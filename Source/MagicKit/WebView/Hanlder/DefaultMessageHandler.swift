@@ -10,7 +10,3 @@ class DefaultMessageHandler: NSObject, WebHandler {
         print(message.body)
     }
 }
-
-#Preview {
-    AppPreview()
-}

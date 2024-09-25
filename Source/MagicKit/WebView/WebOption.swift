@@ -15,7 +15,3 @@ struct WebOption {
         WebOption(htmlFile: file)
     }
 }
-
-#Preview {
-    AppPreview()
-}

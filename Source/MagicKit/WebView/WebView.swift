@@ -93,7 +93,3 @@ extension WebView: ViewRepresentable {
         return content
     }
 }
-
-#Preview("APP") {
-    AppPreview()
-}

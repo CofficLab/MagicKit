@@ -7,7 +7,11 @@ class DefaultDownloadHandler: NSObject, WebHandler {
     var functionName: String = "download"
 
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        os_log("收到JS发送的消息：\(message.name)")
+        if #available(macOS 11.0, *) {
+            os_log("收到JS发送的消息：\(message.name)")
+        } else {
+            // Fallback on earlier versions
+        }
     }
 
     func downloadFile(message: WKScriptMessage) {
@@ -37,8 +41,4 @@ class DefaultDownloadHandler: NSObject, WebHandler {
             }
         } else {}
     }
-}
-
-#Preview {
-    AppPreview()
 }

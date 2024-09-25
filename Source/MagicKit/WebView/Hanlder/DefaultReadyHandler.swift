@@ -9,7 +9,3 @@ class DefaultReadyHandler: NSObject, WebHandler {
         os_log("收到JS发送的消息：\(message.name)")
     }
 }
-
-#Preview {
-    AppPreview()
-}

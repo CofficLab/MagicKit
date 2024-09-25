@@ -1,11 +1,12 @@
-// swift-tools-version:5.5
+// swift-tools-version:5.9
+
 import PackageDescription
 
 let package = Package(
     name: "MagicKit",
     platforms: [
-        .iOS(.v13),
-        .macOS(.v10_15)
+        .iOS(.v17),
+        .macOS(.v14)
     ],
     products: [
         .library(

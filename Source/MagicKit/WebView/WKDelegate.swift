@@ -101,7 +101,3 @@ class WKDelegate: NSObject, WKUIDelegate, ObservableObject, WKNavigationDelegate
         print("WKNavigationResponse")
     }
 }
-
-#Preview("APP") {
-    AppPreview()
-}

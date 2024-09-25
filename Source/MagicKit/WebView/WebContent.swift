@@ -34,7 +34,3 @@ class WebContent: WKWebView {
         }
     }
 }
-
-#Preview {
-    AppPreview()
-}
