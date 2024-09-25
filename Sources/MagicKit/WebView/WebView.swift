@@ -9,7 +9,7 @@ import WebKit
     typealias ViewRepresentable = NSViewRepresentable
 #endif
 
-struct WebView {
+public struct WebView {
     /// 配置
     public var option: WebOption? = nil
 

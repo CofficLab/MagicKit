@@ -1,17 +1,17 @@
 import SwiftUI
 import WebKit
 
-struct WebOption {
-    var url: URL? = nil
-    var html: String? = nil
-    var code: String? = nil
-    var htmlFile: URL? = nil
+public struct WebOption {
+    public var url: URL? = nil
+    public var html: String? = nil
+    public var code: String? = nil
+    public var htmlFile: URL? = nil
     
-    static func url(_ url: URL) -> WebOption {
+    public static func url(_ url: URL) -> WebOption {
         WebOption(url: url)
     }
     
-    static func file(_ file: URL) -> WebOption {
+    public static func file(_ file: URL) -> WebOption {
         WebOption(htmlFile: file)
     }
 }

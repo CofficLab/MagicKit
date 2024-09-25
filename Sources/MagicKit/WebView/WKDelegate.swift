@@ -3,24 +3,24 @@ import OSLog
 import SwiftUI
 import WebKit
 
-class WKDelegate: NSObject, WKUIDelegate, ObservableObject, WKNavigationDelegate {
+public class WKDelegate: NSObject, WKUIDelegate, ObservableObject, WKNavigationDelegate {
     @Environment(\.openURL) var openURL
 
-    func webView(_ webView: WKWebView, didReceiveServerRedirectForProvisionalNavigation navigation: WKNavigation!) {
+    public func webView(_ webView: WKWebView, didReceiveServerRedirectForProvisionalNavigation navigation: WKNavigation!) {
         print("didReceiveServerRedirectForProvisionalNavigation")
     }
 
-    func webView(_ webView: WKWebView, requestMediaCapturePermissionFor origin: WKSecurityOrigin, initiatedByFrame frame: WKFrameInfo, type: WKMediaCaptureType, decisionHandler: @escaping (WKPermissionDecision) -> Void) {
+    public func webView(_ webView: WKWebView, requestMediaCapturePermissionFor origin: WKSecurityOrigin, initiatedByFrame frame: WKFrameInfo, type: WKMediaCaptureType, decisionHandler: @escaping (WKPermissionDecision) -> Void) {
         print("requestMediaCapturePermissionFor")
     }
 
-    func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+    public func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
         print("didStartProvisionalNavigation")
     }
 
     // MARK: 文件上传
 
-    func webView(
+    public func webView(
         _ webView: WKWebView,
         runOpenPanelWith parameters: WKOpenPanelParameters,
         initiatedByFrame frame: WKFrameInfo,
@@ -47,7 +47,7 @@ class WKDelegate: NSObject, WKUIDelegate, ObservableObject, WKNavigationDelegate
     }
 
     // 在新标签中打开链接
-    func webView(
+    public func webView(
         _ webView: WKWebView,
         createWebViewWith configuration: WKWebViewConfiguration,
         for navigationAction: WKNavigationAction,
@@ -63,7 +63,7 @@ class WKDelegate: NSObject, WKUIDelegate, ObservableObject, WKNavigationDelegate
     }
 
     // 在当前标签打开链接
-    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+    public func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         print("打开链接")
         if navigationAction.navigationType == .linkActivated {
             if let url = navigationAction.request.url {
@@ -76,28 +76,28 @@ class WKDelegate: NSObject, WKUIDelegate, ObservableObject, WKNavigationDelegate
         }
     }
 
-    func webView(_ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse) async -> WKNavigationResponsePolicy {
+    public func webView(_ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse) async -> WKNavigationResponsePolicy {
         print("WKNavigationResponse")
         return WKNavigationResponsePolicy.allow
     }
 
-    func webView(_ webView: WKWebView, runJavaScriptTextInputPanelWithPrompt prompt: String, defaultText: String?, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping (String?) -> Void) {
+    public func webView(_ webView: WKWebView, runJavaScriptTextInputPanelWithPrompt prompt: String, defaultText: String?, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping (String?) -> Void) {
         print("runJavaScriptTextInputPanelWithPrompt")
 //        EventProvider().emitRunJavaScriptTextInputPanelWithPrompt()
 //        completionHandler("https://www.apple.com")
     }
 
-    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+    public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         print("webview did finish")
 
         webView.navigationDelegate = self
     }
 
-    func webView(_ webView: WKWebView, navigationAction: WKNavigationAction, didBecome download: WKDownload) {
+    public func webView(_ webView: WKWebView, navigationAction: WKNavigationAction, didBecome download: WKDownload) {
         print("WKNavigationAction")
     }
 
-    func webView(_ webView: WKWebView, navigationResponse: WKNavigationResponse, didBecome download: WKDownload) {
+    public func webView(_ webView: WKWebView, navigationResponse: WKNavigationResponse, didBecome download: WKDownload) {
         print("WKNavigationResponse")
     }
 }

@@ -2,35 +2,35 @@ import Foundation
 import OSLog
 
 extension String {
-    var isNotEmpty: Bool {
+    public var isNotEmpty: Bool {
         !isEmpty
     }
     
-    func noSpaces() -> String {
+    public func noSpaces() -> String {
         self.trimmingCharacters(in: .whitespaces)
     }
     
-    func removingLeadingSlashes() -> String {
+    public func removingLeadingSlashes() -> String {
         return self.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
     }
     
-    func mini() -> String {
+    public func mini() -> String {
         self.count <= 30 ? self : String(self.prefix(30)) + "..."
     }
     
-    func max(_ max: Int) -> String {
+    public func max(_ max: Int) -> String {
         self.count <= max ? self : String(self.prefix(max)) + "..."
     }
     
-    func toURL() -> URL {
+    public func toURL() -> URL {
         URL(string: self)!
     }
     
-    func toData() -> Data? {
+    public func toData() -> Data? {
         self.data(using: .utf8)
     }
     
-    func saveToFile(_ url: URL) {
+    public func saveToFile(_ url: URL) {
         let verbose = false
         
         if verbose {
