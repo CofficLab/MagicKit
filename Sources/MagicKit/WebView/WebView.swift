@@ -11,17 +11,17 @@ import WebKit
 
 struct WebView {
     /// 配置
-    var option: WebOption? = nil
+    public var option: WebOption? = nil
 
     /// 网页内容
-    var content: WebContent
+    public var content: WebContent
     
     /// JS脚本处理器
-    var controller: WKUserContentController
+    public var controller: WKUserContentController
 
-    @StateObject var delegate: WKDelegate = .init()
+    @StateObject public var delegate: WKDelegate = .init()
 
-    init(_ option: WebOption) {
+    public init(_ option: WebOption) {
         os_log("🚩 初始化 Webview")
         self.option = option
         self.controller = WKUserContentController()

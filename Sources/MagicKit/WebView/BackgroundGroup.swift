@@ -157,7 +157,7 @@ public struct BackgroundGroup {
     }
 
     // 添加一个静态属性来提供所有可用的渐变名称
-    static var all: [GradientName] {
+    static public var all: [GradientName] {
         return GradientName.allCases
     }
 }

@@ -4,10 +4,10 @@ import SwiftUI
 import WebKit
 
 /// 负责渲染 Web 内容，与 JS 交互等
-class WebContent: WKWebView {
+public class WebContent: WKWebView {
     // MARK: 执行JS代码
 
-    func run(_ jsCode: String) {
+    public func run(_ jsCode: String) {
         let verbose = false 
         if verbose {
             let trimmed = jsCode.trimmingCharacters(in: .whitespaces)
