@@ -7,7 +7,7 @@ public struct BackgroundView: View {
         BackgroundView.type1
     }
     
-    static var type1: some View {
+    static public var type1: some View {
         ZStack {
             LinearGradient(
                 gradient: Gradient(
@@ -21,7 +21,7 @@ public struct BackgroundView: View {
         .ignoresSafeArea()
     }
     
-    static var type2: some View {
+    static public var type2: some View {
         ZStack {
             LinearGradient(
                 gradient: Gradient(
@@ -32,21 +32,21 @@ public struct BackgroundView: View {
         }.ignoresSafeArea()
     }
     
-    static var type2A: some View {
+    static public var type2A: some View {
         ZStack {
             type2
             Color.green.opacity(0.2).blur(radius: 2)
         }.ignoresSafeArea()
     }
     
-    static var type2B: some View {
+    static public var type2B: some View {
         ZStack {
             type2
             Color.white.opacity(0.2).blur(radius: 2)
         }.ignoresSafeArea()
     }
     
-    static var type3: some View {
+    static public var type3: some View {
         ZStack {
             LinearGradient(
                 gradient: Gradient(
@@ -63,7 +63,7 @@ public struct BackgroundView: View {
         .ignoresSafeArea()
     }
     
-    static var type4: some View {
+    static public var type4: some View {
         ZStack {
             LinearGradient(
                 gradient: Gradient(
@@ -80,7 +80,7 @@ public struct BackgroundView: View {
         .ignoresSafeArea()
     }
     
-    static var type5: some View {
+    static public var type5: some View {
         ZStack {
             LinearGradient(
                 gradient: Gradient(
@@ -95,7 +95,7 @@ public struct BackgroundView: View {
         .ignoresSafeArea()
     }
     
-    var type6: some View {
+    public var type6: some View {
         ZStack {
             if colorScheme == .light {
                 Color.white.opacity(0.9)
@@ -111,7 +111,7 @@ public struct BackgroundView: View {
         .ignoresSafeArea()
     }
     
-    static var preview: some View {
+    static public var preview: some View {
         ZStack {
             LinearGradient(
                 gradient: Gradient(
@@ -130,7 +130,7 @@ public struct BackgroundView: View {
         .ignoresSafeArea()
     }
     
-    static var sky: some View {
+    static public var sky: some View {
         ZStack {
             LinearGradient(
                 gradient: Gradient(
@@ -147,7 +147,7 @@ public struct BackgroundView: View {
         .ignoresSafeArea()
     }
     
-    static var ocean: some View {
+    static public var ocean: some View {
         ZStack {
             LinearGradient(
                 gradient: Gradient(
@@ -164,7 +164,7 @@ public struct BackgroundView: View {
         .ignoresSafeArea()
     }
     
-    static var forest: some View {
+    static public var forest: some View {
         ZStack {
             LinearGradient(
                 gradient: Gradient(
@@ -181,7 +181,7 @@ public struct BackgroundView: View {
         .ignoresSafeArea()
     }
     
-    static var yellow: some View {
+    static public var yellow: some View {
         ZStack {
             LinearGradient(
                 gradient: Gradient(
