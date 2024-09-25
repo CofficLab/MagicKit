@@ -1,6 +1,6 @@
 import SwiftUI
 import WebKit
 
-protocol WebHandler: WKScriptMessageHandler {
+public protocol WebHandler: WKScriptMessageHandler {
     var functionName: String { get }
 }
