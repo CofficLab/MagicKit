@@ -6,7 +6,7 @@ import AppKit
 #endif
 
 public class ImageHelper {
-    static func toJpeg(image: CGImage) {
+    static public func toJpeg(image: CGImage) {
         guard let downloadsURL = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first else {
             print("Failed to access downloads folder.")
             return
@@ -28,7 +28,7 @@ public class ImageHelper {
     }
     
     #if os(macOS)
-    static func toJpeg(image: NSImage, saveTo: URL? = nil) {
+    static public func toJpeg(image: NSImage, saveTo: URL? = nil) {
         var saveToUrl = saveTo
         if saveToUrl == nil {
             guard let downloadsURL = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first else {
@@ -64,29 +64,29 @@ public class ImageHelper {
     }
     #endif
     
-    static private func getTimeString() -> String {
+    static public func getTimeString() -> String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyyMMddHHmmss"
         return dateFormatter.string(from: Date())
     }
     
-    @MainActor static func getViewWidth(_ view: some View) -> Int {
+    @MainActor static public func getViewWidth(_ view: some View) -> Int {
         makeCGImage(view).width
     }
 
-    @MainActor static func getViewHeigth(_ view: some View) -> Int {
+    @MainActor static public func getViewHeigth(_ view: some View) -> Int {
         makeCGImage(view).height
     }
     
-    @MainActor static func makeCGImage(_ view: some View) -> CGImage {
+    @MainActor static public func makeCGImage(_ view: some View) -> CGImage {
         ImageRenderer(content: view).cgImage!
     }
 
-    @MainActor static func makeImage(_ view: some View) -> Image {
+    @MainActor static public func makeImage(_ view: some View) -> Image {
         Image(makeCGImage(view), scale: 1, label: Text("目标图像"))
     }
     
-    @MainActor static func snapshot(_ view: some View, path: URL? = nil, title: String? = nil) -> String {
+    @MainActor static public func snapshot(_ view: some View, path: URL? = nil, title: String? = nil) -> String {
         guard let downloadsURL = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first else {
             return "Failed to access downloads folder."
         }

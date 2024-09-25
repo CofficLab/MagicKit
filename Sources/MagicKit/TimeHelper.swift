@@ -1,13 +1,13 @@
 import Foundation
 
 public class TimeHelper {
-    static func getTimeString() -> String {
+    static public func getTimeString() -> String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyyMMddHHmmss"
         return dateFormatter.string(from: Date())
     }
     
-    static func toTimeString(_ time: Date?) -> String {
+    static public func toTimeString(_ time: Date?) -> String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
 
@@ -21,7 +21,7 @@ public class TimeHelper {
 
 extension Date {
     /// "yyyy-MM-dd HH:mm:ss" 格式的字符串
-    var string: String {
+    public var string: String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         dateFormatter.timeZone = TimeZone.current
@@ -30,7 +30,7 @@ extension Date {
     }
     
     /// "yyyyMMddHHmmss" 格式的字符串
-    var string2: String {
+    public var string2: String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyyMMddHHmmss"
         dateFormatter.timeZone = TimeZone.current

@@ -1,7 +1,7 @@
 import SwiftUI
 
 public struct BackgroundGroup {
-    enum GradientName: String, CaseIterable {
+    public enum GradientName: String, CaseIterable {
         case amber2orange_t2b
         case aquamarine2teal_l2r
         case beige2brown_tl2br
@@ -139,12 +139,12 @@ public struct BackgroundGroup {
     }
 
     // 修改初始化方法
-    init(for name: String) {
+    public init(for name: String) {
         self.name = GradientName(rawValue: name) ?? .blue2cyan // 默认值为 .blue2cyan
     }
 
     // 保留原有的初始化方法
-    init(for name: GradientName) {
+    public init(for name: GradientName) {
         self.name = name
     }
 
