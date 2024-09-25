@@ -39,7 +39,7 @@ extension SuperLog {
 //        }
 //    }
     
-    var t: String {
+    public var t: String {
         var emoji = "🈳"
         
         if let nameProperty = Mirror(reflecting: self).children.first(where: { $0.label == "emoji" }) {
