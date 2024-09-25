@@ -2,7 +2,7 @@ import OSLog
 
 @available(macOS 11.0, *)
 extension Logger {
-    static var initLog: String {
+    static public var initLog: String {
         threadName + "🚩 初始化"
     }
     

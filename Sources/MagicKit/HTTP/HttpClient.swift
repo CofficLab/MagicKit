@@ -1,7 +1,7 @@
 import Foundation
 import OSLog
 
-class HttpClient: SuperLog {
+public class HttpClient: SuperLog {
     let emoji = "🛞"
     var url: URL
     var headers: [String: String] = [

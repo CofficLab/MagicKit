@@ -1,9 +1,9 @@
 import SwiftUI
 
-struct BackgroundView: View {
+public struct BackgroundView: View {
     var colorScheme: ColorScheme = .light
     
-    var body: some View {
+    public var body: some View {
         BackgroundView.type1
     }
     

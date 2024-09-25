@@ -1,6 +1,6 @@
 import Foundation
 
-class TimeHelper {
+public class TimeHelper {
     static func getTimeString() -> String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyyMMddHHmmss"

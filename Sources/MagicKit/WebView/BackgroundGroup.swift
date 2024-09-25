@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct BackgroundGroup {
+public struct BackgroundGroup {
     enum GradientName: String, CaseIterable {
         case amber2orange_t2b
         case aquamarine2teal_l2r
@@ -152,7 +152,7 @@ struct BackgroundGroup {
     private let name: GradientName
 
     // 添加一个计算属性来返回视图
-    var body: some View {
+    public var body: some View {
         gradientView(for: name)
     }
 

@@ -13,13 +13,13 @@ extension URL {
     
     var f: FileManager { FileManager.default }
     
-    func removingLeadingSlashes() -> String {
+    public func removingLeadingSlashes() -> String {
         return self.path.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
     }
     
     // MARK: FileManager
 
-    func removeItem() throws {
+    public func removeItem() throws {
         if self.isFileExist() {
             try f.removeItem(at: self)
         }
@@ -29,38 +29,38 @@ extension URL {
         }
     }
     
-    func nearestFolder() -> URL {
+    public func nearestFolder() -> URL {
         self.isFolder ? self : self.deletingLastPathComponent()
     }
     
-    func isDirExist() -> String {
+    public func isDirExist() -> String {
         isDirExist() ? "是" : "否"
     }
 
-    func isDirExist() -> Bool {
+    public func isDirExist() -> Bool {
         var isDir: ObjCBool = true
         return f.fileExists(atPath: self.path(), isDirectory: &isDir)
     }
     
-    func isFileExist() -> String {
+    public func isFileExist() -> String {
         isFileExist() ? "是" : "否"
     }
 
-    func isFileExist() -> Bool {
+    public func isFileExist() -> Bool {
         f.fileExists(atPath: self.path)
     }
     
-    func removeParentFolder() {
+    public func removeParentFolder() {
         try? f.removeItem(at: self.deletingLastPathComponent())
     }
     
-    func removeParentFolderWhen(_ condition: Bool) {
+    public func removeParentFolderWhen(_ condition: Bool) {
         if condition {
             self.removeParentFolder()
         }
     }
     
-    func getContent() throws -> String {
+    public func getContent() throws -> String {
         do {
             return try String(contentsOfFile: self.path, encoding: .utf8)
         } catch {
@@ -70,7 +70,7 @@ extension URL {
         }
     }
     
-    func getBlob() throws -> String {
+    public func getBlob() throws -> String {
         let url = self
         
         if self.isImage() {
@@ -86,11 +86,11 @@ extension URL {
         }
     }
     
-    func flatten() -> [URL] {
+    public func flatten() -> [URL] {
         getAllFilesInDirectory()
     }
     
-    func getChildren() -> [URL] {
+    public func getChildren() -> [URL] {
         let url = self
         let fileManager = FileManager.default
         var fileURLs: [URL] = []
@@ -112,7 +112,7 @@ extension URL {
         }).sorted(by: {$0.lastPathComponent < $1.lastPathComponent})
     }
     
-    func getFileChildren() -> [URL] {
+    public func getFileChildren() -> [URL] {
         let url = self
         let fileManager = FileManager.default
         var fileURLs: [URL] = []
@@ -137,7 +137,7 @@ extension URL {
         }).sorted(by: {$0.lastPathComponent < $1.lastPathComponent})
     }
     
-    func getAllFilesInDirectory() -> [URL] {
+    public func getAllFilesInDirectory() -> [URL] {
         let url = self
         let fileManager = FileManager.default
         var fileURLs: [URL] = []
@@ -165,7 +165,7 @@ extension URL {
         })
     }
     
-    func openInBrowser() {
+    public func openInBrowser() {
         #if os(iOS)
         UIApplication.shared.open(self)
         #elseif os(macOS)
@@ -176,18 +176,18 @@ extension URL {
     
     // MARK: HTTP
     
-    func withToken(_ token: String) -> HttpClient {
+    public func withToken(_ token: String) -> HttpClient {
         HttpClient(url: self).withToken(token)
     }
     
-    func withBody(_ body: [String:Any]) -> HttpClient {
+    public func withBody(_ body: [String:Any]) -> HttpClient {
         HttpClient(url: self).withBody(body)
     }
     
     // MARK: Type
 
     // 定义常见图片格式的文件头
-    var imageSignatures: [String: [UInt8]] {
+    public var imageSignatures: [String: [UInt8]] {
         [
             "jpg": [0xFF, 0xD8, 0xFF],
             "png": [0x89, 0x50, 0x4E, 0x47],
@@ -198,7 +198,7 @@ extension URL {
     }
 
     // 读取文件头的函数
-    func readFileHeader(length: Int) -> [UInt8]? {
+    public func readFileHeader(length: Int) -> [UInt8]? {
         let fileURL = self
         
         do {
@@ -211,7 +211,7 @@ extension URL {
     }
 
     // 判断文件是否为图片的函数
-    func isImage() -> Bool {
+    public func isImage() -> Bool {
         let verbose = false
         let fileURL = self
         

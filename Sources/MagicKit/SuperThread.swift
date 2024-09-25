@@ -1,33 +1,33 @@
 import Foundation
 
-protocol SuperThread {
+public protocol SuperThread {
     
 }
 
 extension SuperThread {
-    var main: DispatchQueue {
+    public var main: DispatchQueue {
         .main
     }
     
-    var bg: DispatchQueue {
+    public var bg: DispatchQueue {
         .global()
     }
     
-    var background: DispatchQueue {
+    public var background: DispatchQueue {
         .global(qos: .background)
     }
     
-    var f: FileManager {
+    public var f: FileManager {
         FileManager.default
     }
     
-    func makeQueue(name: String) -> DispatchQueue {
+    public func makeQueue(name: String) -> DispatchQueue {
         DispatchQueue(label: name, qos: .background)
     }
 }
 
 extension SuperThread {
-    var threadName: String {
+    public var threadName: String {
         "\(Thread.isMainThread ? "[🔥]" : "")"
     }
 }

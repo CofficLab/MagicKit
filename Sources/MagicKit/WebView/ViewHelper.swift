@@ -1,8 +1,8 @@
 import Foundation
 import SwiftUI
 
-class ViewHelper {
-    static func makeCard(_ text: String) -> some View {
+public class ViewHelper {
+    static public func makeCard(_ text: String) -> some View {
         Text(text)
             .padding(.horizontal, 8)
             .overlay(
@@ -12,7 +12,7 @@ class ViewHelper {
                     .cornerRadius(8)).padding(.horizontal, 8)
     }
 
-    static var dashedBorder: some Shape = Rectangle()
+    static public var dashedBorder: some Shape = Rectangle()
         .stroke(style: StrokeStyle(
             lineWidth: 1,
             dash: [5])
