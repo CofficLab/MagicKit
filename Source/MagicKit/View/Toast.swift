@@ -24,9 +24,3 @@ struct Toast_Previews: PreviewProvider {
             .background(Color.white)
     }
 }
-
-#Preview("APP") {
-    RootView {
-        Content()
-    }.frame(width: 700)
-}
