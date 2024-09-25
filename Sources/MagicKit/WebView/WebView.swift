@@ -42,11 +42,11 @@ public struct WebView {
         self.addHanlder(DefaultReadyHandler())
     }
     
-    func addHanlder(_ h: WebHandler) {
+    public func addHanlder(_ h: WebHandler) {
         self.controller.add(h, name: h.functionName)
     }
     
-    func removeHanlders() {
+    public func removeHanlders() {
         self.controller.removeAllScriptMessageHandlers()
     }
 }
