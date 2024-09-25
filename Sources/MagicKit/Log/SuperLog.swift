@@ -3,7 +3,7 @@ import SwiftUI
 import OSLog
 import SwiftData
 
-protocol SuperLog {
+public protocol SuperLog {
 }
 
 extension SuperLog {
