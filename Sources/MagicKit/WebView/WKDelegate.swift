@@ -20,6 +20,7 @@ public class WKDelegate: NSObject, WKUIDelegate, ObservableObject, WKNavigationD
 
     // MARK: 文件上传
 
+#if os(macOS)
     public func webView(
         _ webView: WKWebView,
         runOpenPanelWith parameters: WKOpenPanelParameters,
@@ -45,6 +46,7 @@ public class WKDelegate: NSObject, WKUIDelegate, ObservableObject, WKNavigationD
             }
         }
     }
+    #endif
 
     // 在新标签中打开链接
     public func webView(

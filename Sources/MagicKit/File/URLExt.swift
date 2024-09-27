@@ -1,6 +1,12 @@
 import Foundation
-import AppKit
 import OSLog
+#if os(macOS)
+import AppKit
+#endif
+
+#if os(iOS)
+import UIKit
+#endif
 
 extension URL {
     var name: String { self.lastPathComponent }

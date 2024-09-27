@@ -44,6 +44,7 @@ struct MenuTile: View {
     }
 
     // MARK: 计算背景色
+
     private var background: some View {
         if dragging {
             return Color.white.opacity(0.5)
@@ -63,9 +64,11 @@ struct MenuTile: View {
             return Color(.gray).opacity(0.4)
         }
 
-        if hovered {
-            return Color(.controlAccentColor).opacity(0.1)
-        }
+        #if os(macOS)
+            if hovered {
+                return Color(.controlAccentColor).opacity(0.1)
+            }
+        #endif
 
         return Color.clear
     }
@@ -121,15 +124,19 @@ struct MenuTile: View {
             collapsed.toggle()
             clicked()
         }
+
         // MARK: 单击事件
+
         .onTapGesture(count: 1) {
             clicked()
         }
         .cornerRadius(4)
-        .overlay(
-            RoundedRectangle(cornerRadius: 4)
-                .stroke(hovered ? Color(.controlAccentColor).opacity(0) : Color.clear, lineWidth: 1)
-        )
+        #if os(macOS)
+            .overlay(
+                RoundedRectangle(cornerRadius: 4)
+                    .stroke(hovered ? Color(.controlAccentColor).opacity(0) : Color.clear, lineWidth: 1)
+            )
+        #endif
     }
 
     private func getIndicatorBackground() -> some ShapeStyle {

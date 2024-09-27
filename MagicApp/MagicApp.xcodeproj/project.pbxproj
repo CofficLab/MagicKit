@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0BD652442CA43CB700BA3CB8 /* MagicKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0BD652432CA43CB700BA3CB8 /* MagicKit */; };
+		F54DFA872CA632D000F81BE3 /* MagicKit in Frameworks */ = {isa = PBXBuildFile; productRef = F54DFA862CA632D000F81BE3 /* MagicKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0BD652442CA43CB700BA3CB8 /* MagicKit in Frameworks */,
+				F54DFA872CA632D000F81BE3 /* MagicKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -71,6 +73,7 @@
 			name = MagicApp;
 			packageProductDependencies = (
 				0BD652432CA43CB700BA3CB8 /* MagicKit */,
+				F54DFA862CA632D000F81BE3 /* MagicKit */,
 			);
 			productName = MagicApp;
 			productReference = 0BD6522E2CA43C2D00BA3CB8 /* MagicApp.app */;
@@ -275,8 +278,11 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.yueyi.MagicApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -303,8 +309,11 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.yueyi.MagicApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -340,6 +349,10 @@
 
 /* Begin XCSwiftPackageProductDependency section */
 		0BD652432CA43CB700BA3CB8 /* MagicKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = MagicKit;
+		};
+		F54DFA862CA632D000F81BE3 /* MagicKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = MagicKit;
 		};

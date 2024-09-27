@@ -23,22 +23,24 @@ class DefaultDownloadHandler: NSObject, WebHandler {
     }
 
     func downloadFile(base64: String, name: String) {
-        let panel = NSOpenPanel()
-        panel.allowsMultipleSelection = false
-        panel.canChooseDirectories = true
-        panel.canChooseFiles = false
-        if panel.runModal() == .OK, let url = panel.url {
-            guard let base64Data = Data(base64Encoded: base64) else {
-                print("Base64 decode failed")
-                return
-            }
+        #if os(macOS)
+            let panel = NSOpenPanel()
+            panel.allowsMultipleSelection = false
+            panel.canChooseDirectories = true
+            panel.canChooseFiles = false
+            if panel.runModal() == .OK, let url = panel.url {
+                guard let base64Data = Data(base64Encoded: base64) else {
+                    print("Base64 decode failed")
+                    return
+                }
 
-            do {
-                try base64Data.write(to: url.appendingPathComponent(name))
-                print("保存成功")
-            } catch {
-                print("保存失败 -> \(error)")
+                do {
+                    try base64Data.write(to: url.appendingPathComponent(name))
+                    print("保存成功")
+                } catch {
+                    print("保存失败 -> \(error)")
+                }
             }
-        } else {}
+        #endif
     }
 }
