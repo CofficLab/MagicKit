@@ -51,6 +51,7 @@ public struct WebView {
     }
 }
 
+#if os(macOS) || os(iOS)
 /// 将 WebContent 封装成一个普通的 View
 extension WebView: ViewRepresentable {
     #if os(iOS)
@@ -93,3 +94,4 @@ extension WebView: ViewRepresentable {
         return content
     }
 }
+#endif

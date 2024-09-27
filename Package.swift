@@ -6,6 +6,7 @@ let package = Package(
     name: "MagicKit",
     platforms: [
         .iOS(.v17),
+        .visionOS(.v1),
         .macOS(.v14)
     ],
     products: [

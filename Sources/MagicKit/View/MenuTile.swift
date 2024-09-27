@@ -1,5 +1,6 @@
 import SwiftUI
 
+#if os(macOS) || os(iOS)
 struct MenuTile: View {
     var title: String = "[无标题]"
     var dragging: Bool = false
@@ -245,3 +246,4 @@ struct MenuTile_Previews: PreviewProvider {
         .padding(.all, 8)
     }
 }
+#endif
