@@ -109,17 +109,14 @@ extension URL {
             // 获取目录下的所有文件和子目录的 URL
             let urls = try fileManager.contentsOfDirectory(at: url, includingPropertiesForKeys: nil, options: [])
             
-            for u in urls {
-                fileURLs.append(u)
-            }
+            fileURLs = urls.sorted { $0.lastPathComponent.localizedStandardCompare($1.lastPathComponent) == .orderedAscending }
         } catch {
-            print("读取目录时发生错误: \(error)")
+            os_log(.error, "读取目录时发生错误: \(error)")
         }
-        
 
         return fileURLs.filter({
             $0.lastPathComponent != ".DS_Store"
-        }).sorted(by: {$0.lastPathComponent < $1.lastPathComponent})
+        })
     }
     
     public func getFileChildren() -> [URL] {
@@ -186,7 +183,7 @@ extension URL {
 
     public func getNextFile() -> URL? {
         let parent = self.getParent()
-        let files = parent.getAllFilesInDirectory()
+        let files = parent.getChildren()
         guard let index = files.firstIndex(of: self) else {
             return nil
         }
