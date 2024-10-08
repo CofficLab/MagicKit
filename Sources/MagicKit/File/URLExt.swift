@@ -191,6 +191,17 @@ extension URL {
         let nextIndex = index + 1
         return files[nextIndex]
     }
+
+    public func getPrevFile() -> URL? {
+        let parent = self.getParent()
+        let files = parent.getChildren()
+        guard let index = files.firstIndex(of: self) else {
+            return nil
+        }
+        
+        let previousIndex = index - 1
+        return files[previousIndex]
+    }
     
     // MARK: HTTP
     
