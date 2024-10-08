@@ -187,6 +187,10 @@ extension URL {
         guard let index = files.firstIndex(of: self) else {
             return nil
         }
+
+        if index == files.count - 1 {
+            return nil
+        }
         
         let nextIndex = index + 1
         return files[nextIndex]
@@ -196,6 +200,10 @@ extension URL {
         let parent = self.getParent()
         let files = parent.getChildren()
         guard let index = files.firstIndex(of: self) else {
+            return nil
+        }
+
+        if index == 0 {
             return nil
         }
         
