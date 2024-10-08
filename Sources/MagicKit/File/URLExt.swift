@@ -179,6 +179,16 @@ extension URL {
         #else
         #endif
     }
+
+    public func getNextFile() -> URL? {
+        let files = self.getAllFilesInDirectory()
+        guard let index = files.firstIndex(of: self) else {
+            return nil
+        }
+        
+        let nextIndex = index + 1
+        return files[nextIndex]
+    }
     
     // MARK: HTTP
     
