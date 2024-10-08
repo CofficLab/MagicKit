@@ -25,6 +25,10 @@ extension URL {
     
     // MARK: FileManager
 
+    public func getParent() -> URL {
+        self.deletingLastPathComponent()
+    }
+
     public func removeItem() throws {
         if self.isFileExist() {
             try f.removeItem(at: self)
@@ -163,7 +167,7 @@ extension URL {
                 }
             }
         } catch {
-            print("读取目录时发生错误: \(error)")
+            os_log(.error, "读取目录时发生错误: \(error.localizedDescription)")
         }
 
         return fileURLs.filter({
@@ -181,7 +185,8 @@ extension URL {
     }
 
     public func getNextFile() -> URL? {
-        let files = self.getAllFilesInDirectory()
+        let parent = self.getParent()
+        let files = parent.getAllFilesInDirectory()
         guard let index = files.firstIndex(of: self) else {
             return nil
         }
