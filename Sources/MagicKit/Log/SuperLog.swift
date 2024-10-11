@@ -19,6 +19,8 @@ extension SuperLog {
         String(describing: type(of: self))
     }
     
+    var className: String { author }
+    
     var isMain: String {
         "\(Thread.isMainThread ? "🔥 " : "")"
     }
