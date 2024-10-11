@@ -7,7 +7,7 @@ public protocol SuperLog {
 }
 
 extension SuperLog {
-    func r(_ s: String) -> String {
+    public func r(_ s: String) -> String {
         makeReason(s)
     }
     
@@ -19,9 +19,9 @@ extension SuperLog {
         String(describing: type(of: self))
     }
     
-    var className: String { author }
+    public var className: String { author }
     
-    var functionName: String {
+    public var functionName: String {
         String(describing: #function).components(separatedBy: "(").first ?? #function
     }
     
