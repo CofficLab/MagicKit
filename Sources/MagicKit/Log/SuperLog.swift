@@ -21,10 +21,6 @@ extension SuperLog {
     
     public var className: String { author }
     
-    public var functionName: String {
-        String(describing: #function).components(separatedBy: "(").first ?? #function
-    }
-    
     var isMain: String {
         "\(Thread.isMainThread ? "🔥 " : "")"
     }
