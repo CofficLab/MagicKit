@@ -2,21 +2,51 @@ import SwiftUI
 
 #if os(macOS) || os(iOS)
 public struct MenuTile: View {
-    var title: String = "[无标题]"
-    var dragging: Bool = false
-    var trailing: String = ""
-    var isFolder: Bool = false
-    var level: Int = 0
-    var forceIcon: String = ""
-    var loading: Bool = false
+    public var title: String = "[无标题]"
+    public var dragging: Bool = false
+    public var trailing: String = ""
+    public var isFolder: Bool = false
+    public var level: Int = 0
+    public var forceIcon: String = ""
+    public var loading: Bool = false
 
     @Binding var deleting: Bool
-    var selected: Bool
+    public var selected: Bool
     @Binding var collapsed: Bool
-    var clicked: () -> Void = {}
+    public var clicked: () -> Void = {}
 
     @State private var indicatorHovered: Bool = false
     @State private var hovered: Bool = false
+    
+    public init(
+        title: String, 
+        dragging: Bool = false, 
+        trailing: String = "", 
+        isFolder: Bool = false, 
+        level: Int = 0, 
+        forceIcon: String = "", 
+        loading: Bool = false, 
+        deleting: Binding<Bool>, 
+        selected: Bool, 
+        collapsed: Binding<Bool>, 
+        clicked: @escaping () -> Void = {}, 
+        indicatorHovered: Bool = false, 
+        hovered: Bool = false
+    ) {
+        self.title = title
+        self.dragging = dragging
+        self.trailing = trailing
+        self.isFolder = isFolder
+        self.level = level
+        self.forceIcon = forceIcon
+        self.loading = loading
+        self._deleting = deleting
+        self.selected = selected
+        self._collapsed = collapsed
+        self.clicked = clicked
+        self.indicatorHovered = indicatorHovered
+        self.hovered = hovered
+    }
 
     private var icon: some View {
         #if os(macOS)
