@@ -14,26 +14,26 @@ public class HttpClient: SuperLog {
         self.url = url
     }
     
-    func withHeaders(_ headers: [String:String]) -> Self {
+    public func withHeaders(_ headers: [String:String]) -> Self {
         self.headers = headers
         return self
     }
     
-    func withHeader(_ key: String, _ value: String) -> Self {
+    public func withHeader(_ key: String, _ value: String) -> Self {
         headers.updateValue(value, forKey: key)
         return self
     }
 
-    func withToken(_ token: String) -> Self {
+    public func withToken(_ token: String) -> Self {
         self.withHeader("Authorization", "Bearer \(token)")
     }
     
-    func withBody(_ body: [String:Any]) -> Self {
+    public func withBody(_ body: [String:Any]) -> Self {
         self.body = body
         return self
     }
 
-    func get() async throws -> String {
+    public func get() async throws -> String {
         var request = URLRequest(url: url)
         let session = URLSession.shared
 
@@ -64,7 +64,7 @@ public class HttpClient: SuperLog {
         return responseString
     }
 
-    func getDataAndResponse() async throws -> (Data, HTTPURLResponse) {
+    public func getDataAndResponse() async throws -> (Data, HTTPURLResponse) {
         var request = URLRequest(url: url)
         let session = URLSession.shared
 
@@ -84,7 +84,7 @@ public class HttpClient: SuperLog {
         return (data, httpResponse)
     }
 
-    func delete() async throws {
+    public func delete() async throws {
         var request = URLRequest(url: url)
         request.httpMethod = "DELETE"
 
@@ -110,7 +110,7 @@ public class HttpClient: SuperLog {
         }
     }
 
-    func post() async throws -> String {
+    public func post() async throws -> String {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
 
@@ -143,7 +143,7 @@ public class HttpClient: SuperLog {
         return responseString
     }
 
-    func patch() async throws -> String {
+    public func patch() async throws -> String {
         var request = URLRequest(url: url)
         request.httpMethod = "PATCH"
 
@@ -176,7 +176,7 @@ public class HttpClient: SuperLog {
         return responseString
     }
 
-    func put() async throws -> String {
+    public func put() async throws -> String {
         var request = URLRequest(url: url)
         request.httpMethod = "PUT"
 
