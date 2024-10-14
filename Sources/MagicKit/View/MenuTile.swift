@@ -7,12 +7,12 @@ public struct MenuTile: View {
     public var trailing: String = ""
     public var isFolder: Bool = false
     public var level: Int = 0
-    public var forceIcon: String = ""
     public var loading: Bool = false
 
-    @Binding var deleting: Bool
-    public var selected: Bool
-    @Binding var collapsed: Bool
+    @Binding public var deleting: Bool
+    @Binding public var selected: Bool
+    @Binding public var collapsed: Bool
+    @Binding public var forceIcon: String
     public var clicked: () -> Void = {}
 
     @State private var indicatorHovered: Bool = false
@@ -24,11 +24,11 @@ public struct MenuTile: View {
         trailing: String = "", 
         isFolder: Bool = false, 
         level: Int = 0, 
-        forceIcon: String = "", 
-        loading: Bool = false, 
+        forceIcon: Binding<String> = Binding.constant(""),
+        loading: Bool = false,
         deleting: Binding<Bool>, 
-        selected: Bool, 
-        collapsed: Binding<Bool>, 
+        selected: Binding<Bool>,
+        collapsed: Binding<Bool>,
         clicked: @escaping () -> Void = {}, 
         indicatorHovered: Bool = false, 
         hovered: Bool = false
@@ -38,14 +38,14 @@ public struct MenuTile: View {
         self.trailing = trailing
         self.isFolder = isFolder
         self.level = level
-        self.forceIcon = forceIcon
         self.loading = loading
-        self._deleting = deleting
-        self.selected = selected
-        self._collapsed = collapsed
         self.clicked = clicked
         self.indicatorHovered = indicatorHovered
         self.hovered = hovered
+        self._deleting = deleting
+        self._selected = selected
+        self._collapsed = collapsed
+        self._forceIcon = forceIcon
     }
 
     private var icon: some View {
@@ -192,21 +192,22 @@ struct MenuTile_Previews: PreviewProvider {
                 trailing: "",
                 isFolder: false,
                 deleting: Binding.constant(false),
-                selected: false,
+                selected: Binding.constant(false),
                 collapsed: Binding.constant(false)
             )
             MenuTile(
                 title: "普通删除中",
                 dragging: false,
                 deleting: Binding.constant(true),
-                selected: false,
+                selected: Binding.constant(false),
                 collapsed: Binding.constant(true)
             )
             MenuTile(
                 title: "普通加载中",
                 dragging: false,
                 loading: true,
-                deleting: Binding.constant(false), selected: false,
+                deleting: Binding.constant(false),
+                selected: Binding.constant(false),
                 collapsed: Binding.constant(true)
             )
             MenuTile(
@@ -214,7 +215,7 @@ struct MenuTile_Previews: PreviewProvider {
                 dragging: false,
                 isFolder: true,
                 deleting: Binding.constant(false),
-                selected: false,
+                selected: Binding.constant(false),
                 collapsed: Binding.constant(true)
             )
             MenuTile(
@@ -222,7 +223,7 @@ struct MenuTile_Previews: PreviewProvider {
                 dragging: false,
                 isFolder: true,
                 deleting: Binding.constant(false),
-                selected: false,
+                selected: Binding.constant(false),
                 collapsed: Binding.constant(false)
             )
             MenuTile(
@@ -230,21 +231,21 @@ struct MenuTile_Previews: PreviewProvider {
                 dragging: false,
                 trailing: "9",
                 deleting: Binding.constant(false),
-                selected: false,
+                selected: Binding.constant(false),
                 collapsed: Binding.constant(false)
             )
             MenuTile(
                 title: "选中",
                 dragging: false,
                 deleting: Binding.constant(false),
-                selected: false,
+                selected: Binding.constant(false),
                 collapsed: Binding.constant(false)
             )
             MenuTile(
                 title: "展开",
                 dragging: false,
                 deleting: Binding.constant(false),
-                selected: false,
+                selected: Binding.constant(false),
                 collapsed: Binding.constant(false)
             )
             MenuTile(
@@ -252,7 +253,7 @@ struct MenuTile_Previews: PreviewProvider {
                 dragging: false,
                 trailing: "89",
                 deleting: Binding.constant(false),
-                selected: false,
+                selected: Binding.constant(false),
                 collapsed: Binding.constant(false)
             )
             MenuTile(
@@ -261,14 +262,14 @@ struct MenuTile_Previews: PreviewProvider {
                 trailing: "",
                 isFolder: false,
                 deleting: Binding.constant(false),
-                selected: false,
+                selected: Binding.constant(false),
                 collapsed: Binding.constant(false)
             )
             MenuTile(
                 title: "选中展开",
                 dragging: false,
                 deleting: Binding.constant(false),
-                selected: false,
+                selected: Binding.constant(false),
                 collapsed: Binding.constant(false)
             )
         }
