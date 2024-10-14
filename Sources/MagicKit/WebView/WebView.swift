@@ -1,6 +1,6 @@
 import Foundation
-import OSLog
 import SwiftUI
+import OSLog
 import WebKit
 
 #if os(iOS)
@@ -9,57 +9,51 @@ import WebKit
     typealias ViewRepresentable = NSViewRepresentable
 #endif
 
-public struct WebView {
-    /// 配置
-    public var option: WebOption? = nil
+// 将 WebContent 封装成一个普通的 View
+struct WebView: ViewRepresentable, SuperLog {
+    let emoji = "🕸️"
+
+    public init(
+        url: URL? = nil,
+        html: String? = "",
+        code: String? = "",
+        htmlFile: URL? = nil,
+        config: WKWebViewConfiguration
+    ) {
+        let verbose = true
+
+        if verbose {
+            os_log("\(Logger.initLog) WebView with url -> \(url?.absoluteString ?? "nil")")
+        }
+
+        self.url = url
+        self.html = html
+        self.config = config
+        self.code = code
+        self.htmlFile = htmlFile
+        content = WebContent(frame: .zero, configuration: config)
+        content.isInspectable = true
+    }
+
+    var url: URL?
+    let html: String?
+    private let code: String?
+    private let htmlFile: URL?
+    private let config: WKWebViewConfiguration?
 
     /// 网页内容
-    public var content: WebContent
-    
-    /// JS脚本处理器
-    public var controller: WKUserContentController
+    var content: WebContent
 
-    @StateObject public var delegate: WKDelegate = .init()
+    @StateObject var delegate = WebViewDelegate()
 
-    public init(_ option: WebOption) {
-        os_log("🚩 初始化 Webview")
-        self.option = option
-        self.controller = WKUserContentController()
-
-        // 初始化网络内容部分
-
-        let config = WKWebViewConfiguration()
-
-        config.userContentController = self.controller
-        config.preferences.setValue(true, forKey: "allowFileAccessFromFileURLs")
-
-        self.content = WebContent(frame: .zero, configuration: config)
-        self.content.isInspectable = true
-        
-        // 处理JS发送的消息
-        self.addHanlder(DefaultMessageHandler())
-        self.addHanlder(DefaultDownloadHandler())
-        self.addHanlder(DefaultReadyHandler())
-    }
-    
-    public func addHanlder(_ h: WebHandler) {
-        self.controller.add(h, name: h.functionName)
-    }
-    
-    public func removeHanlders() {
-        self.controller.removeAllScriptMessageHandlers()
-    }
-}
-
-#if os(macOS) || os(iOS)
-/// 将 WebContent 封装成一个普通的 View
-extension WebView: ViewRepresentable {
     #if os(iOS)
         public func makeUIView(context: Context) -> WKWebView {
             makeView()
         }
 
-        public func updateUIView(_ uiView: WKWebView, context: Context) {}
+        public func updateUIView(_ uiView: WKWebView, context: Context) {
+            os_log("\(self.t)WebView 更新视图")
+        }
     #endif
 
     #if os(macOS)
@@ -68,30 +62,59 @@ extension WebView: ViewRepresentable {
         }
 
         public func updateNSView(_ content: WKWebView, context: Context) {
-            // print("WebView 更新视图")
+            os_log("\(self.t)WebView 更新视图")
         }
     #endif
 
     func makeView() -> WKWebView {
-        if let option = option, let url = option.url {
+        let verbose = true
+
+        if let url = url {
+            if verbose {
+                os_log("\(self.t)Make View with -> \(url.absoluteString)")
+            }
             content.load(URLRequest(url: url))
         }
 
-        if let option = option, let html = option.html, !html.isEmpty {
+        if let html = html, html.isNotEmpty {
             content.loadHTMLString(html, baseURL: nil)
         }
 
-        if let option = option, let htmlFile = option.htmlFile {
+        if let htmlFile = htmlFile {
+            if verbose {
+                os_log("\(self.t)Make View with htmlFile")
+            }
             content.loadFileURL(htmlFile, allowingReadAccessTo: htmlFile)
         }
 
-        if let option = option, let code = option.code, !code.isEmpty {
-            content.run(code)
+        if code != nil && code!.count > 0 {
+            Task {
+                try await content.run(code!)
+            }
         }
 
         content.uiDelegate = delegate
 
         return content
     }
+
+    mutating func changeURL(_ url: URL) {
+        let verbose = true
+
+        if self.url == url {
+            return
+        }
+
+        if verbose {
+            os_log("ChangeURL -> \(url.absoluteString)")
+        }
+
+        content.load(URLRequest(url: url))
+    }
 }
-#endif
+
+extension WebView: Equatable {
+    static func == (lhs: WebView, rhs: WebView) -> Bool {
+        lhs.url == rhs.url
+    }
+}
