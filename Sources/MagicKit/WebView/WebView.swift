@@ -10,7 +10,7 @@ import WebKit
 #endif
 
 // 将 WebContent 封装成一个普通的 View
-struct WebView: ViewRepresentable, SuperLog {
+public struct WebView: ViewRepresentable, SuperLog {
     let emoji = "🕸️"
 
     public init(
@@ -114,7 +114,7 @@ struct WebView: ViewRepresentable, SuperLog {
 }
 
 extension WebView: Equatable {
-    static func == (lhs: WebView, rhs: WebView) -> Bool {
+    public static func == (lhs: WebView, rhs: WebView) -> Bool {
         lhs.url == rhs.url
     }
 }
