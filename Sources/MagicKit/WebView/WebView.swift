@@ -98,7 +98,7 @@ public struct WebView: ViewRepresentable, SuperLog {
         return content
     }
 
-    mutating func changeURL(_ url: URL) {
+    mutating public func changeURL(_ url: URL) {
         let verbose = true
 
         if self.url == url {
