@@ -26,10 +26,10 @@ public struct MenuTile: View {
         level: Int = 0, 
         forceIcon: Binding<String> = Binding.constant(""),
         loading: Bool = false,
-        deleting: Binding<Bool>, 
-        selected: Binding<Bool>,
-        collapsed: Binding<Bool>,
-        clicked: @escaping () -> Void = {}, 
+        deleting: Binding<Bool> = Binding.constant(false),
+        selected: Binding<Bool> = Binding.constant(false),
+        collapsed: Binding<Bool> = Binding.constant(false),
+        clicked: @escaping () -> Void = {},
         indicatorHovered: Bool = false, 
         hovered: Bool = false
     ) {
