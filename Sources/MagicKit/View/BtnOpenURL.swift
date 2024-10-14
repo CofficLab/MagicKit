@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct BtnOpenURL: View {
+public struct BtnOpenURL: View {
     var url: String
     
     var body: some View {
