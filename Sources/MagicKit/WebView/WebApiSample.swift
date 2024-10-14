@@ -4,6 +4,8 @@ import Foundation
 
 extension WebContent {
     @objc func ping() {
-        run("window.api.ping()")
+        Task {
+            try? await run("window.api.ping()")
+        }
     }
 }
