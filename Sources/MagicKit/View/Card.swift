@@ -5,7 +5,14 @@ public struct Card: View {
     public var subTitle: String
     public var deleting: Bool = false
 
-    @Binding var selected: Bool
+    @Binding public var selected: Bool
+    
+    public init(title: String, subTitle: String, deleting: Bool = false, selected: Binding<Bool>) {
+        self.title = title
+        self.subTitle = subTitle
+        self.deleting = deleting
+        self._selected = selected
+    }
     
     public var unselectedBackground: some View {
         Color.blue.opacity(0.2)
