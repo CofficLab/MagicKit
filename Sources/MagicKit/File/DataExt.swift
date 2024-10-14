@@ -2,7 +2,7 @@ import Foundation
 import OSLog
 
 extension Data {
-    func save(_ url: URL) {
+    public func save(_ url: URL) {
         // 获取目录路径
         let directoryURL = url.deletingLastPathComponent()
         

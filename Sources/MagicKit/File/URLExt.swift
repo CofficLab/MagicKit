@@ -9,13 +9,13 @@ import UIKit
 #endif
 
 extension URL {
-    var name: String { self.lastPathComponent }
+    public var name: String { self.lastPathComponent }
     
     var title: String { self.lastPathComponent.mini() }
     
-    var isFolder: Bool { self.hasDirectoryPath }
+    public var isFolder: Bool { self.hasDirectoryPath }
 
-    var isNotFolder: Bool { !isFolder }
+    public var isNotFolder: Bool { !isFolder }
     
     var f: FileManager { FileManager.default }
     
