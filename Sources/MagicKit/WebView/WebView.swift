@@ -42,7 +42,7 @@ public struct WebView: ViewRepresentable, SuperLog {
     private let config: WKWebViewConfiguration?
 
     /// 网页内容
-    var content: WebContent
+    public var content: WebContent
 
     @StateObject var delegate = WebViewDelegate()
 
