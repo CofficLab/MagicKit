@@ -5,7 +5,7 @@ extension Int {
         self >= 200 && self < 300
     }
     
-    var string: String {
+    public var string: String {
         "\(self)"
     }
 }
