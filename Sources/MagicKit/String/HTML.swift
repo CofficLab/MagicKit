@@ -3,7 +3,7 @@ import OSLog
 
 extension String {
     /// 将HTML代码中的base64图片存储到磁盘，并替换HTML代码中的图片路径，然后返回
-    func replaceImageSrcWithRelativePath(_ url: URL) -> String {
+    public func replaceImageSrcWithRelativePath(_ url: URL) -> String {
         let htmlContent = self
         let imagePrefix = url.deletingPathExtension().lastPathComponent.replacingOccurrences(of: " ", with: "_")
 

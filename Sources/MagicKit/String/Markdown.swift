@@ -3,11 +3,11 @@ import OSLog
 import SwiftUI
 
 extension String {
-    func saveMarkdown(_ url: URL) {
+    public func saveMarkdown(_ url: URL) {
         self.replaceImageSrcWithRelativePath(url).toMarkdown().saveToFile(url)
     }
     
-    func toMarkdown() -> String {
+    public func toMarkdown() -> String {
         var markdown = self
         
         // 替换标题（h1-h6）

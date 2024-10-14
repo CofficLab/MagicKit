@@ -1,7 +1,7 @@
 import Foundation
 
 extension String {
-    func toBase64() -> String {
+    public func toBase64() -> String {
         if let data = self.data(using: .utf8) {
             let base64String = data.base64EncodedString()
             

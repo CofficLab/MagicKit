@@ -2,15 +2,15 @@ import Foundation
 import OSLog
 
 extension String {    
-    func getIntFromJSON(for keyPath: String) -> Int? {
+    public func getIntFromJSON(for keyPath: String) -> Int? {
         self.getValueFromJSON(for: keyPath) as? Int
     }
 
-    func getStringFromJSON(for keyPath: String) -> String? {
+    public func getStringFromJSON(for keyPath: String) -> String? {
         self.getValueFromJSON(for: keyPath) as? String
     }
 
-    func getArrayFromJSON(for keyPath: String) -> [String: Any]? {
+    public func getArrayFromJSON(for keyPath: String) -> [String: Any]? {
         self.getValueFromJSON(for: keyPath) as? [String: Any]
     }
     
@@ -35,7 +35,7 @@ extension String {
         print("Key not found.")
     }
     */
-    func getValueFromJSON(for keyPath: String) -> Any? {
+    public func getValueFromJSON(for keyPath: String) -> Any? {
         let jsonString = self
         
         // 将 JSON 字符串转换为 Data
