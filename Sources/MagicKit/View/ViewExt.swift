@@ -2,7 +2,7 @@ import Foundation
 import SwiftUI
 
 extension View {
-    func when(_ v: Bool) -> some View {
+    public func when(_ v: Bool) -> some View {
         ZStack {
             if !v {
                 self.hidden()

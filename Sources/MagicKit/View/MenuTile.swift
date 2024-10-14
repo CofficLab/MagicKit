@@ -1,7 +1,7 @@
 import SwiftUI
 
 #if os(macOS) || os(iOS)
-struct MenuTile: View {
+public struct MenuTile: View {
     var title: String = "[无标题]"
     var dragging: Bool = false
     var trailing: String = ""
@@ -78,7 +78,7 @@ struct MenuTile: View {
         selected == true ? Color.white : Color.primary
     }
 
-    var body: some View {
+    public var body: some View {
         ZStack {
             background
 

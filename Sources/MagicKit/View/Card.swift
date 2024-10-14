@@ -1,19 +1,19 @@
 import SwiftUI
 
-struct Card: View {
-    var title: String
-    var subTitle: String
-    var deleting: Bool = false
+public struct Card: View {
+    public var title: String
+    public var subTitle: String
+    public var deleting: Bool = false
 
     @Binding var selected: Bool
     
-    var unselectedBackground: some View {
+    public var unselectedBackground: some View {
         Color.blue.opacity(0.2)
                 .cornerRadius(8)
                 .shadow(color: Color.blue, radius: 12, x: 0, y: 4)
     }
     
-    var selectedBackground: some View {
+    public var selectedBackground: some View {
         Color.green.opacity(0.3)
             .cornerRadius(8)
             .overlay(
@@ -23,7 +23,7 @@ struct Card: View {
             .shadow(color: Color.green, radius: 12, x: 0, y: 4)
     }
     
-    var deletingBackground: some View {
+    public var deletingBackground: some View {
         ZStack {
             Color.red.opacity(0.3)
                 .cornerRadius(8)
@@ -37,7 +37,7 @@ struct Card: View {
         }
     }
 
-    var body: some View {
+    public var body: some View {
         ZStack {
             if deleting {
                 deletingBackground

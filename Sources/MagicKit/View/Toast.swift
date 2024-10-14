@@ -1,9 +1,9 @@
 import SwiftUI
 
-struct Toast: View {
+public struct Toast: View {
     var message: String = ""
 
-    var body: some View {
+    public var body: some View {
         HStack {
             Text(message)
         }
