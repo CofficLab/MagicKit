@@ -110,6 +110,7 @@ public class HttpClient: SuperLog {
         }
     }
 
+    @discardableResult
     public func post() async throws -> String {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -143,6 +144,7 @@ public class HttpClient: SuperLog {
         return responseString
     }
 
+    @discardableResult
     public func patch() async throws -> String {
         var request = URLRequest(url: url)
         request.httpMethod = "PATCH"
@@ -176,6 +178,7 @@ public class HttpClient: SuperLog {
         return responseString
     }
 
+    @discardableResult
     public func put() async throws -> String {
         var request = URLRequest(url: url)
         request.httpMethod = "PUT"
