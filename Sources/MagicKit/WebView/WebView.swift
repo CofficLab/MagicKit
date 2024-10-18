@@ -57,7 +57,10 @@ public struct WebView: ViewRepresentable, SuperLog {
         }
 
         public func updateUIView(_ uiView: WKWebView, context: Context) {
-            os_log("\(self.t)WebView 更新视图")
+            let verbose = false 
+            if verbose {
+                os_log("\(self.t)WebView 更新视图")
+            }
         }
     #endif
 
@@ -67,12 +70,15 @@ public struct WebView: ViewRepresentable, SuperLog {
         }
 
         public func updateNSView(_ content: WKWebView, context: Context) {
-            os_log("\(self.t)WebView 更新视图")
+            let verbose = false 
+            if verbose {
+                os_log("\(self.t)WebView 更新视图")
+            }
         }
     #endif
 
     func makeView() -> WKWebView {
-        let verbose = true
+        let verbose = false
 
         if let url = url {
             if verbose {
