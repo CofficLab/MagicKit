@@ -43,6 +43,11 @@ public struct WebView: ViewRepresentable, SuperLog {
 
     /// 网页内容
     public var content: WebContent
+    
+    /// The current URL of the web view.
+    public var currentURL: URL? {
+        content.url
+    }
 
     @StateObject var delegate = WebViewDelegate()
 
@@ -98,15 +103,15 @@ public struct WebView: ViewRepresentable, SuperLog {
         return content
     }
 
-    mutating public func changeURL(_ url: URL) {
+    public func goto(_ url: URL) {
         let verbose = true
 
-        if self.url == url {
+        if self.currentURL == url {
             return
         }
 
         if verbose {
-            os_log("ChangeURL -> \(url.absoluteString)")
+            os_log("goto -> \(url.absoluteString)")
         }
 
         content.load(URLRequest(url: url))
