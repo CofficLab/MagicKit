@@ -111,7 +111,7 @@ public struct WebView: ViewRepresentable, SuperLog {
         }
 
         if verbose {
-            os_log("goto -> \(url.absoluteString)")
+            os_log("\(self.t)Goto -> \(url.absoluteString)")
         }
 
         content.load(URLRequest(url: url))
