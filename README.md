@@ -22,3 +22,7 @@ MagicKit 可以通过 [Swift Package Manager](https://swift.org/package-manager/
 ```bash
 swift test
 ```
+
+## Maintainers
+
+Work for Joy & Live for Love ➡️ <https://github.com/nookery>
