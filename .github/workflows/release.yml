@@ -1,0 +1,118 @@
+---
+name: 🚀 Release
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+env:
+  tag: ${{ github.event.head_commit.id }}
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Current User
+        run: whoami
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Generate Tag
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          NEW_VERSION=$(npm version patch)
+          git add package.json
+          git commit -m "👷 CI: Upgrade to $NEW_VERSION"
+          git push origin main --tags
+      - name: Read Version
+        run: |
+          version=$(node -p "require('./package.json').version")
+          echo $version
+          echo "${version}" >> version.txt
+      - name: Upload Version
+        uses: actions/upload-artifact@v4
+        with:
+          name: version
+          path: version.txt
+          retention-days: 1
+
+  rebase_dev:
+    needs:
+      - tag
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Main
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure Git
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+      - name: Rebase dev on main
+        run: |
+          # Check if the dev branch exists
+          if git ls-remote --exit-code --heads origin dev; then
+            git fetch origin dev
+            git checkout -b dev origin/dev
+            git rebase origin/main
+            git push origin dev --force
+          else
+            echo "Dev branch does not exist. Creating dev branch from main."
+            git checkout -b dev
+            git push origin dev
+          fi
+        continue-on-error: true
+
+  release:
+    runs-on: ubuntu-latest
+    needs: [tag]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download Version Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: version
+          path: temp
+      - run: ls -alhR
+      - name: Read Version
+        run: |
+          version=$(cat temp/version.txt)
+          echo $version
+
+          # 写入环境变量
+          echo "tag=v$version" >> $GITHUB_ENV
+      - uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.tag }}
+          files: |
+            ./**/*.dmg
+            ./**/*.zip
+            ./**/*.exe
+            ./**/*.pkg
+            ./**/*.deb
+            ./**/*.ipa
+            ./**/*.AppImage
+            ./**/*.snap
+
+  clear:
+    needs:
+      - release
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - name: Current User
+        run: whoami
+      - name: Clear Artifacts
+        uses: geekyeggo/delete-artifact@v4
+        with:
+          token: ${{ github.token }}
+          name: |
+            dist
+            version
