@@ -25,9 +25,7 @@ jobs:
         run: |
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
-          NEW_VERSION=$(npm version patch)
-          git add package.json
-          git commit -m "👷 CI: Upgrade to $NEW_VERSION"
+          npm version patch -m "👷 CI: Upgrade to v%s"
           git push origin main --tags
       - name: Read Version
         run: |
