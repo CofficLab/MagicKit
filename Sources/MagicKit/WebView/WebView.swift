@@ -12,16 +12,21 @@ import WebKit
 // 将 WebContent 封装成一个普通的 View
 public struct WebView: ViewRepresentable, SuperLog {
     let emoji = "🕸️"
+    var url: URL?
+    let html: String?
+    var verbose = false
+    private let code: String?
+    private let htmlFile: URL?
+    private let config: WKWebViewConfiguration?
 
     public init(
         url: URL? = nil,
         html: String? = "",
         code: String? = "",
         htmlFile: URL? = nil,
-        config: WKWebViewConfiguration
+        config: WKWebViewConfiguration,
+        verbose: Bool = false
     ) {
-        let verbose = true
-
         if verbose {
             os_log("\(Logger.initLog) WebView with url -> \(url?.absoluteString ?? "nil")")
         }
@@ -31,15 +36,10 @@ public struct WebView: ViewRepresentable, SuperLog {
         self.config = config
         self.code = code
         self.htmlFile = htmlFile
+        self.verbose = verbose
         content = WebContent(frame: .zero, configuration: config)
         content.isInspectable = true
     }
-
-    var url: URL?
-    let html: String?
-    private let code: String?
-    private let htmlFile: URL?
-    private let config: WKWebViewConfiguration?
 
     /// 网页内容
     public var content: WebContent
@@ -70,7 +70,6 @@ public struct WebView: ViewRepresentable, SuperLog {
         }
 
         public func updateNSView(_ content: WKWebView, context: Context) {
-            let verbose = false 
             if verbose {
                 os_log("\(self.t)WebView 更新视图")
             }
@@ -78,8 +77,6 @@ public struct WebView: ViewRepresentable, SuperLog {
     #endif
 
     func makeView() -> WKWebView {
-        let verbose = false
-
         if let url = url {
             if verbose {
                 os_log("\(self.t)Make View with -> \(url.absoluteString)")
@@ -110,8 +107,6 @@ public struct WebView: ViewRepresentable, SuperLog {
     }
 
     public func goto(_ url: URL) {
-        let verbose = true
-
         if self.currentURL == url {
             return
         }
