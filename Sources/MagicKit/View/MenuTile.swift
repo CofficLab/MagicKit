@@ -125,21 +125,28 @@ public struct MenuTile: View {
                     .padding(.vertical, 8)
                     .cornerRadius(4)
                     .background(getIndicatorBackground())
+                    .accessibilityIdentifier("indicator")
 
                 icon
+                    .accessibilityIdentifier("icon")
 
                 Text(title)
                     .foregroundColor(foregroundColor)
+                    .accessibilityIdentifier("title")
 
                 Spacer()
+                    .accessibilityIdentifier("spacer")
 
                 Text(trailing)
                     .font(.footnote)
                     .foregroundColor(foregroundColor)
                     .opacity(isFolder ? 1 : 0)
+                    .accessibilityIdentifier("trailing")
 
                 if deleting || loading {
-                    ProgressView().controlSize(.small)
+                    ProgressView()
+                    .controlSize(.small)
+                        .accessibilityIdentifier("progress")
                 }
             }
             .onHover(perform: { v in
