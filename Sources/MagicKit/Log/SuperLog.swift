@@ -16,13 +16,15 @@ extension SuperLog {
     
     public var author: String { Self.author }
     
-    public static var author: String { String(describing: type(of: self)) }
+    public static var author: String { String(describing: Self.self) }
     
     public var className: String { author }
     
     public var isMain: Bool { Thread.isMainThread }
     
-    public func i(_ message: String) -> String {  "\(t)::\(message)" }
+    public static var i: String {  "\(t)Init 🚩🚩🚩" }
+    
+    public var i: String { Self.i }
     
     public var t: String { Self.t }
     
@@ -31,6 +33,6 @@ extension SuperLog {
         let qos = Thread.current.qualityOfService
         let qosDesc = Logger.qosDescription(qos, withName: false)
             
-        return "\(qosDesc) \(emoji) | \(author)::"
+        return "\(qosDesc) | \(emoji) \(author.padding(toLength: 20, withPad: " ", startingAt: 0)) | "
     }
 }
