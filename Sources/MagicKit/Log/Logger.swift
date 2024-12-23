@@ -2,12 +2,29 @@ import OSLog
 
 @available(macOS 11.0, *)
 extension Logger {
-    static public var initLog: String {
-        threadName + "🚩 初始化"
+    static public func qosDescription(_ qos: QualityOfService, withName: Bool = true) -> String {
+        switch qos {
+        case .userInteractive: return withName ? "🔥 UserInteractive" : "🔥"
+        case .userInitiated: return withName ? "2️⃣ UserInitiated" : "2️⃣"
+        case .default: return withName ? "3️⃣ Default" : "3️⃣"
+        case .utility: return withName ? "4️⃣ Utility" : "4️⃣"
+        case .background: return withName ? "5️⃣ Background" : "5️⃣"
+        default: return withName ? "6️⃣ Unknown" : "6️⃣"
+        }
     }
     
-    static var threadName: String {
-        "\(Thread.isMainThread ? "🔥 " : "")"
+    static public var initLog: String {
+        let qos = Thread.current.qualityOfService
+        let qosDesc = qosDescription(qos, withName: false)
+        
+        return "\(qosDesc) 🚀 | Init"
+    }
+    
+    static var threadInfo: String {
+        let qos = Thread.current.qualityOfService
+        let qosDesc = qosDescription(qos, withName: false)
+        
+        return "\(Thread.isMainThread ? "1️⃣ " : "🛞 ") \(qosDesc) | "
     }
     
     static func getAuthor(_ className: Any) -> String {
@@ -15,7 +32,7 @@ extension Logger {
     }
     
     static func m(_ className: Any, _ message: String) -> String {
-        threadName + " " + getAuthor(className) + ": \(message)"
+        threadInfo + " " + getAuthor(className) + ": \(message)"
     }
     
     static let loggingSubsystem: String = "app"

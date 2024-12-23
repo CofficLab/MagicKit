@@ -2,7 +2,7 @@ import Foundation
 import OSLog
 
 public class HttpClient: SuperLog {
-    let emoji = "🛞"
+    public static let emoji = "🛞"
     var url: URL
     var headers: [String: String] = [
         "Content-Type": "application/json",
