@@ -2,7 +2,7 @@ import SwiftUI
 
 public struct MagicImageCoffee: View {
     @State private var rotationAngle: Double = 0
-    
+
     public var rotate = true
 
     public var body: some View {
@@ -15,7 +15,7 @@ public struct MagicImageCoffee: View {
                         .frame(width: 1200, height: 1200)
                         .foregroundColor(.white.opacity(0.6))
                         .scaleEffect(0.8)
-                    
+
                     // 把手
                     RoundedRectangle(cornerRadius: 0)
                         .frame(width: 120, height: 110)
@@ -78,13 +78,12 @@ public struct MagicImageCoffee: View {
     }
 }
 
-
 #Preview {
     VStack(spacing: 0) {
         MagicImageCoffee()
 //        Coffee(rotate: true)
     }.frame(width: 400, height: 400)
-        .background(BackgroundView.type1)
+        .background(MagicBackground.aurora)
 }
 
 #Preview {
@@ -92,7 +91,7 @@ public struct MagicImageCoffee: View {
         MagicImageCoffee()
 //        Coffee(rotate: true)
     }.frame(width: 300, height: 100)
-        .background(BackgroundView.type1)
+        .background(MagicBackground.aurora)
 }
 
 #Preview {
@@ -100,5 +99,5 @@ public struct MagicImageCoffee: View {
         MagicImageCoffee()
         MagicImageCoffee(rotate: true)
     }.frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(BackgroundView.type1)
+        .background(MagicBackground.aurora)
 }

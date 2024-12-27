@@ -1,6 +1,6 @@
 import SwiftUI
 
-public struct Toast: View {
+public struct MagicToast: View {
     var message: String = ""
 
     public var body: some View {
@@ -16,11 +16,9 @@ public struct Toast: View {
     }
 }
 
-struct Toast_Previews: PreviewProvider {
-    static var previews: some View {
-        Toast(message: "Cheers")
-            .padding(.horizontal, 20)
-            .frame(width: 500, height: 500)
-            .background(Color.white)
-    }
+#Preview {
+    MagicToast(message: "Cheers")
+        .padding(.horizontal, 20)
+        .frame(width: 500, height: 500)
+        .background(Color.white)
 }

@@ -1,7 +1,6 @@
 import SwiftUI
-import MagicKit
 
-public struct Centered<Content>: View where Content: View {
+public struct MagicCentered<Content>: View where Content: View {
     private let content: Content
 
     public init(@ViewBuilder content: () -> Content) {
@@ -24,15 +23,8 @@ public struct Centered<Content>: View where Content: View {
 }
 
 #Preview {
-    ZStack {
-        BackgroundView.type2
-
-        VStack {
-            Spacer()
-            Centered {
-                Text("你好").foregroundColor(.white)
-            }
-            Spacer()
-        }.frame(width: 300, height: 300)
+    MagicCentered {
+        Text("Hello, World!")
     }
+    .border(.red)
 }

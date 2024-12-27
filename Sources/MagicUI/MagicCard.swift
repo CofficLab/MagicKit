@@ -1,7 +1,6 @@
 import SwiftUI
-import MagicKit
 
-public struct CardView<Content, Background>: View where Content: View, Background: View {
+public struct MagicCard<Content, Background>: View where Content: View, Background: View {
     private let content: Content
     private var background: Background
     private var paddingVertical: CGFloat = 8
@@ -24,22 +23,20 @@ public struct CardView<Content, Background>: View where Content: View, Backgroun
 
 #Preview {
     ZStack {
-        BackgroundView.type2
-
         VStack {
-            CardView(background: BackgroundView.type1) {
+            MagicCard(background: Color.accentColor) {
                 Text("你好")
                     .foregroundColor(.white)
             }
-            CardView(background: BackgroundView.type2) {
+            MagicCard(background: Color.accentColor) {
                 Text("你好")
                     .foregroundColor(.white)
             }
-            CardView(background: BackgroundView.type3) {
+            MagicCard(background: Color.accentColor) {
                 Text("你好")
                     .foregroundColor(.white)
             }
-            CardView(background: BackgroundView.type4) {
+            MagicCard(background: Color.accentColor) {
                 Text("你好")
                     .foregroundColor(.white)
             }

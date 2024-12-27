@@ -51,7 +51,7 @@ public class FileHelper {
 // MARK: Size
 
 public extension FileHelper {
-    public static func getSize(url: URL) -> Int {
+    static func getSize(url: URL) -> Int {
         let resourceValues = try? url.resourceValues(forKeys: [.fileSizeKey])
         let size = resourceValues?.fileSize ?? 0
         os_log("File size: \(size) bytes")
@@ -59,7 +59,7 @@ public extension FileHelper {
         return size
     }
 
-    public static func getFileSize(_ url: URL, verbose: Bool = false) -> Int64 {
+    static func getFileSize(_ url: URL, verbose: Bool = false) -> Int64 {
         do {
             let attributes = try fileManager.attributesOfItem(atPath: url.path)
             if let fileSize = attributes[.size] as? Int64 {
@@ -78,7 +78,7 @@ public extension FileHelper {
         }
     }
 
-    public static func getFileSizeReadable(_ url: URL) -> String {
+    static func getFileSizeReadable(_ url: URL) -> String {
         let byteCountFormatter: ByteCountFormatter = {
             let formatter = ByteCountFormatter()
             formatter.allowedUnits = [.useMB, .useGB, .useTB]
@@ -104,7 +104,7 @@ public extension FileHelper {
         }
     }
 
-    public static func getFileSizeReadable(_ size: Int64) -> String {
+    static func getFileSizeReadable(_ size: Int64) -> String {
         let byteCountFormatter: ByteCountFormatter = {
             let formatter = ByteCountFormatter()
             formatter.allowedUnits = [.useMB, .useGB, .useTB]
@@ -119,7 +119,7 @@ public extension FileHelper {
 // MARK: ContentType
 
 public extension FileHelper {
-    public static func isAudioFile(_ contentType: String) -> Bool {
+    static func isAudioFile(_ contentType: String) -> Bool {
         [
             "public.mp3",
             "com.microsoft.waveform-audio",
@@ -130,7 +130,7 @@ public extension FileHelper {
 // MARK: Hash
 
 public extension FileHelper {
-    public static func getHash(_ url: URL) -> String {
+    static func getHash(_ url: URL) -> String {
         var fileHash = ""
 
         // 如果文件尚未下载，会卡住，直到下载完成
@@ -145,7 +145,7 @@ public extension FileHelper {
         return fileHash
     }
 
-    public static func getMD5(_ url: URL) -> String {
+    static func getMD5(_ url: URL) -> String {
         if isDirectory(at: url) {
             return ""
         }
@@ -170,7 +170,7 @@ public extension FileHelper {
         }
     }
     
-    public static func isDirectory(at url: URL) -> Bool {
+    static func isDirectory(at url: URL) -> Bool {
         return url.hasDirectoryPath
     }
 }
@@ -178,7 +178,7 @@ public extension FileHelper {
 // MARK: Sub
 
 public extension FileHelper {
-    public static func isURLInDirectory(_ url: URL, _ dir: URL) -> Bool {
+    static func isURLInDirectory(_ url: URL, _ dir: URL) -> Bool {
         url.absoluteString.hasPrefix(dir.absoluteString)
     }
 }

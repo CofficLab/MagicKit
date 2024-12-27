@@ -43,7 +43,7 @@ extension FileBox {
 // MARK: FileSize
 
 public extension FileBox {
-    public func getFileSize() -> Int64 {
+    func getFileSize() -> Int64 {
         if self.isNotFolder() {
             FileHelper.getFileSize(url)
         } else {
@@ -51,7 +51,7 @@ public extension FileBox {
         }
     }
 
-    public func getFileSizeReadable(verbose: Bool = true) -> String {
+    func getFileSizeReadable(verbose: Bool = true) -> String {
         if verbose {
             os_log("\(self.t)GetFileSizeReadable for \(url.lastPathComponent)")
         }
@@ -84,7 +84,7 @@ public extension FileBox {
 // MARK: Parent
 
 public extension FileBox {
-    public var parentURL: URL? {
+    var parentURL: URL? {
         guard let parentURL = url.deletingLastPathComponent() as URL? else {
             return nil
         }
@@ -146,7 +146,7 @@ public extension FileBox {
         !isiCloud
     }
 
-    public var isLocal: Bool {
+    var isLocal: Bool {
         isNotiCloud
     }
 }
@@ -176,7 +176,7 @@ public extension FileBox {
         return FileManager.default.fileExists(atPath: url.path)
     }
 
-    public func isNotExists() -> Bool {
+    func isNotExists() -> Bool {
         !isExists()
     }
 }

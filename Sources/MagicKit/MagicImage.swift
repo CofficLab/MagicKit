@@ -5,7 +5,7 @@ import UniformTypeIdentifiers
 import AppKit
 #endif
 
-public class ImageHelper {
+public class MagicImage {
     static public func toJpeg(image: CGImage) {
         guard let downloadsURL = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first else {
             print("Failed to access downloads folder.")

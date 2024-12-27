@@ -1,5 +1,4 @@
 import Foundation
-import MagicKit
 import OSLog
 
 #if os(macOS)
@@ -292,6 +291,10 @@ extension URL {
 
     public func nearestFolder() -> URL {
         self.isFolder ? self : self.deletingLastPathComponent()
+    }
+    
+    public static var null: URL {
+        URL(filePath: "/dev/null")
     }
 
     public func openInBrowser() {

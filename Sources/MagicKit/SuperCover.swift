@@ -1,6 +1,5 @@
 import AVKit
 import Foundation
-import MagicKit
 import OSLog
 import SwiftUI
 
@@ -23,7 +22,7 @@ extension SuperCover {
 }
 
 public extension SuperCover {
-    public func getPlatformImage() async throws -> PlatformImage? {
+    func getPlatformImage() async throws -> PlatformImage? {
         if let cacheURL = try self.getCoverCacheURL(), FileManager.default.fileExists(atPath: cacheURL.path) {
             if let data = try? Data(contentsOf: cacheURL) {
                 return loadPlatformImage(from: data)
@@ -37,7 +36,7 @@ public extension SuperCover {
         return nil
     }
 
-    public func getCoverImage(verbose: Bool = false) async throws -> Image? {
+    func getCoverImage(verbose: Bool = false) async throws -> Image? {
         if verbose {
             os_log("\(self.t)GetCoverImage for \(self.title)")
         }
