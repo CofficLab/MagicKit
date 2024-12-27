@@ -2,11 +2,11 @@ import Foundation
 import OSLog
 
 public class FilePresenter: NSObject, NSFilePresenter {
-    let fileURL: URL
+    public let fileURL: URL
     public var presentedItemOperationQueue: OperationQueue = .main
-    var onDidChange: () -> Void = { os_log("🍋 FilePresenter::changed") }
+    public var onDidChange: () -> Void = { os_log("🍋 FilePresenter::changed") }
 
-    init(fileURL: URL) {
+    public init(fileURL: URL) {
         self.fileURL = fileURL
         super.init()
         // 注册，监视指定 URL
@@ -28,7 +28,7 @@ public class FilePresenter: NSObject, NSFilePresenter {
         self.onDidChange()
     }
     
-    func getFiles() -> [URL] {
+    public func getFiles() -> [URL] {
         do {
             let files = try FileManager.default.contentsOfDirectory(atPath: self.fileURL.path())
             
