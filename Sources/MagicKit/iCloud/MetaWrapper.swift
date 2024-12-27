@@ -1,60 +1,60 @@
 import Foundation
 import OSLog
 
-struct MetadataItemCollection: Sendable {
-    var name: Notification.Name
-    var isUpdated = false
-    var items: [MetaWrapper] = []
+public struct MetadataItemCollection: Sendable {
+    public var name: Notification.Name
+    public var isUpdated = false
+    public var items: [MetaWrapper] = []
     
-    var count: Int {
+    public var count: Int {
         items.count
     }
     
-    var first: MetaWrapper? {
+    public var first: MetaWrapper? {
         items.first
     }
     
-    var itemsForSync: [MetaWrapper] {
+    public var itemsForSync: [MetaWrapper] {
         items.filter { $0.isUpdated == false }
     }
     
-    var itemsForUpdate: [MetaWrapper] {
+    public var itemsForUpdate: [MetaWrapper] {
         items.filter { $0.isUpdated && $0.isDeleted == false }
     }
     
-    var itemsForDelete: [MetaWrapper] {
+    public var itemsForDelete: [MetaWrapper] {
         items.filter { $0.isDeleted }
     }
 }
 
-struct MetaWrapper: Sendable {
+public struct MetaWrapper: Sendable {
     static var label = "📁 MetaWrapper::"
     
-    let fileName: String?
-    let fileSize: Int64?
-    let contentType: String?
-    let isDirectory: Bool
-    let url: URL?
-    let isPlaceholder: Bool
-    let isDeleted: Bool
+    public let fileName: String?
+    public let fileSize: Int64?
+    public let contentType: String?
+    public let isDirectory: Bool
+    public let url: URL?
+    public let isPlaceholder: Bool
+    public let isDeleted: Bool
     /// 发生了变动
-    let isUpdated: Bool
-    let downloadProgress: Double
-    let uploaded: Bool
-    let identifierKey: String? = nil
+    public let isUpdated: Bool
+    public let downloadProgress: Double
+    public let uploaded: Bool
+    public let identifierKey: String? = nil
     
-    var isDownloaded: Bool {
+    public var isDownloaded: Bool {
         downloadProgress == 100 || isPlaceholder == false
     }
     
     // 如果是占位文件且下载进度大于0且小于100，则认为文件正在下载
-    var isDownloading: Bool {
+    public var isDownloading: Bool {
         isPlaceholder && downloadProgress > 0.0 && downloadProgress < 100.0
     }
     
-    var label: String { "\(Self.label)" }
+    public var label: String { "\(Self.label)" }
 
-    init(metadataItem: NSMetadataItem, isDeleted: Bool = false, isUpdated: Bool = false, verbose: Bool = false) {
+    public init(metadataItem: NSMetadataItem, isDeleted: Bool = false, isUpdated: Bool = false, verbose: Bool = false) {
         // MARK: FileName
         
         let fileName: String? = metadataItem.value(forAttribute: NSMetadataItemFSNameKey) as? String

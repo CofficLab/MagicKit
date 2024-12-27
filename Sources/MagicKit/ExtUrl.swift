@@ -1,5 +1,7 @@
 import Foundation
 import OSLog
+import MagicKit
+
 #if os(macOS)
 import AppKit
 #endif
@@ -11,19 +13,76 @@ import UIKit
 extension URL {
     public var name: String { self.lastPathComponent }
     
-    var title: String { self.lastPathComponent.mini() }
+    public var title: String { self.lastPathComponent.mini() }
     
     public var isFolder: Bool { self.hasDirectoryPath }
 
     public var isNotFolder: Bool { !isFolder }
     
-    var f: FileManager { FileManager.default }
+    public var f: FileManager { FileManager.default }
+    
+    public func download(onProgress: ((Double) -> Void)? = nil) async throws {
+        let fm = FileManager.default
+        
+        if self.isDownloaded {
+            return
+        }
+        
+        os_log("📥 Start downloading -> \(self.lastPathComponent)")
+        
+        try fm.startDownloadingUbiquitousItem(at: self)
+        
+        let queue = OperationQueue()
+        queue.maxConcurrentOperationCount = 1
+        let itemQuery = ItemQuery(queue: queue)
+        
+        let result = itemQuery.searchMetadataItems(predicates: [
+            NSPredicate(format: "%K == %@", NSMetadataItemURLKey, self as NSURL)
+        ])
+        
+        for try await collection in result {
+            if let item = collection.first {
+                let progress = item.downloadProgress
+                os_log("📊 Download progress: \(Int(progress))%")
+                onProgress?(progress)
+                
+                if item.isDownloaded {
+                    os_log("✅ Download completed -> \(self.lastPathComponent)")
+                    onProgress?(1.0)
+                    itemQuery.stop()
+                    break
+                }
+            }
+        }
+    }
     
     public func removingLeadingSlashes() -> String {
         return self.path.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
     }
     
-    // MARK: FileManager
+    var isDownloaded: Bool {
+        isFolder || iCloudHelper.isDownloaded(self)
+    }
+
+    var isDownloading: Bool {
+        iCloudHelper.isDownloading(self)
+    }
+
+    var isNotDownloaded: Bool {
+        !isDownloaded
+    }
+
+    var isiCloud: Bool {
+        iCloudHelper.isCloudPath(url: self)
+    }
+
+    var isNotiCloud: Bool {
+        !isiCloud
+    }
+
+    public var isLocal: Bool {
+        isNotiCloud
+    }
 
     public func getParent() -> URL {
         self.deletingLastPathComponent()
@@ -234,7 +293,7 @@ extension URL {
         ]
     }
 
-    // 读取文件头的函数
+    // 读取文件头���函数
     public func readFileHeader(length: Int) -> [UInt8]? {
         let fileURL = self
         

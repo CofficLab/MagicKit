@@ -15,12 +15,14 @@ let package = Package(
             targets: ["MagicKit"]),
     ],
     dependencies: [
-        // 如果有外部依赖,在这里添加
+        .package(url: "https://github.com/apple/swift-async-algorithms", from: "0.1.0"),
     ],
     targets: [
         .target(
             name: "MagicKit",
-            dependencies: []),
+            dependencies: [
+                .product(name: "AsyncAlgorithms", package: "swift-async-algorithms"),
+            ]),
         .testTarget(
             name: "MagicKitTests",
             dependencies: ["MagicKit"]),

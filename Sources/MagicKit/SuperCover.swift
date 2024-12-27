@@ -61,7 +61,7 @@ public extension SuperCover {
     }
 
     private func loadPlatformImage(from data: Data) -> PlatformImage? {
-        #if os(iOS)
+        #if os(iOS) || os(visionOS)
             return UIImage(data: data)
         #elseif os(macOS)
             return NSImage(data: data)
@@ -69,7 +69,7 @@ public extension SuperCover {
     }
 
     private func loadImage(from data: Data) -> Image? {
-        #if os(iOS)
+        #if os(iOS) || os(visionOS)
             return UIImage(data: data).map { Image(uiImage: $0) }
         #elseif os(macOS)
             return NSImage(data: data).map { Image(nsImage: $0) }
@@ -119,7 +119,7 @@ public extension SuperCover {
                 return nil
             }
         #else
-            return Image(uiImage: UIImage(contentsOfFile: url!.path)!)
+            return Image(uiImage: UIImage(contentsOfFile: url.path)!)
         #endif
     }
 
