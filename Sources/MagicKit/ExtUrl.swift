@@ -19,6 +19,14 @@ extension URL {
         try FileManager.default.copyItem(at: self, to: destination)
     }
 
+    public func delete() throws {
+        // Check if file exists before attempting deletion
+        guard FileManager.default.fileExists(atPath: self.path) else {
+            return
+        }
+        try FileManager.default.removeItem(at: self)
+    }
+
     public func download(onProgress: ((Double) -> Void)? = nil) async throws {
         let fm = FileManager.default
 
