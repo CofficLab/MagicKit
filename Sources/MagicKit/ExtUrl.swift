@@ -146,6 +146,34 @@ extension URL {
         }).sorted(by: { $0.lastPathComponent < $1.lastPathComponent })
     }
 
+    public func getSize() -> Int {
+        let fileURL = self
+        
+        // 如果是文件夹，计算所有子项的大小总和
+        if fileURL.hasDirectoryPath {
+            return getAllFilesInDirectory()
+                .reduce(0) { $0 + $1.getSize() }
+        }
+        
+        // 如果是文件，返回文件大小
+        let attributes = try? fileURL.resourceValues(forKeys: [.fileSizeKey])
+        return attributes?.fileSize ?? 0
+    }
+
+    public func getSizeReadable() -> String {
+        let size = Double(self.getSize())
+        let units = ["B", "KB", "MB", "GB", "TB"]
+        var index = 0
+        var convertedSize = size
+
+        while convertedSize >= 1024 && index < units.count - 1 {
+            convertedSize /= 1024
+            index += 1
+        }
+
+        return String(format: "%.1f %@", convertedSize, units[index])
+    }
+
     public func getNextFile() -> URL? {
         let parent = self.getParent()
         let files = parent.getChildren()
@@ -250,6 +278,10 @@ extension URL {
 
     public var name: String { self.lastPathComponent }
 
+    public func next() -> URL? {
+        self.getNextFile()
+    }
+
     public func nearestFolder() -> URL {
         self.isFolder ? self : self.deletingLastPathComponent()
     }
@@ -260,6 +292,23 @@ extension URL {
         #elseif os(macOS)
             NSWorkspace.shared.open(self)
         #else
+        #endif
+    }
+
+    public func openFolder() {
+        #if os(macOS)
+        NSWorkspace.shared.open(self)
+        #endif
+        
+        #if os(iOS)
+            // 检查 Files 应用程序是否可用
+            if UIApplication.shared.canOpenURL(self) {
+                // 打开 URL 并在 Files 应用程序中处理
+                UIApplication.shared.open(self, options: [:], completionHandler: nil)
+            } else {
+                // 如果 Files 应用程序不可用,可以显示一个错误提示或采取其他措施
+                print("无法打开文件")
+            }
         #endif
     }
 
@@ -297,6 +346,12 @@ extension URL {
 
     public func removingLeadingSlashes() -> String {
         return self.path.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+    }
+
+    public func showInFinder() {
+        #if os(macOS)
+            NSWorkspace.shared.activateFileViewerSelecting([self])
+        #endif
     }
 
     public var title: String { self.lastPathComponent.mini() }
