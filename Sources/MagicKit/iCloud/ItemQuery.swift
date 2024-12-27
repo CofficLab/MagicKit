@@ -65,7 +65,7 @@ public class ItemQuery: SuperLog, SuperEvent, SuperThread {
             }
 
             continuation.onTermination = { @Sendable _ in
-                os_log("\(self.t)onTermination")
+//                os_log("\(self.t)onTermination")
                 self.query.stop()
                 NotificationCenter.default.removeObserver(self, name: .NSMetadataQueryDidFinishGathering, object: self.query)
                 NotificationCenter.default.removeObserver(self, name: .NSMetadataQueryDidUpdate, object: self.query)
