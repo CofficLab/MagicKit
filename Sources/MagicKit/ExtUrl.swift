@@ -312,13 +312,15 @@ extension URL {
         #endif
         
         #if os(iOS)
-            // 检查 Files 应用程序是否可用
-            if UIApplication.shared.canOpenURL(self) {
-                // 打开 URL 并在 Files 应用程序中处理
-                UIApplication.shared.open(self, options: [:], completionHandler: nil)
-            } else {
-                // 如果 Files 应用程序不可用,可以显示一个错误提示或采取其他措施
-                print("无法打开文件")
+            DispatchQueue.main.async {
+                // 检查 Files 应用程序是否可用
+                if UIApplication.shared.canOpenURL(self) {
+                    // 打开 URL 并在 Files 应用程序中处理
+                    UIApplication.shared.open(self, options: [:], completionHandler: nil)
+                } else {
+                    // 如果 Files 应用程序不可用,可以显示一个错误提示或采取其他措施
+                    print("无法打开文件")
+                }
             }
         #endif
     }
