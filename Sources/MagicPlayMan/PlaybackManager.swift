@@ -9,7 +9,7 @@ public class PlaybackManager {
         case shuffle    // 随机播放
         case repeatAll  // 列表循环
 
-        var description: String {
+        public var description: String {
             switch self {
             case .sequence: return "Sequence"
             case .loop: return "Loop"
@@ -18,7 +18,7 @@ public class PlaybackManager {
             }
         }
 
-        var icon: String {
+        public var icon: String {
             switch self {
             case .sequence: return "list.bullet"
             case .loop: return "repeat"
