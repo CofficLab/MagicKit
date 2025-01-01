@@ -428,6 +428,21 @@ public class MagicPlayMan: ObservableObject {
         seek(to: targetTime / duration)
     }
 
+    /// 切换播放状态
+    /// 如果当前正在播放则暂停，如果当前已暂停则开始播放
+    public func toggle() {
+        switch state {
+        case .playing:
+            pause()
+        case .paused, .stopped:
+            play()
+        case .loading, .failed, .idle:
+            // 在这些状态下不执行任何操作
+            log("Cannot toggle playback in current state: \(state)", level: .warning)
+            break
+        }
+    }
+
     deinit {
         downloadTask?.cancel()
         if let timeObserver = timeObserver {

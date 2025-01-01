@@ -191,13 +191,7 @@ public extension MagicPlayMan {
                             size: 50,
                             iconSize: 20,
                             isActive: playMan.state == .playing,
-                            action: { 
-                                if playMan.state == .playing {
-                                    playMan.pause()
-                                } else {
-                                    playMan.play()
-                                }
-                            }
+                            action: playMan.toggle
                         )
                         
                         MagicPlayerButton(

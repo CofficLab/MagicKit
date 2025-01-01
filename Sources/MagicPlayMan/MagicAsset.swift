@@ -1,13 +1,13 @@
 import Foundation
 import AVFoundation
 
-public struct MagicAsset: Identifiable {
+public struct MagicAsset: Identifiable, Equatable {
     public let id: String
     public let url: URL
     public let type: AssetType
     public let metadata: AssetMetadata
     
-    public enum AssetType {
+    public enum AssetType: Equatable {
         case audio
         case video
     }
@@ -25,7 +25,7 @@ public struct MagicAsset: Identifiable {
     }
 }
 
-public struct AssetMetadata {
+public struct AssetMetadata: Equatable {
     public let title: String
     public let artist: String?
     public let artwork: URL?
