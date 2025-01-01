@@ -61,19 +61,12 @@ public extension MagicPlayMan {
                 // 主内容区域
                 if let asset = playMan.currentAsset {
                     if asset.type == .video {
-                        MagicVideoPlayer(player: playMan.player)
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        playMan.videoView
                     } else {
-                        MagicAudioView(
-                            title: asset.metadata.title,
-                            artist: asset.metadata.artist
-                        )
+                        playMan.audioView
                     }
                 } else {
-                    MagicAudioView(
-                        title: "No Media Selected",
-                        artist: "Select a media file to play"
-                    )
+                    playMan.emptyView
                 }
                 
                 // 底部控制栏

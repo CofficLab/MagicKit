@@ -2,6 +2,7 @@ import AVFoundation
 import Combine
 import Foundation
 import SwiftUI
+import MagicUI
 
 public class MagicPlayMan: ObservableObject {
     private let _player = AVPlayer()
@@ -355,6 +356,38 @@ public class MagicPlayMan: ObservableObject {
             )
         ),
     ]
+
+    // 视频视图
+    @ViewBuilder
+    public var videoView: some View {
+        if let asset = currentAsset, asset.type == .video {
+            VideoPlayerView(player: player)
+        } else {
+            EmptyView()
+        }
+    }
+    
+    // 音频视图
+    @ViewBuilder
+    public var audioView: some View {
+        if let asset = currentAsset, asset.type == .audio {
+            MagicAudioView(
+                title: asset.metadata.title,
+                artist: asset.metadata.artist
+            )
+        } else {
+            EmptyView()
+        }
+    }
+    
+    // 空状态视图
+    @ViewBuilder
+    public var emptyView: some View {
+        MagicAudioView(
+            title: "No Media Selected",
+            artist: "Select a media file to play"
+        )
+    }
 }
 
 #Preview {
