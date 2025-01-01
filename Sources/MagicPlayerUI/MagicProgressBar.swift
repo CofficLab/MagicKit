@@ -38,10 +38,19 @@ public struct MagicProgressBar: View {
                     Circle()
                         .fill(Color.white)
                         .frame(width: isHovering ? 16 : 12, height: isHovering ? 16 : 12)
+                        .overlay(
+                            Circle()
+                                .stroke(Color.white.opacity(0.5), lineWidth: 1)
+                        )
                         .shadow(
-                            color: Color.black.opacity(isHovering ? 0.2 : 0.1),
-                            radius: isHovering ? 4 : 2,
-                            y: isHovering ? 2 : 0
+                            color: Color.black.opacity(isHovering ? 0.25 : 0.15),
+                            radius: isHovering ? 6 : 4,
+                            y: isHovering ? 3 : 2
+                        )
+                        .shadow(
+                            color: Color.black.opacity(0.1),
+                            radius: 1,
+                            y: 0
                         )
                         .offset(x: geometry.size.width * CGFloat(isDragging ? dragProgress : progress) - (isHovering ? 8 : 6))
                         .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isHovering)
@@ -80,23 +89,48 @@ public struct MagicProgressBar: View {
             
             // Time labels
             HStack {
-                Text(formatTime(isDragging ? dragProgress * duration : progress * duration))
-                    .font(.caption)
-                    .foregroundColor(isHovering ? .primary : .secondary)
+                TimeLabel(
+                    time: isDragging ? dragProgress * duration : progress * duration,
+                    isProgressBarHovering: isHovering
+                )
                 
                 Spacer()
                 
-                Text(formatTime(duration))
-                    .font(.caption)
-                    .foregroundColor(isHovering ? .primary : .secondary)
+                TimeLabel(
+                    time: duration,
+                    isProgressBarHovering: isHovering
+                )
             }
         }
     }
     
-    private func formatTime(_ time: TimeInterval) -> String {
-        let minutes = Int(time) / 60
-        let seconds = Int(time) % 60
-        return String(format: "%d:%02d", minutes, seconds)
+    private struct TimeLabel: View {
+        let time: TimeInterval
+        let isProgressBarHovering: Bool
+        @State private var isHovering = false
+        
+        var body: some View {
+            Text(formatTime(time))
+                .font(.caption)
+                .foregroundStyle(isProgressBarHovering || isHovering ? .primary : .secondary)
+                .opacity(isProgressBarHovering || isHovering ? 1 : 0.8)
+                .scaleEffect(isHovering ? 1.1 : 1)
+                .animation(
+                    .spring(response: 0.3, dampingFraction: 0.7),
+                    value: isProgressBarHovering || isHovering
+                )
+                .onHover { hovering in
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                        isHovering = hovering
+                    }
+                }
+        }
+        
+        private func formatTime(_ time: TimeInterval) -> String {
+            let minutes = Int(time) / 60
+            let seconds = Int(time) % 60
+            return String(format: "%d:%02d", minutes, seconds)
+        }
     }
 }
 
