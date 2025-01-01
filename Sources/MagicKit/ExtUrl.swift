@@ -1,5 +1,6 @@
 import Foundation
 import OSLog
+import SwiftUI
 
 #if os(macOS)
     import AppKit
@@ -388,4 +389,65 @@ extension URL {
             "webp": [0x52, 0x49, 0x46, 0x46],
         ]
     }
+}
+
+#Preview {
+    NavigationStack {
+        List {
+            Section("文件信息测试") {
+                let testFile = URL.documentsDirectory.appendingPathComponent("test.txt")
+                VStack(alignment: .leading) {
+                    Text("文件路径: \(testFile.path)")
+                    Text("是否存在: \(testFile.isFileExist() as Bool ? "是" : "否")")
+                    Text("文件大小: \(testFile.getSizeReadable())")
+                    Text("是否是图片: \(testFile.isImage().description)")
+                }
+            }
+            
+            Section("iCloud 状态") {
+                let iCloudFile = URL(string: "file:///iCloud/test.pdf")!
+                VStack(alignment: .leading) {
+                    Text("是否是 iCloud 文件: \(iCloudFile.isiCloud.description)")
+                    Text("是否已下载: \(iCloudFile.isDownloaded.description)")
+                    if iCloudFile.isDownloading {
+                        ProgressView()
+                            .progressViewStyle(.circular)
+                    }
+                }
+            }
+            
+            Section("文件导航") {
+                let currentFile = URL.documentsDirectory.appendingPathComponent("current.txt")
+                HStack {
+                    Button("上一个") {
+                        if let prev = currentFile.getPrevFile() {
+                            print("Previous file: \(prev.path)")
+                        }
+                    }
+                    Spacer()
+                    Button("下一个") {
+                        if let next = currentFile.getNextFile() {
+                            print("Next file: \(next.path)")
+                        }
+                    }
+                }
+            }
+            
+            Section("文件操作") {
+                HStack {
+                    Button("打开文件夹") {
+                        URL.documentsDirectory.openFolder()
+                    }
+                    Spacer()
+                    #if os(macOS)
+                    Button("在访达中显示") {
+                        URL.documentsDirectory.showInFinder()
+                    }
+                    #endif
+                }
+            }
+        }
+        .navigationTitle("URL 扩展测试")
+    }
+    .padding()
 }
