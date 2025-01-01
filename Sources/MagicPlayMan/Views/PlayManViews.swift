@@ -160,7 +160,7 @@ public extension MagicPlayMan {
                 onSelect: { asset in
                     playMan.play(asset: asset)
                     showToast(
-                        "Playing: \(asset.metadata.title)",
+                        "Playing: \(asset.title)",
                         icon: "play.circle",
                         style: .info
                     )
@@ -218,6 +218,7 @@ public extension MagicPlayMan {
                         style: .info
                     )
                 }
+                .disabled(playMan.playlist.isEmpty)
                 
                 MagicPlayerButton(
                     icon: "backward.end.fill",
@@ -233,11 +234,13 @@ public extension MagicPlayMan {
                         }
                     }
                 )
+                .disabled(playMan.playlist.isEmpty)
                 
                 MagicPlayerButton(
                     icon: "backward.fill",
                     action: { playMan.skipBackward() }
                 )
+                .disabled(!canSeek)
                 
                 MagicPlayerButton(
                     icon: playMan.state == .playing ? "pause.fill" : "play.fill",
@@ -246,11 +249,13 @@ public extension MagicPlayMan {
                     isActive: playMan.state == .playing,
                     action: playMan.toggle
                 )
+                .disabled(playMan.currentAsset == nil || isLoading)
                 
                 MagicPlayerButton(
                     icon: "forward.fill",
                     action: { playMan.skipForward() }
                 )
+                .disabled(!canSeek)
                 
                 MagicPlayerButton(
                     icon: "forward.end.fill",
@@ -266,6 +271,7 @@ public extension MagicPlayMan {
                         }
                     }
                 )
+                .disabled(playMan.playlist.isEmpty)
             }
         }
         
@@ -418,5 +424,33 @@ public extension MagicPlayMan {
                 return "repeat"
             }
         }
+        
+        // 辅助计算属性
+        private var canSeek: Bool {
+            guard let _ = playMan.currentAsset else { return false }
+            
+            switch playMan.state {
+            case .idle, .loading, .failed:
+                return false
+            case .playing, .paused, .stopped:
+                return true
+            }
+        }
+        
+        private var isLoading: Bool {
+            if case .loading = playMan.state {
+                return true
+            }
+            return false
+        }
     }
-} 
+}
+
+#Preview("MagicPlayMan") {
+    MagicPlayMan.PreviewView()
+        .frame(width: 650, height: 500)
+        .background(.background)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .shadow(radius: 5)
+        .padding()
+}

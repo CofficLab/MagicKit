@@ -8,6 +8,9 @@ public struct MagicAsset: Identifiable, Equatable {
     public let type: AssetType
     public let metadata: AssetMetadata
     
+    /// 快速访问资源标题
+    public var title: String { metadata.title }
+    
     public enum AssetType: Equatable {
         case audio
         case video

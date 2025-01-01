@@ -145,7 +145,7 @@ public class MagicPlayMan: ObservableObject {
     }
 
     public func load(asset: MagicAsset) {
-        log("Loading asset: \(asset.metadata.title)")
+        log("Loading asset: \(asset.title)")
         
         // 停止当前播放
         stop()
@@ -305,7 +305,7 @@ public class MagicPlayMan: ObservableObject {
 
     private func downloadAndCache(_ asset: MagicAsset) {
         log("Downloading asset for caching")
-        showToast("Downloading \(asset.metadata.title)", icon: "arrow.down.circle", style: .info)
+        showToast("Downloading \(asset.title)", icon: "arrow.down.circle", style: .info)
         
         let session = URLSession.shared
         downloadTask?.cancel()
