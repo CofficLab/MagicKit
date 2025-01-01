@@ -1,7 +1,7 @@
 import SwiftUI
 
 #if os(macOS) || os(iOS)
-public struct MenuTile: View {
+public struct MagicMenu: View {
     public var title: String = "[无标题]"
     public var dragging: Bool = false
     public var trailing: String = ""
@@ -193,7 +193,7 @@ public struct MenuTile: View {
 struct MenuTile_Previews: PreviewProvider {
     static var previews: some View {
         VStack(spacing: 0) {
-            MenuTile(
+            MagicMenu(
                 title: "普通",
                 dragging: false,
                 trailing: "",
@@ -202,14 +202,14 @@ struct MenuTile_Previews: PreviewProvider {
                 selected: Binding.constant(false),
                 collapsed: Binding.constant(false)
             )
-            MenuTile(
+            MagicMenu(
                 title: "普通删除中",
                 dragging: false,
                 deleting: Binding.constant(true),
                 selected: Binding.constant(false),
                 collapsed: Binding.constant(true)
             )
-            MenuTile(
+            MagicMenu(
                 title: "普通加载中",
                 dragging: false,
                 loading: true,
@@ -217,7 +217,7 @@ struct MenuTile_Previews: PreviewProvider {
                 selected: Binding.constant(false),
                 collapsed: Binding.constant(true)
             )
-            MenuTile(
+            MagicMenu(
                 title: "普通目录",
                 dragging: false,
                 isFolder: true,
@@ -225,7 +225,7 @@ struct MenuTile_Previews: PreviewProvider {
                 selected: Binding.constant(false),
                 collapsed: Binding.constant(true)
             )
-            MenuTile(
+            MagicMenu(
                 title: "选中目录",
                 dragging: false,
                 isFolder: true,
@@ -233,7 +233,7 @@ struct MenuTile_Previews: PreviewProvider {
                 selected: Binding.constant(false),
                 collapsed: Binding.constant(false)
             )
-            MenuTile(
+            MagicMenu(
                 title: "普通带尾部",
                 dragging: false,
                 trailing: "9",
@@ -241,21 +241,21 @@ struct MenuTile_Previews: PreviewProvider {
                 selected: Binding.constant(false),
                 collapsed: Binding.constant(false)
             )
-            MenuTile(
+            MagicMenu(
                 title: "选中",
                 dragging: false,
                 deleting: Binding.constant(false),
                 selected: Binding.constant(false),
                 collapsed: Binding.constant(false)
             )
-            MenuTile(
+            MagicMenu(
                 title: "展开",
                 dragging: false,
                 deleting: Binding.constant(false),
                 selected: Binding.constant(false),
                 collapsed: Binding.constant(false)
             )
-            MenuTile(
+            MagicMenu(
                 title: "选中带尾部",
                 dragging: false,
                 trailing: "89",
@@ -263,7 +263,7 @@ struct MenuTile_Previews: PreviewProvider {
                 selected: Binding.constant(false),
                 collapsed: Binding.constant(false)
             )
-            MenuTile(
+            MagicMenu(
                 title: "普通",
                 dragging: false,
                 trailing: "",
@@ -272,7 +272,7 @@ struct MenuTile_Previews: PreviewProvider {
                 selected: Binding.constant(false),
                 collapsed: Binding.constant(false)
             )
-            MenuTile(
+            MagicMenu(
                 title: "选中展开",
                 dragging: false,
                 deleting: Binding.constant(false),

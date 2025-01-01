@@ -4,42 +4,28 @@ import PackageDescription
 
 let package = Package(
     name: "MagicKit",
-    platforms: [
-        .iOS(.v17),
-        .visionOS(.v1),
-        .macOS(.v14)
-    ],
+    platforms: [.macOS(.v14), .iOS(.v17)],
     products: [
         .library(name: "MagicKit", targets: ["MagicKit"]),
-        .library(name: "MagicUI", targets: ["MagicUI"]),
-        .library(name: "MagicPlayerUI", targets: ["MagicPlayerUI"]),
         .library(name: "MagicPlayMan", targets: ["MagicPlayMan"]),
-        .executable(name: "MagicDemo", targets: ["MagicDemo"])
+        .library(name: "MagicUI", targets: ["MagicUI"])
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-async-algorithms", from: "0.1.0"),
     ],
     targets: [
-        .target(name: "MagicUI"),
         .target(
             name: "MagicKit",
             dependencies: [
-                "MagicUI",
-                .product(name: "AsyncAlgorithms", package: "swift-async-algorithms"),
-            ]),
-        .target(
-            name: "MagicPlayerUI",
-            dependencies: ["MagicUI"]
+                .product(name: "AsyncAlgorithms", package: "swift-async-algorithms")
+            ]
         ),
         .target(
             name: "MagicPlayMan",
-            dependencies: []
+            dependencies: ["MagicKit", "MagicUI"]
         ),
-        .executableTarget(
-            name: "MagicDemo",
-            dependencies: ["MagicKit", "MagicUI", "MagicPlayerUI", "MagicPlayMan"]),
-        .testTarget(
-            name: "MagicKitTests",
-            dependencies: ["MagicKit"]),
+        .target(
+            name: "MagicUI"
+        )
     ]
 )
