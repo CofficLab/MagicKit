@@ -16,6 +16,10 @@ public class MagicPlayMan: ObservableObject {
         let manager = MediaCenterManager(playMan: self)
         return manager
     }()
+    private lazy var playbackManager: PlaybackManager = {
+        let manager = PlaybackManager(playMan: self)
+        return manager
+    }()
 
     @Published public private(set) var currentAsset: MagicAsset?
     @Published public private(set) var state: PlaybackState = .idle
@@ -24,6 +28,8 @@ public class MagicPlayMan: ObservableObject {
     @Published public private(set) var isBuffering = false
     @Published public private(set) var progress: Double = 0
     @Published public private(set) var logs: [PlaybackLog] = []
+    @Published public private(set) var playlist: [MagicAsset] = []
+    @Published public private(set) var currentIndex: Int = -1
 
     public var player: AVPlayer { _player }
     public var asset: MagicAsset? { self.currentAsset }
@@ -608,6 +614,102 @@ public class MagicPlayMan: ObservableObject {
         #else
         return UIImage(cgImage: cgImage)
         #endif
+    }
+
+    public func play(_ asset: MagicAsset, reason: String, verbose: Bool = false) {
+        if verbose {
+            log("Playing asset: \(asset.metadata.title) (reason: \(reason))")
+        }
+        play(asset: asset)
+    }
+
+    /// 添加资源到播放列表并播放
+    public func play(asset: MagicAsset) {
+        // 如果资源已在列表中，直接切换到该资源
+        if let index = playlist.firstIndex(of: asset) {
+            currentIndex = index
+            load(asset: asset)
+            return
+        }
+        
+        // 否则添加到列表末尾并播放
+        playlist.append(asset)
+        currentIndex = playlist.count - 1
+        load(asset: asset)
+    }
+    
+    /// 添加资源到播放列表
+    public func append(_ asset: MagicAsset) {
+        playlist.append(asset)
+    }
+    
+    /// 清空播放列表
+    public func clearPlaylist() {
+        stop()
+        playlist.removeAll()
+        currentIndex = -1
+    }
+    
+    /// 播放下一曲
+    public func next() {
+        guard !playlist.isEmpty else {
+            log("Cannot play next: playlist is empty", level: .warning)
+            return
+        }
+        
+        let nextIndex = currentIndex + 1
+        if nextIndex < playlist.count {
+            currentIndex = nextIndex
+            let nextAsset = playlist[nextIndex]
+            log("Playing next: \(nextAsset.metadata.title)")
+            load(asset: nextAsset)
+        } else {
+            // 到达列表末尾，循环到开头
+            currentIndex = 0
+            let firstAsset = playlist[0]
+            log("Reached end of playlist, looping to first: \(firstAsset.metadata.title)")
+            load(asset: firstAsset)
+        }
+    }
+    
+    /// 播放上一曲
+    public func previous() {
+        guard !playlist.isEmpty else {
+            log("Cannot play previous: playlist is empty", level: .warning)
+            return
+        }
+        
+        let prevIndex = currentIndex - 1
+        if prevIndex >= 0 {
+            currentIndex = prevIndex
+            let prevAsset = playlist[prevIndex]
+            log("Playing previous: \(prevAsset.metadata.title)")
+            load(asset: prevAsset)
+        } else {
+            // 到达列表开头，循环到末尾
+            currentIndex = playlist.count - 1
+            let lastAsset = playlist[currentIndex]
+            log("Reached start of playlist, looping to last: \(lastAsset.metadata.title)")
+            load(asset: lastAsset)
+        }
+    }
+
+    // 公开播放模式
+    public var playMode: PlaybackManager.PlayMode {
+        playbackManager.mode
+    }
+    
+    public func togglePlayMode() {
+        playbackManager.toggleMode()
+    }
+    
+    // 公开播放列表管理方法
+    public func removeFromPlaylist(at index: Int) {
+        playbackManager.remove(at: index)
+    }
+    
+    public func moveInPlaylist(from: Int, to: Int) {
+        playbackManager.move(from: from, to: to)
     }
 }
 

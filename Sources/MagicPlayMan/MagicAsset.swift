@@ -1,5 +1,6 @@
 import Foundation
 import AVFoundation
+import SwiftUI
 
 public struct MagicAsset: Identifiable, Equatable {
     public let id: String
@@ -42,4 +43,13 @@ public struct AssetMetadata: Equatable {
         self.artwork = artwork
         self.duration = duration
     }
+}
+
+#Preview("MagicPlayMan") {
+    MagicPlayMan.PreviewView()
+        .frame(width: 650, height: 500)
+        .background(.background)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .shadow(radius: 5)
+        .padding()
 }
