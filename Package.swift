@@ -13,6 +13,7 @@ let package = Package(
         .library(name: "MagicKit", targets: ["MagicKit"]),
         .library(name: "MagicUI", targets: ["MagicUI"]),
         .library(name: "MagicPlayerUI", targets: ["MagicPlayerUI"]),
+        .library(name: "MagicPlayMan", targets: ["MagicPlayMan"]),
         .executable(name: "MagicDemo", targets: ["MagicDemo"])
     ],
     dependencies: [
@@ -26,10 +27,17 @@ let package = Package(
                 "MagicUI",
                 .product(name: "AsyncAlgorithms", package: "swift-async-algorithms"),
             ]),
-        .target(name: "MagicPlayerUI"),
+        .target(
+            name: "MagicPlayerUI",
+            dependencies: ["MagicUI"]
+        ),
+        .target(
+            name: "MagicPlayMan",
+            dependencies: []
+        ),
         .executableTarget(
             name: "MagicDemo",
-            dependencies: ["MagicKit", "MagicUI", "MagicPlayerUI"]),
+            dependencies: ["MagicKit", "MagicUI", "MagicPlayerUI", "MagicPlayMan"]),
         .testTarget(
             name: "MagicKitTests",
             dependencies: ["MagicKit"]),
