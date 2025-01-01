@@ -80,8 +80,10 @@ public class MagicPlayMan: ObservableObject {
         do {
             try cache?.clear()
             log("Cache cleared")
+            showToast("Cache cleared successfully", icon: "trash", style: .info)
         } catch {
             log("Failed to clear cache: \(error.localizedDescription)", level: .error)
+            showToast("Failed to clear cache", icon: "exclamationmark.triangle", style: .error)
         }
     }
 
@@ -303,6 +305,7 @@ public class MagicPlayMan: ObservableObject {
 
     private func downloadAndCache(_ asset: MagicAsset) {
         log("Downloading asset for caching")
+        showToast("Downloading \(asset.metadata.title)", icon: "arrow.down.circle", style: .info)
         
         let session = URLSession.shared
         downloadTask?.cancel()
@@ -342,6 +345,7 @@ public class MagicPlayMan: ObservableObject {
                     
                     if let cachedURL = self.cache?.cachedURL(for: asset.url) {
                         self.loadFromURL(cachedURL)
+                        showToast("Download completed", icon: "checkmark.circle", style: .info)
                     }
                 } catch {
                     self.log("Failed to cache asset: \(error.localizedDescription)", level: .error)
@@ -710,6 +714,19 @@ public class MagicPlayMan: ObservableObject {
     
     public func moveInPlaylist(from: Int, to: Int) {
         playbackManager.move(from: from, to: to)
+    }
+
+    // 添加 Toast 显示方法
+    private func showToast(_ message: String, icon: String, style: MagicToast.Style) {
+        NotificationCenter.default.post(
+            name: .showToast,
+            object: nil,
+            userInfo: [
+                "message": message,
+                "icon": icon,
+                "style": style
+            ]
+        )
     }
 }
 

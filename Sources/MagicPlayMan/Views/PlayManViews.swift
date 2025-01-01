@@ -11,6 +11,8 @@ public extension MagicPlayMan {
         @State private var showFormats = false
         let showLogs: Bool
         
+        @State private var toast: (message: String, icon: String, style: MagicToast.Style)?
+        
         public init(
             cacheDirectory: URL? = nil,
             showLogs: Bool = true
@@ -46,6 +48,16 @@ public extension MagicPlayMan {
                 }
             }
             .animation(.spring(response: 0.3, dampingFraction: 0.8), value: showPlaylist)
+            .overlay(alignment: .top) {
+                if let toast = toast {
+                    MagicToast(
+                        message: toast.message,
+                        icon: toast.icon,
+                        style: toast.style
+                    )
+                    .padding(.top, 20)
+                }
+            }
         }
         
         // MARK: - Subviews
@@ -147,12 +159,28 @@ public extension MagicPlayMan {
                 currentIndex: playMan.currentIndex,
                 onSelect: { asset in
                     playMan.play(asset: asset)
+                    showToast(
+                        "Playing: \(asset.metadata.title)",
+                        icon: "play.circle",
+                        style: .info
+                    )
                 },
                 onRemove: { index in
+                    let asset = playMan.playlist[index]
                     playMan.removeFromPlaylist(at: index)
+                    showToast(
+                        "Removed: \(asset.metadata.title)",
+                        icon: "minus.circle",
+                        style: .warning
+                    )
                 },
                 onMove: { from, to in
                     playMan.moveInPlaylist(from: from, to: to)
+                    showToast(
+                        "Playlist reordered",
+                        icon: "arrow.up.arrow.down",
+                        style: .info
+                    )
                 }
             )
             .frame(width: 300)
@@ -184,11 +212,26 @@ public extension MagicPlayMan {
             HStack(spacing: 20) {
                 MagicPlayModeButton(mode: playMan.playMode) {
                     playMan.togglePlayMode()
+                    showToast(
+                        playModeName(playMan.playMode),
+                        icon: playModeIcon(playMan.playMode),
+                        style: .info
+                    )
                 }
                 
                 MagicPlayerButton(
                     icon: "backward.end.fill",
-                    action: { playMan.previous() }
+                    action: {
+                        if playMan.playlist.isEmpty {
+                            showToast(
+                                "Playlist is empty",
+                                icon: "exclamationmark.triangle",
+                                style: .warning
+                            )
+                        } else {
+                            playMan.previous()
+                        }
+                    }
                 )
                 
                 MagicPlayerButton(
@@ -211,7 +254,17 @@ public extension MagicPlayMan {
                 
                 MagicPlayerButton(
                     icon: "forward.end.fill",
-                    action: { playMan.next() }
+                    action: {
+                        if playMan.playlist.isEmpty {
+                            showToast(
+                                "Playlist is empty",
+                                icon: "exclamationmark.triangle",
+                                style: .warning
+                            )
+                        } else {
+                            playMan.next()
+                        }
+                    }
                 )
             }
         }
@@ -320,6 +373,49 @@ public extension MagicPlayMan {
                 return "Network error: \(message)"
             case .playbackError(let message):
                 return "Playback error: \(message)"
+            }
+        }
+        
+        private func showToast(
+            _ message: String,
+            icon: String,
+            style: MagicToast.Style = .info
+        ) {
+            withAnimation {
+                toast = (message, icon, style)
+            }
+            
+            // 2秒后自动隐藏
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                withAnimation {
+                    toast = nil
+                }
+            }
+        }
+        
+        private func playModeName(_ mode: PlaybackManager.PlayMode) -> String {
+            switch mode {
+            case .sequence:
+                return "Sequential Play"
+            case .loop:
+                return "Single Track Loop"
+            case .shuffle:
+                return "Shuffle Play"
+            case .repeatAll:
+                return "Repeat All"
+            }
+        }
+        
+        private func playModeIcon(_ mode: PlaybackManager.PlayMode) -> String {
+            switch mode {
+            case .sequence:
+                return "arrow.right"
+            case .loop:
+                return "repeat.1"
+            case .shuffle:
+                return "shuffle"
+            case .repeatAll:
+                return "repeat"
             }
         }
     }
