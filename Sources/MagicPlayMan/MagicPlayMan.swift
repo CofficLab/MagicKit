@@ -422,6 +422,11 @@ public class MagicPlayMan: ObservableObject {
         )
     }
 
+    public func seek(_ time: TimeInterval) {
+        let cmTime = CMTime(seconds: time, preferredTimescale: 600)
+        _player.seek(to: cmTime)
+    }
+
     public func seek(to progress: Double) {
         let time = duration * progress
         let cmTime = CMTime(seconds: time, preferredTimescale: 600)
