@@ -223,8 +223,7 @@ public class MagicPlayMan: ObservableObject {
     }
 
     private func isSampleAsset(_ asset: MagicAsset) -> Bool {
-        let sampleAssets = Self.audioSamples.map(\.asset) + Self.videoSamples.map(\.asset)
-        return sampleAssets.contains { $0.url == asset.url }
+        SampleAssets.allSamples.contains { $0.asset.url == asset.url }
     }
 
     public func play() {
@@ -288,74 +287,6 @@ public class MagicPlayMan: ObservableObject {
     public func clearLogs() {
         logs.removeAll()
     }
-
-    /// 示例音频资源
-    static let audioSamples: [(name: String, asset: MagicAsset)] = [
-        (
-            "MP3 Sample",
-            MagicAsset(
-                url: URL(string: "https://download.samplelib.com/mp3/sample-15s.mp3")!,
-                type: .audio,
-                metadata: AssetMetadata(
-                    title: "MP3 Sample",
-                    artist: "Sample Artist",
-                    duration: 15
-                )
-            )
-        ),
-        (
-            "WAV Sample",
-            MagicAsset(
-                url: URL(string: "https://download.samplelib.com/wav/sample-3s.wav")!,
-                type: .audio,
-                metadata: AssetMetadata(
-                    title: "WAV Sample",
-                    artist: "Sample Artist",
-                    duration: 3
-                )
-            )
-        ),
-        (
-            "AAC Sample",
-            MagicAsset(
-                url: URL(string: "https://download.samplelib.com/aac/sample-9s.aac")!,
-                type: .audio,
-                metadata: AssetMetadata(
-                    title: "AAC Sample",
-                    artist: "Sample Artist",
-                    duration: 9
-                )
-            )
-        ),
-    ]
-
-    /// 示例视频资源
-    static let videoSamples: [(name: String, asset: MagicAsset)] = [
-        (
-            "MP4 Sample",
-            MagicAsset(
-                url: URL(string: "https://download.samplelib.com/mp4/sample-5s.mp4")!,
-                type: .video,
-                metadata: AssetMetadata(
-                    title: "MP4 Sample",
-                    artist: "Sample Director",
-                    duration: 5
-                )
-            )
-        ),
-        (
-            "MOV Sample",
-            MagicAsset(
-                url: URL(string: "https://download.samplelib.com/mov/sample-10s.mov")!,
-                type: .video,
-                metadata: AssetMetadata(
-                    title: "MOV Sample",
-                    artist: "Sample Director",
-                    duration: 10
-                )
-            )
-        ),
-    ]
 
     // 视频视图
     @ViewBuilder

@@ -7,9 +7,14 @@ public extension MagicPlayMan {
         @StateObject private var playMan: MagicPlayMan
         @State private var selectedSampleName: String?
         @State private var showMediaPicker = false
+        let showLogs: Bool
         
-        public init(cacheDirectory: URL? = nil) {
+        public init(
+            cacheDirectory: URL? = nil,
+            showLogs: Bool = true
+        ) {
             _playMan = StateObject(wrappedValue: MagicPlayMan(cacheDirectory: cacheDirectory))
+            self.showLogs = showLogs
         }
         
         public var body: some View {
@@ -17,7 +22,7 @@ public extension MagicPlayMan {
                 // 顶部工具栏
                 HStack {
                     Menu {
-                        ForEach(MagicPlayMan.audioSamples, id: \.name) { sample in
+                        ForEach(SampleAssets.audioSamples, id: \.name) { sample in
                             Button {
                                 selectedSampleName = sample.name
                                 playMan.load(asset: sample.asset)
@@ -28,7 +33,7 @@ public extension MagicPlayMan {
                         
                         Divider()
                         
-                        ForEach(MagicPlayMan.videoSamples, id: \.name) { sample in
+                        ForEach(SampleAssets.videoSamples, id: \.name) { sample in
                             Button {
                                 selectedSampleName = sample.name
                                 playMan.load(asset: sample.asset)
@@ -115,14 +120,16 @@ public extension MagicPlayMan {
                 .padding()
                 .background(.ultraThinMaterial)
                 
-                // 日志视图
-                LogView(
-                    logs: playMan.logs,
-                    onClear: { playMan.clearLogs() }
-                )
-                .frame(height: 120)
-                .padding()
-                .background(.ultraThinMaterial)
+                // 日志视图（可选）
+                if showLogs {
+                    LogView(
+                        logs: playMan.logs,
+                        onClear: { playMan.clearLogs() }
+                    )
+                    .frame(height: 120)
+                    .padding()
+                    .background(.ultraThinMaterial)
+                }
             }
         }
         
@@ -201,9 +208,18 @@ public extension MagicPlayMan {
     }
 }
 
-#Preview("MagicPlayMan") {
-    MagicPlayMan.PreviewView()
-        .frame(width: 650, height: 650)  // 增加高度以适应日志视图
+#Preview("With Logs") {
+    MagicPlayMan.PreviewView(showLogs: true)
+        .frame(width: 650, height: 650)
+        .background(.background)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .shadow(radius: 5)
+        .padding()
+}
+
+#Preview("Without Logs") {
+    MagicPlayMan.PreviewView(showLogs: false)
+        .frame(width: 650, height: 500)
         .background(.background)
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .shadow(radius: 5)
