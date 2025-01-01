@@ -1,214 +1,115 @@
 import SwiftUI
+import AVFoundation
 
-#if DEBUG
-struct MagicPlayManPreview: View {
-    @StateObject private var playMan = MagicPlayMan()
-    @State private var selectedSampleName: String?
-    @State private var isDarkMode = false
-    @State private var isInspectorExpanded = true
-    
-    private var allSamples: [(name: String, asset: MagicAsset)] {
-        MagicPlayMan.audioSamples + MagicPlayMan.videoSamples
-    }
-    
-    var body: some View {
-        HStack(spacing: 0) {
-            // 主内容
-            VStack(spacing: 20) {
-                // 格式选择器
-                Menu {
-                    ForEach(allSamples, id: \.name) { sample in
-                        Button(sample.name) {
-                            selectedSampleName = sample.name
-                            playMan.load(asset: sample.asset)
+// MARK: - 预览视图
+public extension MagicPlayMan {
+    /// 创建一个预览视图，用于快速展示播放器的功能
+    struct PreviewView: View {
+        @StateObject private var playMan: MagicPlayMan
+        @State private var selectedSampleName: String?
+        @State private var isDarkMode = false
+        @State private var isInspectorExpanded = true
+        
+        public init(cacheDirectory: URL? = nil) {
+            _playMan = StateObject(wrappedValue: MagicPlayMan(cacheDirectory: cacheDirectory))
+        }
+        
+        private var allSamples: [(name: String, asset: MagicAsset)] {
+            MagicPlayMan.audioSamples + MagicPlayMan.videoSamples
+        }
+        
+        public var body: some View {
+            HStack(spacing: 0) {
+                // 主内容
+                VStack(spacing: 20) {
+                    // 格式选择器
+                    Menu {
+                        ForEach(allSamples, id: \.name) { sample in
+                            Button(sample.name) {
+                                selectedSampleName = sample.name
+                                playMan.load(asset: sample.asset)
+                            }
                         }
+                    } label: {
+                        HStack {
+                            Image(systemName: currentAssetIcon)
+                            Text(selectedSampleName ?? "Select Media")
+                            Image(systemName: "chevron.down")
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(.ultraThinMaterial)
+                        .clipShape(Capsule())
                     }
-                } label: {
-                    HStack {
-                        Image(systemName: currentAssetIcon)
-                        Text(selectedSampleName ?? "Select Media")
-                        Image(systemName: "chevron.down")
+                    
+                    // 资源信息
+                    AssetInfoView(asset: playMan.currentAsset)
+                    
+                    // 视频视图（仅在播放视频时显示）
+                    if let asset = playMan.currentAsset, asset.type == .video {
+                        VideoPlayerView(player: playMan.player)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 225)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                    } else if playMan.currentAsset == nil {
+                        EmptyVideoView()
                     }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .background(.ultraThinMaterial)
-                    .clipShape(Capsule())
+                    
+                    // 播放控制
+                    PlaybackControlsView(
+                        isPlaying: playMan.state == .playing,
+                        progress: playMan.progress,
+                        currentTime: playMan.currentTime,
+                        duration: playMan.duration,
+                        state: playMan.state,
+                        onPlay: { playMan.play() },
+                        onPause: { playMan.pause() },
+                        onSeek: { playMan.seek(to: $0) },
+                        onSkipForward: { playMan.skipForward() },
+                        onSkipBackward: { playMan.skipBackward() }
+                    )
+                    
+                    // 日志视图
+                    LogView(logs: playMan.logs)
                 }
+                .padding()
+                .frame(width: 400)
                 
-                // 资源信息
-                AssetInfoView(asset: playMan.currentAsset)
-                
-                // 视频视图（仅在播放视频时显示）
-                if let asset = playMan.currentAsset, asset.type == .video {
-                    VideoPlayerView(player: playMan.player)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 225)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                } else if playMan.currentAsset == nil {
-                    EmptyVideoView()
-                }
-                
-                // 播放控制
-                PlaybackControlsView(
-                    isPlaying: playMan.state == .playing,
-                    progress: playMan.progress,
-                    currentTime: playMan.currentTime,
-                    duration: playMan.duration,
-                    state: playMan.state,
-                    onPlay: { playMan.play() },
-                    onPause: { playMan.pause() },
-                    onSeek: { playMan.seek(to: $0) },
-                    onSkipForward: { playMan.skipForward() },
-                    onSkipBackward: { playMan.skipBackward() }
+                // 状态检查器
+                StateInspectorView(
+                    playMan: playMan,
+                    isExpanded: $isInspectorExpanded
                 )
-                
-                // 日志视图
-                LogView(logs: playMan.logs)
+                .frame(width: isInspectorExpanded ? 250 : 150)
             }
-            .padding()
-            .frame(width: 400)
-            
-            // 状态检查器
-            StateInspectorView(
-                playMan: playMan,
-                isExpanded: $isInspectorExpanded
-            )
-            .frame(width: isInspectorExpanded ? 250 : 150)
-        }
-        .overlay(alignment: .topTrailing) {
-            Button {
-                isDarkMode.toggle()
-            } label: {
-                Image(systemName: isDarkMode ? "sun.max.fill" : "moon.fill")
-                    .font(.title3)
-                    .foregroundStyle(isDarkMode ? .yellow : .primary)
-                    .padding(8)
-                    .background(.ultraThinMaterial)
-                    .clipShape(Circle())
+            .overlay(alignment: .topTrailing) {
+                Button {
+                    isDarkMode.toggle()
+                } label: {
+                    Image(systemName: isDarkMode ? "sun.max.fill" : "moon.fill")
+                        .font(.title3)
+                        .foregroundStyle(isDarkMode ? .yellow : .primary)
+                        .padding(8)
+                        .background(.ultraThinMaterial)
+                        .clipShape(Circle())
+                }
+                .buttonStyle(.plain)
+                .padding()
             }
-            .buttonStyle(.plain)
-            .padding()
+            .preferredColorScheme(isDarkMode ? .dark : .light)
         }
-        .preferredColorScheme(isDarkMode ? .dark : .light)
-    }
-    
-    private var currentAssetIcon: String {
-        guard let asset = playMan.currentAsset else {
-            return "play.circle"
+        
+        private var currentAssetIcon: String {
+            guard let asset = playMan.currentAsset else {
+                return "play.circle"
+            }
+            return asset.type == .audio ? "music.note" : "film"
         }
-        return asset.type == .audio ? "music.note" : "film"
     }
 }
 
-private struct AudioPlayerPreview: View {
-    @ObservedObject var playMan: MagicPlayMan
-    @State private var selectedSampleName: String?
-    
-    var body: some View {
-        VStack(spacing: 20) {
-            // 格式选择器
-            Menu {
-                ForEach(MagicPlayMan.audioSamples, id: \.name) { sample in
-                    Button(sample.name) {
-                        selectedSampleName = sample.name
-                        playMan.load(asset: sample.asset)
-                    }
-                }
-            } label: {
-                HStack {
-                    Image(systemName: "music.note.list")
-                    Text(selectedSampleName ?? "Select Audio Sample")
-                    Image(systemName: "chevron.down")
-                }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
-                .background(.ultraThinMaterial)
-                .clipShape(Capsule())
-            }
-            
-            // 资源信息
-            AssetInfoView(asset: playMan.currentAsset)
-            
-            // 播放控制
-            PlaybackControlsView(
-                isPlaying: playMan.state == .playing,
-                progress: playMan.progress,
-                currentTime: playMan.currentTime,
-                duration: playMan.duration,
-                state: playMan.state,
-                onPlay: { playMan.play() },
-                onPause: { playMan.pause() },
-                onSeek: { playMan.seek(to: $0) },
-                onSkipForward: { playMan.skipForward() },
-                onSkipBackward: { playMan.skipBackward() }
-            )
-            
-            // 日志视图
-            LogView(logs: playMan.logs)
-        }
-        .padding()
-    }
-}
-
-private struct VideoPlayerPreview: View {
-    @ObservedObject var playMan: MagicPlayMan
-    @State private var selectedSampleName: String?
-    
-    var body: some View {
-        VStack(spacing: 20) {
-            // 格式选择器
-            Menu {
-                ForEach(MagicPlayMan.videoSamples, id: \.name) { sample in
-                    Button(sample.name) {
-                        selectedSampleName = sample.name
-                        playMan.load(asset: sample.asset)
-                    }
-                }
-            } label: {
-                HStack {
-                    Image(systemName: "film.stack")
-                    Text(selectedSampleName ?? "Select Video Sample")
-                    Image(systemName: "chevron.down")
-                }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
-                .background(.ultraThinMaterial)
-                .clipShape(Capsule())
-            }
-            
-            // 视频视图
-            if playMan.currentAsset != nil {
-                VideoPlayerView(player: playMan.player)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 225)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-            } else {
-                EmptyVideoView()
-            }
-            
-            // 播放控制
-            PlaybackControlsView(
-                isPlaying: playMan.state == .playing,
-                progress: playMan.progress,
-                currentTime: playMan.currentTime,
-                duration: playMan.duration,
-                state: playMan.state,
-                onPlay: { playMan.play() },
-                onPause: { playMan.pause() },
-                onSeek: { playMan.seek(to: $0) },
-                onSkipForward: { playMan.skipForward() },
-                onSkipBackward: { playMan.skipBackward() }
-            )
-            
-            // 日志视图
-            LogView(logs: playMan.logs)
-        }
-        .padding()
-    }
-}
-
-// 辅助视图组件
-private struct AssetInfoView: View {
+// MARK: - 组件视图
+struct AssetInfoView: View {
     let asset: MagicAsset?
     
     var body: some View {
@@ -226,7 +127,7 @@ private struct AssetInfoView: View {
     }
 }
 
-private struct PlaybackControlsView: View {
+struct PlaybackControlsView: View {
     let isPlaying: Bool
     let progress: Double
     let currentTime: TimeInterval
@@ -321,17 +222,67 @@ private struct PlaybackControlsView: View {
     }
 }
 
-private struct LoadAssetButton: View {
-    let title: String
-    let action: () -> Void
+struct VideoPlayerView: View {
+    let player: AVPlayer
     
     var body: some View {
-        Button(title, action: action)
-            .buttonStyle(.borderedProminent)
+        VideoPlayerViewRepresentable(player: player)
     }
 }
 
-private struct EmptyVideoView: View {
+private extension VideoPlayerView {
+    struct VideoPlayerViewRepresentable: View {
+        let player: AVPlayer
+        
+        var body: some View {
+            #if os(macOS)
+            MacVideoPlayerView(player: player)
+            #else
+            iOSVideoPlayerView(player: player)
+            #endif
+        }
+    }
+    
+    #if os(macOS)
+    struct MacVideoPlayerView: NSViewRepresentable {
+        let player: AVPlayer
+        
+        func makeNSView(context: Context) -> NSView {
+            let view = NSView()
+            let playerLayer = AVPlayerLayer(player: player)
+            playerLayer.videoGravity = .resizeAspect
+            view.layer = playerLayer
+            view.wantsLayer = true
+            return view
+        }
+        
+        func updateNSView(_ nsView: NSView, context: Context) {
+            guard let playerLayer = nsView.layer as? AVPlayerLayer else { return }
+            playerLayer.player = player
+            playerLayer.frame = nsView.bounds
+        }
+    }
+    #else
+    struct iOSVideoPlayerView: UIViewRepresentable {
+        let player: AVPlayer
+        
+        func makeUIView(context: Context) -> UIView {
+            let view = UIView()
+            let playerLayer = AVPlayerLayer(player: player)
+            playerLayer.videoGravity = .resizeAspect
+            view.layer.addSublayer(playerLayer)
+            return view
+        }
+        
+        func updateUIView(_ uiView: UIView, context: Context) {
+            guard let playerLayer = uiView.layer.sublayers?.first as? AVPlayerLayer else { return }
+            playerLayer.frame = uiView.bounds
+        }
+    }
+    #endif
+}
+
+struct EmptyVideoView: View {
     var body: some View {
         Rectangle()
             .fill(.secondary.opacity(0.1))
@@ -346,20 +297,7 @@ private struct EmptyVideoView: View {
     }
 }
 
-extension PlaybackState.LoadingPhase {
-    var description: String {
-        switch self {
-        case .connecting:
-            return "Connecting..."
-        case .buffering:
-            return "Buffering..."
-        case .preparing:
-            return "Preparing..."
-        }
-    }
-}
-
-private struct LogView: View {
+struct LogView: View {
     let logs: [PlaybackLog]
     
     var body: some View {
@@ -388,8 +326,7 @@ private struct LogView: View {
     }
 }
 
-// 首先添加状态检查器视图
-private struct StateInspectorView: View {
+struct StateInspectorView: View {
     let playMan: MagicPlayMan
     @Binding var isExpanded: Bool
     
@@ -502,13 +439,15 @@ private struct StateInspectorView: View {
     }
 }
 
-// 更新预览尺寸
-#Preview("MagicPlayMan") {
-    MagicPlayManPreview()
-        .frame(width: 650, height: 500)
-        .background(.background)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .shadow(radius: 5)
-        .padding()
+#if DEBUG
+struct MagicPlayMan_Previews: PreviewProvider {
+    static var previews: some View {
+        MagicPlayMan.PreviewView()
+            .frame(width: 650, height: 500)
+            .background(.background)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .shadow(radius: 5)
+            .padding()
+    }
 }
 #endif 

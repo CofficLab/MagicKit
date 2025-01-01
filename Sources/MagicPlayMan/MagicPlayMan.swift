@@ -1,6 +1,7 @@
 import Foundation
 import AVFoundation
 import Combine
+import SwiftUI
 
 public class MagicPlayMan: ObservableObject {
     private let _player = AVPlayer()
@@ -286,9 +287,7 @@ public class MagicPlayMan: ObservableObject {
     public func clearLogs() {
         logs.removeAll()
     }
-}
-
-public extension MagicPlayMan {
+    
     /// 示例音频资源
     static let audioSamples: [(name: String, asset: MagicAsset)] = [
         (

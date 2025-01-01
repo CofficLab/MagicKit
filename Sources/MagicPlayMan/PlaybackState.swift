@@ -12,6 +12,17 @@ public enum PlaybackState: Equatable {
         case connecting
         case buffering
         case preparing
+        
+        public var description: String {
+            switch self {
+            case .connecting:
+                return "Connecting..."
+            case .buffering:
+                return "Buffering..."
+            case .preparing:
+                return "Preparing..."
+            }
+        }
     }
     
     public enum PlaybackError: Error, Equatable {
