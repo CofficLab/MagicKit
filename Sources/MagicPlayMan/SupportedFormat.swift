@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 /// 支持的媒体格式
 public struct SupportedFormat {
@@ -40,72 +41,26 @@ public struct SupportedFormat {
             mimeTypes: ["audio/mpeg"],
             samples: [
                 Sample(
-                    name: "MP3 Sample (15s)",
+                    name: "Snow Fight",
                     asset: MagicAsset(
-                        url: URL(string: "https://download.samplelib.com/mp3/sample-15s.mp3")!,
+                        url: URL(string: "https://storage.googleapis.com/media-session/sintel/snow-fight.mp3")!,
                         type: .audio,
                         metadata: AssetMetadata(
-                            title: "MP3 Sample",
-                            artist: "Sample Artist",
-                            duration: 15
+                            title: "Snow Fight",
+                            artist: "Jan Morgenstern",
+                            duration: 88
                         )
                     )
                 ),
                 Sample(
-                    name: "Piano Music (30s)",
+                    name: "Sintel Trailer Score",
                     asset: MagicAsset(
-                        url: URL(string: "https://download.samplelib.com/mp3/piano-30s.mp3")!,
+                        url: URL(string: "https://storage.googleapis.com/media-session/sintel/sintel-trailer-music.mp3")!,
                         type: .audio,
                         metadata: AssetMetadata(
-                            title: "Piano Music",
-                            artist: "Classical Artist",
-                            duration: 30
-                        )
-                    )
-                ),
-                Sample(
-                    name: "Guitar Solo (20s)",
-                    asset: MagicAsset(
-                        url: URL(string: "https://download.samplelib.com/mp3/guitar-20s.mp3")!,
-                        type: .audio,
-                        metadata: AssetMetadata(
-                            title: "Guitar Solo",
-                            artist: "Rock Artist",
-                            duration: 20
-                        )
-                    )
-                )
-            ]
-        ),
-        
-        // WAV
-        SupportedFormat(
-            name: "WAV",
-            type: .audio,
-            extensions: ["wav"],
-            mimeTypes: ["audio/wav", "audio/x-wav"],
-            samples: [
-                Sample(
-                    name: "WAV Sample (3s)",
-                    asset: MagicAsset(
-                        url: URL(string: "https://download.samplelib.com/wav/sample-3s.wav")!,
-                        type: .audio,
-                        metadata: AssetMetadata(
-                            title: "WAV Sample",
-                            artist: "Sample Artist",
-                            duration: 3
-                        )
-                    )
-                ),
-                Sample(
-                    name: "Drum Beat (10s)",
-                    asset: MagicAsset(
-                        url: URL(string: "https://download.samplelib.com/wav/drums-10s.wav")!,
-                        type: .audio,
-                        metadata: AssetMetadata(
-                            title: "Drum Beat",
-                            artist: "Percussion Artist",
-                            duration: 10
+                            title: "Sintel Trailer Score",
+                            artist: "Jan Morgenstern",
+                            duration: 74
                         )
                     )
                 )
@@ -120,26 +75,60 @@ public struct SupportedFormat {
             mimeTypes: ["audio/aac", "audio/mp4"],
             samples: [
                 Sample(
-                    name: "AAC Sample (9s)",
+                    name: "Apple Music Preview",
                     asset: MagicAsset(
-                        url: URL(string: "https://download.samplelib.com/aac/sample-9s.aac")!,
+                        url: URL(string: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/8e/d3/a6/8ed3a6a6-0b06-b4b0-8937-fc0ce6d6f6e2/mzaf_5766840152287573829.plus.aac.p.m4a")!,
                         type: .audio,
                         metadata: AssetMetadata(
-                            title: "AAC Sample",
-                            artist: "Sample Artist",
-                            duration: 9
+                            title: "Apple Music Sample",
+                            artist: "Apple",
+                            duration: 30
                         )
                     )
                 ),
                 Sample(
-                    name: "Vocal Track (25s)",
+                    name: "AAC Test Stream",
                     asset: MagicAsset(
-                        url: URL(string: "https://download.samplelib.com/aac/vocal-25s.aac")!,
+                        url: URL(string: "https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_4x3/gear1/prog_index.m4a")!,
                         type: .audio,
                         metadata: AssetMetadata(
-                            title: "Vocal Track",
-                            artist: "Pop Artist",
-                            duration: 25
+                            title: "AAC Stream",
+                            artist: "Apple",
+                            duration: 60
+                        )
+                    )
+                )
+            ]
+        ),
+        
+        // WAV
+        SupportedFormat(
+            name: "WAV",
+            type: .audio,
+            extensions: ["wav"],
+            mimeTypes: ["audio/wav", "audio/x-wav"],
+            samples: [
+                Sample(
+                    name: "W3C Audio Test",
+                    asset: MagicAsset(
+                        url: URL(string: "https://www.w3schools.com/html/horse.wav")!,
+                        type: .audio,
+                        metadata: AssetMetadata(
+                            title: "Horse",
+                            artist: "W3Schools",
+                            duration: 2
+                        )
+                    )
+                ),
+                Sample(
+                    name: "Sound Bible Sample",
+                    asset: MagicAsset(
+                        url: URL(string: "https://soundbible.com/grab.php?id=1542&type=wav")!,
+                        type: .audio,
+                        metadata: AssetMetadata(
+                            title: "Beep Sound",
+                            artist: "Sound Bible",
+                            duration: 1
                         )
                     )
                 )
@@ -154,72 +143,26 @@ public struct SupportedFormat {
             mimeTypes: ["video/mp4"],
             samples: [
                 Sample(
-                    name: "MP4 Sample (5s)",
+                    name: "Sintel Trailer",
                     asset: MagicAsset(
-                        url: URL(string: "https://download.samplelib.com/mp4/sample-5s.mp4")!,
+                        url: URL(string: "https://media.w3.org/2010/05/sintel/trailer.mp4")!,
                         type: .video,
                         metadata: AssetMetadata(
-                            title: "MP4 Sample",
-                            artist: "Sample Director",
-                            duration: 5
+                            title: "Sintel",
+                            artist: "Blender Foundation",
+                            duration: 52
                         )
                     )
                 ),
                 Sample(
-                    name: "Nature Scene (15s)",
+                    name: "Big Buck Bunny",
                     asset: MagicAsset(
-                        url: URL(string: "https://download.samplelib.com/mp4/nature-15s.mp4")!,
+                        url: URL(string: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4")!,
                         type: .video,
                         metadata: AssetMetadata(
-                            title: "Nature Scene",
-                            artist: "Nature Director",
-                            duration: 15
-                        )
-                    )
-                ),
-                Sample(
-                    name: "City Timelapse (20s)",
-                    asset: MagicAsset(
-                        url: URL(string: "https://download.samplelib.com/mp4/city-20s.mp4")!,
-                        type: .video,
-                        metadata: AssetMetadata(
-                            title: "City Timelapse",
-                            artist: "Urban Director",
-                            duration: 20
-                        )
-                    )
-                )
-            ]
-        ),
-        
-        // MOV
-        SupportedFormat(
-            name: "MOV",
-            type: .video,
-            extensions: ["mov"],
-            mimeTypes: ["video/quicktime"],
-            samples: [
-                Sample(
-                    name: "MOV Sample (10s)",
-                    asset: MagicAsset(
-                        url: URL(string: "https://download.samplelib.com/mov/sample-10s.mov")!,
-                        type: .video,
-                        metadata: AssetMetadata(
-                            title: "MOV Sample",
-                            artist: "Sample Director",
-                            duration: 10
-                        )
-                    )
-                ),
-                Sample(
-                    name: "Ocean Waves (30s)",
-                    asset: MagicAsset(
-                        url: URL(string: "https://download.samplelib.com/mov/ocean-30s.mov")!,
-                        type: .video,
-                        metadata: AssetMetadata(
-                            title: "Ocean Waves",
-                            artist: "Nature Director",
-                            duration: 30
+                            title: "Big Buck Bunny",
+                            artist: "Blender Foundation",
+                            duration: 596
                         )
                     )
                 )
@@ -234,14 +177,26 @@ public struct SupportedFormat {
             mimeTypes: ["application/x-mpegURL"],
             samples: [
                 Sample(
-                    name: "Live Stream Sample",
+                    name: "Apple Basic Stream",
                     asset: MagicAsset(
-                        url: URL(string: "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8")!,
+                        url: URL(string: "https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_4x3/bipbop_4x3_variant.m3u8")!,
                         type: .video,
                         metadata: AssetMetadata(
-                            title: "Live Stream",
-                            artist: "Streaming Provider",
-                            duration: 0  // 直播流没有固定时长
+                            title: "Apple Test Stream",
+                            artist: "Apple",
+                            duration: 0
+                        )
+                    )
+                ),
+                Sample(
+                    name: "Apple Advanced Stream",
+                    asset: MagicAsset(
+                        url: URL(string: "https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_ts/master.m3u8")!,
+                        type: .video,
+                        metadata: AssetMetadata(
+                            title: "Advanced Streaming",
+                            artist: "Apple",
+                            duration: 0
                         )
                     )
                 )
@@ -268,3 +223,12 @@ public struct SupportedFormat {
         allFormats.flatMap(\.samples)
     }
 } 
+
+#Preview("With Logs") {
+    MagicPlayMan.PreviewView(showLogs: true)
+        .frame(width: 650, height: 650)
+        .background(.background)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .shadow(radius: 5)
+        .padding()
+}

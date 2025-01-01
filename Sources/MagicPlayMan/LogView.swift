@@ -5,6 +5,7 @@ struct LogView: View {
     let logs: [PlaybackLog]
     let onClear: () -> Void
     @State private var copiedLogId: UUID?
+    @State private var showCopyAllToast = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -16,6 +17,15 @@ struct LogView: View {
                 Spacer()
                 
                 MagicButton(
+                    icon: "doc.on.doc",
+                    title: "Copy All",
+                    style: .secondary,
+                    size: .small,
+                    shape: .capsule,
+                    action: copyAllLogs
+                )
+                
+                MagicButton(
                     icon: "trash",
                     title: "Clear",
                     style: .secondary,
@@ -23,6 +33,18 @@ struct LogView: View {
                     shape: .capsule,
                     action: onClear
                 )
+            }
+            .overlay {
+                if showCopyAllToast {
+                    Text("All logs copied!")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(.ultraThinMaterial)
+                        .clipShape(Capsule())
+                        .transition(.scale.combined(with: .opacity))
+                }
             }
             
             ScrollView {
@@ -52,8 +74,31 @@ struct LogView: View {
         }
     }
     
+    private func copyAllLogs() {
+        let text = logs.map { formatLogEntry($0) }.joined(separator: "\n")
+        copyToClipboard(text)
+        
+        withAnimation {
+            showCopyAllToast = true
+        }
+        
+        // 2秒后隐藏提示
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            withAnimation {
+                showCopyAllToast = false
+            }
+        }
+    }
+    
+    private func formatLogEntry(_ log: PlaybackLog) -> String {
+        "\(formatTime(log.timestamp)) [\(log.level)] \(log.message)"
+    }
+    
     private func copyToClipboard(_ log: PlaybackLog) {
-        let text = "\(formatTime(log.timestamp)) [\(log.level)] \(log.message)"
+        copyToClipboard(formatLogEntry(log))
+    }
+    
+    private func copyToClipboard(_ text: String) {
         #if os(macOS)
         NSPasteboard.general.clearContents()
         NSPasteboard.general.setString(text, forType: .string)

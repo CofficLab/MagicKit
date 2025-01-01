@@ -78,10 +78,86 @@ public extension MagicPlayMan {
                 
                 // 主内容区域
                 if let asset = playMan.currentAsset {
-                    if asset.type == .video {
-                        playMan.videoView
-                    } else {
-                        playMan.audioView
+                    ZStack {
+                        if asset.type == .video {
+                            playMan.videoView
+                        } else {
+                            playMan.audioView
+                        }
+                        
+                        // 加载状态覆盖层
+                        if case .loading(let loadingState) = playMan.state {
+                            Rectangle()
+                                .fill(.ultraThinMaterial)
+                            
+                            switch loadingState {
+                            case .downloading(let progress):
+                                VStack(spacing: 16) {
+                                    ProgressView("Downloading \(asset.metadata.title)", value: progress, total: 1.0)
+                                    Text("\(Int(progress * 100))%")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                                
+                            case .buffering:
+                                VStack(spacing: 16) {
+                                    ProgressView()
+                                        .progressViewStyle(.circular)
+                                    Text("Buffering...")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                                
+                            case .preparing:
+                                VStack(spacing: 16) {
+                                    ProgressView()
+                                        .progressViewStyle(.circular)
+                                    Text("Preparing...")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                                
+                            case .connecting:
+                                VStack(spacing: 16) {
+                                    ProgressView()
+                                        .progressViewStyle(.circular)
+                                    Text("Connecting...")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                        }
+                        
+                        // 失败状态覆盖层
+                        if case .failed(let error) = playMan.state {
+                            Rectangle()
+                                .fill(.ultraThinMaterial)
+                            
+                            VStack(spacing: 16) {
+                                Image(systemName: "exclamationmark.triangle.fill")
+                                    .font(.system(size: 40))
+                                    .foregroundStyle(.red)
+                                
+                                Text("Failed to Load Media")
+                                    .font(.headline)
+                                
+                                Text(errorMessage(for: error))
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                    .multilineTextAlignment(.center)
+                                
+                                MagicButton(
+                                    icon: "arrow.clockwise",
+                                    title: "Try Again",
+                                    style: .primary,
+                                    shape: .capsule,
+                                    action: {
+                                        playMan.load(asset: asset)
+                                    }
+                                )
+                            }
+                            .padding()
+                        }
                     }
                 } else {
                     playMan.emptyView
@@ -151,6 +227,19 @@ public extension MagicPlayMan {
                 return asset.type == .audio ? "music.note" : "film"
             }
             return "play.circle"
+        }
+        
+        private func errorMessage(for error: PlaybackState.PlaybackError) -> String {
+            switch error {
+            case .noAsset:
+                return "No media selected"
+            case .invalidAsset:
+                return "The media file is invalid or corrupted"
+            case .networkError(let message):
+                return "Network error: \(message)"
+            case .playbackError(let message):
+                return "Playback error: \(message)"
+            }
         }
     }
 }
