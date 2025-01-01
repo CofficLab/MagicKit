@@ -67,11 +67,14 @@ public extension MagicPlayMan {
                 mediaPickerButton
                 
                 if let asset = playMan.currentAsset {
-                    Text(asset.metadata.title)
+                    Text(asset.title)
                         .font(.headline)
                 }
                 
                 Spacer()
+                
+                PlayModeIndicator(mode: playMan.playMode)
+                    .foregroundStyle(.secondary)
                 
                 toolbarButtons
             }
@@ -218,7 +221,6 @@ public extension MagicPlayMan {
                         style: .info
                     )
                 }
-                .disabled(playMan.playlist.isEmpty)
                 
                 MagicPlayerButton(
                     icon: "backward.end.fill",
@@ -234,7 +236,6 @@ public extension MagicPlayMan {
                         }
                     }
                 )
-                .disabled(playMan.playlist.isEmpty)
                 
                 MagicPlayerButton(
                     icon: "backward.fill",
@@ -271,7 +272,6 @@ public extension MagicPlayMan {
                         }
                     }
                 )
-                .disabled(playMan.playlist.isEmpty)
             }
         }
         
@@ -442,6 +442,48 @@ public extension MagicPlayMan {
                 return true
             }
             return false
+        }
+    }
+    
+    // 播放模式指示器组件
+    private struct PlayModeIndicator: View {
+        let mode: PlaybackManager.PlayMode
+        
+        var body: some View {
+            Label(
+                title: { Text(modeName).font(.caption) },
+                icon: { Image(systemName: modeIcon) }
+            )
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .background(Color.primary.opacity(0.05))
+            .clipShape(Capsule())
+        }
+        
+        private var modeName: String {
+            switch mode {
+            case .sequence:
+                return "Sequential"
+            case .loop:
+                return "Loop One"
+            case .shuffle:
+                return "Shuffle"
+            case .repeatAll:
+                return "Repeat All"
+            }
+        }
+        
+        private var modeIcon: String {
+            switch mode {
+            case .sequence:
+                return "arrow.right"
+            case .loop:
+                return "repeat.1"
+            case .shuffle:
+                return "shuffle"
+            case .repeatAll:
+                return "repeat"
+            }
         }
     }
 }

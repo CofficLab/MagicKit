@@ -8,6 +8,24 @@ public class PlaybackManager {
         case loop       // 单曲循环
         case shuffle    // 随机播放
         case repeatAll  // 列表循环
+
+        var description: String {
+            switch self {
+            case .sequence: return "Sequence"
+            case .loop: return "Loop"
+            case .shuffle: return "Shuffle"
+            case .repeatAll: return "Repeat All"
+            }
+        }
+
+        var icon: String {
+            switch self {
+            case .sequence: return "list.bullet"
+            case .loop: return "repeat"
+            case .shuffle: return "shuffle"
+            case .repeatAll: return "repeat.1"
+            }
+        }
     }
     
     private weak var playMan: MagicPlayMan?
