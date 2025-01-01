@@ -121,6 +121,15 @@ public extension MagicPlayMan {
                 }
                 .padding()
                 .background(.ultraThinMaterial)
+                
+                // 日志视图
+                LogView(
+                    logs: playMan.logs,
+                    onClear: { playMan.clearLogs() }
+                )
+                .frame(height: 120)
+                .padding()
+                .background(.ultraThinMaterial)
             }
         }
         
@@ -131,11 +140,77 @@ public extension MagicPlayMan {
             return asset.type == .audio ? "music.note" : "film"
         }
     }
+    
+    // 日志视图组件
+    private struct LogView: View {
+        let logs: [PlaybackLog]
+        let onClear: () -> Void
+        
+        var body: some View {
+            VStack(alignment: .leading, spacing: 4) {
+                HStack {
+                    Text("Logs")
+                        .font(.headline)
+                        .foregroundStyle(.secondary)
+                    
+                    Spacer()
+                    
+                    // 使用 MagicButton 替代普通按钮
+                    MagicButton(
+                        icon: "trash",
+                        title: "Clear",
+                        style: .secondary,
+                        size: .small,
+                        shape: .capsule,
+                        action: onClear
+                    )
+                }
+                
+                ScrollView {
+                    LazyVStack(alignment: .leading, spacing: 4) {
+                        ForEach(logs.reversed()) { log in
+                            HStack(spacing: 8) {
+                                Circle()
+                                    .fill(logColor(for: log.level))
+                                    .frame(width: 8, height: 8)
+                                
+                                Text(formatTime(log.timestamp))
+                                    .font(.caption.monospaced())
+                                    .foregroundStyle(.secondary)
+                                
+                                Text(log.message)
+                                    .font(.caption)
+                                    .foregroundStyle(log.level == .error ? .red : .primary)
+                            }
+                            .padding(.vertical, 2)
+                        }
+                    }
+                }
+            }
+        }
+        
+        private func logColor(for level: PlaybackLog.Level) -> Color {
+            switch level {
+            case .info:
+                return .green
+            case .warning:
+                return .orange
+            case .error:
+                return .red
+            }
+        }
+        
+        private func formatTime(_ date: Date) -> String {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "HH:mm:ss"
+            return formatter.string(from: date)
+        }
+    }
 }
 
 #Preview("MagicPlayMan") {
     MagicPlayMan.PreviewView()
-        .frame(width: 650, height: 500)
+        .frame(width: 650, height: 650)  // 增加高度以适应日志视图
         .background(.background)
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .shadow(radius: 5)

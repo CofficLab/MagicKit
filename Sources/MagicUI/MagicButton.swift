@@ -1,143 +1,248 @@
-import OSLog
 import SwiftUI
 
 public struct MagicButton: View {
-    @State private var hovered: Bool = false
-    @State private var pressed: Bool = false
-    @State private var isButtonTapped = false
-    @State private var showTips: Bool = false
-
-    public var title: String = "标题"
-    public var tips: String = ""
-    public var image: String = "plus"
-    public var dynamicSize = true
-    public var onTap: () -> Void = {
-        os_log("点击了button")
+    public enum Style {
+        case primary
+        case secondary
     }
-
-    public var menus: AnyView? = nil
-
+    
+    public enum Size {
+        case small
+        case regular
+        case large
+    }
+    
+    public enum Shape {
+        case circle
+        case capsule
+    }
+    
+    let icon: String
+    let title: String?
+    let style: Style
+    let size: Size
+    let shape: Shape
+    let action: () -> Void
+    @State private var isHovering = false
+    @Environment(\.colorScheme) private var colorScheme
+    
+    public init(
+        icon: String,
+        title: String? = nil,
+        style: Style = .primary,
+        size: Size = .regular,
+        shape: Shape = .circle,
+        action: @escaping () -> Void
+    ) {
+        self.icon = icon
+        self.title = title
+        self.style = style
+        self.size = size
+        self.shape = shape
+        self.action = action
+    }
+    
     public var body: some View {
-        ZStack {
-            if dynamicSize == false {
-                makeButton()
-            } else {
-                GeometryReader { geo in
-                    HStack {
-                        Spacer()
-                        VStack {
-                            Spacer()
-                            makeButton(geo)
-                            Spacer()
-                        }
-                        Spacer()
-                    }
+        Button(action: action) {
+            HStack(spacing: 4) {
+                Image(systemName: icon)
+                    .font(.system(size: iconSize))
+                if let title = title {
+                    Text(title)
+                        .font(font)
                 }
             }
+            .foregroundStyle(foregroundColor)
+            .frame(width: shape == .circle && title == nil ? buttonSize : nil, 
+                   height: shape == .circle && title == nil ? buttonSize : nil)
+            .padding(.horizontal, shape == .circle && title == nil ? 0 : horizontalPadding)
+            .padding(.vertical, shape == .circle && title == nil ? 0 : verticalPadding)
+            .background(buttonShape)
+            .scaleEffect(isHovering ? 1.05 : 1.0)
+            .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isHovering)
+        }
+        .buttonStyle(MagicButtonStyle())
+        .onHover { hovering in
+            isHovering = hovering
         }
     }
-
-    func makeButton(_ geo: GeometryProxy? = nil) -> some View {
-        ZStack {
-            if let menus = menus {
-                Menu(content: {
-                    menus
-                        .labelStyle(.titleAndIcon)
-                }, label: {
-                    getImage(geo)
-                })
-                .menuIndicator(.hidden)
-                // 注意测试ButtonStyle对这个操作的影响：
-                //  其他App获取焦点
-                //  点击本App的button，看看是否有反应
-                #if os(macOS)
-                .buttonStyle(PlainButtonStyle())
-                .foregroundStyle(.primary)
-                #else
-                .buttonStyle(PlainButtonStyle())
-                #endif
-            } else {
-                Button(action: {
-                    withAnimation(.default) {
-                        self.pressed = true
-                        onTap()
-
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                            self.pressed = false
-                        }
-                    }
-                }, label: {
-                    Label(
-                        title: { Text(title) },
-                        icon: {
-                            getImage(geo)
-                        }
-                    )
-                })
-                // 注意测试ButtonStyle对这个操作的影响：
-                //  其他App获取焦点
-                //  点击本App的button，看看是否有反应
-                #if os(macOS)
-                .buttonStyle(LinkButtonStyle())
-                .foregroundStyle(.primary)
-                #else
-                .buttonStyle(PlainButtonStyle())
-                #endif
-            }
+    
+    @ViewBuilder
+    private var buttonShape: some View {
+        switch shape {
+        case .circle:
+            Circle()
+                .fill(backgroundColor)
+                .shadow(
+                    color: shadowColor,
+                    radius: 8
+                )
+        case .capsule:
+            Capsule()
+                .fill(backgroundColor)
+                .shadow(
+                    color: shadowColor,
+                    radius: 8
+                )
         }
     }
-
-    func getImage(_ geo: GeometryProxy?) -> some View {
-        Image(systemName: image)
-            .font(getSize(geo))
-            .padding(7)
-            .background(hovered ? Color.gray.opacity(0.4) : .clear)
-            .clipShape(RoundedRectangle(cornerRadius: 10.0))
-            .onHover(perform: { hovering in
-                self.hovered = hovering
-            })
-            .scaleEffect(pressed ? 1.2 : 1)
-            .animation(.easeOut(duration: 0.2), value: pressed)
+    
+    private var buttonSize: CGFloat {
+        switch size {
+        case .small:
+            return 32
+        case .regular:
+            return 40
+        case .large:
+            return 50
+        }
     }
-
-    func getSize(_ geo: GeometryProxy?) -> Font {
-        if dynamicSize == false {
+    
+    private var iconSize: CGFloat {
+        switch size {
+        case .small:
+            return 12
+        case .regular:
+            return 15
+        case .large:
+            return 20
+        }
+    }
+    
+    private var font: Font {
+        switch size {
+        case .small:
+            return .caption
+        case .regular:
             return .body
+        case .large:
+            return .title3
         }
-
-        guard let geo = geo else {
-            return .system(size: 24)
+    }
+    
+    private var horizontalPadding: CGFloat {
+        switch size {
+        case .small:
+            return 8
+        case .regular:
+            return 12
+        case .large:
+            return 16
         }
-
-        return .system(size: min(geo.size.height, geo.size.width) * 0.45)
+    }
+    
+    private var verticalPadding: CGFloat {
+        switch size {
+        case .small:
+            return 4
+        case .regular:
+            return 8
+        case .large:
+            return 12
+        }
+    }
+    
+    private var foregroundColor: Color {
+        switch style {
+        case .primary:
+            return isHovering ? .white : .accentColor
+        case .secondary:
+            return .primary
+        }
+    }
+    
+    private var backgroundColor: Color {
+        switch style {
+        case .primary:
+            return isHovering ? .accentColor : .accentColor.opacity(0.1)
+        case .secondary:
+            return isHovering ? 
+                Color.primary.opacity(colorScheme == .dark ? 0.2 : 0.15) :
+                Color.primary.opacity(0.1)
+        }
+    }
+    
+    private var shadowColor: Color {
+        switch style {
+        case .primary:
+            return isHovering ? .accentColor.opacity(0.3) : .clear
+        case .secondary:
+            return isHovering ? Color.primary.opacity(0.2) : .clear
+        }
     }
 }
 
-struct SmartButtonStyle: ButtonStyle {
-    @State var hovered = false
-
+private struct MagicButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .padding(7)
-            .background(hovered ? Color.gray.opacity(0.4) : .clear)
-            .onHover(perform: { hovering in
-                self.hovered = hovering
-            })
-            .clipShape(RoundedRectangle(cornerRadius: 10.0))
-            .scaleEffect(configuration.isPressed ? 1.2 : 1)
-            .animation(.easeOut(duration: 0.2), value: configuration.isPressed)
+            .scaleEffect(configuration.isPressed ? 0.95 : 1)
+            .animation(.easeInOut(duration: 0.1), value: configuration.isPressed)
     }
 }
 
-#Preview("Button") {
-    VStack {
-        MagicButton(title: "菜单", menus: AnyView(VStack {
-            Button("1", action: {})
-            Button("2", action: {})
-        }))
-        
-        MagicButton(title: "菜单2")
+#Preview("MagicButton") {
+    struct PreviewWrapper: View {
+        var body: some View {
+            HStack {
+                VStack(spacing: 20) {
+                    Text("Light Mode")
+                        .font(.headline)
+                    
+                    VStack(spacing: 12) {
+                        MagicButton(
+                            icon: "play.fill",
+                            title: "Play",
+                            style: .primary,
+                            size: .regular,
+                            shape: .circle,
+                            action: {}
+                        )
+                        
+                        MagicButton(
+                            icon: "trash",
+                            title: "Clear",
+                            style: .secondary,
+                            size: .small,
+                            shape: .circle,
+                            action: {}
+                        )
+                    }
+                }
+                .padding()
+                .background(.background)
+                .environment(\.colorScheme, .light)
+                
+                VStack(spacing: 20) {
+                    Text("Dark Mode")
+                        .font(.headline)
+                    
+                    VStack(spacing: 12) {
+                        MagicButton(
+                            icon: "play.fill",
+                            title: "Play",
+                            style: .primary,
+                            size: .regular,
+                            shape: .circle,
+                            action: {}
+                        )
+                        
+                        MagicButton(
+                            icon: "trash",
+                            title: "Clear",
+                            style: .secondary,
+                            size: .small,
+                            shape: .circle,
+                            action: {}
+                        )
+                    }
+                }
+                .padding()
+                .background(.background)
+                .environment(\.colorScheme, .dark)
+            }
+            .previewLayout(.sizeThatFits)
+        }
     }
-    .frame(height: 300)
-    .frame(width: 300)
+    
+    return PreviewWrapper()
 }
