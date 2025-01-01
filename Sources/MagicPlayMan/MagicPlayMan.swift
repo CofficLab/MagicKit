@@ -223,7 +223,7 @@ public class MagicPlayMan: ObservableObject {
     }
 
     private func isSampleAsset(_ asset: MagicAsset) -> Bool {
-        SampleAssets.allSamples.contains { $0.asset.url == asset.url }
+        SupportedFormat.allSamples.contains { $0.asset.url == asset.url }
     }
 
     public func play() {
@@ -318,6 +318,11 @@ public class MagicPlayMan: ObservableObject {
             title: "No Media Selected",
             artist: "Select a media file to play"
         )
+    }
+
+    /// 获取支持的格式列表
+    public var supportedFormats: [SupportedFormat] {
+        SupportedFormat.allFormats
     }
 }
 

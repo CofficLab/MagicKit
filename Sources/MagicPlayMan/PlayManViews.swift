@@ -7,6 +7,7 @@ public extension MagicPlayMan {
         @StateObject private var playMan: MagicPlayMan
         @State private var selectedSampleName: String?
         @State private var showMediaPicker = false
+        @State private var showFormats = false
         let showLogs: Bool
         
         public init(
@@ -22,23 +23,19 @@ public extension MagicPlayMan {
                 // 顶部工具栏
                 HStack {
                     Menu {
-                        ForEach(SampleAssets.audioSamples, id: \.name) { sample in
-                            Button {
-                                selectedSampleName = sample.name
-                                playMan.load(asset: sample.asset)
-                            } label: {
-                                Label(sample.name, systemImage: "music.note")
-                            }
-                        }
-                        
-                        Divider()
-                        
-                        ForEach(SampleAssets.videoSamples, id: \.name) { sample in
-                            Button {
-                                selectedSampleName = sample.name
-                                playMan.load(asset: sample.asset)
-                            } label: {
-                                Label(sample.name, systemImage: "film")
+                        ForEach(playMan.supportedFormats.filter { !$0.samples.isEmpty }, id: \.name) { format in
+                            Section(format.name) {
+                                ForEach(format.samples, id: \.name) { sample in
+                                    Button {
+                                        selectedSampleName = sample.name
+                                        playMan.load(asset: sample.asset)
+                                    } label: {
+                                        Label(
+                                            sample.name,
+                                            systemImage: format.type == .audio ? "music.note" : "film"
+                                        )
+                                    }
+                                }
                             }
                         }
                     } label: {
@@ -59,9 +56,25 @@ public extension MagicPlayMan {
                     }
                     
                     Spacer()
+                    
+                    MagicButton(
+                        icon: "info.circle",
+                        style: .secondary,
+                        size: .small,
+                        shape: .circle,
+                        action: { showFormats = true }
+                    )
                 }
                 .padding()
                 .background(.ultraThinMaterial)
+                
+                // 格式信息视图
+                if showFormats {
+                    FormatInfoView(
+                        formats: playMan.supportedFormats,
+                        onDismiss: { showFormats = false }
+                    )
+                }
                 
                 // 主内容区域
                 if let asset = playMan.currentAsset {
@@ -134,76 +147,10 @@ public extension MagicPlayMan {
         }
         
         private var currentAssetIcon: String {
-            guard let asset = playMan.currentAsset else {
-                return "play.circle"
+            if let asset = playMan.currentAsset {
+                return asset.type == .audio ? "music.note" : "film"
             }
-            return asset.type == .audio ? "music.note" : "film"
-        }
-    }
-    
-    // 日志视图组件
-    private struct LogView: View {
-        let logs: [PlaybackLog]
-        let onClear: () -> Void
-        
-        var body: some View {
-            VStack(alignment: .leading, spacing: 4) {
-                HStack {
-                    Text("Logs")
-                        .font(.headline)
-                        .foregroundStyle(.secondary)
-                    
-                    Spacer()
-                    
-                    // 使用 MagicButton 替代普通按钮
-                    MagicButton(
-                        icon: "trash",
-                        title: "Clear",
-                        style: .secondary,
-                        size: .small,
-                        shape: .capsule,
-                        action: onClear
-                    )
-                }
-                
-                ScrollView {
-                    LazyVStack(alignment: .leading, spacing: 4) {
-                        ForEach(logs.reversed()) { log in
-                            HStack(spacing: 8) {
-                                Circle()
-                                    .fill(logColor(for: log.level))
-                                    .frame(width: 8, height: 8)
-                                
-                                Text(formatTime(log.timestamp))
-                                    .font(.caption.monospaced())
-                                    .foregroundStyle(.secondary)
-                                
-                                Text(log.message)
-                                    .font(.caption)
-                                    .foregroundStyle(log.level == .error ? .red : .primary)
-                            }
-                            .padding(.vertical, 2)
-                        }
-                    }
-                }
-            }
-        }
-        
-        private func logColor(for level: PlaybackLog.Level) -> Color {
-            switch level {
-            case .info:
-                return .green
-            case .warning:
-                return .orange
-            case .error:
-                return .red
-            }
-        }
-        
-        private func formatTime(_ date: Date) -> String {
-            let formatter = DateFormatter()
-            formatter.dateFormat = "HH:mm:ss"
-            return formatter.string(from: date)
+            return "play.circle"
         }
     }
 }
