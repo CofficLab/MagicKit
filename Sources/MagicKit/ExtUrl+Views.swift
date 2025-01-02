@@ -100,10 +100,10 @@ private struct MediaPreviewView: View {
                         shape.shape
                             .foregroundStyle(.background)
                             .shadow(radius: 1)
-                            .frame(width: 60, height: 60)
+                            .frame(width: size.width * 0.4, height: size.height * 0.4)
 
                         thumbnailContent
-                            .frame(width: 60, height: 60)
+                            .frame(width: size.width * 0.4, height: size.height * 0.4)
                             .let { shape.apply(to: $0) }
                         
                         // 下载进度
@@ -138,6 +138,7 @@ private struct MediaPreviewView: View {
                     Spacer()
                 }
                 .frame(maxWidth: .infinity)
+                .frame(height: size.height * 0.5)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
                 .background(.background.opacity(0.5))
@@ -430,6 +431,7 @@ private struct ErrorDetailsView: View {
 
 private struct PreviewDemoView: View {
     @State private var selectedShape: PreviewShape = .rectangle
+    @State private var selectedSize: CGSize = .init(width: 120, height: 120)
     
     private let previewURLs: [(String, URL)] = [
         // 音频文件
@@ -460,10 +462,17 @@ private struct PreviewDemoView: View {
         ("Rounded", .roundedSquare())
     ]
     
+    private let sizes: [(String, CGSize)] = [
+        ("Small", CGSize(width: 80, height: 80)),
+        ("Medium", CGSize(width: 120, height: 120)),
+        ("Large", CGSize(width: 160, height: 160))
+    ]
+    
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
                 shapeSelector
+                sizeSelector
                 previewList
             }
             .padding()
@@ -510,6 +519,31 @@ private struct PreviewDemoView: View {
         }
     }
     
+    // 新增尺寸选择器
+    private var sizeSelector: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 12) {
+                ForEach(sizes, id: \.0) { name, size in
+                    sizeButton(name: name, size: size)
+                }
+            }
+            .padding(.horizontal)
+        }
+        .padding(.vertical, 8)
+    }
+    
+    // 新增尺寸按钮
+    private func sizeButton(name: String, size: CGSize) -> some View {
+        MagicButton(
+            icon: "rectangle.compress.vertical",
+            title: name,
+            style: selectedSize == size ? .primary : .secondary,
+            size: .small,
+            shape: .capsule,
+            action: { selectedSize = size }
+        )
+    }
+    
     // 预览列表
     private var previewList: some View {
         ForEach(previewURLs, id: \.0) { name, url in
@@ -523,7 +557,7 @@ private struct PreviewDemoView: View {
             Text(name)
                 .font(.caption)
                 .foregroundStyle(.secondary)
-            url.makePreviewView(shape: selectedShape)
+            url.makePreviewView(size: selectedSize, shape: selectedShape)
         }
     }
 }
