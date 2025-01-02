@@ -1,7 +1,7 @@
 import SwiftUI
 import MagicUI
 
-public enum PlayMode: String, CaseIterable {
+public enum MagicPlayMode: String, CaseIterable {
     case sequence
     case loop
     case shuffle
@@ -40,7 +40,7 @@ public enum PlayMode: String, CaseIterable {
     }
     
     /// 切换到下一个模式
-    public var next: PlayMode {
+    public var next: MagicPlayMode {
         switch self {
         case .sequence: return .loop
         case .loop: return .shuffle
@@ -76,7 +76,7 @@ public enum PlayMode: String, CaseIterable {
 
 /// 播放模式指示器组件
 public struct PlayModeIndicator: View {
-    let mode: PlayMode
+    let mode: MagicPlayMode
     
     public var body: some View {
         mode.label
@@ -90,7 +90,7 @@ public struct PlayModeIndicator: View {
 
 /// 播放模式按钮组件
 public struct PlayModeButton: View {
-    let mode: PlayMode
+    let mode: MagicPlayMode
     let action: () -> Void
     
     public var body: some View {
@@ -110,21 +110,21 @@ public struct PlayModeButton: View {
     VStack(spacing: 30) {
         // 指示器预览
         HStack(spacing: 20) {
-            ForEach(PlayMode.allCases, id: \.self) { mode in
+            ForEach(MagicPlayMode.allCases, id: \.self) { mode in
                 mode.indicator
             }
         }
         
         // 按钮预览
         HStack(spacing: 20) {
-            ForEach(PlayMode.allCases, id: \.self) { mode in
+            ForEach(MagicPlayMode.allCases, id: \.self) { mode in
                 mode.button {}
             }
         }
         
         // 标签预览
         VStack(alignment: .leading, spacing: 10) {
-            ForEach(PlayMode.allCases, id: \.self) { mode in
+            ForEach(MagicPlayMode.allCases, id: \.self) { mode in
                 mode.label
             }
         }

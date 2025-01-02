@@ -269,15 +269,6 @@ public extension MagicPlayMan {
             }
         }
         
-        // MARK: - Helper Methods
-        
-        private var currentAssetIcon: String {
-            if let asset = playMan.currentAsset {
-                return asset.type == .audio ? "music.note" : "film"
-            }
-            return "play.circle"
-        }
-        
         private func errorMessage(for error: PlaybackState.PlaybackError) -> String {
             switch error {
             case .noAsset:
@@ -306,25 +297,6 @@ public extension MagicPlayMan {
                     toast = nil
                 }
             }
-        }
-        
-        // 辅助计算属性
-        private var canSeek: Bool {
-            guard let _ = playMan.currentAsset else { return false }
-            
-            switch playMan.state {
-            case .idle, .loading, .failed:
-                return false
-            case .playing, .paused, .stopped:
-                return true
-            }
-        }
-        
-        private var isLoading: Bool {
-            if case .loading = playMan.state {
-                return true
-            }
-            return false
         }
     }
 }

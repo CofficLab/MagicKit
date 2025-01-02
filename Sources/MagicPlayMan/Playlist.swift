@@ -67,7 +67,7 @@ public class Playlist: ObservableObject {
         return false
     }
     
-    public func playNext(mode: PlayMode) -> MagicAsset? {
+    public func playNext(mode: MagicPlayMode) -> MagicAsset? {
         guard !items.isEmpty else { return nil }
         
         switch mode {
@@ -82,7 +82,7 @@ public class Playlist: ObservableObject {
         }
     }
     
-    public func playPrevious(mode: PlayMode) -> MagicAsset? {
+    public func playPrevious(mode: MagicPlayMode) -> MagicAsset? {
         guard !items.isEmpty else { return nil }
         
         switch mode {

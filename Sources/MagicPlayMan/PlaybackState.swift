@@ -28,4 +28,13 @@ public enum PlaybackState: Equatable {
         }
         return false
     }
+    
+    public var canSeek: Bool {
+        switch self {
+        case .idle, .loading, .failed:
+            return false
+        case .playing, .paused, .stopped:
+            return true
+        }
+    }
 }

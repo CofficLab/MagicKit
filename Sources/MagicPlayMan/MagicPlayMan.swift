@@ -21,7 +21,7 @@ public class MagicPlayMan: ObservableObject {
     
     @Published public private(set) var items: [MagicAsset] = []
     @Published public private(set) var currentIndex: Int = -1
-    @Published public private(set) var playMode: PlayMode = .sequence
+    @Published public private(set) var playMode: MagicPlayMode = .sequence
     @Published public private(set) var currentAsset: MagicAsset?
     @Published public private(set) var state: PlaybackState = .idle
     @Published public private(set) var currentTime: TimeInterval = 0
@@ -713,7 +713,7 @@ public class MagicPlayMan: ObservableObject {
     }
     
     /// 设置播放模式
-    public func setPlayMode(_ mode: PlayMode) {
+    public func setPlayMode(_ mode: MagicPlayMode) {
         playMode = mode
         log("Playback mode set to: \(mode.displayName)")
     }
