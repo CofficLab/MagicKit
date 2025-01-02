@@ -467,6 +467,19 @@ public class MagicPlayMan: ObservableObject {
     public func log(_ message: String, level: PlaybackLog.Level = .info) {
         logger.log(message, level: level)
     }
+
+    /// Returns the current playback error, if any.
+    ///
+    /// This property returns the error associated with the current failed playback state.
+    /// If the player is not in a failed state, it returns `nil`.
+    ///
+    /// - Returns: The current `PlaybackError` or `nil` if there is no error.
+    public var currentError: PlaybackState.PlaybackError? {
+        if case .failed(let error) = state {
+            return error
+        }
+        return nil
+    }
 }
 
 #Preview("MagicPlayMan") {
