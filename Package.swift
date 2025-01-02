@@ -11,7 +11,7 @@ let package = Package(
         .library(name: "MagicUI", targets: ["MagicUI"])
     ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-async-algorithms", from: "0.1.0"),
+        .package(url: "https://github.com/apple/swift-async-algorithms", from: "1.0.3"),
     ],
     targets: [
         .target(
