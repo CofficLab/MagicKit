@@ -25,12 +25,12 @@ extension URL {
             return try await imageThumbnail(size: size)
         }
         
-        if isVideo {
-            return try await videoThumbnail(size: size)
-        }
-        
         if isAudio {
             return try await audioThumbnail(size: size)
+        }
+        
+        if isVideo {
+            return try await videoThumbnail(size: size)
         }
         
         return nil
