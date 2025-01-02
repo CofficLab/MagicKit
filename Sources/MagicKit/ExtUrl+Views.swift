@@ -85,6 +85,8 @@ private struct MediaPreviewView: View {
     @State private var error: Error?
     @State private var isLoading = true
     @State private var fileSize: String = ""
+    @State private var downloadProgress: Double = 0
+    @State private var isDownloading = false
 
     var body: some View {
         Group {
@@ -96,10 +98,21 @@ private struct MediaPreviewView: View {
                         shape.shape
                             .foregroundStyle(.background)
                             .shadow(radius: 1)
+                            .frame(width: 60, height: 60)
 
                         thumbnailContent
                             .frame(width: 60, height: 60)
                             .let { shape.apply(to: $0) }
+                        
+                        // 下载进度
+                        if isDownloading {
+                            ProgressView(value: downloadProgress, total: 100)
+                                .progressViewStyle(.circular)
+                                .scaleEffect(0.6)
+                                .tint(.white)
+                                .background(.ultraThinMaterial)
+                                .clipShape(Circle())
+                        }
                     }
 
                     // 右侧信息
@@ -109,12 +122,18 @@ private struct MediaPreviewView: View {
                             .lineLimit(1)
                             .truncationMode(.middle)
 
-                        Text(fileSize)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                        if isDownloading {
+                            Text("Downloading \(Int(downloadProgress))%")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        } else {
+                            Text(fileSize)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
                     }
 
-                    Spacer(minLength: 0)
+                    Spacer()
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.horizontal, 12)
@@ -143,6 +162,16 @@ private struct MediaPreviewView: View {
                             }
                             .padding(8)
                         }
+
+                        // 下载进度
+                        if isDownloading {
+                            ProgressView(value: downloadProgress, total: 100)
+                                .progressViewStyle(.circular)
+                                .scaleEffect(0.8)
+                                .tint(.white)
+                                .background(.ultraThinMaterial)
+                                .clipShape(Circle())
+                        }
                     }
 
                     if showTitle {
@@ -157,6 +186,9 @@ private struct MediaPreviewView: View {
         }
         .task {
             await loadPreview()
+            if url.isiCloud && url.isNotDownloaded {
+                await downloadFile()
+            }
         }
     }
 
@@ -197,6 +229,19 @@ private struct MediaPreviewView: View {
 
         if shape.isRectangle {
             fileSize = url.getSizeReadable()
+        }
+    }
+
+    private func downloadFile() async {
+        isDownloading = true
+        defer { isDownloading = false }
+        
+        do {
+            try await url.download { progress in
+                downloadProgress = progress * 100
+            }
+        } catch {
+            self.error = error
         }
     }
 }
@@ -322,6 +367,12 @@ private struct FilePreviewView: View {
 #Preview("URL Views") {
     ScrollView {
         VStack(spacing: 20) {
+            // iCloud 文件预览
+            URL(string: "file:///iCloud/test.mp3")!
+                .makePreviewView(shape: .rectangle)
+            
+            URL(string: "https://storage.googleapis.com/media-session/sintel/snow-fight.mp3")!.makePreviewView(shape: .rectangle)
+            
             // 长方形预览（文件样式）
             URL(string: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/fd/37/41/fd374113-bf05-692f-e157-5c364af08d9d/mzaf_15384825730917775750.plus.aac.p.m4a")!
                 .makePreviewView(shape: .rectangle)
