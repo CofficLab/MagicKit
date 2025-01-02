@@ -16,11 +16,12 @@ public class MagicPlayMan: ObservableObject {
         let manager = MediaCenterManager(playMan: self)
         return manager
     }()
-    private lazy var playbackManager: PlaybackManager = {
-        let manager = PlaybackManager(playMan: self)
-        return manager
-    }()
-
+    
+    private let playlist = Playlist()
+    
+    @Published public private(set) var items: [MagicAsset] = []
+    @Published public private(set) var currentIndex: Int = -1
+    @Published public private(set) var playMode: PlayMode = .sequence
     @Published public private(set) var currentAsset: MagicAsset?
     @Published public private(set) var state: PlaybackState = .idle
     @Published public private(set) var currentTime: TimeInterval = 0
@@ -28,8 +29,6 @@ public class MagicPlayMan: ObservableObject {
     @Published public private(set) var isBuffering = false
     @Published public private(set) var progress: Double = 0
     @Published public private(set) var logs: [PlaybackLog] = []
-    @Published public private(set) var playlist: [MagicAsset] = []
-    @Published public private(set) var currentIndex: Int = -1
     @Published public private(set) var currentThumbnail: Image?
 
     public var player: AVPlayer { _player }
@@ -46,6 +45,8 @@ public class MagicPlayMan: ObservableObject {
     public var durationForDisplay: String {
         duration.displayFormat
     }
+
+    private let logger = PlayLogger()
 
     /// 初始化播放器
     /// - Parameter cacheDirectory: 自定义缓存目录。如果为 nil，则使用系统默认缓存目录
@@ -70,6 +71,23 @@ public class MagicPlayMan: ObservableObject {
         } else {
             log("Cache disabled", level: .warning)
         }
+        
+        // 修改监听方式
+        playlist.$items
+            .sink { [weak self] items in
+                self?.items = items
+            }
+            .store(in: &cancellables)
+        
+        playlist.$currentIndex
+            .sink { [weak self] index in
+                self?.currentIndex = index
+            }
+            .store(in: &cancellables)
+        
+        // 监听日志变化
+        logger.$logs
+            .assign(to: &$logs)
     }
 
     /// 获取当前缓存目录
@@ -482,15 +500,19 @@ public class MagicPlayMan: ObservableObject {
         mediaCenterManager.cleanup()
     }
 
-    private func log(_ message: String, level: PlaybackLog.Level = .info) {
-        let log = PlaybackLog(timestamp: Date(), level: level, message: message)
-        DispatchQueue.main.async {
-            self.logs.append(log)
-        }
+    /// 记录日志
+    public func log(_ message: String, level: PlaybackLog.Level = .info) {
+        logger.log(message, level: level)
     }
-
+    
+    /// 清空日志
     public func clearLogs() {
-        logs.removeAll()
+        logger.clear()
+    }
+    
+    /// 创建日志视图
+    public func makeLogView() -> some View {
+        logger.makeLogView()
     }
 
     // 视频视图
@@ -649,17 +671,13 @@ public class MagicPlayMan: ObservableObject {
 
     /// 添加资源到播放列表并播放
     public func play(asset: MagicAsset) {
-        // 如果资源已在列表中，直接切换到该资源
-        if let index = playlist.firstIndex(of: asset) {
-            currentIndex = index
+        if playlist.play(asset) {
             load(asset: asset)
-            return
+        } else {
+            playlist.append(asset)
+            _ = playlist.play(asset)
+            load(asset: asset)
         }
-        
-        // 否则添加到列表末尾并播放
-        playlist.append(asset)
-        currentIndex = playlist.count - 1
-        load(asset: asset)
     }
     
     /// 添加资源到播放列表
@@ -669,81 +687,45 @@ public class MagicPlayMan: ObservableObject {
     
     /// 清空播放列表
     public func clearPlaylist() {
-        stop()
-        playlist.removeAll()
-        currentIndex = -1
+        playlist.clear()
     }
     
     /// 播放下一曲
     public func next() {
-        guard !playlist.isEmpty else {
-            log("Cannot play next: playlist is empty", level: .warning)
-            return
-        }
-        
-        let nextIndex = currentIndex + 1
-        if nextIndex < playlist.count {
-            currentIndex = nextIndex
-            let nextAsset = playlist[nextIndex]
-            log("Playing next: \(nextAsset.metadata.title)")
+        if let nextAsset = playlist.playNext(mode: playMode) {
             load(asset: nextAsset)
-        } else {
-            // 到达列表末尾，循环到开头
-            currentIndex = 0
-            let firstAsset = playlist[0]
-            log("Reached end of playlist, looping to first: \(firstAsset.metadata.title)")
-            load(asset: firstAsset)
         }
     }
     
     /// 播放上一曲
     public func previous() {
-        guard !playlist.isEmpty else {
-            log("Cannot play previous: playlist is empty", level: .warning)
-            return
-        }
-        
-        let prevIndex = currentIndex - 1
-        if prevIndex >= 0 {
-            currentIndex = prevIndex
-            let prevAsset = playlist[prevIndex]
-            log("Playing previous: \(prevAsset.metadata.title)")
+        if let prevAsset = playlist.playPrevious(mode: playMode) {
             load(asset: prevAsset)
-        } else {
-            // 到达列表开头，循环到末尾
-            currentIndex = playlist.count - 1
-            let lastAsset = playlist[currentIndex]
-            log("Reached start of playlist, looping to last: \(lastAsset.metadata.title)")
-            load(asset: lastAsset)
         }
     }
 
     // MARK: - 播放模式
     
-    /// 当前播放模式
-    public var playMode: PlayMode {
-        playbackManager.mode
-    }
-    
     /// 切换播放模式
     public func togglePlayMode() {
-        playbackManager.toggleMode()
+        playMode = playMode.next
         log("Playback mode changed to: \(playMode.displayName)")
     }
     
     /// 设置播放模式
     public func setPlayMode(_ mode: PlayMode) {
-        playbackManager.mode = mode
+        playMode = mode
         log("Playback mode set to: \(mode.displayName)")
     }
     
-    // 公开播放列表管理方法
+    /// 从播放列表中移除指定索引的资源
     public func removeFromPlaylist(at index: Int) {
-        playbackManager.remove(at: index)
+        playlist.remove(at: index)
     }
     
+    /// 移动播放列表中的资源
     public func moveInPlaylist(from: Int, to: Int) {
-        playbackManager.move(from: from, to: to)
+        playlist.move(from: from, to: to)
     }
 
     // 添加 Toast 显示方法
@@ -774,6 +756,21 @@ public class MagicPlayMan: ObservableObject {
     public func reloadThumbnail() {
         guard let asset = currentAsset else { return }
         loadThumbnail(for: asset)
+    }
+
+    /// 创建播放列表视图
+    public func makePlaylistView() -> some View {
+        playlist.makeListView(
+            onSelect: { [weak self] asset in
+                self?.play(asset: asset)
+            },
+            onRemove: { [weak self] index in
+                self?.removeFromPlaylist(at: index)
+            },
+            onMove: { [weak self] from, to in
+                self?.moveInPlaylist(from: from, to: to)
+            }
+        )
     }
 }
 

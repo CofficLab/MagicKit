@@ -144,38 +144,10 @@ public extension MagicPlayMan {
         }
         
         private var playlistSidebarView: some View {
-            PlaylistView(
-                playlist: playMan.playlist,
-                currentIndex: playMan.currentIndex,
-                onSelect: { asset in
-                    playMan.play(asset: asset)
-                    showToast(
-                        "Playing: \(asset.title)",
-                        icon: "play.circle",
-                        style: .info
-                    )
-                },
-                onRemove: { index in
-                    let asset = playMan.playlist[index]
-                    playMan.removeFromPlaylist(at: index)
-                    showToast(
-                        "Removed: \(asset.metadata.title)",
-                        icon: "minus.circle",
-                        style: .warning
-                    )
-                },
-                onMove: { from, to in
-                    playMan.moveInPlaylist(from: from, to: to)
-                    showToast(
-                        "Playlist reordered",
-                        icon: "arrow.up.arrow.down",
-                        style: .info
-                    )
-                }
-            )
-            .frame(width: 300)
-            .background(.ultraThinMaterial)
-            .transition(.move(edge: .trailing))
+            playMan.makePlaylistView()
+                .frame(width: 300)
+                .background(.ultraThinMaterial)
+                .transition(.move(edge: .trailing))
         }
         
         private var controlsView: some View {
@@ -218,13 +190,10 @@ public extension MagicPlayMan {
         }
         
         private var logsView: some View {
-            LogView(
-                logs: playMan.logs,
-                onClear: { playMan.clearLogs() }
-            )
-            .frame(height: 120)
-            .padding()
-            .background(.ultraThinMaterial)
+            playMan.makeLogView()
+                .frame(height: 120)
+                .padding()
+                .background(.ultraThinMaterial)
         }
         
         // MARK: - Helper Views
