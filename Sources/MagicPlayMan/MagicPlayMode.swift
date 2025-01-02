@@ -39,6 +39,8 @@ public enum MagicPlayMode: String, CaseIterable {
         }
     }
     
+    public var icon: String { iconName }
+    
     /// 切换到下一个模式
     public var next: MagicPlayMode {
         switch self {

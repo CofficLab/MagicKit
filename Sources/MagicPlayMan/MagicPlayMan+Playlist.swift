@@ -48,20 +48,6 @@ public extension MagicPlayMan {
     func moveInPlaylist(from: Int, to: Int) {
         playlist.move(from: from, to: to)
     }
-    
-    // MARK: - Playback Mode
-    
-    /// 切换播放模式
-    func togglePlayMode() {
-        playMode = playMode.next
-        log("Playback mode changed to: \(playMode.displayName)")
-    }
-    
-    /// 设置播放模式
-    func setPlayMode(_ mode: MagicPlayMode) {
-        playMode = mode
-        log("Playback mode set to: \(mode.displayName)")
-    }
 }
 
 // MARK: - Preview
@@ -129,10 +115,6 @@ private struct PlaylistPreview: View {
                 Button("下一曲") {
                     playMan.next()
                 }
-            }
-            
-            Button("切换播放模式 (\(playMan.playMode.displayName))") {
-                playMan.togglePlayMode()
             }
         }
     }
