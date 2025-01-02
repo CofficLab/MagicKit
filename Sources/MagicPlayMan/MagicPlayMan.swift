@@ -19,9 +19,9 @@ public class MagicPlayMan: ObservableObject {
     
     public let playlist = Playlist()
     
-    @Published public private(set) var items: [MagicAsset] = []
-    @Published public private(set) var currentIndex: Int = -1
-    @Published public private(set) var playMode: MagicPlayMode = .sequence
+    @Published public var items: [MagicAsset] = []
+    @Published public var currentIndex: Int = -1
+    @Published public var playMode: MagicPlayMode = .sequence
     @Published public var currentAsset: MagicAsset?
     @Published public var state: PlaybackState = .idle
     @Published public var currentTime: TimeInterval = 0
@@ -179,198 +179,6 @@ public class MagicPlayMan: ObservableObject {
             .store(in: &cancellables)
     }
 
-    private func loadFromURL(_ url: URL) {
-        log("Loading asset from URL: \(url.absoluteString)")
-        
-        // 预检查文件是否可访问
-        #if os(macOS)
-        if url.isFileURL && !FileManager.default.fileExists(atPath: url.path) {
-            state = .failed(.invalidAsset)
-            log("File does not exist at path: \(url.path)", level: .error)
-            return
-        }
-        #endif
-        
-        let asset = AVAsset(url: url)
-        let playerItem = AVPlayerItem(asset: asset)
-        
-        // 预加载关键属性
-        Task { @MainActor in
-            do {
-                let isPlayable = try await asset.load(.isPlayable)
-                if !isPlayable {
-                    throw NSError(domain: "MagicPlayMan", code: -1, 
-                                userInfo: [NSLocalizedDescriptionKey: "Asset is not playable"])
-                }
-            } catch {
-                self.state = .failed(.invalidAsset)
-                self.log("Asset validation failed: \(error.localizedDescription)", level: .error)
-                return
-            }
-        }
-        
-        // 添加资源加载错误观察
-        NotificationCenter.default.addObserver(
-            forName: .AVPlayerItemFailedToPlayToEndTime,
-            object: playerItem,
-            queue: .main
-        ) { [weak self] notification in
-            guard let self = self else { return }
-            if let error = notification.userInfo?[AVPlayerItemFailedToPlayToEndTimeErrorKey] as? Error {
-                self.log("Playback failed: \(error.localizedDescription)", level: .error)
-            }
-        }
-        
-        _player.replaceCurrentItem(with: playerItem)
-        
-        // 监听播放项状态
-        playerItem.publisher(for: \.status)
-            .sink { [weak self] status in
-                guard let self = self else { return }
-                switch status {
-                case .readyToPlay:
-                    self.duration = playerItem.duration.seconds
-                    self.state = .paused
-                    self.log("Asset ready to play (duration: \(self.duration)s)")
-                    
-                    // 检查是否可以播放
-                    if !playerItem.isPlaybackLikelyToKeepUp {
-                        self.log("Playback not likely to keep up, buffering...", level: .warning)
-                    }
-                    
-                    // 检查错误
-                    if let error = playerItem.error {
-                        self.log("Asset loaded but has error: \(error.localizedDescription)", level: .error)
-                    }
-                    
-                case .failed:
-                    if let error = playerItem.error {
-                        // 获取更详细的错误信息
-                        let errorDescription = error.localizedDescription
-                        let underlyingError = (error as NSError).userInfo[NSUnderlyingErrorKey] as? Error
-                        let underlyingDescription = underlyingError?.localizedDescription ?? "Unknown"
-                        
-                        self.log("Failed to load asset: \(errorDescription)", level: .error)
-                        self.log("Underlying error: \(underlyingDescription)", level: .error)
-                        
-                        // 转换 AVPlayer 错误为 PlaybackError
-                        let playbackError: PlaybackState.PlaybackError
-                        if let urlError = error as? URLError {
-                            playbackError = .networkError(urlError.localizedDescription)
-                        } else {
-                            playbackError = .playbackError(errorDescription)
-                        }
-                        self.state = .failed(playbackError)
-                    } else {
-                        self.state = .failed(.invalidAsset)
-                        self.log("Failed to load asset: Unknown error", level: .error)
-                    }
-                    
-                case .unknown:
-                    self.log("Asset status unknown", level: .warning)
-                    
-                @unknown default:
-                    self.log("Asset status: unexpected value", level: .warning)
-                }
-            }
-            .store(in: &cancellables)
-        
-        // 监听缓冲进度
-        playerItem.publisher(for: \.isPlaybackLikelyToKeepUp)
-            .sink { [weak self] isLikelyToKeepUp in
-                guard let self = self else { return }
-                if !isLikelyToKeepUp {
-                    self.state = .loading(.buffering)
-                    self.log("Buffering required")
-                }
-            }
-            .store(in: &cancellables)
-        
-        // 监听加载状态
-        playerItem.publisher(for: \.loadedTimeRanges)
-            .sink { [weak self] ranges in
-                guard let self = self else { return }
-                if case .loading = self.state {
-                    self.state = .loading(.preparing)
-                    if let timeRange = ranges.first?.timeRangeValue {
-                        let bufferedDuration = timeRange.duration.seconds
-                        self.log("Buffered duration: \(bufferedDuration)s")
-                    }
-                }
-            }
-            .store(in: &cancellables)
-    }
-
-    private func downloadAndCache(_ asset: MagicAsset) {
-        log("Downloading asset for caching")
-        showToast("Downloading \(asset.title)", icon: "arrow.down.circle", style: .info)
-        
-        let session = URLSession.shared
-        downloadTask?.cancel()
-        
-        // 创建带进度的数据任务
-        let task = session.dataTask(with: asset.url) { [weak self] data, response, error in
-            Task { @MainActor [weak self] in
-                guard let self = self else { return }
-                
-                if let error = error {
-                    self.state = .failed(.networkError(error.localizedDescription))
-                    self.log("Download failed: \(error.localizedDescription)", level: .error)
-                    return
-                }
-                
-                guard let data = data,
-                      let response = response as? HTTPURLResponse,
-                      (200...299).contains(response.statusCode) else {
-                    self.state = .failed(.networkError("Invalid server response"))
-                    self.log("Download failed: Invalid server response", level: .error)
-                    return
-                }
-                
-                // 验证数据是否是有效的媒体文件
-                let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
-                do {
-                    try data.write(to: tempURL)
-                    let tempAsset = AVAsset(url: tempURL)
-                    let isPlayable = try await tempAsset.load(.isPlayable)
-                    if !isPlayable {
-                        throw NSError(domain: "MagicPlayMan", code: -1, 
-                                    userInfo: [NSLocalizedDescriptionKey: "Downloaded data is not a valid media file"])
-                    }
-                    
-                    try self.cache?.cache(data, for: asset.url)
-                    self.log("Asset cached successfully")
-                    
-                    if let cachedURL = self.cache?.cachedURL(for: asset.url) {
-                        self.loadFromURL(cachedURL)
-                        showToast("Download completed", icon: "checkmark.circle", style: .info)
-                    }
-                } catch {
-                    self.log("Failed to cache asset: \(error.localizedDescription)", level: .error)
-                    self.loadFromURL(asset.url)
-                }
-                
-                try? FileManager.default.removeItem(at: tempURL)
-            }
-        }
-        
-        // 添加进度观察
-        if let expectedSize = try? asset.url.resourceValues(forKeys: [.fileSizeKey]).fileSize {
-            var observation: NSKeyValueObservation?
-            observation = task.progress.observe(\.fractionCompleted) { [weak self] progress, _ in
-                DispatchQueue.main.async {
-                    self?.state = .loading(.downloading(progress.fractionCompleted))
-                    self?.log("Download progress: \(Int(progress.fractionCompleted * 100))%")
-                }
-            }
-            downloadTask = task
-            task.resume()
-        } else {
-            downloadTask = task
-            task.resume()
-        }
-    }
-
     private func isSampleAsset(_ asset: MagicAsset) -> Bool {
         SupportedFormat.allSamples.contains { $0.asset.url == asset.url }
     }
@@ -380,65 +188,6 @@ public class MagicPlayMan: ObservableObject {
             log("Playing asset: \(asset.metadata.title) (reason: \(reason))")
         }
         play(asset: asset)
-    }
-
-    /// 添加资源到播放列表并播放
-    public func play(asset: MagicAsset) {
-        if playlist.play(asset) {
-            load(asset: asset)
-        } else {
-            playlist.append(asset)
-            _ = playlist.play(asset)
-            load(asset: asset)
-        }
-    }
-    
-    /// 添加资源到播放列表
-    public func append(_ asset: MagicAsset) {
-        playlist.append(asset)
-    }
-    
-    /// 清空播放列表
-    public func clearPlaylist() {
-        playlist.clear()
-    }
-    
-    /// 播放下一曲
-    public func next() {
-        if let nextAsset = playlist.playNext(mode: playMode) {
-            load(asset: nextAsset)
-        }
-    }
-    
-    /// 播放上一曲
-    public func previous() {
-        if let prevAsset = playlist.playPrevious(mode: playMode) {
-            load(asset: prevAsset)
-        }
-    }
-
-    // MARK: - 播放模式
-    
-    /// 切换播放模式
-    public func togglePlayMode() {
-        playMode = playMode.next
-        log("Playback mode changed to: \(playMode.displayName)")
-    }
-    
-    /// 设置播放模式
-    public func setPlayMode(_ mode: MagicPlayMode) {
-        playMode = mode
-        log("Playback mode set to: \(mode.displayName)")
-    }
-    
-    /// 从播放列表中移除指定索引的资源
-    public func removeFromPlaylist(at index: Int) {
-        playlist.remove(at: index)
-    }
-    
-    /// 移动播放列表中的资源
-    public func moveInPlaylist(from: Int, to: Int) {
-        playlist.move(from: from, to: to)
     }
 
     public func showToast(_ message: String, icon: String, style: MagicToast.Style) {
@@ -451,17 +200,6 @@ public class MagicPlayMan: ObservableObject {
                 "style": style
             ]
         )
-    }
-
-    /// 加载资源的缩略图
-    private func loadThumbnail(for asset: MagicAsset) {
-        Task { @MainActor in
-            do {
-                currentThumbnail = try await asset.url.thumbnail(size: CGSize(width: 600, height: 600))
-            } catch {
-                log("Failed to load thumbnail: \(error.localizedDescription)", level: .warning)
-            }
-        }
     }
 
     public func log(_ message: String, level: PlaybackLog.Level = .info) {
