@@ -57,10 +57,11 @@ public extension MagicPlayMan {
             log("Cannot seek: no asset loaded", level: .warning)
             return 
         }
-        
-        let targetTime = duration * progress
 
-        log("Seeking to \(Int(targetTime))s")
+        log("Seeking to \(Int(progress))%")
+        
+        let targetTime = duration * progress / 100
+
         seek(time: targetTime)
     }
     
@@ -179,4 +180,13 @@ private struct ControlsPreview: View {
             )
         }
     }
-} 
+}
+
+#Preview("MagicPlayMan") {
+    MagicPlayMan.PreviewView()
+        .frame(width: 650, height: 800)
+        .background(.background)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .shadow(radius: 5)
+        .padding()
+}
