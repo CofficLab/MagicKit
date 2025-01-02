@@ -172,7 +172,7 @@ public extension MagicPlayMan {
             VStack {
                 if showLogs {
                     playMan.makeLogView()
-                        .frame(height: 120)
+                        .frame(height: 200)
                         .padding()
                         .background(.ultraThinMaterial)
                 }

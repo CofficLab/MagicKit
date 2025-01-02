@@ -1,6 +1,6 @@
-import Foundation
-import Combine
 import AVFoundation
+import Combine
+import Foundation
 import SwiftUI
 
 public extension MagicPlayMan {
@@ -12,35 +12,26 @@ public extension MagicPlayMan {
             currentAsset = asset
             state = .loading(.preparing)
             log("Loading asset: \(asset.metadata.title)")
-            
-            // 模拟加载过程
-            DispatchQueue.global().asyncAfter(deadline: .now() + 1) {
-                Task { @MainActor in
-                    self.state = .playing
-                    self.duration = 240 // 假设时长为 240 秒
-                    self.currentTime = 0
-                    self.updateNowPlayingInfo()
-                    self.play()
-                }
-            }
+
+            self.loadFromURL(asset.url)
         }
     }
-    
+
     /// 从 URL 加载媒体
     private func loadFromURL(_ url: URL) {
         log("Loading asset from URL: \(url.absoluteString)")
-        
+
         // 预检查文件是否可访问
         #if os(macOS)
-        if url.isFileURL && !FileManager.default.fileExists(atPath: url.path) {
-            state = .failed(.invalidAsset)
-            log("File not found: \(url.path)", level: .error)
-            return
-        }
+            if url.isFileURL && !FileManager.default.fileExists(atPath: url.path) {
+                state = .failed(.invalidAsset)
+                log("File not found: \(url.path)", level: .error)
+                return
+            }
         #endif
-        
+
         let item = AVPlayerItem(url: url)
-        
+
         // 监听加载状态
         let observation = item.observe(\.status) { [weak self] item, _ in
             guard let self = self else { return }
@@ -59,15 +50,15 @@ public extension MagicPlayMan {
                 break
             }
         }
-        
+
         // 保存观察者以防止被释放
         cancellables.insert(AnyCancellable {
             observation.invalidate()
         })
-        
+
         _player.replaceCurrentItem(with: item)
     }
-    
+
     /// 下载并缓存资源
     private func downloadAndCache(_ asset: MagicAsset) {
         guard let cache = cache else {
@@ -75,13 +66,13 @@ public extension MagicPlayMan {
             loadFromURL(asset.url)
             return
         }
-        
+
         state = .loading(.connecting)
-        
+
         // 创建下载任务
         let task = URLSession.shared.dataTask(with: asset.url) { [weak self] data, response, error in
             guard let self = self else { return }
-            
+
             if let error = error {
                 DispatchQueue.main.async {
                     self.state = .failed(.networkError(error.localizedDescription))
@@ -89,33 +80,33 @@ public extension MagicPlayMan {
                 }
                 return
             }
-            
+
             guard let response = response as? HTTPURLResponse,
                   let data = data,
-                  (200...299).contains(response.statusCode) else {
+                  (200 ... 299).contains(response.statusCode) else {
                 DispatchQueue.main.async {
                     self.state = .failed(.networkError("Invalid server response"))
                     self.log("Download failed: Invalid server response", level: .error)
                 }
                 return
             }
-            
+
             // 验证数据是否是有效的媒体文件
             let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
             do {
                 try data.write(to: tempURL)
                 let tempAsset = AVAsset(url: tempURL)
-                
+
                 Task {
                     let isPlayable = try await tempAsset.load(.isPlayable)
                     if !isPlayable {
-                        throw NSError(domain: "MagicPlayMan", code: -1, 
-                                    userInfo: [NSLocalizedDescriptionKey: "Downloaded data is not a valid media file"])
+                        throw NSError(domain: "MagicPlayMan", code: -1,
+                                      userInfo: [NSLocalizedDescriptionKey: "Downloaded data is not a valid media file"])
                     }
-                    
+
                     try self.cache?.cache(data, for: asset.url)
                     self.log("Asset cached successfully")
-                    
+
                     if let cachedURL = self.cache?.cachedURL(for: asset.url) {
                         self.loadFromURL(cachedURL)
                         self.showToast("Download completed", icon: "checkmark.circle", style: .info)
@@ -125,10 +116,10 @@ public extension MagicPlayMan {
                 self.log("Failed to cache asset: \(error.localizedDescription)", level: .error)
                 self.loadFromURL(asset.url)
             }
-            
+
             try? FileManager.default.removeItem(at: tempURL)
         }
-        
+
         // 添加进度观察
         if let expectedSize = try? asset.url.resourceValues(forKeys: [.fileSizeKey]).fileSize {
             var observation: NSKeyValueObservation?
@@ -145,7 +136,7 @@ public extension MagicPlayMan {
             task.resume()
         }
     }
-    
+
     /// 加载资源的缩略图
     private func loadThumbnail(for asset: MagicAsset) {
         Task { @MainActor in
@@ -156,20 +147,21 @@ public extension MagicPlayMan {
             }
         }
     }
-    
+
     /// 手动刷新当前资源的缩略图
     public func reloadThumbnail() {
         guard let asset = currentAsset else { return }
         loadThumbnail(for: asset)
     }
-    
+
     /// 检查是否是示例资源
     private func isSampleAsset(_ asset: MagicAsset) -> Bool {
         SupportedFormat.allSamples.contains { $0.asset.url == asset.url }
     }
-} 
+}
 
 // MARK: - Preview
+
 #Preview("MagicPlayMan") {
     MagicPlayMan.PreviewView()
         .frame(width: 650, height: 800)
@@ -178,4 +170,3 @@ public extension MagicPlayMan {
         .shadow(radius: 5)
         .padding()
 }
-

@@ -56,6 +56,10 @@ public extension MagicPlayMan {
             return
         }
         
+        if currentTime == duration {
+            self.seek(time: 0)
+        }
+        
         _player.play()
         state = .playing
         log("Started playback: \(currentAsset?.title ?? "Unknown")")
