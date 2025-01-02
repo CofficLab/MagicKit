@@ -138,6 +138,7 @@ public class MagicPlayMan: ObservableObject {
     private func setupObservers() {
         // 监听播放状态
         _player.publisher(for: \.timeControlStatus)
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] status in
                 guard let self = self else { return }
                 switch status {
@@ -163,6 +164,7 @@ public class MagicPlayMan: ObservableObject {
 
         // 监听缓冲状态
         _player.publisher(for: \.currentItem?.isPlaybackBufferEmpty)
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] isEmpty in
                 if let isEmpty = isEmpty {
                     self?.isBuffering = isEmpty
@@ -173,10 +175,31 @@ public class MagicPlayMan: ObservableObject {
         // 更新播放进度
         $currentTime
             .throttle(for: .seconds(1), scheduler: DispatchQueue.main, latest: true)
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] time in
                 self?.mediaCenterManager.updatePlaybackTime(time)
             }
             .store(in: &cancellables)
+            
+        // 监听播放列表变化
+        playlist.$items
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] items in
+                self?.items = items
+            }
+            .store(in: &cancellables)
+        
+        playlist.$currentIndex
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] index in
+                self?.currentIndex = index
+            }
+            .store(in: &cancellables)
+        
+        // 监听日志变化
+        logger.$logs
+            .receive(on: DispatchQueue.main)
+            .assign(to: &$logs)
     }
 
     private func isSampleAsset(_ asset: MagicAsset) -> Bool {
@@ -191,15 +214,17 @@ public class MagicPlayMan: ObservableObject {
     }
 
     public func showToast(_ message: String, icon: String, style: MagicToast.Style) {
-        NotificationCenter.default.post(
-            name: .showToast,
-            object: nil,
-            userInfo: [
-                "message": message,
-                "icon": icon,
-                "style": style
-            ]
-        )
+        DispatchQueue.main.async {
+            NotificationCenter.default.post(
+                name: .showToast,
+                object: nil,
+                userInfo: [
+                    "message": message,
+                    "icon": icon,
+                    "style": style
+                ]
+            )
+        }
     }
 
     public func log(_ message: String, level: PlaybackLog.Level = .info) {
