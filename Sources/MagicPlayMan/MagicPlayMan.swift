@@ -218,6 +218,11 @@ public class MagicPlayMan: ObservableObject {
         }
         return nil
     }
+
+    /// 剩余播放时间
+    public var remainingTime: TimeInterval {
+        max(0, duration - currentTime)
+    }
 }
 
 #Preview("MagicPlayMan") {

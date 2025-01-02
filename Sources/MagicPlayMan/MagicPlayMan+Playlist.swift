@@ -52,13 +52,12 @@ public extension MagicPlayMan {
 
 // MARK: - Preview
 #Preview("Playlist Management") {
-    PlaylistPreview()
+    PlaylistPreview().frame(height: 800)
 }
 
 private struct PlaylistPreview: View {
     @StateObject private var playMan = MagicPlayMan()
     
-    // 将示例资源移到单独的计算属性中
     private var audioSample: MagicAsset {
         MagicAsset(
             url: URL(string: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/fd/37/41/fd374113-bf05-692f-e157-5c364af08d9d/mzaf_15384825730917775750.plus.aac.p.m4a")!,
@@ -89,8 +88,14 @@ private struct PlaylistPreview: View {
     
     var body: some View {
         List {
+            Section("播放内容与播放列表") {
+                HStack {
+                    playMan.makeAssetView()
+                    playMan.makePlaylistView()
+                }
+            }
+            
             playbackControlSection
-            playlistSection
             addSamplesSection
         }
         .navigationTitle("播放列表管理")
@@ -119,24 +124,6 @@ private struct PlaylistPreview: View {
         }
     }
     
-    private var playlistSection: some View {
-        Section("播放列表") {
-            ForEach(playMan.items) { asset in
-                PlaylistItemRow(asset: asset)
-            }
-            .onMove { from, to in
-                if let firstIndex = from.first {
-                    playMan.moveInPlaylist(from: firstIndex, to: to)
-                }
-            }
-            .onDelete { indexSet in
-                indexSet.forEach { index in
-                    playMan.removeFromPlaylist(at: index)
-                }
-            }
-        }
-    }
-    
     private var addSamplesSection: some View {
         Section("添加测试资源") {
             ForEach(sampleAssets) { asset in
@@ -152,7 +139,6 @@ private struct PlaylistPreview: View {
     }
 }
 
-// MARK: - Supporting Views
 private struct PlaylistItemRow: View {
     let asset: MagicAsset
     
