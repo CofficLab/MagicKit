@@ -50,21 +50,6 @@ public extension MagicPlayMan {
         }
     }
     
-    /// 跳转到指定进度
-    /// - Parameter progress: 目标进度，范围 0-1
-    func seek(to progress: Double) {
-        guard hasAsset else { 
-            log("Cannot seek: no asset loaded", level: .warning)
-            return 
-        }
-
-        log("Seeking to \(Int(progress))%")
-        
-        let targetTime = duration * progress / 100
-
-        seek(time: targetTime)
-    }
-    
     /// 跳转到指定时间
     /// - Parameter time: 目标时间（秒）
     func seek(time: TimeInterval) {
@@ -85,14 +70,14 @@ public extension MagicPlayMan {
     /// 快进指定时间
     /// - Parameter seconds: 快进的秒数，默认 10 秒
     func skipForward(_ seconds: TimeInterval = 10) {
-        seek(to: currentTime + seconds)
+        seek(time: currentTime + seconds)
         log("Skipped forward \(Int(seconds))s")
     }
     
     /// 快退指定时间
     /// - Parameter seconds: 快退的秒数，默认 10 秒
     func skipBackward(_ seconds: TimeInterval = 10) {
-        seek(to: max(currentTime - seconds, 0))
+        seek(time: max(currentTime - seconds, 0))
         log("Skipped backward \(Int(seconds))s")
     }
     

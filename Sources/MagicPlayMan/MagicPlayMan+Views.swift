@@ -81,25 +81,20 @@ private struct PlaybackProgressView: View {
     @ObservedObject var playMan: MagicPlayMan
     let style: ProgressStyle
     let showTime: Bool
-
-    // 计算当前进度
-    private var currentProgress: Double {
-        playMan.duration > 0 ? playMan.currentTime / playMan.duration : 0
-    }
-
+    
     var body: some View {
         VStack(spacing: 4) {
             // 进度条
             MagicProgressBar(
-                progress: .init(
-                    get: { currentProgress },
-                    set: { progress in
-                        playMan.seek(to: playMan.duration * progress)
+                currentTime: .init(
+                    get: { playMan.currentTime },
+                    set: { time in
+                        playMan.seek(time: time)
                     }
                 ),
                 duration: playMan.duration,
-                onSeek: { progress in
-                    playMan.seek(to: playMan.duration * progress)
+                onSeek: { time in
+                    playMan.seek(time: time)
                 }
             )
         }

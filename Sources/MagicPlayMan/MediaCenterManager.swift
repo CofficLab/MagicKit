@@ -64,7 +64,7 @@ class MediaCenterManager {
                   let event = event as? MPChangePlaybackPositionCommandEvent else {
                 return .commandFailed
             }
-            playMan.seek(to: event.positionTime / playMan.duration)
+            playMan.seek(time: event.positionTime)
             return .success
         }
     }
