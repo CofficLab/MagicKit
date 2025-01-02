@@ -34,6 +34,7 @@ public class MagicPlayMan: ObservableObject {
     public var player: AVPlayer { _player }
     public var asset: MagicAsset? { self.currentAsset }
     public var playing: Bool { self.state == .playing }
+    public var hasAsset: Bool { self.asset != nil }
 
     /// 初始化播放器
     /// - Parameter cacheDirectory: 自定义缓存目录。如果为 nil，则使用系统默认缓存目录
