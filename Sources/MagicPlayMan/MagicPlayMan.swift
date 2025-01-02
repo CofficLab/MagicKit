@@ -36,6 +36,16 @@ public class MagicPlayMan: ObservableObject {
     public var playing: Bool { self.state == .playing }
     public var hasAsset: Bool { self.asset != nil }
 
+    /// 格式化后的当前播放时间，格式为 "mm:ss" 或 "hh:mm:ss"
+    public var currentTimeForDisplay: String {
+        currentTime.displayFormat
+    }
+    
+    /// 格式化后的总时长，格式为 "mm:ss" 或 "hh:mm:ss"
+    public var durationForDisplay: String {
+        duration.displayFormat
+    }
+
     /// 初始化播放器
     /// - Parameter cacheDirectory: 自定义缓存目录。如果为 nil，则使用系统默认缓存目录
     public init(cacheDirectory: URL? = nil) {
