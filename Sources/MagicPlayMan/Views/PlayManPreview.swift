@@ -120,14 +120,7 @@ public extension MagicPlayMan {
             Group {
                 if let asset = playMan.currentAsset {
                     ZStack {
-                        if asset.type == .video {
-                            playMan.videoView
-                        } else {
-                            AudioContentView(
-                                asset: asset,
-                                artwork: playMan.currentThumbnail
-                            )
-                        }
+                        playMan.makeAssetView()
                         
                         if case .loading(let loadingState) = playMan.state {
                             LoadingOverlay(
@@ -145,7 +138,7 @@ public extension MagicPlayMan {
                         }
                     }
                 } else {
-                    playMan.emptyView
+                    playMan.makeEmptyView()
                 }
             }
         }
@@ -301,7 +294,7 @@ public extension MagicPlayMan {
 // MARK: - Preview
 #Preview("MagicPlayMan") {
     MagicPlayMan.PreviewView()
-        .frame(width: 650, height: 500)
+        .frame(width: 650, height: 800)
         .background(.background)
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .shadow(radius: 5)

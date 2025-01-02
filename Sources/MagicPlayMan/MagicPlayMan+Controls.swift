@@ -53,18 +53,27 @@ public extension MagicPlayMan {
     /// 跳转到指定进度
     /// - Parameter progress: 目标进度，范围 0-1
     func seek(to progress: Double) {
-        guard hasAsset else { return }
+        guard hasAsset else { 
+            log("Cannot seek: no asset loaded", level: .warning)
+            return 
+        }
         
         let targetTime = duration * progress
-        seek(to: targetTime)
+
+        log("Seeking to \(Int(targetTime))s")
+        seek(time: targetTime)
     }
     
     /// 跳转到指定时间
     /// - Parameter time: 目标时间（秒）
     func seek(time: TimeInterval) {
-        guard hasAsset else { return }
+        guard hasAsset else { 
+            log("Cannot seek: no asset loaded", level: .warning)
+            return 
+        }
         
         let targetTime = CMTime(seconds: time, preferredTimescale: 600)
+        log("Seeking to \(Int(time))s")
         _player.seek(to: targetTime) { [weak self] finished in
             guard let self = self, finished else { return }
             self.currentTime = time

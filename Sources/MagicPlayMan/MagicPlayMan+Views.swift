@@ -1,17 +1,17 @@
-import SwiftUI
 import MagicUI
+import SwiftUI
 
 public extension MagicPlayMan {
     /// 创建播放状态视图
     func makeStateView() -> some View {
         state.makeStateView(assetTitle: currentAsset?.title)
     }
-    
+
     /// 创建日志视图
     func makeLogView() -> some View {
         logger.makeLogView()
     }
-    
+
     /// 创建播放列表视图
     func makePlaylistView() -> some View {
         playlist.makeListView(
@@ -26,30 +26,19 @@ public extension MagicPlayMan {
             }
         )
     }
-    
-    /// 视频播放视图
-    var videoView: some View {
-        VideoPlayerView(player: player)
-            .opacity(currentAsset?.type == .video ? 1 : 0)
+
+    func makeAssetView() -> some View {
+        return Group {
+            if currentAsset == nil {
+                makeEmptyView()
+            } else if currentAsset?.type == .video {
+                makeVideoView()
+            } else {
+                makeAudioView()
+            }
+        }
     }
-    
-    /// 音频播放视图
-    var audioView: some View {
-        MagicAudioView(
-            title: currentAsset?.metadata.title ?? "No Title",
-            artist: currentAsset?.metadata.artist
-        )
-        .opacity(currentAsset?.type == .audio ? 1 : 0)
-    }
-    
-    /// 空状态视图
-    var emptyView: some View {
-        MagicAudioView(
-            title: "No Media Selected",
-            artist: "Select a media file to play"
-        )
-    }
-    
+
     /// 创建播放进度条视图
     /// - Parameters:
     ///   - style: 进度条样式
@@ -68,11 +57,12 @@ public extension MagicPlayMan {
 }
 
 // MARK: - Progress Style
+
 public enum ProgressStyle {
     case `default`
     case compact
     case minimal
-    
+
     var height: CGFloat {
         switch self {
         case .default:
@@ -86,16 +76,17 @@ public enum ProgressStyle {
 }
 
 // MARK: - Playback Progress View
+
 private struct PlaybackProgressView: View {
     @ObservedObject var playMan: MagicPlayMan
     let style: ProgressStyle
     let showTime: Bool
-    
+
     // 计算当前进度
     private var currentProgress: Double {
         playMan.duration > 0 ? playMan.currentTime / playMan.duration : 0
     }
-    
+
     var body: some View {
         VStack(spacing: 4) {
             // 进度条
@@ -116,13 +107,14 @@ private struct PlaybackProgressView: View {
 }
 
 // MARK: - Preview
+
 #Preview("MagicPlayMan Views") {
     ViewsPreview()
 }
 
 private struct ViewsPreview: View {
     @StateObject private var playMan = MagicPlayMan()
-    
+
     var body: some View {
         VStack(spacing: 20) {
             // 状态视图
@@ -131,7 +123,7 @@ private struct ViewsPreview: View {
                     .font(.headline)
                 playMan.makeStateView()
             }
-            
+
             // 播放列表视图
             Group {
                 Text("Playlist View")
@@ -139,21 +131,15 @@ private struct ViewsPreview: View {
                 playMan.makePlaylistView()
                     .frame(height: 200)
             }
-            
+
             // 音频/视频视图
             Group {
                 Text("Media View")
                     .font(.headline)
-                if playMan.currentAsset == nil {
-                    playMan.emptyView
-                } else if playMan.currentAsset?.type == .video {
-                    playMan.videoView
-                } else {
-                    playMan.audioView
-                }
+                playMan.makeAssetView()
             }
             .frame(height: 200)
-            
+
             // 日志视图
             Group {
                 Text("Log View")
@@ -179,13 +165,13 @@ private struct ViewsPreview: View {
             .makeProgressView()
             .padding()
             .background(.background)
-        
+
         // 紧凑样式
         MagicPlayMan()
             .makeProgressView(style: .compact)
             .padding()
             .background(.background)
-        
+
         // 最小样式
         MagicPlayMan()
             .makeProgressView(style: .minimal, showTime: false)
@@ -193,4 +179,4 @@ private struct ViewsPreview: View {
             .background(.background)
     }
     .padding()
-} 
+}
