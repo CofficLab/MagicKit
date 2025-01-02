@@ -4,77 +4,91 @@ import MagicUI
 public extension MagicPlayMan {
     /// 创建播放/暂停按钮
     func makePlayPauseButton() -> some View {
-        MagicPlayerButton(
+        MagicButton(
             icon: state == .playing ? "pause.fill" : "play.fill",
-            size: 50,
-            iconSize: 20,
-            isActive: state == .playing,
+            style: state == .playing ? .primary : .secondary,
+            size: .large,
+            shape: .circle,
+            disabledReason: !hasAsset ? "No media loaded" : 
+                           state.isLoading ? "Loading..." : nil,
             action: toggle
         )
-        .disabled(!hasAsset || state.isLoading)
     }
     
     /// 创建上一曲按钮
     func makePreviousButton() -> some View {
-        MagicPlayerButton(
+        MagicButton(
             icon: "backward.end.fill",
-            size: 40,
-            iconSize: 15,
+            style: .secondary,
+            size: .regular,
+            shape: .circle,
+            disabledReason: !hasAsset ? "No media loaded" :
+                           currentIndex <= 0 ? "This is the first track" : nil,
             action: previous
         )
-        .disabled(!hasAsset || currentIndex <= 0)
     }
     
     /// 创建下一曲按钮
     func makeNextButton() -> some View {
-        MagicPlayerButton(
+        MagicButton(
             icon: "forward.end.fill",
-            size: 40,
-            iconSize: 15,
+            style: .secondary,
+            size: .regular,
+            shape: .circle,
+            disabledReason: !hasAsset ? "No media loaded" :
+                           currentIndex >= items.count - 1 ? "This is the last track" : nil,
             action: next
         )
-        .disabled(!hasAsset || currentIndex >= items.count - 1)
     }
     
     /// 创建快退按钮
     func makeRewindButton() -> some View {
-        MagicPlayerButton(
+        MagicButton(
             icon: "gobackward.10",
-            size: 40,
-            iconSize: 15,
-            action: { self.skipBackward() }
+            style: .secondary,
+            size: .regular,
+            shape: .circle,
+            disabledReason: !hasAsset ? "No media loaded" :
+                           state.isLoading ? "Loading..." : nil,
+            action: {
+                self.skipBackward()
+            }
         )
-        .disabled(!hasAsset || state.isLoading)
     }
     
     /// 创建快进按钮
     func makeForwardButton() -> some View {
-        MagicPlayerButton(
+        MagicButton(
             icon: "goforward.10",
-            size: 40,
-            iconSize: 15,
-            action: { self.skipForward() }
+            style: .secondary,
+            size: .regular,
+            shape: .circle,
+            disabledReason: !hasAsset ? "No media loaded" :
+                           state.isLoading ? "Loading..." : nil,
+            action: {
+                self.skipForward()
+            }
         )
-        .disabled(!hasAsset || state.isLoading)
     }
     
     /// 创建播放模式按钮
     func makePlayModeButton() -> some View {
-        MagicPlayerButton(
+        MagicButton(
             icon: playMode.iconName,
-            size: 40,
-            iconSize: 15,
-            isActive: playMode != .sequence,
+            style: playMode != .sequence ? .primary : .secondary,
+            size: .regular,
+            shape: .circle,
             action: togglePlayMode
         )
     }
     
     /// 创建播放列表按钮
     func makePlaylistButton(isPresented: Binding<Bool>) -> some View {
-        MagicPlayerButton(
+        MagicButton(
             icon: "list.bullet",
-            size: 40,
-            iconSize: 15,
+            style: .secondary,
+            size: .regular,
+            shape: .circle,
             action: { isPresented.wrappedValue.toggle() }
         )
     }

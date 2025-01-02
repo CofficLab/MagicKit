@@ -23,7 +23,7 @@ struct PlaybackControls: View {
             Spacer()
             
             // 占位，保持对称
-            MagicPlayerButton(
+            MagicButton(
                 icon: "placeholder", action: {}
             )
             .opacity(0)

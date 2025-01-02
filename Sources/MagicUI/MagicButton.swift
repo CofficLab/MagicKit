@@ -22,9 +22,11 @@ public struct MagicButton: View {
     let style: Style
     let size: Size
     let shape: Shape
+    let disabledReason: String?
     let action: () -> Void
     @State private var isHovering = false
     @Environment(\.colorScheme) private var colorScheme
+    @State private var showingDisabledPopover = false
     
     public init(
         icon: String,
@@ -32,6 +34,7 @@ public struct MagicButton: View {
         style: Style = .primary,
         size: Size = .regular,
         shape: Shape = .circle,
+        disabledReason: String? = nil,
         action: @escaping () -> Void
     ) {
         self.icon = icon
@@ -39,11 +42,18 @@ public struct MagicButton: View {
         self.style = style
         self.size = size
         self.shape = shape
+        self.disabledReason = disabledReason
         self.action = action
     }
     
     public var body: some View {
-        Button(action: action) {
+        Button(action: {
+            if disabledReason != nil {
+                showingDisabledPopover = true
+            } else {
+                action()
+            }
+        }) {
             HStack(spacing: 4) {
                 Image(systemName: icon)
                     .font(.system(size: iconSize))
@@ -60,10 +70,18 @@ public struct MagicButton: View {
             .background(buttonShape)
             .scaleEffect(isHovering ? 1.05 : 1.0)
             .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isHovering)
+            .opacity(disabledReason != nil ? 0.5 : 1.0)
         }
         .buttonStyle(MagicButtonStyle())
         .onHover { hovering in
-            isHovering = hovering
+            isHovering = hovering && disabledReason == nil
+        }
+        .popover(isPresented: $showingDisabledPopover, arrowEdge: .top) {
+            if let reason = disabledReason {
+                Text(reason)
+                    .font(.callout)
+                    .padding()
+            }
         }
     }
     
@@ -143,6 +161,9 @@ public struct MagicButton: View {
     }
     
     private var foregroundColor: Color {
+        if disabledReason != nil {
+            return .gray
+        }
         switch style {
         case .primary:
             return isHovering ? .white : .accentColor
@@ -152,6 +173,9 @@ public struct MagicButton: View {
     }
     
     private var backgroundColor: Color {
+        if disabledReason != nil {
+            return Color.gray.opacity(0.1)
+        }
         switch style {
         case .primary:
             return isHovering ? .accentColor : .accentColor.opacity(0.1)
@@ -194,7 +218,8 @@ private struct MagicButtonStyle: ButtonStyle {
                             title: "Play",
                             style: .primary,
                             size: .regular,
-                            shape: .circle,
+                            shape: .capsule,
+                            disabledReason: nil,
                             action: {}
                         )
                         
@@ -203,7 +228,8 @@ private struct MagicButtonStyle: ButtonStyle {
                             title: "Clear",
                             style: .secondary,
                             size: .small,
-                            shape: .circle,
+                            shape: .capsule,
+                            disabledReason: "Cannot clear",
                             action: {}
                         )
                     }
@@ -222,7 +248,8 @@ private struct MagicButtonStyle: ButtonStyle {
                             title: "Play",
                             style: .primary,
                             size: .regular,
-                            shape: .circle,
+                            shape: .capsule,
+                            disabledReason: nil,
                             action: {}
                         )
                         
@@ -231,7 +258,8 @@ private struct MagicButtonStyle: ButtonStyle {
                             title: "Clear",
                             style: .secondary,
                             size: .small,
-                            shape: .circle,
+                            shape: .capsule,
+                            disabledReason: "Cannot clear",
                             action: {}
                         )
                     }
