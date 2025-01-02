@@ -1,5 +1,5 @@
-import SwiftUI
 import MagicUI
+import SwiftUI
 
 public extension MagicPlayMan {
     /// 创建播放/暂停按钮
@@ -9,12 +9,12 @@ public extension MagicPlayMan {
             style: state == .playing ? .primary : .secondary,
             size: .large,
             shape: .circle,
-            disabledReason: !hasAsset ? "No media loaded" : 
-                           state.isLoading ? "Loading..." : nil,
+            disabledReason: !hasAsset ? "No media loaded" :
+                state.isLoading ? "Loading..." : nil,
             action: toggle
         )
     }
-    
+
     /// 创建上一曲按钮
     func makePreviousButton() -> some View {
         MagicButton(
@@ -23,11 +23,11 @@ public extension MagicPlayMan {
             size: .regular,
             shape: .circle,
             disabledReason: !hasAsset ? "No media loaded" :
-                           currentIndex <= 0 ? "This is the first track" : nil,
+                currentIndex <= 0 ? "This is the first track" : nil,
             action: previous
         )
     }
-    
+
     /// 创建下一曲按钮
     func makeNextButton() -> some View {
         MagicButton(
@@ -36,11 +36,11 @@ public extension MagicPlayMan {
             size: .regular,
             shape: .circle,
             disabledReason: !hasAsset ? "No media loaded" :
-                           currentIndex >= items.count - 1 ? "This is the last track" : nil,
+                currentIndex >= items.count - 1 ? "This is the last track" : nil,
             action: next
         )
     }
-    
+
     /// 创建快退按钮
     func makeRewindButton() -> some View {
         MagicButton(
@@ -49,13 +49,13 @@ public extension MagicPlayMan {
             size: .regular,
             shape: .circle,
             disabledReason: !hasAsset ? "No media loaded" :
-                           state.isLoading ? "Loading..." : nil,
+                state.isLoading ? "Loading..." : nil,
             action: {
                 self.skipBackward()
             }
         )
     }
-    
+
     /// 创建快进按钮
     func makeForwardButton() -> some View {
         MagicButton(
@@ -64,13 +64,13 @@ public extension MagicPlayMan {
             size: .regular,
             shape: .circle,
             disabledReason: !hasAsset ? "No media loaded" :
-                           state.isLoading ? "Loading..." : nil,
+                state.isLoading ? "Loading..." : nil,
             action: {
                 self.skipForward()
             }
         )
     }
-    
+
     /// 创建播放模式按钮
     func makePlayModeButton() -> some View {
         MagicButton(
@@ -81,20 +81,44 @@ public extension MagicPlayMan {
             action: togglePlayMode
         )
     }
-    
+
     /// 创建播放列表按钮
-    func makePlaylistButton(isPresented: Binding<Bool>) -> some View {
+    func makePlaylistButton() -> some View {
         MagicButton(
             icon: "list.bullet",
             style: .secondary,
             size: .regular,
             shape: .circle,
-            action: { isPresented.wrappedValue.toggle() }
+            popoverContent: AnyView(
+                ZStack {
+                    self.makePlaylistView()
+                        .frame(width: 300, height: 400)
+                        .padding()
+                }
+            ),
+            action: {}
+        )
+    }
+
+    /// 创建支持的格式按钮
+    func makeSupportedFormatsButton() -> some View {
+        MagicButton(
+            icon: "music.note",
+            style: .secondary,
+            size: .regular,
+            shape: .circle,
+            popoverContent: AnyView(
+                FormatInfoView(
+                    formats: SupportedFormat.allFormats
+                )
+            ),
+            action: {}
         )
     }
 }
 
 // MARK: - Preview
+
 #Preview("MagicPlayMan") {
     MagicPlayMan.PreviewView()
         .frame(width: 650, height: 800)
@@ -103,4 +127,3 @@ public extension MagicPlayMan {
         .shadow(radius: 5)
         .padding()
 }
-

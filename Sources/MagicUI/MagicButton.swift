@@ -23,6 +23,7 @@ public struct MagicButton: View {
     let size: Size
     let shape: Shape
     let disabledReason: String?
+    let popoverContent: AnyView?
     let action: () -> Void
     @State private var isHovering = false
     @Environment(\.colorScheme) private var colorScheme
@@ -35,6 +36,7 @@ public struct MagicButton: View {
         size: Size = .regular,
         shape: Shape = .circle,
         disabledReason: String? = nil,
+        popoverContent: AnyView? = nil,
         action: @escaping () -> Void
     ) {
         self.icon = icon
@@ -43,6 +45,7 @@ public struct MagicButton: View {
         self.size = size
         self.shape = shape
         self.disabledReason = disabledReason
+        self.popoverContent = popoverContent
         self.action = action
     }
     
@@ -50,6 +53,8 @@ public struct MagicButton: View {
         Button(action: {
             if disabledReason != nil {
                 showingDisabledPopover = true
+            } else if popoverContent != nil {
+                showingDisabledPopover.toggle()
             } else {
                 action()
             }
@@ -81,6 +86,8 @@ public struct MagicButton: View {
                 Text(reason)
                     .font(.callout)
                     .padding()
+            } else if let content = popoverContent {
+                content
             }
         }
     }
@@ -205,34 +212,63 @@ private struct MagicButtonStyle: ButtonStyle {
 }
 
 #Preview("MagicButton") {
+    struct ButtonGroup: View {
+        var body: some View {
+            VStack(spacing: 12) {
+                MagicButton(
+                    icon: "play.fill",
+                    title: "Play",
+                    style: .primary,
+                    size: .regular,
+                    shape: .capsule,
+                    disabledReason: nil,
+                    popoverContent: nil,
+                    action: {}
+                )
+                
+                MagicButton(
+                    icon: "trash",
+                    title: "Clear",
+                    style: .secondary,
+                    size: .small,
+                    shape: .capsule,
+                    disabledReason: "Cannot clear",
+                    popoverContent: nil,
+                    action: {}
+                )
+                
+                MagicButton(
+                    icon: "info.circle",
+                    title: "Info",
+                    style: .primary,
+                    size: .regular,
+                    shape: .capsule,
+                    popoverContent: AnyView(
+                        VStack(spacing: 8) {
+                            Text("Custom Popover")
+                                .font(.headline)
+                            Text("This is a custom popover content example")
+                                .font(.body)
+                                .multilineTextAlignment(.center)
+                            Image(systemName: "star.fill")
+                                .foregroundStyle(.yellow)
+                        }
+                        .padding()
+                        .frame(width: 200)
+                    ),
+                    action: {}
+                )
+            }
+        }
+    }
+    
     struct PreviewWrapper: View {
         var body: some View {
             HStack {
                 VStack(spacing: 20) {
                     Text("Light Mode")
                         .font(.headline)
-                    
-                    VStack(spacing: 12) {
-                        MagicButton(
-                            icon: "play.fill",
-                            title: "Play",
-                            style: .primary,
-                            size: .regular,
-                            shape: .capsule,
-                            disabledReason: nil,
-                            action: {}
-                        )
-                        
-                        MagicButton(
-                            icon: "trash",
-                            title: "Clear",
-                            style: .secondary,
-                            size: .small,
-                            shape: .capsule,
-                            disabledReason: "Cannot clear",
-                            action: {}
-                        )
-                    }
+                    ButtonGroup()
                 }
                 .padding()
                 .background(.background)
@@ -241,34 +277,12 @@ private struct MagicButtonStyle: ButtonStyle {
                 VStack(spacing: 20) {
                     Text("Dark Mode")
                         .font(.headline)
-                    
-                    VStack(spacing: 12) {
-                        MagicButton(
-                            icon: "play.fill",
-                            title: "Play",
-                            style: .primary,
-                            size: .regular,
-                            shape: .capsule,
-                            disabledReason: nil,
-                            action: {}
-                        )
-                        
-                        MagicButton(
-                            icon: "trash",
-                            title: "Clear",
-                            style: .secondary,
-                            size: .small,
-                            shape: .capsule,
-                            disabledReason: "Cannot clear",
-                            action: {}
-                        )
-                    }
+                    ButtonGroup()
                 }
                 .padding()
                 .background(.background)
                 .environment(\.colorScheme, .dark)
             }
-            .previewLayout(.sizeThatFits)
         }
     }
     

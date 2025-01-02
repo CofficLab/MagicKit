@@ -11,7 +11,6 @@ public extension MagicPlayMan {
         @StateObject private var playMan: MagicPlayMan
         @State private var selectedSampleName: String?
         @State private var showPlaylist = false
-        @State private var showFormats = false
         @State var showLogs: Bool
 
         @State private var toast: (message: String, icon: String, style: MagicToast.Style)?
@@ -30,6 +29,8 @@ public extension MagicPlayMan {
 
         public var body: some View {
             VStack(spacing: 0) {
+                // MARK: Toolbar
+
                 toolbarView
 
                 ZStack {
@@ -43,20 +44,17 @@ public extension MagicPlayMan {
                             }
                         }
 
-                        controlsView
+                        // MARK: Control
+
+                        GroupBox {
+                            controlsView
+                        }.padding()
 
                         // MARK: Bottom
 
                         GroupBox {
                             bottomView
                         }.padding()
-                    }
-
-                    if showFormats {
-                        FormatInfoView(
-                            formats: SupportedFormat.allFormats,
-                            onDismiss: { showFormats = false }
-                        )
                     }
                 }
                 .overlay(alignment: .top) {
@@ -72,8 +70,6 @@ public extension MagicPlayMan {
             }
             .animation(.spring(response: 0.3, dampingFraction: 0.8), value: showPlaylist)
         }
-
-        // MARK: - Subviews
 
         private var toolbarView: some View {
             HStack {
@@ -93,29 +89,14 @@ public extension MagicPlayMan {
 
                 Spacer()
 
-                playMan.playMode.indicator
-                    .foregroundStyle(.secondary)
-
                 HStack {
-                    playMan.makePlaylistButton(isPresented: $showPlaylist)
-                        .popover(isPresented: $showPlaylist) {
-                            playMan.makePlaylistView()
-                                .frame(width: 300, height: 400)
-                                .padding()
-                        }
+                    playMan.makePlaylistButton()
+                    playMan.makeSupportedFormatsButton()
 
                     MagicButton(
-                        icon: "info.circle",
+                        icon: "apple.terminal",
                         style: .secondary,
-                        size: .small,
-                        shape: .circle,
-                        action: { showFormats = true }
-                    )
-
-                    MagicButton(
-                        icon: "list.bullet",
-                        style: .secondary,
-                        size: .small,
+                        size: .regular,
                         shape: .circle,
                         action: { showLogs.toggle() }
                     )
@@ -162,7 +143,31 @@ public extension MagicPlayMan {
         private var controlsView: some View {
             VStack(spacing: 16) {
                 playMan.makeProgressView()
-                PlaybackControls(playMan: playMan)
+
+                HStack(spacing: 16) {
+                    // 播放模式按钮
+                    playMan.makePlayModeButton()
+
+                    Spacer()
+
+                    // 主控制按钮组
+                    HStack(spacing: 16) {
+                        playMan.makePreviousButton()
+                        playMan.makeRewindButton()
+                        playMan.makePlayPauseButton()
+                        playMan.makeForwardButton()
+                        playMan.makeNextButton()
+                    }
+
+                    Spacer()
+
+                    // 占位，保持对称
+                    MagicButton(
+                        icon: "placeholder", action: {}
+                    )
+                    .opacity(0)
+                }
+                .padding(.horizontal)
             }
             .padding()
             .background(.ultraThinMaterial)
