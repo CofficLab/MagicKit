@@ -12,11 +12,6 @@ public class MagicPlayMan: ObservableObject {
     public let cache: AssetCache?
     public var downloadTask: URLSessionDataTask?
     internal var nowPlayingInfo: [String: Any] = [:]
-    private lazy var mediaCenterManager: MediaCenterManager = {
-        let manager = MediaCenterManager(playMan: self)
-        return manager
-    }()
-    
     public let playlist = Playlist()
     
     @Published public var items: [MagicAsset] = []
@@ -169,15 +164,6 @@ public class MagicPlayMan: ObservableObject {
                 if let isEmpty = isEmpty {
                     self?.isBuffering = isEmpty
                 }
-            }
-            .store(in: &cancellables)
-
-        // 更新播放进度
-        $currentTime
-            .throttle(for: .seconds(1), scheduler: DispatchQueue.main, latest: true)
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] time in
-                self?.mediaCenterManager.updatePlaybackTime(time)
             }
             .store(in: &cancellables)
             
