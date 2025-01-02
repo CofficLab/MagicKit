@@ -153,26 +153,7 @@ public extension MagicPlayMan {
         private var controlsView: some View {
             VStack(spacing: 16) {
                 playMan.makeProgressView()
-                PlaybackControls(
-                    isPlaying: playMan.state == .playing,
-                    hasAsset: playMan.hasAsset,
-                    isLoading: playMan.state.isLoading,
-                    canSeek: playMan.hasAsset && !playMan.state.isLoading,
-                    playMode: playMan.playMode,
-                    onPlayPause: playMan.toggle,
-                    onSkipForward: { playMan.skipForward() },
-                    onSkipBackward: { playMan.skipBackward() },
-                    onNext: playMan.next,
-                    onPrevious: playMan.previous,
-                    onTogglePlayMode: {
-                        playMan.togglePlayMode()
-                        showToast(
-                            playMan.playMode.displayName,
-                            icon: playMan.playMode.iconName,
-                            style: .info
-                        )
-                    }
-                )
+                PlaybackControls(playMan: playMan)
             }
             .padding()
             .background(.ultraThinMaterial)
