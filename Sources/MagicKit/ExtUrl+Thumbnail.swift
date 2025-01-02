@@ -21,7 +21,7 @@ extension URL {
             return try await folderThumbnail(size: size)
         }
         
-        if isImage() {
+        if isImage {
             return try await imageThumbnail(size: size)
         }
         

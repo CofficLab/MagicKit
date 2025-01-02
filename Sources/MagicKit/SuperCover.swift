@@ -134,7 +134,7 @@ public extension SuperCover {
 
     private func getCoverData(verbose: Bool = false) async throws -> Data? {
         guard isDownloaded
-            && url.isFileExist()
+            && url.isFileExist
             && !isFolder()
             && !isImage
             && !isJSON

@@ -6,30 +6,30 @@ import MagicUI
 import MediaPlayer
 
 public class MagicPlayMan: ObservableObject {
-    private let _player = AVPlayer()
+    internal let _player = AVPlayer()
     private var timeObserver: Any?
-    private var cancellables = Set<AnyCancellable>()
-    private let cache: AssetCache?
-    private var downloadTask: URLSessionDataTask?
-    private var nowPlayingInfo: [String: Any] = [:]
+    public var cancellables = Set<AnyCancellable>()
+    public let cache: AssetCache?
+    public var downloadTask: URLSessionDataTask?
+    internal var nowPlayingInfo: [String: Any] = [:]
     private lazy var mediaCenterManager: MediaCenterManager = {
         let manager = MediaCenterManager(playMan: self)
         return manager
     }()
     
-    private let playlist = Playlist()
+    public let playlist = Playlist()
     
     @Published public private(set) var items: [MagicAsset] = []
     @Published public private(set) var currentIndex: Int = -1
     @Published public private(set) var playMode: MagicPlayMode = .sequence
-    @Published public private(set) var currentAsset: MagicAsset?
-    @Published public private(set) var state: PlaybackState = .idle
-    @Published public private(set) var currentTime: TimeInterval = 0
-    @Published public private(set) var duration: TimeInterval = 0
-    @Published public private(set) var isBuffering = false
-    @Published public private(set) var progress: Double = 0
-    @Published public private(set) var logs: [PlaybackLog] = []
-    @Published public private(set) var currentThumbnail: Image?
+    @Published public var currentAsset: MagicAsset?
+    @Published public var state: PlaybackState = .idle
+    @Published public var currentTime: TimeInterval = 0
+    @Published public var duration: TimeInterval = 0
+    @Published public var isBuffering = false
+    @Published public var progress: Double = 0
+    @Published public var logs: [PlaybackLog] = []
+    @Published public var currentThumbnail: Image?
 
     public var player: AVPlayer { _player }
     public var asset: MagicAsset? { self.currentAsset }
@@ -46,7 +46,12 @@ public class MagicPlayMan: ObservableObject {
         duration.displayFormat
     }
 
-    private let logger = PlayLogger()
+    public let logger = PlayLogger()
+
+    /// 支持的媒体格式
+    public var supportedFormats: [SupportedFormat] {
+        SupportedFormat.allFormats
+    }
 
     /// 初始化播放器
     /// - Parameter cacheDirectory: 自定义缓存目录。如果为 nil，则使用系统默认缓存目录
@@ -172,46 +177,6 @@ public class MagicPlayMan: ObservableObject {
                 self?.mediaCenterManager.updatePlaybackTime(time)
             }
             .store(in: &cancellables)
-    }
-
-    public func load(asset: MagicAsset) {
-        log("Loading asset: \(asset.title)")
-        
-        // 停止当前播放
-        stop()
-        
-        currentAsset = asset
-        state = .loading(.connecting)
-        updateNowPlayingInfo()
-        
-        // 加载缩略图
-        loadThumbnail(for: asset)
-        
-        // 检查缓存
-        if let cachedURL = cache?.cachedURL(for: asset.url) {
-            // 验证缓存文件
-            if cache?.validateCache(for: asset.url) == true {
-                log("Loading asset from cache")
-                loadFromURL(cachedURL)
-            } else {
-                log("Cached file is invalid, removing and redownloading", level: .warning)
-                cache?.removeCached(asset.url)
-                if isSampleAsset(asset) {
-                    downloadAndCache(asset)
-                } else {
-                    loadFromURL(asset.url)
-                }
-            }
-            return
-        }
-
-        // 如果是示例资源，则下载并缓存
-        if isSampleAsset(asset) {
-            downloadAndCache(asset)
-        } else {
-            // 非示例资源直接加载
-            loadFromURL(asset.url)
-        }
     }
 
     private func loadFromURL(_ url: URL) {
@@ -410,258 +375,6 @@ public class MagicPlayMan: ObservableObject {
         SupportedFormat.allSamples.contains { $0.asset.url == asset.url }
     }
 
-    public func play() {
-        guard state != .playing else { return }
-
-        if currentAsset == nil {
-            state = .failed(.noAsset)
-            log("Attempted to play with no asset loaded", level: .error)
-            return
-        }
-
-        log("Starting playback")
-        _player.play()
-        state = .playing
-        mediaCenterManager.updateNowPlayingInfo(
-            asset: currentAsset,
-            state: state,
-            currentTime: currentTime,
-            duration: duration
-        )
-    }
-
-    public func pause() {
-        guard state == .playing else { return }
-        log("Pausing playback")
-        _player.pause()
-        state = .paused
-        mediaCenterManager.updateNowPlayingInfo(
-            asset: currentAsset,
-            state: state,
-            currentTime: currentTime,
-            duration: duration
-        )
-    }
-
-    public func stop() {
-        _player.pause()
-        seek(to: 0)
-        state = .stopped
-        mediaCenterManager.updateNowPlayingInfo(
-            asset: currentAsset,
-            state: state,
-            currentTime: currentTime,
-            duration: duration
-        )
-    }
-
-    public func seek(_ time: TimeInterval) {
-        let cmTime = CMTime(seconds: time, preferredTimescale: 600)
-        _player.seek(to: cmTime)
-    }
-
-    public func seek(to progress: Double) {
-        let time = duration * progress
-        let cmTime = CMTime(seconds: time, preferredTimescale: 600)
-        _player.seek(to: cmTime)
-    }
-
-    public func skipForward(by seconds: TimeInterval = 10) {
-        let targetTime = min(currentTime + seconds, duration)
-        seek(to: targetTime / duration)
-    }
-
-    public func skipBackward(by seconds: TimeInterval = 10) {
-        let targetTime = max(currentTime - seconds, 0)
-        seek(to: targetTime / duration)
-    }
-
-    /// 切换播放状态
-    /// 如果当前正在播放则暂停，如果当前已暂停则开始播放
-    public func toggle() {
-        switch state {
-        case .playing:
-            pause()
-        case .paused, .stopped:
-            play()
-        case .loading, .failed, .idle:
-            // 在这些状态下不执行任何操作
-            log("Cannot toggle playback in current state: \(state)", level: .warning)
-            break
-        }
-    }
-
-    deinit {
-        downloadTask?.cancel()
-        if let timeObserver = timeObserver {
-            _player.removeTimeObserver(timeObserver)
-        }
-        cancellables.removeAll()
-        mediaCenterManager.cleanup()
-    }
-
-    /// 记录日志
-    public func log(_ message: String, level: PlaybackLog.Level = .info) {
-        logger.log(message, level: level)
-    }
-    
-    /// 清空日志
-    public func clearLogs() {
-        logger.clear()
-    }
-    
-    /// 创建日志视图
-    public func makeLogView() -> some View {
-        logger.makeLogView()
-    }
-
-    // 视频视图
-    @ViewBuilder
-    public var videoView: some View {
-        if let asset = currentAsset, asset.type == .video {
-            VideoPlayerView(player: player)
-        } else {
-            EmptyView()
-        }
-    }
-    
-    // 音频视图
-    @ViewBuilder
-    public var audioView: some View {
-        if let asset = currentAsset, asset.type == .audio {
-            MagicAudioView(
-                title: asset.metadata.title,
-                artist: asset.metadata.artist
-            )
-        } else {
-            EmptyView()
-        }
-    }
-    
-    // 空状态视图
-    @ViewBuilder
-    public var emptyView: some View {
-        MagicAudioView(
-            title: "No Media Selected",
-            artist: "Select a media file to play"
-        )
-    }
-
-    /// 获取支持的格式列表
-    public var supportedFormats: [SupportedFormat] {
-        SupportedFormat.allFormats
-    }
-
-    private func setupRemoteControl() {
-        #if os(iOS)
-        // 请求音频会话
-        try? AVAudioSession.sharedInstance().setCategory(.playback)
-        try? AVAudioSession.sharedInstance().setActive(true)
-        #endif
-
-        // 设置远程控制事件接收
-        let commandCenter = MPRemoteCommandCenter.shared()
-        
-        // 播放/暂停
-        commandCenter.playCommand.addTarget { [weak self] _ in
-            guard let self = self else { return .commandFailed }
-            if self.state != .playing {
-                self.play()
-                return .success
-            }
-            return .commandFailed
-        }
-        
-        commandCenter.pauseCommand.addTarget { [weak self] _ in
-            guard let self = self else { return .commandFailed }
-            if self.state == .playing {
-                self.pause()
-                return .success
-            }
-            return .commandFailed
-        }
-        
-        // 快进/快退
-        commandCenter.skipForwardCommand.addTarget { [weak self] _ in
-            guard let self = self else { return .commandFailed }
-            self.skipForward()
-            return .success
-        }
-        
-        commandCenter.skipBackwardCommand.addTarget { [weak self] _ in
-            guard let self = self else { return .commandFailed }
-            self.skipBackward()
-            return .success
-        }
-        
-        // 进度控制
-        commandCenter.changePlaybackPositionCommand.addTarget { [weak self] event in
-            guard let self = self,
-                  let event = event as? MPChangePlaybackPositionCommandEvent else {
-                return .commandFailed
-            }
-            self.seek(to: event.positionTime / self.duration)
-            return .success
-        }
-    }
-    
-    private func updateNowPlayingInfo() {
-        guard let asset = currentAsset else {
-            MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
-            return
-        }
-        
-        var info: [String: Any] = [
-            MPMediaItemPropertyTitle: asset.metadata.title,
-            MPMediaItemPropertyPlaybackDuration: duration,
-            MPNowPlayingInfoPropertyElapsedPlaybackTime: currentTime,
-            MPNowPlayingInfoPropertyPlaybackRate: state == .playing ? 1.0 : 0.0
-        ]
-        
-        if let artist = asset.metadata.artist {
-            info[MPMediaItemPropertyArtist] = artist
-        }
-        
-        // 设置媒体类型
-        info[MPMediaItemPropertyMediaType] = asset.type == .audio ? 
-            MPMediaType.music.rawValue : MPMediaType.movie.rawValue
-        
-        // 如果是视频，可以添加缩略图
-        if asset.type == .video {
-            Task {
-                if let image = try? await generateThumbnail() {
-                    info[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(
-                        boundsSize: image.size,
-                        requestHandler: { _ in image }
-                    )
-                    DispatchQueue.main.async {
-                        MPNowPlayingInfoCenter.default().nowPlayingInfo = info
-                    }
-                }
-            }
-        }
-        
-        MPNowPlayingInfoCenter.default().nowPlayingInfo = info
-        self.nowPlayingInfo = info
-    }
-    
-    private func generateThumbnail() async throws -> NSImage? {
-        guard let asset = currentAsset,
-              asset.type == .video else { return nil }
-        
-        let generator = AVAssetImageGenerator(asset: AVAsset(url: asset.url))
-        generator.appliesPreferredTrackTransform = true
-        
-        let time = CMTime(seconds: 0, preferredTimescale: 600)
-        let cgImage = try generator.copyCGImage(at: time, actualTime: nil)
-        
-        #if os(macOS)
-        return NSImage(cgImage: cgImage, size: .zero)
-        #else
-        return UIImage(cgImage: cgImage)
-        #endif
-    }
-
     public func play(_ asset: MagicAsset, reason: String, verbose: Bool = false) {
         if verbose {
             log("Playing asset: \(asset.metadata.title) (reason: \(reason))")
@@ -728,8 +441,7 @@ public class MagicPlayMan: ObservableObject {
         playlist.move(from: from, to: to)
     }
 
-    // 添加 Toast 显示方法
-    private func showToast(_ message: String, icon: String, style: MagicToast.Style) {
+    public func showToast(_ message: String, icon: String, style: MagicToast.Style) {
         NotificationCenter.default.post(
             name: .showToast,
             object: nil,
@@ -751,31 +463,9 @@ public class MagicPlayMan: ObservableObject {
             }
         }
     }
-    
-    /// 手动刷新当前资源的缩略图
-    public func reloadThumbnail() {
-        guard let asset = currentAsset else { return }
-        loadThumbnail(for: asset)
-    }
 
-    /// 创建播放列表视图
-    public func makePlaylistView() -> some View {
-        playlist.makeListView(
-            onSelect: { [weak self] asset in
-                self?.play(asset: asset)
-            },
-            onRemove: { [weak self] index in
-                self?.removeFromPlaylist(at: index)
-            },
-            onMove: { [weak self] from, to in
-                self?.moveInPlaylist(from: from, to: to)
-            }
-        )
-    }
-
-    /// 创建播放状态视图
-    func makeStateView() -> some View {
-        state.makeStateView(assetTitle: currentAsset?.title)
+    public func log(_ message: String, level: PlaybackLog.Level = .info) {
+        logger.log(message, level: level)
     }
 }
 

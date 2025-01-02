@@ -2,7 +2,7 @@ import Foundation
 import AVFoundation
 import SwiftUI
 
-class AssetCache {
+public class AssetCache {
     private let cacheDirectory: URL
     private let fileManager = FileManager.default
     

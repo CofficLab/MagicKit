@@ -48,7 +48,7 @@ public extension MagicPlayMan {
                     
                     if showFormats {
                         FormatInfoView(
-                            formats: playMan.supportedFormats,
+                            formats: SupportedFormat.allFormats,
                             onDismiss: { showFormats = false }
                         )
                     }
