@@ -49,6 +49,81 @@ public extension MagicPlayMan {
             artist: "Select a media file to play"
         )
     }
+    
+    /// 创建播放进度条视图
+    /// - Parameters:
+    ///   - style: 进度条样式
+    ///   - showTime: 是否显示时间
+    /// - Returns: 进度条视图
+    func makeProgressView(
+        style: ProgressStyle = .default,
+        showTime: Bool = true
+    ) -> some View {
+        PlaybackProgressView(
+            playMan: self,
+            style: style,
+            showTime: showTime
+        )
+    }
+}
+
+// MARK: - Progress Style
+public enum ProgressStyle {
+    case `default`
+    case compact
+    case minimal
+    
+    var height: CGFloat {
+        switch self {
+        case .default:
+            return 6
+        case .compact:
+            return 4
+        case .minimal:
+            return 2
+        }
+    }
+}
+
+// MARK: - Playback Progress View
+private struct PlaybackProgressView: View {
+    @ObservedObject var playMan: MagicPlayMan
+    let style: ProgressStyle
+    let showTime: Bool
+    
+    // 计算当前进度
+    private var currentProgress: Double {
+        playMan.duration > 0 ? playMan.currentTime / playMan.duration : 0
+    }
+    
+    var body: some View {
+        VStack(spacing: 4) {
+            // 进度条
+            MagicProgressBar(
+                progress: .init(
+                    get: { currentProgress },
+                    set: { progress in
+                        playMan.seek(to: playMan.duration * progress)
+                    }
+                ),
+                duration: playMan.duration,
+                onSeek: { progress in
+                    playMan.seek(to: playMan.duration * progress)
+                }
+            )
+            
+            // 时间显示
+            if showTime {
+                HStack {
+                    Text(playMan.currentTimeForDisplay)
+                    Spacer()
+                    Text(playMan.durationForDisplay)
+                }
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+            }
+        }
+    }
 }
 
 // MARK: - Preview
@@ -106,4 +181,27 @@ private struct ViewsPreview: View {
             playMan.log("Failed to load media", level: .error)
         }
     }
+}
+
+#Preview("Progress Views") {
+    VStack(spacing: 40) {
+        // 默认样式
+        MagicPlayMan()
+            .makeProgressView()
+            .padding()
+            .background(.background)
+        
+        // 紧凑样式
+        MagicPlayMan()
+            .makeProgressView(style: .compact)
+            .padding()
+            .background(.background)
+        
+        // 最小样式
+        MagicPlayMan()
+            .makeProgressView(style: .minimal, showTime: false)
+            .padding()
+            .background(.background)
+    }
+    .padding()
 } 

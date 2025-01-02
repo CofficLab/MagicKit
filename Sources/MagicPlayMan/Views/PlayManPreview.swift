@@ -159,7 +159,7 @@ public extension MagicPlayMan {
         
         private var controlsView: some View {
             VStack(spacing: 16) {
-                progressBar
+                playMan.makeProgressView()
                 PlaybackControls(
                     isPlaying: playMan.state == .playing,
                     hasAsset: playMan.hasAsset,
@@ -183,17 +183,6 @@ public extension MagicPlayMan {
             }
             .padding()
             .background(.ultraThinMaterial)
-        }
-        
-        private var progressBar: some View {
-            MagicProgressBar(
-                progress: .init(
-                    get: { playMan.progress },
-                    set: { playMan.seek(to: $0) }
-                ),
-                duration: playMan.duration,
-                onSeek: { playMan.seek(to: $0) }
-            )
         }
         
         private var logsView: some View {
