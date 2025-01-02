@@ -34,58 +34,11 @@ public extension MagicPlayMan {
 }
 
 // MARK: - Preview
-#Preview("Playback Mode") {
-    PlayModePreview()
-}
-
-private struct PlayModePreview: View {
-    @StateObject private var playMan = MagicPlayMan()
-    
-    var body: some View {
-        List {
-            currentModeSection
-            setModeSection
-            logSection
-        }
-        .navigationTitle("播放模式")
-    }
-    
-    private var currentModeSection: some View {
-        Section("当前播放模式") {
-            HStack {
-                Image(systemName: playMan.playModeIcon)
-                Text(playMan.playModeDisplayName)
-            }
-            
-            Button("切换播放模式") {
-                playMan.togglePlayMode()
-            }
-        }
-    }
-    
-    private var setModeSection: some View {
-        Section("设置播放模式") {
-            PlayModeButtons(playMan: playMan)
-        }
-    }
-    
-    private var logSection: some View {
-        Section("日志") {
-            playMan.makeLogView()
-        }
-    }
-}
-
-private struct PlayModeButtons: View {
-    @ObservedObject var playMan: MagicPlayMan
-    private let modes = [MagicPlayMode.sequence, .loop, .shuffle]
-    
-    var body: some View {
-        ForEach(modes, id: \.self) { mode in
-            PlayModeButton(
-                mode: mode,
-                action: { playMan.setPlayMode(mode) }
-            )
-        }
-    }
+#Preview("MagicPlayMan") {
+    MagicPlayMan.PreviewView()
+        .frame(width: 650, height: 800)
+        .background(.background)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .shadow(radius: 5)
+        .padding()
 }

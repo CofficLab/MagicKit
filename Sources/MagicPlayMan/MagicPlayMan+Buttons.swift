@@ -68,31 +68,25 @@ public extension MagicPlayMan {
             action: togglePlayMode
         )
     }
+    
+    /// 创建播放列表按钮
+    func makePlaylistButton(isPresented: Binding<Bool>) -> some View {
+        MagicPlayerButton(
+            icon: "list.bullet",
+            size: 40,
+            iconSize: 15,
+            action: { isPresented.wrappedValue.toggle() }
+        )
+    }
 }
 
 // MARK: - Preview
-#Preview("Player Buttons") {
-    struct ButtonsPreview: View {
-        @StateObject private var playMan = MagicPlayMan()
-        
-        var body: some View {
-            VStack(spacing: 20) {
-                // 播放控制按钮
-                HStack(spacing: 16) {
-                    playMan.makePreviousButton()
-                    playMan.makeRewindButton()
-                    playMan.makePlayPauseButton()
-                    playMan.makeForwardButton()
-                    playMan.makeNextButton()
-                }
-                
-                // 播放模式按钮
-                playMan.makePlayModeButton()
-            }
-            .padding()
-            .background(.background)
-        }
-    }
-    
-    return ButtonsPreview()
-} 
+#Preview("MagicPlayMan") {
+    MagicPlayMan.PreviewView()
+        .frame(width: 650, height: 800)
+        .background(.background)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .shadow(radius: 5)
+        .padding()
+}
+

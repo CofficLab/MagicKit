@@ -206,13 +206,6 @@ public class MagicPlayMan: ObservableObject {
         SupportedFormat.allSamples.contains { $0.asset.url == asset.url }
     }
 
-    public func play(_ asset: MagicAsset, reason: String, verbose: Bool = false) {
-        if verbose {
-            log("Playing asset: \(asset.metadata.title) (reason: \(reason))")
-        }
-        play(asset: asset)
-    }
-
     public func showToast(_ message: String, icon: String, style: MagicToast.Style) {
         DispatchQueue.main.async {
             NotificationCenter.default.post(

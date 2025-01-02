@@ -1,6 +1,8 @@
 import Foundation
 import MediaPlayer
 import AVFoundation
+import SwiftUI
+
 #if os(macOS)
 import AppKit
 #else
@@ -128,4 +130,14 @@ extension MagicPlayMan {
         return UIImage(cgImage: cgImage)
         #endif
     }
+}
+
+// MARK: - Preview
+#Preview("MagicPlayMan") {
+    MagicPlayMan.PreviewView()
+        .frame(width: 650, height: 800)
+        .background(.background)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .shadow(radius: 5)
+        .padding()
 }

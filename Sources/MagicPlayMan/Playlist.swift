@@ -1,6 +1,4 @@
 import Foundation
-import SwiftUI
-import MagicUI
 
 public class Playlist: ObservableObject {
     @Published public private(set) var items: [MagicAsset] = []
@@ -159,42 +157,4 @@ public class Playlist: ObservableObject {
     private func updateShuffleIndices() {
         shuffledIndices = Array(0..<items.count).shuffled()
     }
-    
-    // MARK: - View Builders
-    
-    /// 创建播放列表视图
-    public func makeListView(
-        onSelect: @escaping (MagicAsset) -> Void,
-        onRemove: @escaping (Int) -> Void,
-        onMove: @escaping (Int, Int) -> Void
-    ) -> some View {
-        PlaylistView(
-            playlist: items,
-            currentIndex: currentIndex,
-            onSelect: onSelect,
-            onRemove: onRemove,
-            onMove: onMove
-        )
-    }
 }
-
-// MARK: - Preview
-
-#Preview {
-    let playlist = Playlist()
-    // 添加一些测试数据
-    let testAssets = [
-        MagicAsset(url: .documentsDirectory, type: .audio, metadata: .init(title: "Song 1", artist: "Artist 1")),
-        MagicAsset(url: .documentsDirectory, type: .audio, metadata: .init(title: "Song 2", artist: "Artist 2")),
-        MagicAsset(url: .documentsDirectory, type: .audio, metadata: .init(title: "Song 3", artist: "Artist 3"))
-    ]
-    testAssets.forEach { playlist.append($0) }
-    
-    return playlist.makeListView(
-        onSelect: { _ in },
-        onRemove: { _ in },
-        onMove: { _, _ in }
-    )
-    .frame(width: 300)
-    .background(.ultraThinMaterial)
-} 

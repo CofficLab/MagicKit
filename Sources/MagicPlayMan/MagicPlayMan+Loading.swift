@@ -7,42 +7,22 @@ public extension MagicPlayMan {
     /// 加载媒体资源
     /// - Parameter asset: 要加载的资源
     func load(asset: MagicAsset) {
-        log("Loading asset: \(asset.title)")
-        
-        // 停止当前播放
-        stop()
-        
-        currentAsset = asset
-        state = .loading(.connecting)
-        updateNowPlayingInfo()
-        
-        // 加载缩略图
-        loadThumbnail(for: asset)
-        
-        // 检查缓存
-        if let cachedURL = cache?.cachedURL(for: asset.url) {
-            // 验证缓存文件
-            if cache?.validateCache(for: asset.url) == true {
-                log("Loading asset from cache")
-                loadFromURL(cachedURL)
-            } else {
-                log("Cached file is invalid, removing and redownloading", level: .warning)
-                cache?.removeCached(asset.url)
-                if isSampleAsset(asset) {
-                    downloadAndCache(asset)
-                } else {
-                    loadFromURL(asset.url)
+        Task { @MainActor in
+            stop() // 确保在主线程上调用
+            currentAsset = asset
+            state = .loading(.preparing)
+            log("Loading asset: \(asset.metadata.title)")
+            
+            // 模拟加载过程
+            DispatchQueue.global().asyncAfter(deadline: .now() + 1) {
+                Task { @MainActor in
+                    self.state = .playing
+                    self.duration = 240 // 假设时长为 240 秒
+                    self.currentTime = 0
+                    self.updateNowPlayingInfo()
+                    self.play()
                 }
             }
-            return
-        }
-
-        // 如果是示例资源，则下载并缓存
-        if isSampleAsset(asset) {
-            downloadAndCache(asset)
-        } else {
-            // 非示例资源直接加载
-            loadFromURL(asset.url)
         }
     }
     
@@ -190,83 +170,12 @@ public extension MagicPlayMan {
 } 
 
 // MARK: - Preview
-#Preview("Asset Loading") {
-    LoadingPreview().frame(height: 800)
+#Preview("MagicPlayMan") {
+    MagicPlayMan.PreviewView()
+        .frame(width: 650, height: 800)
+        .background(.background)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .shadow(radius: 5)
+        .padding()
 }
 
-private struct LoadingPreview: View {
-    @StateObject private var playMan = MagicPlayMan()
-    
-    private let testAssets = [
-        // 本地缓存测试
-        (
-            name: "Cached Audio",
-            url: URL(string: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/fd/37/41/fd374113-bf05-692f-e157-5c364af08d9d/mzaf_15384825730917775750.plus.aac.p.m4a")!,
-            type: MagicAsset.MediaType.audio
-        ),
-        // 在线流媒体测试
-        (
-            name: "Streaming Video",
-            url: URL(string: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4")!,
-            type: MagicAsset.MediaType.video
-        )
-    ]
-    
-    var body: some View {
-        VStack(spacing: 20) {
-            // 状态显示
-            playMan.makeStateView()
-            
-            // 加载测试按钮
-            ForEach(testAssets, id: \.name) { asset in
-                Button {
-                    loadAsset(name: asset.name, url: asset.url, type: asset.type)
-                } label: {
-                    Label(
-                        "Load \(asset.name)",
-                        systemImage: asset.type == .audio ? "music.note" : "film"
-                    )
-                }
-                .buttonStyle(.bordered)
-            }
-            
-            // 缓存控制
-            HStack {
-                Button("Clear Cache") {
-                    playMan.clearCache()
-                }
-                .buttonStyle(.bordered)
-                
-                if let asset = playMan.currentAsset {
-                    Text(playMan.isAssetCached(asset) ? "Cached" : "Not Cached")
-                        .foregroundStyle(.secondary)
-                }
-            }
-            
-            // 缩略图显示
-            if let thumbnail = playMan.currentThumbnail {
-                thumbnail
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(height: 200)
-            }
-            
-            // 日志显示
-            playMan.makeLogView()
-        }
-        .padding()
-    }
-    
-    private func loadAsset(name: String, url: URL, type: MagicAsset.MediaType) {
-        let asset = MagicAsset(
-            url: url,
-            type: type,
-            metadata: .init(
-                title: name,
-                artist: "Test Artist",
-                album: "Test Album"
-            )
-        )
-        playMan.load(asset: asset)
-    }
-} 

@@ -2,7 +2,53 @@ import Foundation
 import AVFoundation
 import SwiftUI
 
+@MainActor
 public extension MagicPlayMan {
+    /// 添加资源到播放列表并播放
+    func play(asset: MagicAsset) {
+        if playlist.play(asset) {
+            load(asset: asset)
+        } else {
+            playlist.append(asset)
+            _ = playlist.play(asset)
+            load(asset: asset)
+        }
+    }
+    
+    /// 添加资源到播放列表
+    func append(_ asset: MagicAsset) {
+        playlist.append(asset)
+    }
+    
+    /// 清空播放列表
+    func clearPlaylist() {
+        playlist.clear()
+    }
+    
+    /// 播放下一曲
+    func next() {
+        if let nextAsset = playlist.playNext(mode: playMode) {
+            load(asset: nextAsset)
+        }
+    }
+    
+    /// 播放上一曲
+    func previous() {
+        if let prevAsset = playlist.playPrevious(mode: playMode) {
+            load(asset: prevAsset)
+        }
+    }
+    
+    /// 从播放列表中移除指定索引的资源
+    func removeFromPlaylist(at index: Int) {
+        playlist.remove(at: index)
+    }
+    
+    /// 移动播放列表中的资源
+    func moveInPlaylist(from: Int, to: Int) {
+        playlist.move(from: from, to: to)
+    }
+    
     /// 开始播放
     func play() {
         guard hasAsset else {
@@ -62,8 +108,10 @@ public extension MagicPlayMan {
         log("Seeking to \(Int(time))s")
         _player.seek(to: targetTime) { [weak self] finished in
             guard let self = self, finished else { return }
-            self.currentTime = time
-            self.updateNowPlayingInfo()
+            Task { @MainActor in
+                self.currentTime = time
+                self.updateNowPlayingInfo()
+            }
         }
     }
     
@@ -96,73 +144,14 @@ public extension MagicPlayMan {
     }
     
     internal func updateState(_ newState: PlaybackState) {
-        state = newState
-    }
-    internal func updateCurrentTime(_ time: TimeInterval) {
-        currentTime = time
-    }
-}
-
-// MARK: - Preview
-#Preview("Playback Controls") {
-    ControlsPreview()
-}
-
-private struct ControlsPreview: View {
-    @StateObject private var playMan = MagicPlayMan()
-    
-    var body: some View {
-        VStack(spacing: 20) {
-            // 播放状态
-            playMan.makeStateView()
-            
-            // 播放控制按钮
-            HStack(spacing: 20) {
-                Button("Play") { playMan.play() }
-                    .buttonStyle(.bordered)
-                
-                Button("Pause") { playMan.pause() }
-                    .buttonStyle(.bordered)
-                
-                Button("Stop") { playMan.stop() }
-                    .buttonStyle(.bordered)
-                
-                Button("Toggle") { playMan.toggle() }
-                    .buttonStyle(.bordered)
-            }
-            
-            // 快进快退控制
-            HStack(spacing: 20) {
-                Button("Skip -10s") { playMan.skipBackward() }
-                    .buttonStyle(.bordered)
-                
-                Button("Skip +10s") { playMan.skipForward() }
-                    .buttonStyle(.bordered)
-            }
-            
-            // 音量控制
-            HStack(spacing: 20) {
-                Button("Mute") { playMan.setMuted(true) }
-                    .buttonStyle(.bordered)
-                
-                Button("Unmute") { playMan.setMuted(false) }
-                    .buttonStyle(.bordered)
-                
-                Button("50% Volume") { playMan.setVolume(0.5) }
-                    .buttonStyle(.bordered)
-            }
-            
-            // 日志显示
-            playMan.makeLogView()
-                .frame(height: 400)
+        Task { @MainActor in
+            state = newState
         }
-        .padding()
-        .onAppear {
-            // 加载测试媒体
-            playMan.play(
-                url: URL(string: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/fd/37/41/fd374113-bf05-692f-e157-5c364af08d9d/mzaf_15384825730917775750.plus.aac.p.m4a")!,
-                title: "Test Audio"
-            )
+    }
+    
+    internal func updateCurrentTime(_ time: TimeInterval) {
+        Task { @MainActor in
+            currentTime = time
         }
     }
 }

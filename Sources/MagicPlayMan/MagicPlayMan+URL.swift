@@ -8,7 +8,7 @@ public extension MagicPlayMan {
     ///   - title: 可选的标题，如果不提供则使用文件名
     ///   - autoPlay: 是否自动开始播放，默认为 true
     /// - Returns: 如果成功加载返回 true，否则返回 false
-    @discardableResult
+    @MainActor @discardableResult
     func play(
         url: URL,
         title: String? = nil,
@@ -62,7 +62,7 @@ public extension MagicPlayMan {
     ///   - urls: 要播放的媒体 URL 数组
     ///   - playFirst: 是否立即播放第一个资源，默认为 true
     /// - Returns: 成功加载的 URL 数量
-    @discardableResult
+    @MainActor @discardableResult
     func play(
         urls: [URL],
         playFirst: Bool = true
@@ -86,7 +86,7 @@ public extension MagicPlayMan {
     ///   - metadata: 媒体元数据
     ///   - autoPlay: 是否自动开始播放，默认为 true
     /// - Returns: 如果成功加载返回 true，否则返回 false
-    @discardableResult
+    @MainActor @discardableResult
     func play(
         url: URL,
         metadata: MagicAsset.Metadata,
@@ -129,45 +129,12 @@ public extension MagicPlayMan {
 }
 
 // MARK: - Preview
-#Preview("URL Playback") {
-    URLPlaybackPreview()
+#Preview("MagicPlayMan") {
+    MagicPlayMan.PreviewView()
+        .frame(width: 650, height: 800)
+        .background(.background)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .shadow(radius: 5)
+        .padding()
 }
 
-private struct URLPlaybackPreview: View {
-    @StateObject private var playMan = MagicPlayMan()
-    
-    private let sampleURLs = [
-        // 音频示例
-        URL(string: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/fd/37/41/fd374113-bf05-692f-e157-5c364af08d9d/mzaf_15384825730917775750.plus.aac.p.m4a")!,
-        // 视频示例
-        URL(string: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4")!
-    ]
-    
-    var body: some View {
-        VStack(spacing: 16) {
-            HStack(spacing: 12) {
-                // 单个 URL 播放
-                Button("Play Audio URL") {
-                    playMan.play(url: sampleURLs[0], title: "Sample Audio")
-                }
-                .buttonStyle(.bordered)
-                
-                Button("Play Video URL") {
-                    playMan.play(url: sampleURLs[1], title: "Sample Video")
-                }
-                .buttonStyle(.bordered)
-                
-                // 批量 URL 播放
-                Button("Play All URLs") {
-                    playMan.play(urls: sampleURLs)
-                }
-                .buttonStyle(.bordered)
-            }
-            
-            playMan.makeStateView()
-            playMan.makeLogView()
-        }
-        .padding()
-        .frame(width: 600, height: 800)
-    }
-} 
