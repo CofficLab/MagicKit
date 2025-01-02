@@ -111,17 +111,6 @@ private struct PlaybackProgressView: View {
                     playMan.seek(to: playMan.duration * progress)
                 }
             )
-            
-            // 时间显示
-            if showTime {
-                HStack {
-                    Text(playMan.currentTimeForDisplay)
-                    Spacer()
-                    Text(playMan.durationForDisplay)
-                }
-                .font(.caption2)
-                .foregroundStyle(.secondary)
-            }
         }
     }
 }
