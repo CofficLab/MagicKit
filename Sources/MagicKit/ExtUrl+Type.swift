@@ -77,7 +77,7 @@ private extension URL {
 
 // MARK: - Preview
 #Preview("URL Type Tests") {
-    URLTypeTestView()
+    URLTypeTestView().frame(height: 800)
 }
 
 private struct URLTypeTestView: View {

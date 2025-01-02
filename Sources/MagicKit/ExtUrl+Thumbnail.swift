@@ -90,8 +90,8 @@ extension URL {
             return Image(uiImage: image)
             #endif
         } catch {
-            os_log(.error, "生成视频缩略图失败: \(error.localizedDescription)")
-            return nil
+            os_log(.error, "\(self.t)生成视频缩略图失败: \(error.localizedDescription)")
+            throw error
         }
     }
     

@@ -10,6 +10,10 @@ import SwiftUI
     import UIKit
 #endif
 
+extension URL: SuperLog {
+    public static var emoji = "🌉"
+}
+
 extension URL {
     public func getBlob() throws -> String {
         let url = self

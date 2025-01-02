@@ -17,6 +17,7 @@ let package = Package(
         .target(
             name: "MagicKit",
             dependencies: [
+                "MagicUI",
                 .product(name: "AsyncAlgorithms", package: "swift-async-algorithms")
             ]
         ),

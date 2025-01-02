@@ -1,5 +1,6 @@
 import AVKit
 import SwiftUI
+import MagicUI
 
 // MARK: - View Extension
 
@@ -35,7 +36,7 @@ public extension URL {
 
 // MARK: - Preview Shape
 
-public enum PreviewShape {
+public enum PreviewShape: Equatable {
     case square
     case circle
     case roundedSquare(radius: CGFloat = 8)
@@ -87,6 +88,7 @@ private struct MediaPreviewView: View {
     @State private var fileSize: String = ""
     @State private var downloadProgress: Double = 0
     @State private var isDownloading = false
+    @State private var showErrorDetails = false
 
     var body: some View {
         Group {
@@ -200,17 +202,7 @@ private struct MediaPreviewView: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
             } else if let error = error {
-                VStack(spacing: 4) {
-                    Image(systemName: "exclamationmark.triangle")
-                        .font(.title2)
-                    if !shape.isRectangle {
-                        Text(error.localizedDescription)
-                            .font(.caption2)
-                            .multilineTextAlignment(.center)
-                    }
-                }
-                .foregroundStyle(.red)
-                .padding(8)
+                ErrorIconView(error: error, showDetails: $showErrorDetails)
             } else if isLoading {
                 ProgressView()
             }
@@ -362,35 +354,176 @@ private struct FilePreviewView: View {
     }
 }
 
+// MARK: - Error Icon View
+
+private struct ErrorIconView: View {
+    let error: Error
+    @Binding var showDetails: Bool
+    
+    var body: some View {
+        Button {
+            showDetails.toggle()
+        } label: {
+            VStack(spacing: 4) {
+                Image(systemName: "exclamationmark.triangle")
+                    .font(.title2)
+                    .foregroundStyle(.red)
+            }
+        }
+        .buttonStyle(.plain)
+        .popover(isPresented: $showDetails) {
+            ErrorDetailsView(error: error)
+        }
+    }
+}
+
+private struct ErrorDetailsView: View {
+    let error: Error
+    @Environment(\.dismiss) private var dismiss
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "exclamationmark.triangle")
+                    .foregroundStyle(.red)
+                Text("Error Details")
+                    .font(.headline)
+                Spacer()
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundStyle(.secondary)
+                }
+            }
+            
+            Divider()
+            
+            ScrollView {
+                VStack(alignment: .leading, spacing: 8) {
+                    Group {
+                        let nsError = error as NSError
+                        Text("Domain: \(nsError.domain)")
+                        Text("Code: \(nsError.code)")
+                        if let reason = nsError.localizedFailureReason {
+                            Text("Reason: \(reason)")
+                        }
+                        if let suggestion = nsError.localizedRecoverySuggestion {
+                            Text("Suggestion: \(suggestion)")
+                        }
+                        Text("Description: \(error.localizedDescription)")
+                    }
+                    .textSelection(.enabled)
+                }
+            }
+        }
+        .padding()
+        .frame(width: 300, height: 200)
+    }
+}
+
 // MARK: - Preview
 
 #Preview("URL Views") {
-    ScrollView {
-        VStack(spacing: 20) {
-            // iCloud 文件预览
-            URL(string: "file:///iCloud/test.mp3")!
-                .makePreviewView(shape: .rectangle)
-            
-            URL(string: "https://storage.googleapis.com/media-session/sintel/snow-fight.mp3")!.makePreviewView(shape: .rectangle)
-            
-            // 长方形预览（文件样式）
-            URL(string: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/fd/37/41/fd374113-bf05-692f-e157-5c364af08d9d/mzaf_15384825730917775750.plus.aac.p.m4a")!
-                .makePreviewView(shape: .rectangle)
+    PreviewDemoView()
+}
 
-            // 方形预览
-            URL(string: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4")!
-                .makePreviewView(shape: .square)
-
-            // 圆形预览
-            URL(string: "https://picsum.photos/200")!
-                .makePreviewView(shape: .circle)
-
-            // 圆角方形预览
-            URL.documentsDirectory
-                .makePreviewView(shape: .roundedSquare())
+private struct PreviewDemoView: View {
+    @State private var selectedShape: PreviewShape = .rectangle
+    
+    private let previewURLs: [(String, URL)] = [
+        // 音频文件
+        ("iCloud Audio", URL(string: "file:///iCloud/test.mp3")!),
+        ("Remote Audio", URL(string: "https://storage.googleapis.com/media-session/sintel/snow-fight.mp3")!),
+        ("Local Audio", URL(string: "file:///music.mp3")!),
+        
+        // 视频文件
+        ("Remote Video", URL(string: "https://media.w3.org/2010/05/sintel/trailer.mp4")!),
+        ("Sample Video", URL(string: "https://download.samplelib.com/mp4/sample-5s.mp4")!),
+        ("Local Video", URL(string: "file:///movie.mp4")!),
+        
+        // 图片文件
+        ("Sample Image", URL(string: "https://picsum.photos/200")!),
+        ("Nature Image", URL(string: "https://source.unsplash.com/random/200x200/?nature")!),
+        ("Local Image", URL(string: "file:///photo.jpg")!),
+        
+        // 文档和文件夹
+        ("Local Folder", URL.documentsDirectory),
+        ("PDF Document", URL(string: "file:///document.pdf")!),
+        ("Text File", URL(string: "file:///notes.txt")!)
+    ]
+    
+    private let shapes: [(String, PreviewShape)] = [
+        ("Rectangle", .rectangle),
+        ("Square", .square),
+        ("Circle", .circle),
+        ("Rounded", .roundedSquare())
+    ]
+    
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 20) {
+                shapeSelector
+                previewList
+            }
+            .padding()
         }
-        .padding()
+        .frame(width: 600, height: 800)
     }
-    .frame(width: 600)
-    .frame(height: 800)
+    
+    // 样式选择器
+    private var shapeSelector: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 12) {
+                ForEach(shapes, id: \.0) { name, shape in
+                    shapeButton(name: name, shape: shape)
+                }
+            }
+            .padding(.horizontal)
+        }
+        .padding(.vertical, 8)
+    }
+    
+    // 样式按钮
+    private func shapeButton(name: String, shape: PreviewShape) -> some View {
+        MagicButton(
+            icon: iconForShape(shape),
+            title: name,
+            style: selectedShape == shape ? .primary : .secondary,
+            size: .small,
+            shape: .capsule,
+            action: { selectedShape = shape }
+        )
+    }
+    
+    // 为每种形状选择合适的图标
+    private func iconForShape(_ shape: PreviewShape) -> String {
+        switch shape {
+        case .rectangle:
+            return "rectangle"
+        case .square:
+            return "square"
+        case .circle:
+            return "circle"
+        case .roundedSquare:
+            return "square.fill.on.square"
+        }
+    }
+    
+    // 预览列表
+    private var previewList: some View {
+        ForEach(previewURLs, id: \.0) { name, url in
+            previewItem(name: name, url: url)
+        }
+    }
+    
+    // 预览项
+    private func previewItem(name: String, url: URL) -> some View {
+        VStack(alignment: .leading) {
+            Text(name)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            url.makePreviewView(shape: selectedShape)
+        }
+    }
 }
