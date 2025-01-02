@@ -45,10 +45,10 @@ public struct SupportedFormat {
                     asset: MagicAsset(
                         url: URL(string: "https://storage.googleapis.com/media-session/sintel/snow-fight.mp3")!,
                         type: .audio,
-                        metadata: AssetMetadata(
+                        metadata: MagicAsset.Metadata(
                             title: "Snow Fight",
                             artist: "Jan Morgenstern",
-                            duration: 88
+                            album: "Album Name"
                         )
                     )
                 ),
@@ -57,10 +57,10 @@ public struct SupportedFormat {
                     asset: MagicAsset(
                         url: URL(string: "https://storage.googleapis.com/media-session/sintel/sintel-trailer-music.mp3")!,
                         type: .audio,
-                        metadata: AssetMetadata(
+                        metadata: MagicAsset.Metadata(
                             title: "Sintel Trailer Score",
                             artist: "Jan Morgenstern",
-                            duration: 74
+                            album: "Album Name"
                         )
                     )
                 )
@@ -79,10 +79,10 @@ public struct SupportedFormat {
                     asset: MagicAsset(
                         url: URL(string: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/8e/d3/a6/8ed3a6a6-0b06-b4b0-8937-fc0ce6d6f6e2/mzaf_5766840152287573829.plus.aac.p.m4a")!,
                         type: .audio,
-                        metadata: AssetMetadata(
+                        metadata: MagicAsset.Metadata(
                             title: "Apple Music Sample",
                             artist: "Apple",
-                            duration: 30
+                            album: "Album Name"
                         )
                     )
                 ),
@@ -91,10 +91,10 @@ public struct SupportedFormat {
                     asset: MagicAsset(
                         url: URL(string: "https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_4x3/gear1/prog_index.m4a")!,
                         type: .audio,
-                        metadata: AssetMetadata(
+                        metadata: MagicAsset.Metadata(
                             title: "AAC Stream",
                             artist: "Apple",
-                            duration: 60
+                            album: "Album Name"
                         )
                     )
                 )
@@ -113,10 +113,10 @@ public struct SupportedFormat {
                     asset: MagicAsset(
                         url: URL(string: "https://www.w3schools.com/html/horse.wav")!,
                         type: .audio,
-                        metadata: AssetMetadata(
+                        metadata: MagicAsset.Metadata(
                             title: "Horse",
                             artist: "W3Schools",
-                            duration: 2
+                            album: "Album Name"
                         )
                     )
                 ),
@@ -125,10 +125,10 @@ public struct SupportedFormat {
                     asset: MagicAsset(
                         url: URL(string: "https://soundbible.com/grab.php?id=1542&type=wav")!,
                         type: .audio,
-                        metadata: AssetMetadata(
+                        metadata: MagicAsset.Metadata(
                             title: "Beep Sound",
                             artist: "Sound Bible",
-                            duration: 1
+                            album: "Album Name"
                         )
                     )
                 )
@@ -147,10 +147,10 @@ public struct SupportedFormat {
                     asset: MagicAsset(
                         url: URL(string: "https://media.w3.org/2010/05/sintel/trailer.mp4")!,
                         type: .video,
-                        metadata: AssetMetadata(
+                        metadata: MagicAsset.Metadata(
                             title: "Sintel",
                             artist: "Blender Foundation",
-                            duration: 52
+                            album: "Album Name"
                         )
                     )
                 ),
@@ -159,10 +159,10 @@ public struct SupportedFormat {
                     asset: MagicAsset(
                         url: URL(string: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4")!,
                         type: .video,
-                        metadata: AssetMetadata(
+                        metadata: MagicAsset.Metadata(
                             title: "Big Buck Bunny",
                             artist: "Blender Foundation",
-                            duration: 596
+                            album: "Album Name"
                         )
                     )
                 )
@@ -181,10 +181,10 @@ public struct SupportedFormat {
                     asset: MagicAsset(
                         url: URL(string: "https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_4x3/bipbop_4x3_variant.m3u8")!,
                         type: .video,
-                        metadata: AssetMetadata(
+                        metadata: MagicAsset.Metadata(
                             title: "Apple Test Stream",
                             artist: "Apple",
-                            duration: 0
+                            album: "Album Name"
                         )
                     )
                 ),
@@ -193,10 +193,10 @@ public struct SupportedFormat {
                     asset: MagicAsset(
                         url: URL(string: "https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_ts/master.m3u8")!,
                         type: .video,
-                        metadata: AssetMetadata(
+                        metadata: MagicAsset.Metadata(
                             title: "Advanced Streaming",
                             artist: "Apple",
-                            duration: 0
+                            album: "Album Name"
                         )
                     )
                 )

@@ -772,6 +772,11 @@ public class MagicPlayMan: ObservableObject {
             }
         )
     }
+
+    /// 创建播放状态视图
+    func makeStateView() -> some View {
+        state.makeStateView(assetTitle: currentAsset?.title)
+    }
 }
 
 #Preview("MagicPlayMan") {

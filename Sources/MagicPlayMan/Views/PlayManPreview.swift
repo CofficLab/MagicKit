@@ -3,8 +3,9 @@ import MagicUI
 import MagicKit
 
 public extension MagicPlayMan {
-    /// 创建一个预览视图，用于快速展示播放器的功能
+    // MARK: - PreviewView
     struct PreviewView: View {
+        // MARK: - Properties
         @StateObject private var playMan: MagicPlayMan
         @State private var selectedSampleName: String?
         @State private var showPlaylist = false
@@ -13,6 +14,7 @@ public extension MagicPlayMan {
         
         @State private var toast: (message: String, icon: String, style: MagicToast.Style)?
         
+        // MARK: - Initialization
         public init(
             cacheDirectory: URL? = nil,
             showLogs: Bool = true
@@ -21,43 +23,48 @@ public extension MagicPlayMan {
             self.showLogs = showLogs
         }
         
+        // MARK: - Body
         public var body: some View {
             VStack(spacing: 0) {
                 toolbarView
                 
-                if showFormats {
-                    FormatInfoView(
-                        formats: playMan.supportedFormats,
-                        onDismiss: { showFormats = false }
-                    )
-                }
-                
-                HStack(spacing: 0) {
-                    mainContentView
-                        .frame(maxWidth: .infinity)
+                ZStack {
+                    VStack(spacing: 0) {
+                        HStack(spacing: 0) {
+                            mainContentView
+                                .frame(maxWidth: .infinity)
+                            
+                            if showPlaylist {
+                                playlistSidebarView
+                            }
+                        }
+                        
+                        controlsView
+                        
+                        if showLogs {
+                            logsView
+                        }
+                    }
                     
-                    if showPlaylist {
-                        playlistSidebarView
+                    if showFormats {
+                        FormatInfoView(
+                            formats: playMan.supportedFormats,
+                            onDismiss: { showFormats = false }
+                        )
                     }
                 }
-                
-                controlsView
-                
-                if showLogs {
-                    logsView
+                .overlay(alignment: .top) {
+                    if let toast = toast {
+                        MagicToast(
+                            message: toast.message,
+                            icon: toast.icon,
+                            style: toast.style
+                        )
+                        .padding(.top, 20)
+                    }
                 }
             }
             .animation(.spring(response: 0.3, dampingFraction: 0.8), value: showPlaylist)
-            .overlay(alignment: .top) {
-                if let toast = toast {
-                    MagicToast(
-                        message: toast.message,
-                        icon: toast.icon,
-                        style: toast.style
-                    )
-                    .padding(.top, 20)
-                }
-            }
         }
         
         // MARK: - Subviews
@@ -282,6 +289,7 @@ public extension MagicPlayMan {
             }
         }
         
+        // MARK: - Helper Methods
         private func showToast(
             _ message: String,
             icon: String,
@@ -301,6 +309,7 @@ public extension MagicPlayMan {
     }
 }
 
+// MARK: - Preview
 #Preview("MagicPlayMan") {
     MagicPlayMan.PreviewView()
         .frame(width: 650, height: 500)

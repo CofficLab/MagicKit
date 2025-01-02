@@ -111,7 +111,7 @@ private struct PlaylistRow: View {
             MagicAsset(
                 url: URL(string: "https://example.com/1.mp3")!,
                 type: .audio,
-                metadata: AssetMetadata(
+                metadata: MagicAsset.Metadata(
                     title: "Song 1",
                     artist: "Artist 1",
                     duration: 180
@@ -120,7 +120,7 @@ private struct PlaylistRow: View {
             MagicAsset(
                 url: URL(string: "https://example.com/2.mp4")!,
                 type: .video,
-                metadata: AssetMetadata(
+                metadata: MagicAsset.Metadata(
                     title: "Video 1",
                     artist: "Director 1",
                     duration: 300
