@@ -78,17 +78,20 @@ public struct MagicAsset: Identifiable, Equatable {
 public struct AssetMetadata: Equatable {
     public let title: String
     public let artist: String?
+    public let album: String?
     public let artwork: URL?
     public let duration: TimeInterval
 
     public init(
         title: String,
         artist: String? = nil,
+        album: String? = nil,
         artwork: URL? = nil,
         duration: TimeInterval = 0
     ) {
         self.title = title
         self.artist = artist
+        self.album = album
         self.artwork = artwork
         self.duration = duration
     }

@@ -10,9 +10,9 @@ public enum PlaybackState: Equatable {
     
     public enum LoadingState: Equatable {
         case connecting
-        case downloading(Double)
         case preparing
         case buffering
+        case downloading(Double)
     }
     
     public enum PlaybackError: Equatable {
@@ -20,5 +20,12 @@ public enum PlaybackState: Equatable {
         case invalidAsset
         case networkError(String)
         case playbackError(String)
+    }
+    
+    public var isLoading: Bool {
+        if case .loading = self {
+            return true
+        }
+        return false
     }
 }

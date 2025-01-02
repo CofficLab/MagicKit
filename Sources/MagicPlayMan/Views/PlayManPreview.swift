@@ -1,12 +1,12 @@
 import SwiftUI
 import MagicUI
+import MagicKit
 
 public extension MagicPlayMan {
     /// 创建一个预览视图，用于快速展示播放器的功能
     struct PreviewView: View {
         @StateObject private var playMan: MagicPlayMan
         @State private var selectedSampleName: String?
-        @State private var showMediaPicker = false
         @State private var showPlaylist = false
         @State private var showFormats = false
         let showLogs: Bool
@@ -64,7 +64,14 @@ public extension MagicPlayMan {
         
         private var toolbarView: some View {
             HStack {
-                mediaPickerButton
+                MediaPickerButton(
+                    formats: playMan.supportedFormats,
+                    selectedName: selectedSampleName,
+                    onSelect: { asset in
+                        selectedSampleName = asset.metadata.title
+                        playMan.load(asset: asset)
+                    }
+                )
                 
                 if let asset = playMan.currentAsset {
                     Text(asset.title)
@@ -80,36 +87,6 @@ public extension MagicPlayMan {
             }
             .padding()
             .background(.ultraThinMaterial)
-        }
-        
-        private var mediaPickerButton: some View {
-            Menu {
-                ForEach(playMan.supportedFormats.filter { !$0.samples.isEmpty }, id: \.name) { format in
-                    Section(format.name) {
-                        ForEach(format.samples, id: \.name) { sample in
-                            Button {
-                                selectedSampleName = sample.name
-                                playMan.load(asset: sample.asset)
-                            } label: {
-                                Label(
-                                    sample.name,
-                                    systemImage: format.type == .audio ? "music.note" : "film"
-                                )
-                            }
-                        }
-                    }
-                }
-            } label: {
-                HStack {
-                    Image(systemName: currentAssetIcon)
-                    Text(selectedSampleName ?? "Select Media")
-                    Image(systemName: "chevron.down")
-                }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
-                .background(.ultraThinMaterial)
-                .clipShape(Capsule())
-            }
         }
         
         private var toolbarButtons: some View {
@@ -139,15 +116,25 @@ public extension MagicPlayMan {
                         if asset.type == .video {
                             playMan.videoView
                         } else {
-                            playMan.audioView
+                            AudioContentView(
+                                asset: asset,
+                                artwork: playMan.currentThumbnail
+                            )
                         }
                         
                         if case .loading(let loadingState) = playMan.state {
-                            loadingOverlay(loadingState)
+                            LoadingOverlay(
+                                state: loadingState,
+                                assetTitle: asset.title
+                            )
                         }
                         
                         if case .failed(let error) = playMan.state {
-                            errorOverlay(error, asset: asset)
+                            ErrorOverlay(
+                                error: error,
+                                asset: asset,
+                                onRetry: { playMan.load(asset: asset) }
+                            )
                         }
                     }
                 } else {
@@ -194,7 +181,26 @@ public extension MagicPlayMan {
         private var controlsView: some View {
             VStack(spacing: 16) {
                 progressBar
-                playbackControls
+                PlaybackControls(
+                    isPlaying: playMan.state == .playing,
+                    hasAsset: playMan.hasAsset,
+                    isLoading: playMan.state.isLoading,
+                    canSeek: playMan.hasAsset && !playMan.state.isLoading,
+                    playMode: playMan.playMode,
+                    onPlayPause: playMan.toggle,
+                    onSkipForward: { playMan.skipForward() },
+                    onSkipBackward: { playMan.skipBackward() },
+                    onNext: playMan.next,
+                    onPrevious: playMan.previous,
+                    onTogglePlayMode: {
+                        playMan.togglePlayMode()
+                        showToast(
+                            playModeName(playMan.playMode),
+                            icon: playModeIcon(playMan.playMode),
+                            style: .info
+                        )
+                    }
+                )
             }
             .padding()
             .background(.ultraThinMaterial)
@@ -211,70 +217,6 @@ public extension MagicPlayMan {
             )
         }
         
-        private var playbackControls: some View {
-            HStack(spacing: 20) {
-                MagicPlayModeButton(mode: playMan.playMode) {
-                    playMan.togglePlayMode()
-                    showToast(
-                        playModeName(playMan.playMode),
-                        icon: playModeIcon(playMan.playMode),
-                        style: .info
-                    )
-                }
-                
-                MagicPlayerButton(
-                    icon: "backward.end.fill",
-                    action: {
-                        if playMan.playlist.isEmpty {
-                            showToast(
-                                "Playlist is empty",
-                                icon: "exclamationmark.triangle",
-                                style: .warning
-                            )
-                        } else {
-                            playMan.previous()
-                        }
-                    }
-                )
-                
-                MagicPlayerButton(
-                    icon: "backward.fill",
-                    action: { playMan.skipBackward() }
-                )
-                .disabled(!canSeek)
-                
-                MagicPlayerButton(
-                    icon: playMan.state == .playing ? "pause.fill" : "play.fill",
-                    size: 50,
-                    iconSize: 20,
-                    isActive: playMan.state == .playing,
-                    action: playMan.toggle
-                )
-                .disabled(playMan.currentAsset == nil || isLoading)
-                
-                MagicPlayerButton(
-                    icon: "forward.fill",
-                    action: { playMan.skipForward() }
-                )
-                .disabled(!canSeek)
-                
-                MagicPlayerButton(
-                    icon: "forward.end.fill",
-                    action: {
-                        if playMan.playlist.isEmpty {
-                            showToast(
-                                "Playlist is empty",
-                                icon: "exclamationmark.triangle",
-                                style: .warning
-                            )
-                        } else {
-                            playMan.next()
-                        }
-                    }
-                )
-            }
-        }
-        
         private var logsView: some View {
             LogView(
                 logs: playMan.logs,
@@ -287,7 +229,7 @@ public extension MagicPlayMan {
         
         // MARK: - Helper Views
         
-        private func loadingOverlay(_ state: PlaybackState.LoadingState) -> some View {
+        private func LoadingOverlay(state: PlaybackState.LoadingState, assetTitle: String) -> some View {
             ZStack {
                 Rectangle()
                     .fill(.ultraThinMaterial)
@@ -328,7 +270,7 @@ public extension MagicPlayMan {
             }
         }
         
-        private func errorOverlay(_ error: PlaybackState.PlaybackError, asset: MagicAsset) -> some View {
+        private func ErrorOverlay(error: PlaybackState.PlaybackError, asset: MagicAsset, onRetry: @escaping () -> Void) -> some View {
             ZStack {
                 Rectangle()
                     .fill(.ultraThinMaterial)
@@ -351,9 +293,7 @@ public extension MagicPlayMan {
                         title: "Try Again",
                         style: .primary,
                         shape: .capsule,
-                        action: {
-                            playMan.load(asset: asset)
-                        }
+                        action: onRetry
                     )
                 }
                 .padding()
@@ -442,48 +382,6 @@ public extension MagicPlayMan {
                 return true
             }
             return false
-        }
-    }
-    
-    // 播放模式指示器组件
-    private struct PlayModeIndicator: View {
-        let mode: PlaybackManager.PlayMode
-        
-        var body: some View {
-            Label(
-                title: { Text(modeName).font(.caption) },
-                icon: { Image(systemName: modeIcon) }
-            )
-            .padding(.horizontal, 8)
-            .padding(.vertical, 4)
-            .background(Color.primary.opacity(0.05))
-            .clipShape(Capsule())
-        }
-        
-        private var modeName: String {
-            switch mode {
-            case .sequence:
-                return "Sequential"
-            case .loop:
-                return "Loop One"
-            case .shuffle:
-                return "Shuffle"
-            case .repeatAll:
-                return "Repeat All"
-            }
-        }
-        
-        private var modeIcon: String {
-            switch mode {
-            case .sequence:
-                return "arrow.right"
-            case .loop:
-                return "repeat.1"
-            case .shuffle:
-                return "shuffle"
-            case .repeatAll:
-                return "repeat"
-            }
         }
     }
 }

@@ -30,6 +30,7 @@ public class MagicPlayMan: ObservableObject {
     @Published public private(set) var logs: [PlaybackLog] = []
     @Published public private(set) var playlist: [MagicAsset] = []
     @Published public private(set) var currentIndex: Int = -1
+    @Published public private(set) var currentThumbnail: Image?
 
     public var player: AVPlayer { _player }
     public var asset: MagicAsset? { self.currentAsset }
@@ -164,7 +165,10 @@ public class MagicPlayMan: ObservableObject {
         currentAsset = asset
         state = .loading(.connecting)
         updateNowPlayingInfo()
-
+        
+        // 加载缩略图
+        loadThumbnail(for: asset)
+        
         // 检查缓存
         if let cachedURL = cache?.cachedURL(for: asset.url) {
             // 验证缓存文件
@@ -743,6 +747,23 @@ public class MagicPlayMan: ObservableObject {
                 "style": style
             ]
         )
+    }
+
+    /// 加载资源的缩略图
+    private func loadThumbnail(for asset: MagicAsset) {
+        Task { @MainActor in
+            do {
+                currentThumbnail = try await asset.url.thumbnail(size: CGSize(width: 600, height: 600))
+            } catch {
+                log("Failed to load thumbnail: \(error.localizedDescription)", level: .warning)
+            }
+        }
+    }
+    
+    /// 手动刷新当前资源的缩略图
+    public func reloadThumbnail() {
+        guard let asset = currentAsset else { return }
+        loadThumbnail(for: asset)
     }
 }
 

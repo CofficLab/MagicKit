@@ -1,6 +1,7 @@
 import Foundation
 import OSLog
 import SwiftUI
+import AVFoundation
 
 #if os(macOS)
     import AppKit
@@ -389,7 +390,63 @@ extension URL {
             "webp": [0x52, 0x49, 0x46, 0x46],
         ]
     }
+
+    /// 判断是否为视频文件
+    public var isVideo: Bool {
+        let videoExtensions = ["mp4", "mov", "m4v", "avi", "mkv"]
+        return videoExtensions.contains(self.pathExtension.lowercased())
+    }
+    
+    /// 判断是否为音频文件
+    public var isAudio: Bool {
+        let audioExtensions = ["mp3", "m4a", "wav", "aac", "flac", "alac"]
+        return audioExtensions.contains(self.pathExtension.lowercased())
+    }
+    
+    /// 生成默认音频缩略图
+    public func defaultAudioThumbnail(size: CGSize) -> Image {
+        #if os(macOS)
+        if let defaultIcon = NSImage(systemSymbolName: "music.note", accessibilityDescription: nil) {
+            let resizedIcon = defaultIcon.resize(to: size)
+            return Image(nsImage: resizedIcon)
+        }
+        return Image(systemName: "music.note")
+        #else
+        if let defaultIcon = UIImage(systemName: "music.note") {
+            let resizedIcon = defaultIcon.resize(to: size)
+            return Image(uiImage: resizedIcon)
+        }
+        return Image(systemName: "music.note")
+        #endif
+    }
 }
+
+#if os(macOS)
+extension NSImage {
+    func resize(to size: CGSize) -> NSImage {
+        let newImage = NSImage(size: size)
+        newImage.lockFocus()
+        
+        NSGraphicsContext.current?.imageInterpolation = .high
+        draw(in: NSRect(origin: .zero, size: size),
+             from: NSRect(origin: .zero, size: self.size),
+             operation: .copy,
+             fraction: 1.0)
+        
+        newImage.unlockFocus()
+        return newImage
+    }
+}
+#else
+extension UIImage {
+    func resize(to size: CGSize) -> UIImage {
+        let renderer = UIGraphicsImageRenderer(size: size)
+        return renderer.image { _ in
+            self.draw(in: CGRect(origin: .zero, size: size))
+        }
+    }
+}
+#endif
 
 #Preview {
     NavigationStack {
@@ -446,8 +503,62 @@ extension URL {
                     #endif
                 }
             }
+            
+            Section("缩略图测试") {
+                VStack(spacing: 20) {
+                    HStack(spacing: 20) {
+                        // 测试图片缩略图
+                        if let imageUrl = Bundle.main.url(forResource: "test", withExtension: "jpg") {
+                            AsyncPreviewCell(url: imageUrl, title: "图片缩略图")
+                        }
+                        
+                        // 测试音频缩略图
+                        if let audioUrl = Bundle.main.url(forResource: "test", withExtension: "mp3") {
+                            AsyncPreviewCell(url: audioUrl, title: "音频缩略图")
+                        }
+                        
+                        // 测试视频缩略图
+                        if let videoUrl = Bundle.main.url(forResource: "test", withExtension: "mp4") {
+                            AsyncPreviewCell(url: videoUrl, title: "视频缩略图")
+                        }
+                    }
+                    .frame(height: 150)
+                    
+                    // 测试默认音频图标
+                    VStack {
+                        Text("默认音频图标")
+                        URL.documentsDirectory
+                            .defaultAudioThumbnail(size: CGSize(width: 100, height: 100))
+                    }
+                }
+                .padding()
+            }
         }
         .navigationTitle("URL 扩展测试")
     }
     .padding()
+}
+
+// 辅助预览组件
+private struct AsyncPreviewCell: View {
+    let url: URL
+    let title: String
+    @State private var thumbnail: Image?
+    
+    var body: some View {
+        VStack {
+            if let thumbnail = thumbnail {
+                thumbnail
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+            } else {
+                ProgressView()
+            }
+            Text(title)
+                .font(.caption)
+        }
+        .task {
+            thumbnail = try? await url.thumbnail(size: CGSize(width: 100, height: 100))
+        }
+    }
 }
