@@ -80,7 +80,7 @@ public extension MagicPlayMan {
                 
                 Spacer()
                 
-                PlayModeIndicator(mode: playMan.playMode)
+                playMan.playMode.indicator
                     .foregroundStyle(.secondary)
                 
                 toolbarButtons
@@ -195,8 +195,8 @@ public extension MagicPlayMan {
                     onTogglePlayMode: {
                         playMan.togglePlayMode()
                         showToast(
-                            playModeName(playMan.playMode),
-                            icon: playModeIcon(playMan.playMode),
+                            playMan.playMode.displayName,
+                            icon: playMan.playMode.iconName,
                             style: .info
                         )
                     }
@@ -336,32 +336,6 @@ public extension MagicPlayMan {
                 withAnimation {
                     toast = nil
                 }
-            }
-        }
-        
-        private func playModeName(_ mode: PlaybackManager.PlayMode) -> String {
-            switch mode {
-            case .sequence:
-                return "Sequential Play"
-            case .loop:
-                return "Single Track Loop"
-            case .shuffle:
-                return "Shuffle Play"
-            case .repeatAll:
-                return "Repeat All"
-            }
-        }
-        
-        private func playModeIcon(_ mode: PlaybackManager.PlayMode) -> String {
-            switch mode {
-            case .sequence:
-                return "arrow.right"
-            case .loop:
-                return "repeat.1"
-            case .shuffle:
-                return "shuffle"
-            case .repeatAll:
-                return "repeat"
             }
         }
         

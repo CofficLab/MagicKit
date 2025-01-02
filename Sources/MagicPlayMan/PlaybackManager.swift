@@ -2,36 +2,10 @@ import Foundation
 import SwiftUI
 
 public class PlaybackManager {
-    /// 播放模式
-    public enum PlayMode {
-        case sequence    // 顺序播放
-        case loop       // 单曲循环
-        case shuffle    // 随机播放
-        case repeatAll  // 列表循环
-
-        public var description: String {
-            switch self {
-            case .sequence: return "Sequence"
-            case .loop: return "Loop"
-            case .shuffle: return "Shuffle"
-            case .repeatAll: return "Repeat All"
-            }
-        }
-
-        public var icon: String {
-            switch self {
-            case .sequence: return "list.bullet"
-            case .loop: return "repeat"
-            case .shuffle: return "shuffle"
-            case .repeatAll: return "repeat.1"
-            }
-        }
-    }
-    
     private weak var playMan: MagicPlayMan?
     private var shuffledIndices: [Int] = []
     
-    @Published var mode: PlayMode = .sequence
+    @Published public internal(set) var mode: PlayMode = .sequence
     @Published var playlist: [MagicAsset] = []
     @Published var currentIndex: Int = -1
     
@@ -131,16 +105,9 @@ public class PlaybackManager {
     // MARK: - 播放模式
     
     func toggleMode() {
-        switch mode {
-        case .sequence:
-            mode = .loop
-        case .loop:
-            mode = .shuffle
+        mode = mode.next
+        if mode == .shuffle {
             updateShuffleIndices()
-        case .shuffle:
-            mode = .repeatAll
-        case .repeatAll:
-            mode = .sequence
         }
     }
     

@@ -718,13 +718,23 @@ public class MagicPlayMan: ObservableObject {
         }
     }
 
-    // 公开播放模式
-    public var playMode: PlaybackManager.PlayMode {
+    // MARK: - 播放模式
+    
+    /// 当前播放模式
+    public var playMode: PlayMode {
         playbackManager.mode
     }
     
+    /// 切换播放模式
     public func togglePlayMode() {
         playbackManager.toggleMode()
+        log("Playback mode changed to: \(playMode.displayName)")
+    }
+    
+    /// 设置播放模式
+    public func setPlayMode(_ mode: PlayMode) {
+        playbackManager.mode = mode
+        log("Playback mode set to: \(mode.displayName)")
     }
     
     // 公开播放列表管理方法

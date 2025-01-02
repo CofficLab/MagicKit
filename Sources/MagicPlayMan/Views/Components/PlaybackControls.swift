@@ -6,7 +6,7 @@ struct PlaybackControls: View {
     let hasAsset: Bool
     let isLoading: Bool
     let canSeek: Bool
-    let playMode: PlaybackManager.PlayMode
+    let playMode: PlayMode
     let onPlayPause: () -> Void
     let onSkipForward: () -> Void
     let onSkipBackward: () -> Void

@@ -1,13 +1,13 @@
 import SwiftUI
 
 struct MagicPlayModeButton: View {
-    let mode: PlaybackManager.PlayMode
+    let mode: PlayMode
     let action: () -> Void
     
     @State private var isHovering = false
     @Environment(\.colorScheme) private var colorScheme
     
-    init(mode: PlaybackManager.PlayMode, action: @escaping () -> Void) {
+    init(mode: PlayMode, action: @escaping () -> Void) {
         self.mode = mode
         self.action = action
     }
@@ -65,7 +65,7 @@ struct MagicPlayModeButton: View {
 
 #Preview("MagicPlayModeButton") {
     struct PreviewWrapper: View {
-        @State private var mode: PlaybackManager.PlayMode = .sequence
+        @State private var mode: PlayMode = .sequence
         
         var body: some View {
             HStack(spacing: 20) {
@@ -74,7 +74,7 @@ struct MagicPlayModeButton: View {
                         .font(.headline)
                     
                     ForEach([
-                        PlaybackManager.PlayMode.sequence,
+                        PlayMode.sequence,
                         .loop,
                         .shuffle,
                         .repeatAll
@@ -93,7 +93,7 @@ struct MagicPlayModeButton: View {
                         .font(.headline)
                     
                     ForEach([
-                        PlaybackManager.PlayMode.sequence,
+                        PlayMode.sequence,
                         .loop,
                         .shuffle,
                         .repeatAll
