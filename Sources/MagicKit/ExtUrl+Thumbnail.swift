@@ -136,54 +136,109 @@ extension URL {
 // MARK: - Preview
 
 #Preview("Thumbnails") {
-    VStack(spacing: 20) {
-        // 测试文件夹缩略图
-        AsyncThumbnailView(
-            url: .documentsDirectory,
-            title: "文件夹缩略图"
-        )
-        
-        // 测试图片缩略图 (NASA 地球照片)
-        AsyncThumbnailView(
-            url: .sample_jpg_earth,
-            title: "NASA 地球照片"
-        )
-        
-        // 测试音频缩略图 (NASA 肯尼迪演讲)
-        AsyncThumbnailView(
-            url: .sample_mp3_kennedy,
-            title: "肯尼迪演讲"
-        )
-        
-        // 测试视频缩略图 (Big Buck Bunny)
-        AsyncThumbnailView(
-            url: .sample_mp4_bunny,
-            title: "Big Buck Bunny"
-        )
-        
-        // 额外的示例
-        AsyncThumbnailView(
-            url: .sample_jpg_mars,
-            title: "NASA 火星照片"
-        )
-        
-        AsyncThumbnailView(
-            url: .sample_mp4_sintel,
-            title: "Sintel 预告片"
-        )
-        
-        // 测试临时文件
-        AsyncThumbnailView(
-            url: .sample_temp_mp3,
-            title: "临时测试文件"
-        )
-        AsyncThumbnailView(
-            url: .sample_temp_txt,
-            title: "临时测试文件txt"
-        )
+    ScrollView {
+        VStack(spacing: 20) {
+            Group {
+                // 文件夹
+                AsyncThumbnailView(
+                    url: .documentsDirectory,
+                    title: "文件夹缩略图"
+                )
+                
+                // 图片文件
+                AsyncThumbnailView(
+                    url: .sample_jpg_earth,
+                    title: "NASA 地球照片"
+                )
+                AsyncThumbnailView(
+                    url: .sample_jpg_mars,
+                    title: "NASA 火星照片"
+                )
+                AsyncThumbnailView(
+                    url: .sample_png_transparency,
+                    title: "PNG 透明度演示"
+                )
+                AsyncThumbnailView(
+                    url: .sample_png_gradient,
+                    title: "RGB 渐变演示"
+                )
+            }
+            
+            Group {
+                // 音频文件
+                AsyncThumbnailView(
+                    url: .sample_mp3_kennedy,
+                    title: "肯尼迪演讲"
+                )
+                AsyncThumbnailView(
+                    url: .sample_wav_mars,
+                    title: "火星音效"
+                )
+                AsyncThumbnailView(
+                    url: .sample_mp3_apollo,
+                    title: "阿波罗登月"
+                )
+            }
+            
+            Group {
+                // 视频文件
+                AsyncThumbnailView(
+                    url: .sample_mp4_bunny,
+                    title: "Big Buck Bunny"
+                )
+                AsyncThumbnailView(
+                    url: .sample_mp4_sintel,
+                    title: "Sintel 预告片"
+                )
+                AsyncThumbnailView(
+                    url: .sample_mp4_elephants,
+                    title: "Elephants Dream"
+                )
+            }
+            
+            Group {
+                // PDF 文件
+                AsyncThumbnailView(
+                    url: .sample_pdf_swift_guide,
+                    title: "Swift 入门指南"
+                )
+                AsyncThumbnailView(
+                    url: .sample_pdf_swiftui,
+                    title: "SwiftUI 文档"
+                )
+            }
+            
+            Group {
+                // 文本文件
+                AsyncThumbnailView(
+                    url: .sample_txt_mit,
+                    title: "MIT 开源协议"
+                )
+                AsyncThumbnailView(
+                    url: .sample_txt_apache,
+                    title: "Apache 开源协议"
+                )
+            }
+            
+            Group {
+                // 临时文件测试
+                AsyncThumbnailView(
+                    url: .sample_temp_mp3,
+                    title: "临时音频文件"
+                )
+                AsyncThumbnailView(
+                    url: .sample_temp_txt,
+                    title: "临时文本文件"
+                )
+                AsyncThumbnailView(
+                    url: .sample_temp_pdf,
+                    title: "临时 PDF 文件"
+                )
+            }
+        }
+        .padding()
     }
-    .padding()
-    .frame(width: 500)
+    .frame(width: 500, height: 600)
     .background(MagicBackground.mint)
 }
 

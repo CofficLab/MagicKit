@@ -45,7 +45,7 @@ public extension URL {
 
 // MARK: - Preview Shape
 
-public enum PreviewShape: Equatable {
+public enum PreviewShape: Equatable, Hashable {
     case square
     case circle
     case roundedSquare(radius: CGFloat = 8)
@@ -73,6 +73,20 @@ public enum PreviewShape: Equatable {
 
     func apply<V: View>(to view: V) -> some View {
         view.clipShape(shape)
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        switch self {
+        case .square:
+            hasher.combine(0)
+        case .circle:
+            hasher.combine(1)
+        case .roundedSquare(let radius):
+            hasher.combine(2)
+            hasher.combine(radius)
+        case .rectangle:
+            hasher.combine(3)
+        }
     }
 }
 
@@ -454,100 +468,158 @@ public extension View {
 // MARK: - Preview
 
 #Preview("Media Preview") {
-    ScrollView {
-        VStack(spacing: 20) {
-            // 预览形状展示
-            Group {
-                Text("预览形状").font(.headline)
-                HStack(spacing: 20) {
-                    // 方形预览
-                    URL.sample_jpg_earth.makePreviewView(
-                        shape: .square,
-                        showTitle: true
-                    )
-                    .withBackground(.blue.opacity(0.1))
+    struct PreviewState {
+        var showTitle = true
+        var showType = true
+        var backgroundColor: Color? = nil
+        var shape: PreviewShape = .square
+    }
+    
+    struct PreviewContainer: View {
+        @State private var state = PreviewState()
+        
+        var body: some View {
+            ScrollView {
+                VStack(spacing: 20) {
+                    // 预览形状展示
+                    Group {
+                        Text("预览形状").font(.headline)
+                        HStack(spacing: 20) {
+                            ForEach([
+                                URL.sample_jpg_earth,
+                                URL.sample_jpg_mars,
+                                URL.sample_jpg_jupiter
+                            ], id: \.self) { url in
+                                url.makePreviewView(
+                                    shape: state.shape,
+                                    showTitle: state.showTitle,
+                                    showType: state.showType
+                                )
+                                .modifier(PreviewBackgroundModifier(
+                                    isEnabled: state.backgroundColor != nil,
+                                    style: state.backgroundColor
+                                ))
+                            }
+                        }
+                    }
                     
-                    // 圆形预览
-                    URL.sample_jpg_mars.makePreviewView(
-                        shape: .circle,
-                        showTitle: true
-                    )
-                    .withBackground(.red.opacity(0.1))
+                    // 图片预览
+                    Group {
+                        Text("图片预览").font(.headline)
+                        HStack(spacing: 20) {
+                            URL.sample_jpg_earth.makePreviewView()
+                                .withBackground(.blue.opacity(0.1))
+                            URL.sample_jpg_mars.makePreviewView()
+                                .withBackground(.red.opacity(0.1))
+                            URL.sample_png_transparency.makePreviewView()
+                                .withBackground(.green.opacity(0.1))
+                        }
+                    }
                     
-                    // 圆角方形预览
-                    URL.sample_jpg_jupiter.makePreviewView(
-                        shape: .roundedSquare(radius: 16),
-                        showTitle: true
-                    )
-                    .withBackground(.orange.opacity(0.1))
+                    // 音频预览
+                    Group {
+                        Text("音频预览").font(.headline)
+                        HStack(spacing: 20) {
+                            URL.sample_mp3_kennedy.makePreviewView()
+                                .withBackground(.yellow.opacity(0.1))
+                            URL.sample_mp3_apollo.makePreviewView()
+                                .withBackground(.orange.opacity(0.1))
+                            URL.sample_wav_mars.makePreviewView()
+                                .withBackground(.purple.opacity(0.1))
+                        }
+                    }
+                    
+                    // 视频预览
+                    Group {
+                        Text("视频预览").font(.headline)
+                        HStack(spacing: 20) {
+                            URL.sample_mp4_bunny.makePreviewView()
+                                .withBackground(.cyan.opacity(0.1))
+                            URL.sample_mp4_sintel.makePreviewView()
+                                .withBackground(.mint.opacity(0.1))
+                            URL.sample_mp4_elephants.makePreviewView()
+                                .withBackground(.indigo.opacity(0.1))
+                        }
+                    }
+                    
+                    // 文件预览
+                    Group {
+                        Text("文件预览样式").font(.headline)
+                        VStack(spacing: 12) {
+                            URL.sample_pdf_swift_guide.makePreviewView(shape: .file)
+                                .withBackground(.gray.opacity(0.1))
+                            URL.sample_txt_mit.makePreviewView(shape: .file)
+                                .withBackground(.brown.opacity(0.1))
+                        }
+                    }
+                    
+                    // 临时文件预览
+                    Group {
+                        Text("临时文件预览").font(.headline)
+                        HStack(spacing: 20) {
+                            URL.sample_temp_jpg.makePreviewView()
+                                .withBackground(.teal.opacity(0.1))
+                            URL.sample_temp_mp3.makePreviewView()
+                                .withBackground(.pink.opacity(0.1))
+                            URL.sample_temp_txt.makePreviewView(shape: .file)
+                                .withBackground(.gray.opacity(0.1))
+                        }
+                    }
                 }
+                .frame(maxWidth: .infinity)
             }
-            
-            // 图片预览
-            Group {
-                Text("图片预览").font(.headline)
-                HStack(spacing: 20) {
-                    URL.sample_jpg_earth.makePreviewView()
-                        .withBackground(.blue.opacity(0.1))
-                    URL.sample_jpg_mars.makePreviewView()
-                        .withBackground(.red.opacity(0.1))
-                    URL.sample_png_transparency.makePreviewView()
-                        .withBackground(.green.opacity(0.1))
+            .toolbar {
+                #if os(macOS)
+                ToolbarItemGroup(placement: .automatic) {
+                    toolbarContent
                 }
-            }
-            
-            // 音频预览
-            Group {
-                Text("音频预览").font(.headline)
-                HStack(spacing: 20) {
-                    URL.sample_mp3_kennedy.makePreviewView()
-                        .withBackground(.yellow.opacity(0.1))
-                    URL.sample_mp3_apollo.makePreviewView()
-                        .withBackground(.orange.opacity(0.1))
-                    URL.sample_wav_mars.makePreviewView()
-                        .withBackground(.purple.opacity(0.1))
+                #else
+                ToolbarItemGroup(placement: .bottomBar) {
+                    toolbarContent
                 }
-            }
-            
-            // 视频预览
-            Group {
-                Text("视频预览").font(.headline)
-                HStack(spacing: 20) {
-                    URL.sample_mp4_bunny.makePreviewView()
-                        .withBackground(.cyan.opacity(0.1))
-                    URL.sample_mp4_sintel.makePreviewView()
-                        .withBackground(.mint.opacity(0.1))
-                    URL.sample_mp4_elephants.makePreviewView()
-                        .withBackground(.indigo.opacity(0.1))
-                }
-            }
-            
-            // 文件预览
-            Group {
-                Text("文件预览样式").font(.headline)
-                VStack(spacing: 12) {
-                    URL.sample_pdf_swift_guide.makePreviewView(shape: .file)
-                        .withBackground(.gray.opacity(0.1))
-                    URL.sample_txt_mit.makePreviewView(shape: .file)
-                        .withBackground(.brown.opacity(0.1))
-                }
-            }
-            
-            // 临时文件预览
-            Group {
-                Text("临时文件预览").font(.headline)
-                HStack(spacing: 20) {
-                    URL.sample_temp_jpg.makePreviewView()
-                        .withBackground(.teal.opacity(0.1))
-                    URL.sample_temp_mp3.makePreviewView()
-                        .withBackground(.pink.opacity(0.1))
-                    URL.sample_temp_txt.makePreviewView(shape: .file)
-                        .withBackground(.gray.opacity(0.1))
-                }
+                #endif
             }
         }
-        .padding()
+        
+        @ViewBuilder
+        private var toolbarContent: some View {
+            Toggle("显示标题", isOn: $state.showTitle)
+            Toggle("显示类型", isOn: $state.showType)
+            
+            Divider()
+            
+            Picker("形状", selection: $state.shape) {
+                Image(systemName: "square.fill")
+                    .tag(PreviewShape.square)
+                Image(systemName: "circle.fill")
+                    .tag(PreviewShape.circle)
+                Image(systemName: "square.fill")
+                    .tag(PreviewShape.roundedSquare(radius: 8))
+            }
+            .pickerStyle(.segmented)
+            
+            Divider()
+            
+            Menu {
+                Button("无背景") {
+                    state.backgroundColor = nil
+                }
+                Button("蓝色") {
+                    state.backgroundColor = .blue.opacity(0.1)
+                }
+                Button("红色") {
+                    state.backgroundColor = .red.opacity(0.1)
+                }
+                Button("绿色") {
+                    state.backgroundColor = .green.opacity(0.1)
+                }
+            } label: {
+                Image(systemName: "paintpalette")
+            }
+        }
     }
-    .frame(width: 600, height: 800)
-    .background(MagicBackground.mint)
+    
+    return PreviewContainer()
+        .frame(width: 600, height: 800)
+        .background(MagicBackground.mint)
 }

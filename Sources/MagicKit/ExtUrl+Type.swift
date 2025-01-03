@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import MagicUI
 import UniformTypeIdentifiers
 
 public extension URL {
@@ -47,6 +48,30 @@ public extension URL {
         scheme == "http" || scheme == "https"
     }
 
+    /// 是否是 PDF 文件
+    var isPDF: Bool {
+        if let type = try? resourceValues(forKeys: [.contentTypeKey]).contentType {
+            return type.conforms(to: .pdf)
+        }
+        return pathExtension.lowercased() == "pdf"
+    }
+    
+    /// 是否是文本文件
+    var isText: Bool {
+        if let type = try? resourceValues(forKeys: [.contentTypeKey]).contentType {
+            return type.conforms(to: .text)
+        }
+        return textExtensions.contains(pathExtension.lowercased())
+    }
+    
+    /// 是否是压缩文件
+    var isArchive: Bool {
+        if let type = try? resourceValues(forKeys: [.contentTypeKey]).contentType {
+            return type.conforms(to: .archive)
+        }
+        return archiveExtensions.contains(pathExtension.lowercased())
+    }
+
     /// 返回 URL 对应的文件类型标签视图
     var label: Label<Text, Image> {
         if isAudio {
@@ -57,6 +82,12 @@ public extension URL {
             return Label("Image", systemImage: icon)
         } else if isDirectory {
             return Label("Directory", systemImage: icon)
+        } else if isPDF {
+            return Label("PDF", systemImage: icon)
+        } else if isText {
+            return Label("Text", systemImage: icon)
+        } else if isArchive {
+            return Label("Archive", systemImage: icon)
         } else {
             return Label("Other", systemImage: icon)
         }
@@ -72,6 +103,12 @@ public extension URL {
             return "photo"
         } else if isDirectory {
             return "folder"
+        } else if isPDF {
+            return "doc.text"
+        } else if isText {
+            return "doc.text.fill"
+        } else if isArchive {
+            return "doc.zipper"
         } else {
             return "doc"
         }
@@ -102,6 +139,23 @@ private extension URL {
         [
             "jpg", "jpeg", "png", "gif", "bmp", "tiff",
             "webp", "heic", "heif", "raw", "svg",
+        ]
+    }
+
+    /// 支持的文本文件扩展名
+    var textExtensions: Set<String> {
+        [
+            "txt", "rtf", "md", "json", "xml", "yml",
+            "yaml", "swift", "java", "cpp", "c", "h",
+            "html", "css", "js", "py", "sh"
+        ]
+    }
+    
+    /// 支持的压缩文件扩展名
+    var archiveExtensions: Set<String> {
+        [
+            "zip", "rar", "7z", "tar", "gz", "bz2",
+            "xz", "tgz", "tbz"
         ]
     }
 }
@@ -160,5 +214,5 @@ struct FileTypeExamplesView: View {
 }
 
 #Preview {
-    FileTypeExamplesView()
+    FileTypeExamplesView().frame(height: 800)
 }
