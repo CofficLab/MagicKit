@@ -18,6 +18,15 @@ public extension URL {
     ///   - showTitle: 是否显示标题
     ///   - showType: 是否显示类型图标
     /// - Returns: 预览视图
+    ///
+    /// 支持以下背景样式设置：
+    /// ```swift
+    /// // 移除背景
+    /// url.makePreviewView().noBackground()
+    /// 
+    /// // 自定义背景颜色
+    /// url.makePreviewView().withBackground(.blue)
+    /// ```
     func makePreviewView(
         size: CGSize = CGSize(width: 120, height: 120),
         shape: PreviewShape = .square,
@@ -143,6 +152,7 @@ private struct MediaPreviewView: View {
                 .padding(.vertical, 8)
                 .background(.background.opacity(0.5))
                 .clipShape(RoundedRectangle(cornerRadius: 8))
+                .modifier(PreviewBackgroundModifier(isEnabled: true, style: nil))
             } else {
                 // 原有的方形/圆形布局
                 VStack(spacing: 8) {
@@ -245,25 +255,11 @@ private struct TypeBadge: View {
     let url: URL
 
     var body: some View {
-        Image(systemName: icon)
+        Image(systemName: url.icon)
             .font(.caption)
             .padding(4)
             .background(.ultraThinMaterial)
             .clipShape(Circle())
-    }
-
-    private var icon: String {
-        if url.isAudio {
-            return "music.note"
-        } else if url.isVideo {
-            return "film"
-        } else if url.isImage {
-            return "photo"
-        } else if url.isDirectory {
-            return "folder"
-        } else {
-            return "doc"
-        }
     }
 }
 
@@ -423,141 +419,135 @@ private struct ErrorDetailsView: View {
     }
 }
 
-// MARK: - Preview
+// MARK: - Background Modifier
 
-#Preview("URL Views") {
-    PreviewDemoView()
+private struct PreviewBackgroundModifier: ViewModifier {
+    let isEnabled: Bool
+    let style: Color?
+    
+    func body(content: Content) -> some View {
+        if isEnabled {
+            if let style = style {
+                content.background(style.opacity(0.5))
+            } else {
+                content.background(.background.opacity(0.5))
+            }
+        } else {
+            content
+        }
+    }
 }
 
-private struct PreviewDemoView: View {
-    @State private var selectedShape: PreviewShape = .rectangle
-    @State private var selectedSize: CGSize = .init(width: 120, height: 120)
-    
-    private let previewURLs: [(String, URL)] = [
-        // 音频文件
-        ("iCloud Audio", URL(string: "file:///iCloud/test.mp3")!),
-        ("Remote Audio", URL(string: "https://storage.googleapis.com/media-session/sintel/snow-fight.mp3")!),
-        ("Local Audio", URL(string: "file:///music.mp3")!),
-        
-        // 视频文件
-        ("Remote Video", URL(string: "https://media.w3.org/2010/05/sintel/trailer.mp4")!),
-        ("Sample Video", URL(string: "https://download.samplelib.com/mp4/sample-5s.mp4")!),
-        ("Local Video", URL(string: "file:///movie.mp4")!),
-        
-        // 图片文件
-        ("Sample Image", URL(string: "https://picsum.photos/200")!),
-        ("Nature Image", URL(string: "https://source.unsplash.com/random/200x200/?nature")!),
-        ("Local Image", URL(string: "file:///photo.jpg")!),
-        
-        // 文档和文件夹
-        ("Local Folder", URL.documentsDirectory),
-        ("PDF Document", URL(string: "file:///document.pdf")!),
-        ("Text File", URL(string: "file:///notes.txt")!)
-    ]
-    
-    private let shapes: [(String, PreviewShape)] = [
-        ("Rectangle", .rectangle),
-        ("Square", .square),
-        ("Circle", .circle),
-        ("Rounded", .roundedSquare())
-    ]
-    
-    private let sizes: [(String, CGSize)] = [
-        ("Small", CGSize(width: 80, height: 80)),
-        ("Medium", CGSize(width: 120, height: 120)),
-        ("Large", CGSize(width: 160, height: 160))
-    ]
-    
-    var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                shapeSelector
-                sizeSelector
-                previewList
-            }
-            .padding()
-        }
-        .frame(width: 600, height: 800)
+public extension View {
+    /// 移除预览视图的背景
+    func noBackground() -> some View {
+        modifier(PreviewBackgroundModifier(isEnabled: false, style: nil))
     }
     
-    // 样式选择器
-    private var shapeSelector: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 12) {
-                ForEach(shapes, id: \.0) { name, shape in
-                    shapeButton(name: name, shape: shape)
+    /// 设置预览视图的背景颜色
+    /// - Parameter color: 背景颜色
+    func withBackground(_ color: Color) -> some View {
+        modifier(PreviewBackgroundModifier(isEnabled: true, style: color))
+    }
+}
+
+// MARK: - Preview
+
+#Preview("Media Preview") {
+    ScrollView {
+        VStack(spacing: 20) {
+            // 预览形状展示
+            Group {
+                Text("预览形状").font(.headline)
+                HStack(spacing: 20) {
+                    // 方形预览
+                    URL.sample_jpg_earth.makePreviewView(
+                        shape: .square,
+                        showTitle: true
+                    )
+                    .withBackground(.blue.opacity(0.1))
+                    
+                    // 圆形预览
+                    URL.sample_jpg_mars.makePreviewView(
+                        shape: .circle,
+                        showTitle: true
+                    )
+                    .withBackground(.red.opacity(0.1))
+                    
+                    // 圆角方形预览
+                    URL.sample_jpg_jupiter.makePreviewView(
+                        shape: .roundedSquare(radius: 16),
+                        showTitle: true
+                    )
+                    .withBackground(.orange.opacity(0.1))
                 }
             }
-            .padding(.horizontal)
-        }
-        .padding(.vertical, 8)
-    }
-    
-    // 样式按钮
-    private func shapeButton(name: String, shape: PreviewShape) -> some View {
-        MagicButton(
-            icon: iconForShape(shape),
-            title: name,
-            style: selectedShape == shape ? .primary : .secondary,
-            size: .small,
-            shape: .capsule,
-            action: { selectedShape = shape }
-        )
-    }
-    
-    // 为每种形状选择合适的图标
-    private func iconForShape(_ shape: PreviewShape) -> String {
-        switch shape {
-        case .rectangle:
-            return "rectangle"
-        case .square:
-            return "square"
-        case .circle:
-            return "circle"
-        case .roundedSquare:
-            return "square.fill.on.square"
-        }
-    }
-    
-    // 新增尺寸选择器
-    private var sizeSelector: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 12) {
-                ForEach(sizes, id: \.0) { name, size in
-                    sizeButton(name: name, size: size)
+            
+            // 图片预览
+            Group {
+                Text("图片预览").font(.headline)
+                HStack(spacing: 20) {
+                    URL.sample_jpg_earth.makePreviewView()
+                        .withBackground(.blue.opacity(0.1))
+                    URL.sample_jpg_mars.makePreviewView()
+                        .withBackground(.red.opacity(0.1))
+                    URL.sample_png_transparency.makePreviewView()
+                        .withBackground(.green.opacity(0.1))
                 }
             }
-            .padding(.horizontal)
+            
+            // 音频预览
+            Group {
+                Text("音频预览").font(.headline)
+                HStack(spacing: 20) {
+                    URL.sample_mp3_kennedy.makePreviewView()
+                        .withBackground(.yellow.opacity(0.1))
+                    URL.sample_mp3_apollo.makePreviewView()
+                        .withBackground(.orange.opacity(0.1))
+                    URL.sample_wav_mars.makePreviewView()
+                        .withBackground(.purple.opacity(0.1))
+                }
+            }
+            
+            // 视频预览
+            Group {
+                Text("视频预览").font(.headline)
+                HStack(spacing: 20) {
+                    URL.sample_mp4_bunny.makePreviewView()
+                        .withBackground(.cyan.opacity(0.1))
+                    URL.sample_mp4_sintel.makePreviewView()
+                        .withBackground(.mint.opacity(0.1))
+                    URL.sample_mp4_elephants.makePreviewView()
+                        .withBackground(.indigo.opacity(0.1))
+                }
+            }
+            
+            // 文件预览
+            Group {
+                Text("文件预览样式").font(.headline)
+                VStack(spacing: 12) {
+                    URL.sample_pdf_swift_guide.makePreviewView(shape: .file)
+                        .withBackground(.gray.opacity(0.1))
+                    URL.sample_txt_mit.makePreviewView(shape: .file)
+                        .withBackground(.brown.opacity(0.1))
+                }
+            }
+            
+            // 临时文件预览
+            Group {
+                Text("临时文件预览").font(.headline)
+                HStack(spacing: 20) {
+                    URL.sample_temp_jpg.makePreviewView()
+                        .withBackground(.teal.opacity(0.1))
+                    URL.sample_temp_mp3.makePreviewView()
+                        .withBackground(.pink.opacity(0.1))
+                    URL.sample_temp_txt.makePreviewView(shape: .file)
+                        .withBackground(.gray.opacity(0.1))
+                }
+            }
         }
-        .padding(.vertical, 8)
+        .padding()
     }
-    
-    // 新增尺寸按钮
-    private func sizeButton(name: String, size: CGSize) -> some View {
-        MagicButton(
-            icon: "rectangle.compress.vertical",
-            title: name,
-            style: selectedSize == size ? .primary : .secondary,
-            size: .small,
-            shape: .capsule,
-            action: { selectedSize = size }
-        )
-    }
-    
-    // 预览列表
-    private var previewList: some View {
-        ForEach(previewURLs, id: \.0) { name, url in
-            previewItem(name: name, url: url)
-        }
-    }
-    
-    // 预览项
-    private func previewItem(name: String, url: URL) -> some View {
-        VStack(alignment: .leading) {
-            Text(name)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-            url.makePreviewView(size: selectedSize, shape: selectedShape)
-        }
-    }
+    .frame(width: 600, height: 800)
+    .background(MagicBackground.mint)
 }

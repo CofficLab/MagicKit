@@ -2,6 +2,7 @@ import Foundation
 import SwiftUI
 import AVFoundation
 import OSLog
+import MagicUI
 
 #if os(macOS)
     import AppKit
@@ -142,25 +143,48 @@ extension URL {
             title: "文件夹缩略图"
         )
         
-        // 测试图片缩略图
+        // 测试图片缩略图 (NASA 地球照片)
         AsyncThumbnailView(
-            url: URL(string: "https://picsum.photos/200")!,
-            title: "图片缩略图"
+            url: .sample_jpg_earth,
+            title: "NASA 地球照片"
         )
         
-        // 测试音频缩略图（使用 Apple Music 预览链接）
+        // 测试音频缩略图 (NASA 肯尼迪演讲)
         AsyncThumbnailView(
-            url: URL(string: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/fd/37/41/fd374113-bf05-692f-e157-5c364af08d9d/mzaf_15384825730917775750.plus.aac.p.m4a")!,
-            title: "音频缩略图"
+            url: .sample_mp3_kennedy,
+            title: "肯尼迪演讲"
         )
         
-        // 测试视频缩略图（使用示例视频）
+        // 测试视频缩略图 (Big Buck Bunny)
         AsyncThumbnailView(
-            url: URL(string: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4")!,
-            title: "视频缩略图"
+            url: .sample_mp4_bunny,
+            title: "Big Buck Bunny"
+        )
+        
+        // 额外的示例
+        AsyncThumbnailView(
+            url: .sample_jpg_mars,
+            title: "NASA 火星照片"
+        )
+        
+        AsyncThumbnailView(
+            url: .sample_mp4_sintel,
+            title: "Sintel 预告片"
+        )
+        
+        // 测试临时文件
+        AsyncThumbnailView(
+            url: .sample_temp_mp3,
+            title: "临时测试文件"
+        )
+        AsyncThumbnailView(
+            url: .sample_temp_txt,
+            title: "临时测试文件txt"
         )
     }
     .padding()
+    .frame(width: 500)
+    .background(MagicBackground.mint)
 }
 
 private struct AsyncThumbnailView: View {

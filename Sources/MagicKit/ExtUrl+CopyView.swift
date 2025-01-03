@@ -302,27 +302,26 @@ private struct ToastView: View {
 #Preview("File Copy Styles") {
     VStack(spacing: 20) {
         // 默认样式
-        URL.documentsDirectory
-            .appendingPathComponent("test.txt")
+        URL.sample_temp_txt
             .copyView(destination: .documentsDirectory.appendingPathComponent("copy"))
             .withBackground()
         
         // 自定义背景色和形状
-        URL(string: "https://picsum.photos/200")!
+        URL.sample_jpg_moon
             .copyView(destination: .documentsDirectory.appendingPathComponent("random.jpg"))
             .withBackground(.blue.opacity(0.1))
             .withShape(.capsule)
             .withShadow(radius: 4)
             
         // 矩形样式
-        URL(string: "https://speed.hetzner.de/100MB.bin")!
+        URL.sample_txt_bsd
             .copyView(destination: .documentsDirectory.appendingPathComponent("download.bin"))
             .withBackground(.green.opacity(0.1))
             .withShape(.rectangle)
             .withShadow(radius: 8)
             
         // 圆角矩形 + 深色背景
-        URL(string: "file:///iCloud/test.pdf")!
+        URL.sample_jpg_earth
             .copyView(destination: .documentsDirectory)
             .withBackground(.black.opacity(0.1))
             .withShape(.roundedRectangle, cornerRadius: 20)
