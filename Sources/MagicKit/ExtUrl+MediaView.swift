@@ -3,15 +3,22 @@ import SwiftUI
 import MagicUI
 
 // MARK: - Media View Style
+/// 媒体视图的背景样式
 public enum MediaViewStyle {
+    /// 无背景
     case none
+    /// 自定义背景视图
     case background(AnyView)
 }
 
 // MARK: - Media View Shape
+/// 媒体视图左侧缩略图的形状
 public enum MediaViewShape {
+    /// 圆形
     case circle
+    /// 圆角矩形，可指定圆角半径
     case roundedRectangle(cornerRadius: CGFloat = 8)
+    /// 矩形
     case rectangle
     
     @ViewBuilder
@@ -99,6 +106,32 @@ private struct ActionButtonsView: View {
     }
 }
 
+// MARK: - Media File View
+/// 用于显示文件信息的视图组件
+/// 
+/// 这个视图组件可以显示文件的缩略图、名称、大小等信息，并提供文件操作功能。
+/// 支持以下特性：
+/// - 自动生成文件缩略图
+/// - 显示文件大小
+/// - 错误状态展示
+/// - 悬停时显示操作按钮
+/// - 可自定义背景样式
+/// - 可自定义缩略图形状
+/// - 可调整垂直内边距
+///
+/// 基本用法：
+/// ```swift
+/// let url = URL(fileURLWithPath: "path/to/file")
+/// url.makeMediaView()
+/// ```
+///
+/// 自定义样式：
+/// ```swift
+/// url.makeMediaView()
+///     .withBackground(MagicBackground.mint)
+///     .thumbnailShape(.roundedRectangle(cornerRadius: 8))
+///     .verticalPadding(16)
+/// ```
 public struct MediaFileView: View {
     let url: URL
     let size: String
@@ -111,6 +144,10 @@ public struct MediaFileView: View {
     @State private var isLoading = false
     @State private var isHovering = false
     
+    /// 创建媒体文件视图
+    /// - Parameters:
+    ///   - url: 文件的 URL
+    ///   - size: 文件大小的字符串表示
     public init(url: URL, size: String) {
         self.url = url
         self.size = size
@@ -192,30 +229,43 @@ public struct MediaFileView: View {
         }
     }
     
+    /// 移除背景样式
+    /// - Returns: 无背景样式的视图
     public func noBackground() -> MediaFileView {
         var view = self
         view.style = .none
         return view
     }
     
+    /// 添加自定义背景
+    /// - Parameter background: 背景视图
+    /// - Returns: 带有指定背景的视图
     public func withBackground<Background: View>(_ background: Background) -> MediaFileView {
         var view = self
         view.style = .background(AnyView(background))
         return view
     }
     
+    /// 隐藏操作按钮
+    /// - Returns: 不显示操作按钮的视图
     public func hideActions() -> MediaFileView {
         var view = self
         view.showActions = false
         return view
     }
     
+    /// 设置缩略图形状
+    /// - Parameter shape: 要应用的形状
+    /// - Returns: 使用指定形状的视图
     public func thumbnailShape(_ shape: MediaViewShape) -> MediaFileView {
         var view = self
         view.shape = shape
         return view
     }
     
+    /// 设置垂直内边距
+    /// - Parameter padding: 内边距大小（点）
+    /// - Returns: 使用指定内边距的视图
     public func verticalPadding(_ padding: CGFloat) -> MediaFileView {
         var view = self
         view.verticalPadding = padding
@@ -230,7 +280,30 @@ private extension View {
     }
 }
 
+// MARK: - URL Extension
 public extension URL {
+    /// 为 URL 创建媒体文件视图
+    /// - Returns: 展示该 URL 对应文件信息的视图
+    ///
+    /// 这个方法会自动：
+    /// - 获取文件大小
+    /// - 生成缩略图（如果是媒体文件）
+    /// - 处理错误状态
+    ///
+    /// 示例：
+    /// ```swift
+    /// // 基本使用
+    /// url.makeMediaView()
+    ///
+    /// // 带背景
+    /// url.makeMediaView()
+    ///     .withBackground(MagicBackground.mint)
+    ///
+    /// // 自定义形状和内边距
+    /// url.makeMediaView()
+    ///     .thumbnailShape(.roundedRectangle(cornerRadius: 8))
+    ///     .verticalPadding(16)
+    /// ```
     func makeMediaView() -> MediaFileView {
         MediaFileView(url: self, size: self.getSizeReadable())
     }
