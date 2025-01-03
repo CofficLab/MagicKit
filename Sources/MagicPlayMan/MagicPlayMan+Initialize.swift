@@ -139,7 +139,7 @@ internal extension MagicPlayMan {
                     if !self.isPlaylistEnabled {
                         // 如果播放列表被禁用，通知调用者播放完成
                         self.log("播放列表已禁用，等待订阅者处理下一首")
-                        self.events.onTrackFinished.send(currentAsset)
+                        self.events.onNextRequested.send(currentAsset)
                     } else if let nextAsset = self._playlist.playNext(mode: self.playMode) {
                         // 如果播放列表启用，播放下一首
                         self.log("播放列表已启用，即将播放下一首：\(nextAsset.title)")
