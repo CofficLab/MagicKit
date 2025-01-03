@@ -8,6 +8,30 @@ public extension URL {
     ///   - destination: 目标位置（可以是文件夹或具体文件路径）
     ///   - onCompletion: 复制完成后的回调，参数为可选的错误信息
     /// - Returns: 文件复制进度视图
+    ///
+    /// 这个视图会显示：
+    /// - 文件缩略图（如果可用）
+    /// - 文件名和大小
+    /// - iCloud 下载进度（如果是 iCloud 文件）
+    /// - 复制进度
+    /// - 错误信息（如果发生错误）
+    ///
+    /// 基本用法：
+    /// ```swift
+    /// // 复制到文件夹
+    /// url.copyView(destination: .documentsDirectory)
+    ///
+    /// // 复制到指定文件
+    /// url.copyView(destination: .documentsDirectory.appendingPathComponent("copy.txt"))
+    /// ```
+    ///
+    /// 自定义样式：
+    /// ```swift
+    /// url.copyView(destination: destination)
+    ///     .withBackground(.mint.opacity(0.1))
+    ///     .withShape(.capsule)
+    ///     .withShadow(radius: 4)
+    /// ```
     func copyView(
         destination: URL,
         onCompletion: @escaping (Error?) async -> Void = { _ in }
@@ -21,17 +45,27 @@ public extension URL {
 }
 
 // MARK: - Style Configuration
+/// 复制视图的形状样式
 public enum CopyViewShape {
+    /// 圆角矩形（默认）
     case roundedRectangle
+    /// 矩形
     case rectangle
+    /// 胶囊形状
     case capsule
 }
 
+/// 复制视图的样式配置
 fileprivate struct CopyViewStyle {
+    /// 背景颜色
     var background: Color = .white
+    /// 背景不透明度
     var backgroundOpacity: Double = 0.8
+    /// 形状样式
     var shape: CopyViewShape = .roundedRectangle
+    /// 圆角半径（仅用于圆角矩形）
     var cornerRadius: CGFloat = 12
+    /// 阴影半径
     var shadowRadius: CGFloat = 2
 }
 
@@ -50,6 +84,10 @@ extension EnvironmentValues {
 // MARK: - Style Modifiers
 extension View {
     /// 设置复制视图的背景色
+    /// - Parameters:
+    ///   - color: 背景颜色
+    ///   - opacity: 不透明度
+    /// - Returns: 修改后的视图
     public func withBackground(_ color: Color = .white, opacity: Double = 0.8) -> some View {
         transformEnvironment(\.copyViewStyle) { style in
             style.background = color
@@ -58,6 +96,10 @@ extension View {
     }
     
     /// 设置复制视图的形状
+    /// - Parameters:
+    ///   - shape: 形状样式
+    ///   - cornerRadius: 圆角半径（仅用于圆角矩形）
+    /// - Returns: 修改后的视图
     public func withShape(_ shape: CopyViewShape, cornerRadius: CGFloat = 12) -> some View {
         transformEnvironment(\.copyViewStyle) { style in
             style.shape = shape
@@ -66,6 +108,8 @@ extension View {
     }
     
     /// 设置复制视图的阴影
+    /// - Parameter radius: 阴影半径
+    /// - Returns: 修改后的视图
     public func withShadow(radius: CGFloat = 2) -> some View {
         transformEnvironment(\.copyViewStyle) { style in
             style.shadowRadius = radius
@@ -74,6 +118,7 @@ extension View {
 }
 
 // MARK: - Helper Views and Modifiers
+/// 形状修改器
 private struct ShapeModifier: ViewModifier {
     let style: CopyViewStyle
     
@@ -89,8 +134,11 @@ private struct ShapeModifier: ViewModifier {
     }
 }
 
+/// 文件信息视图
 private struct FileInfoView: View {
+    /// 文件 URL
     let url: URL
+    /// 文件缩略图（如果可用）
     let thumbnail: Image?
     
     var body: some View {
@@ -122,21 +170,29 @@ private struct FileInfoView: View {
     }
 }
 
+/// 进度指示器视图
 private struct ProgressIndicatorView: View {
+    /// 当前进度（0-100）
     let progress: Double
+    /// 进度说明文本
     let message: String
     
     var body: some View {
         VStack(spacing: 4) {
             ProgressView(value: progress, total: 100)
-            Text(message)
-                .font(.caption)
-                .foregroundStyle(.secondary)
+            HStack {
+                Text(message)
+                Spacer()
+                Text(String(format: "%.1f%%", progress))
+            }
+            .font(.caption)
+            .foregroundStyle(.secondary)
         }
     }
 }
 
 // MARK: - Main View
+/// 文件复制进度视图
 private struct FileCopyProgressView: View {
     let source: URL
     let destination: URL
@@ -245,6 +301,7 @@ private struct FileCopyProgressView: View {
 }
 
 // MARK: - Supporting Views
+/// 错误信息视图
 private struct ErrorView: View {
     let error: Error
     @Binding var showCopiedTip: Bool
@@ -274,6 +331,7 @@ private struct ErrorView: View {
     }
 }
 
+/// 提示信息视图
 private struct ToastView: View {
     let message: String
     
@@ -298,36 +356,6 @@ private struct ToastView: View {
     }
 }
 
-// MARK: - Preview
-#Preview("File Copy Styles") {
-    VStack(spacing: 20) {
-        // 默认样式
-        URL.sample_temp_txt
-            .copyView(destination: .documentsDirectory.appendingPathComponent("copy"))
-            .withBackground()
-        
-        // 自定义背景色和形状
-        URL.sample_jpg_moon
-            .copyView(destination: .documentsDirectory.appendingPathComponent("random.jpg"))
-            .withBackground(.blue.opacity(0.1))
-            .withShape(.capsule)
-            .withShadow(radius: 4)
-            
-        // 矩形样式
-        URL.sample_txt_bsd
-            .copyView(destination: .documentsDirectory.appendingPathComponent("download.bin"))
-            .withBackground(.green.opacity(0.1))
-            .withShape(.rectangle)
-            .withShadow(radius: 8)
-            
-        // 圆角矩形 + 深色背景
-        URL.sample_jpg_earth
-            .copyView(destination: .documentsDirectory)
-            .withBackground(.black.opacity(0.1))
-            .withShape(.roundedRectangle, cornerRadius: 20)
-            .withShadow(radius: 6)
-    }
-    .padding()
-    .frame(maxWidth: 400)
-    .frame(height: 800)
+#Preview("Copy View") {
+    CopyViewPreviewContainer()
 }
