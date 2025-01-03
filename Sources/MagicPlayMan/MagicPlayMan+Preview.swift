@@ -2,21 +2,20 @@ import MagicKit
 import MagicUI
 import SwiftUI
 
-public extension MagicPlayMan {
-    // MARK: - PreviewView
+// MARK: - PreviewView
 
+public extension MagicPlayMan {
     struct PreviewView: View {
         // MARK: - Properties
-
+        
         @StateObject private var playMan: MagicPlayMan
         @State private var selectedSampleName: String?
         @State private var showPlaylist = false
         @State var showLogs: Bool
-
         @State private var toast: (message: String, icon: String, style: MagicToast.Style)?
-
+        
         // MARK: - Initialization
-
+        
         public init(
             cacheDirectory: URL? = nil,
             showLogs: Bool = true
@@ -24,54 +23,50 @@ public extension MagicPlayMan {
             _playMan = StateObject(wrappedValue: MagicPlayMan(cacheDirectory: cacheDirectory))
             self.showLogs = showLogs
         }
-
+        
         // MARK: - Body
-
+        
         public var body: some View {
             VStack(spacing: 0) {
-                // MARK: Toolbar
-
                 toolbarView
-
-                ZStack {
-                    VStack(spacing: 0) {
-                        HStack(spacing: 0) {
-                            mainContentView
-                                .frame(maxWidth: .infinity)
-
-                            if showPlaylist {
-                                playlistSidebarView
-                            }
+                
+                mainContentArea
+                    .overlay(alignment: .top) {
+                        if let toast = toast {
+                            toastView(toast)
                         }
-
-                        // MARK: Control
-
-                        GroupBox {
-                            controlsView
-                        }.padding()
-
-                        // MARK: Bottom
-
-                        GroupBox {
-                            bottomView
-                        }.padding()
                     }
-                }
-                .overlay(alignment: .top) {
-                    if let toast = toast {
-                        MagicToast(
-                            message: toast.message,
-                            icon: toast.icon,
-                            style: toast.style
-                        )
-                        .padding(.top, 20)
-                    }
-                }
             }
             .animation(.spring(response: 0.3, dampingFraction: 0.8), value: showPlaylist)
         }
-
+        
+        // MARK: - Main Layout Components
+        
+        /// 顶部工具栏
         private var toolbarView: some View {
+            HStack {
+                leadingToolbarItems
+                Spacer()
+                trailingToolbarItems
+            }
+            .padding()
+            .background(.ultraThinMaterial)
+        }
+        
+        /// 主内容区域
+        private var mainContentArea: some View {
+            ZStack {
+                VStack(spacing: 0) {
+                    contentWithSidebar
+                    controlsSection
+                    bottomSection
+                }
+            }
+        }
+        
+        // MARK: - Toolbar Components
+        
+        private var leadingToolbarItems: some View {
             HStack {
                 MediaPickerButton(
                     formats: playMan.supportedFormats,
@@ -81,100 +76,110 @@ public extension MagicPlayMan {
                         playMan.load(asset: asset)
                     }
                 )
-
+                
                 if let asset = playMan.currentAsset {
                     Text(asset.title)
                         .font(.headline)
                 }
-
-                Spacer()
-
-                HStack {
-                    playMan.makePlaylistButton()
-                    playMan.makeSupportedFormatsButton()
-
-                    MagicButton(
-                        icon: "apple.terminal",
-                        style: .secondary,
-                        size: .regular,
-                        shape: .circle,
-                        action: { showLogs.toggle() }
-                    )
+            }
+        }
+        
+        private var trailingToolbarItems: some View {
+            HStack {
+                playMan.makePlaylistButton()
+                playMan.makePlaylistToggleButton()
+                playMan.makeSupportedFormatsButton()
+                
+                MagicButton(
+                    icon: "apple.terminal",
+                    style: .secondary,
+                    size: .regular,
+                    shape: .circle,
+                    action: { showLogs.toggle() }
+                )
+            }
+        }
+        
+        // MARK: - Content Area Components
+        
+        private var contentWithSidebar: some View {
+            HStack(spacing: 0) {
+                mainContent
+                    .frame(maxWidth: .infinity)
+                
+                if showPlaylist {
+                    playlistSidebar
                 }
             }
-            .padding()
-            .background(.ultraThinMaterial)
         }
-
-        private var mainContentView: some View {
+        
+        private var mainContent: some View {
             Group {
                 if let asset = playMan.currentAsset {
-                    ZStack {
-                        playMan.makeAssetView()
-
-                        if case let .loading(loadingState) = playMan.state {
-                            LoadingOverlay(
-                                state: loadingState,
-                                assetTitle: asset.title
-                            )
-                        }
-
-                        if case let .failed(error) = playMan.state {
-                            ErrorOverlay(
-                                error: error,
-                                asset: asset,
-                                onRetry: { playMan.load(asset: asset) }
-                            )
-                        }
-                    }
+                    assetContentView(for: asset)
                 } else {
                     playMan.makeEmptyView()
                 }
             }
         }
-
-        private var playlistSidebarView: some View {
+        
+        private var playlistSidebar: some View {
             playMan.makePlaylistView()
                 .frame(width: 300)
                 .background(.ultraThinMaterial)
                 .transition(.move(edge: .trailing))
         }
-
+        
+        // MARK: - Control Components
+        
+        private var controlsSection: some View {
+            GroupBox {
+                controlsView
+            }
+            .padding()
+        }
+        
         private var controlsView: some View {
             VStack(spacing: 16) {
                 playMan.makeProgressView()
-
+                
                 HStack(spacing: 16) {
-                    // 播放模式按钮
                     playMan.makePlayModeButton()
-
+                    
                     Spacer()
-
-                    // 主控制按钮组
-                    HStack(spacing: 16) {
-                        playMan.makePreviousButton()
-                        playMan.makeRewindButton()
-                        playMan.makePlayPauseButton()
-                        playMan.makeForwardButton()
-                        playMan.makeNextButton()
-                    }
-
+                    
+                    playbackControls
+                    
                     Spacer()
-
+                    
                     // 占位，保持对称
-                    MagicButton(
-                        icon: "placeholder", action: {}
-                    )
-                    .opacity(0)
+                    placeholderButton
                 }
                 .padding(.horizontal)
             }
             .padding()
             .background(.ultraThinMaterial)
         }
-
-        private var bottomView: some View {
-            VStack {
+        
+        private var playbackControls: some View {
+            HStack(spacing: 16) {
+                playMan.makePreviousButton()
+                playMan.makeRewindButton()
+                playMan.makePlayPauseButton()
+                playMan.makeForwardButton()
+                playMan.makeNextButton()
+            }
+        }
+        
+        private var placeholderButton: some View {
+            MagicButton(icon: "placeholder", action: {})
+                .opacity(0)
+        }
+        
+        // MARK: - Bottom Section
+        
+        private var bottomSection: some View {
+            GroupBox {
                 if showLogs {
                     playMan.makeLogView()
                         .frame(height: 200)
@@ -182,18 +187,37 @@ public extension MagicPlayMan {
                         .background(.ultraThinMaterial)
                 }
             }
+            .padding()
         }
-
-        // MARK: - Helper Views
-
+        
+        // MARK: - Asset Content Views
+        
+        private func assetContentView(for asset: MagicAsset) -> some View {
+            ZStack {
+                playMan.makeAssetView()
+                
+                if case let .loading(loadingState) = playMan.state {
+                    LoadingOverlay(state: loadingState, assetTitle: asset.title)
+                }
+                
+                if case let .failed(error) = playMan.state {
+                    ErrorOverlay(error: error, asset: asset) {
+                        playMan.load(asset: asset)
+                    }
+                }
+            }
+        }
+        
+        // MARK: - Overlay Components
+        
         private func LoadingOverlay(state: PlaybackState.LoadingState, assetTitle: String) -> some View {
             ZStack {
                 Rectangle()
                     .fill(.ultraThinMaterial)
-
+                
                 switch state {
                 case let .downloading(progress):
-                    downloadingProgress(progress)
+                    downloadingProgress(progress, title: assetTitle)
                 case .buffering:
                     loadingIndicator("Buffering...")
                 case .preparing:
@@ -203,48 +227,25 @@ public extension MagicPlayMan {
                 }
             }
         }
-
-        private func downloadingProgress(_ progress: Double) -> some View {
-            VStack(spacing: 16) {
-                ProgressView(
-                    "Downloading \(playMan.currentAsset?.metadata.title ?? "")",
-                    value: progress,
-                    total: 1.0
-                )
-                Text("\(Int(progress * 100))%")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-        }
-
-        private func loadingIndicator(_ message: String) -> some View {
-            VStack(spacing: 16) {
-                ProgressView()
-                    .progressViewStyle(.circular)
-                Text(message)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-        }
-
+        
         private func ErrorOverlay(error: PlaybackState.PlaybackError, asset: MagicAsset, onRetry: @escaping () -> Void) -> some View {
             ZStack {
                 Rectangle()
                     .fill(.ultraThinMaterial)
-
+                
                 VStack(spacing: 16) {
                     Image(systemName: "exclamationmark.triangle.fill")
                         .font(.system(size: 40))
                         .foregroundStyle(.red)
-
+                    
                     Text("Failed to Load Media")
                         .font(.headline)
-
+                    
                     Text(errorMessage(for: error))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
-
+                    
                     MagicButton(
                         icon: "arrow.clockwise",
                         title: "Try Again",
@@ -256,7 +257,43 @@ public extension MagicPlayMan {
                 .padding()
             }
         }
-
+        
+        private func toastView(_ toast: (message: String, icon: String, style: MagicToast.Style)) -> some View {
+            MagicToast(
+                message: toast.message,
+                icon: toast.icon,
+                style: toast.style
+            )
+            .padding(.top, 20)
+        }
+        
+        // MARK: - Helper Views
+        
+        private func downloadingProgress(_ progress: Double, title: String) -> some View {
+            VStack(spacing: 16) {
+                ProgressView(
+                    "Downloading \(title)",
+                    value: progress,
+                    total: 1.0
+                )
+                Text("\(Int(progress * 100))%")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        
+        private func loadingIndicator(_ message: String) -> some View {
+            VStack(spacing: 16) {
+                ProgressView()
+                    .progressViewStyle(.circular)
+                Text(message)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        
+        // MARK: - Helper Methods
+        
         private func errorMessage(for error: PlaybackState.PlaybackError) -> String {
             switch error {
             case .noAsset:
@@ -269,9 +306,7 @@ public extension MagicPlayMan {
                 return "Playback error: \(message)"
             }
         }
-
-        // MARK: - Helper Methods
-
+        
         private func showToast(
             _ message: String,
             icon: String,
@@ -280,7 +315,7 @@ public extension MagicPlayMan {
             withAnimation {
                 toast = (message, icon, style)
             }
-
+            
             // 2秒后自动隐藏
             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                 withAnimation {

@@ -89,13 +89,14 @@ public extension MagicPlayMan {
             style: .secondary,
             size: .regular,
             shape: .circle,
-            popoverContent: AnyView(
+            disabledReason: !self.isPlaylistEnabled ? "Playlist is disabled\nEnable playlist to view and manage tracks" : nil,
+            popoverContent: self.isPlaylistEnabled ? AnyView(
                 ZStack {
                     self.makePlaylistView()
                         .frame(width: 300, height: 400)
                         .padding()
                 }
-            ),
+            ) : nil,
             action: {}
         )
     }
@@ -117,6 +118,7 @@ public extension MagicPlayMan {
                 self.log(self.isPlaylistEnabled ? "Playlist enabled" : "Playlist disabled")
             }
         )
+        .symbolEffect(.bounce, value: self.isPlaylistEnabled)
     }
 
     /// 创建支持的格式按钮
