@@ -109,13 +109,7 @@ public extension MagicPlayMan {
             size: .regular,
             shape: .circle,
             action: { [self] in
-                self.isPlaylistEnabled.toggle()
-                self.showToast(
-                    self.isPlaylistEnabled ? "Playlist enabled" : "Playlist disabled",
-                    icon: self.isPlaylistEnabled ? "list.bullet.circle.fill" : "list.bullet.circle",
-                    style: .info
-                )
-                self.log(self.isPlaylistEnabled ? "Playlist enabled" : "Playlist disabled")
+                self.setPlaylistEnabled(!self.isPlaylistEnabled)
             }
         )
         .symbolEffect(.bounce, value: self.isPlaylistEnabled)

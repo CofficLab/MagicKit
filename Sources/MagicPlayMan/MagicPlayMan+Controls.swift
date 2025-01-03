@@ -187,6 +187,53 @@ public extension MagicPlayMan {
             currentTime = time
         }
     }
+    
+    /// 启用播放列表功能
+    func enablePlaylist() {
+        guard !isPlaylistEnabled else { return }
+        
+        isPlaylistEnabled = true
+        log("Playlist enabled")
+        showToast(
+            "Playlist enabled",
+            icon: "list.bullet.circle.fill",
+            style: .info
+        )
+    }
+    
+    /// 禁用播放列表功能
+    /// 禁用时会保留当前播放的资源（如果有），清除其他资源
+    func disablePlaylist() {
+        guard isPlaylistEnabled else { return }
+        
+        isPlaylistEnabled = false
+        log("Playlist disabled")
+        
+        // 如果禁用播放列表，保留当前播放的资源
+        if let currentAsset = currentAsset {
+            items = [currentAsset]
+            currentIndex = 0
+        } else {
+            items.removeAll()
+            currentIndex = -1
+        }
+        
+        showToast(
+            "Playlist disabled",
+            icon: "list.bullet.circle",
+            style: .info
+        )
+    }
+    
+    /// 设置播放列表启用状态
+    /// - Parameter enabled: 是否启用播放列表
+    func setPlaylistEnabled(_ enabled: Bool) {
+        if enabled {
+            enablePlaylist()
+        } else {
+            disablePlaylist()
+        }
+    }
 }
 
 #Preview("MagicPlayMan") {
