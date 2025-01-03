@@ -262,6 +262,19 @@ extension String {
     }
 }
 
+// MARK: - Clipboard Extension
+extension String {
+    /// 将字符串复制到剪贴板
+    public func copy() {
+        #if os(macOS)
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(self, forType: .string)
+        #elseif os(iOS) || os(tvOS)
+        UIPasteboard.general.string = self
+        #endif
+    }
+}
+
 #Preview {
     VStack {
         Spacer()
