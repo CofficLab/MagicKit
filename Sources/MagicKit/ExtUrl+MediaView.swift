@@ -8,6 +8,37 @@ public enum MediaViewStyle {
     case background(AnyView)
 }
 
+// MARK: - Media View Shape
+public enum MediaViewShape {
+    case circle
+    case roundedRectangle(cornerRadius: CGFloat = 8)
+    case rectangle
+    
+    @ViewBuilder
+    func apply<V: View>(to view: V) -> some View {
+        switch self {
+        case .circle:
+            view.clipShape(Circle())
+        case .roundedRectangle(let radius):
+            view.clipShape(RoundedRectangle(cornerRadius: radius))
+        case .rectangle:
+            view
+        }
+    }
+    
+    @ViewBuilder
+    func strokeShape() -> some View {
+        switch self {
+        case .circle:
+            Circle().stroke(Color.red, lineWidth: 2)
+        case .roundedRectangle(let radius):
+            RoundedRectangle(cornerRadius: radius).stroke(Color.red, lineWidth: 2)
+        case .rectangle:
+            Rectangle().stroke(Color.red, lineWidth: 2)
+        }
+    }
+}
+
 // MARK: - Background Modifier
 struct MediaViewBackground: ViewModifier {
     let style: MediaViewStyle
@@ -73,6 +104,8 @@ public struct MediaFileView: View {
     let size: String
     fileprivate var style: MediaViewStyle = .none
     fileprivate var showActions: Bool = true
+    fileprivate var shape: MediaViewShape = .circle
+    fileprivate var verticalPadding: CGFloat = 12
     @State private var thumbnail: Image?
     @State private var error: Error?
     @State private var isLoading = false
@@ -85,7 +118,7 @@ public struct MediaFileView: View {
     
     public var body: some View {
         HStack(spacing: 12) {
-            // 左侧圆形图片
+            // 左侧图片
             Group {
                 if let thumbnail = thumbnail {
                     thumbnail
@@ -106,11 +139,10 @@ public struct MediaFileView: View {
             }
             .frame(width: 40, height: 40)
             .background(.ultraThinMaterial)
-            .clipShape(Circle())
+            .apply(shape: shape)
             .overlay {
-                if let error = error {
-                    Circle()
-                        .stroke(.red, lineWidth: 2)
+                if error != nil {
+                    shape.strokeShape()
                 }
             }
             
@@ -138,7 +170,7 @@ public struct MediaFileView: View {
             }
         }
         .padding(.horizontal, 16)
-        .padding(.vertical, 12)
+        .padding(.vertical, verticalPadding)
         .modifier(MediaViewBackground(style: style))
         .onHover { hovering in
             withAnimation(.easeInOut(duration: 0.2)) {
@@ -177,6 +209,25 @@ public struct MediaFileView: View {
         view.showActions = false
         return view
     }
+    
+    public func thumbnailShape(_ shape: MediaViewShape) -> MediaFileView {
+        var view = self
+        view.shape = shape
+        return view
+    }
+    
+    public func verticalPadding(_ padding: CGFloat) -> MediaFileView {
+        var view = self
+        view.verticalPadding = padding
+        return view
+    }
+}
+
+// MARK: - View Extension
+private extension View {
+    func apply(shape: MediaViewShape) -> some View {
+        shape.apply(to: self)
+    }
 }
 
 public extension URL {
@@ -186,107 +237,5 @@ public extension URL {
 }
 
 #Preview("Media View") {
-    VStack(spacing: 20) {
-        // 音频文件预览
-        URL.sample_mp3_kennedy.makeMediaView()
-            .withBackground(MagicBackground.mint)
-        
-        // 视频文件预览
-        URL.sample_mp4_bunny.makeMediaView()
-            .noBackground()
-        
-        // 图片文件预览
-        URL.sample_jpg_earth.makeMediaView()
-            .withBackground(MagicBackground.aurora)
-        
-        // PDF文件预览
-        URL.sample_pdf_swift_guide.makeMediaView()
-            .withBackground(MagicBackground.cosmicDust)
-        
-        // 文本文件预览
-        URL.sample_txt_mit.makeMediaView()
-            .noBackground()
-    }
-    .padding()
-    .background(MagicBackground.mysticalForest)
-}
-
-#Preview("Media View - Remote Files") {
-    VStack(spacing: 20) {
-        // 音频文件预览
-        URL.sample_mp3_kennedy.makeMediaView()
-            .withBackground(MagicBackground.mint)
-        
-        // 视频文件预览
-        URL.sample_mp4_bunny.makeMediaView()
-            .noBackground()
-        
-        // 图片文件预览
-        URL.sample_jpg_earth.makeMediaView()
-            .withBackground(MagicBackground.aurora)
-        
-        // PDF文件预览
-        URL.sample_pdf_swift_guide.makeMediaView()
-            .withBackground(MagicBackground.cosmicDust)
-        
-        // 文本文件预览
-        URL.sample_txt_mit.makeMediaView()
-            .noBackground()
-    }
-    .padding()
-    .background(MagicBackground.mysticalForest)
-}
-
-#Preview("Media View - Local Files") {
-    ScrollView {
-        VStack(spacing: 20) {
-            Group {
-                // 临时文本文件
-                Text("临时文本文件")
-                    .font(.headline)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                URL.sample_temp_txt.makeMediaView()
-                    .withBackground(MagicBackground.serenity)
-            }
-            
-            Group {
-                // 临时音频文件
-                Text("临时音频文件")
-                    .font(.headline)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                URL.sample_temp_mp3.makeMediaView()
-                    .withBackground(MagicBackground.lavender)
-            }
-            
-            Group {
-                // 临时视频文件
-                Text("临时视频文件")
-                    .font(.headline)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                URL.sample_temp_mp4.makeMediaView()
-                    .withBackground(MagicBackground.sunset)
-            }
-            
-            Group {
-                // 临时图片文件
-                Text("临时图片文件")
-                    .font(.headline)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                URL.sample_temp_jpg.makeMediaView()
-                    .withBackground(MagicBackground.ocean)
-            }
-            
-            Group {
-                // 临时PDF文件
-                Text("临时PDF文件")
-                    .font(.headline)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                URL.sample_temp_pdf.makeMediaView()
-                    .withBackground(MagicBackground.galaxySpiral)
-            }
-        }
-        .padding()
-    }
-    .frame(width: 400, height: 600)
-    .background(MagicBackground.nebulaMist)
+    MediaViewPreviewContainer()
 }
