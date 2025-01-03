@@ -18,6 +18,11 @@ extension URL {
     public func thumbnail(
         size: CGSize = CGSize(width: 120, height: 120)
     ) async throws -> Image? {
+        // 如果是 iCloud 文件且未下载，返回特殊的缩略图
+        if isiCloud && isNotDownloaded {
+            return makeICloudThumbnail(size: size)
+        }
+        
         if hasDirectoryPath {
             return try await folderThumbnail(size: size)
         }
@@ -35,6 +40,132 @@ extension URL {
         }
         
         return nil
+    }
+    
+    // MARK: - iCloud Thumbnail
+    
+    private func makeICloudThumbnail(size: CGSize) -> Image? {
+        let format = fileFormat
+        
+        #if os(macOS)
+        let baseIcon = NSImage(systemSymbolName: format.iconName, accessibilityDescription: nil)
+        let cloudIcon = NSImage(systemSymbolName: "icloud", accessibilityDescription: nil)
+        let arrowIcon = NSImage(systemSymbolName: "arrow.down.circle", accessibilityDescription: nil)
+        
+        guard let combined = combineIcons(
+            base: baseIcon,
+            cloud: cloudIcon,
+            arrow: arrowIcon,
+            size: size
+        ) else { return nil }
+        
+        return Image(nsImage: combined)
+        #else
+        let baseIcon = UIImage(systemName: format.iconName)?.withTintColor(format.color)
+        let cloudIcon = UIImage(systemName: "icloud")?.withTintColor(.systemBlue)
+        let arrowIcon = UIImage(systemName: "arrow.down.circle")?.withTintColor(.systemBlue)
+        
+        guard let combined = combineIcons(
+            base: baseIcon,
+            cloud: cloudIcon,
+            arrow: arrowIcon,
+            size: size
+        ) else { return nil }
+        
+        return Image(uiImage: combined)
+        #endif
+    }
+    
+    #if os(macOS)
+    private func combineIcons(
+        base: NSImage?,
+        cloud: NSImage?,
+        arrow: NSImage?,
+        size: CGSize
+    ) -> NSImage? {
+        guard let base = base,
+              let cloud = cloud,
+              let arrow = arrow else { return nil }
+        
+        let result = NSImage(size: size)
+        result.lockFocus()
+        
+        // 绘制主图标
+        base.draw(in: CGRect(origin: .zero, size: size))
+        
+        // 绘制云图标（右上角）
+        let cloudSize = CGSize(width: size.width * 0.4, height: size.height * 0.4)
+        let cloudPoint = CGPoint(x: size.width - cloudSize.width, y: size.height - cloudSize.height)
+        cloud.draw(in: CGRect(origin: cloudPoint, size: cloudSize))
+        
+        // 绘制下载箭头（左下角）
+        let arrowSize = CGSize(width: size.width * 0.4, height: size.height * 0.4)
+        let arrowPoint = CGPoint(x: 0, y: 0)
+        arrow.draw(in: CGRect(origin: arrowPoint, size: arrowSize))
+        
+        result.unlockFocus()
+        return result
+    }
+    #else
+    private func combineIcons(
+        base: UIImage?,
+        cloud: UIImage?,
+        arrow: UIImage?,
+        size: CGSize
+    ) -> UIImage? {
+        guard let base = base,
+              let cloud = cloud,
+              let arrow = arrow else { return nil }
+        
+        UIGraphicsBeginImageContextWithOptions(size, false, 0.0)
+        defer { UIGraphicsEndImageContext() }
+        
+        // 绘制主图标
+        base.draw(in: CGRect(origin: .zero, size: size))
+        
+        // 绘制云图标（右上角）
+        let cloudSize = CGSize(width: size.width * 0.4, height: size.height * 0.4)
+        let cloudPoint = CGPoint(x: size.width - cloudSize.width, y: size.height - cloudSize.height)
+        cloud.draw(in: CGRect(origin: cloudPoint, size: cloudSize))
+        
+        // 绘制下载箭头（左下角）
+        let arrowSize = CGSize(width: size.width * 0.4, height: size.height * 0.4)
+        let arrowPoint = CGPoint(x: 0, y: 0)
+        arrow.draw(in: CGRect(origin: arrowPoint, size: arrowSize))
+        
+        return UIGraphicsGetImageFromCurrentImageContext()
+    }
+    #endif
+    
+    // MARK: - File Format
+    
+    private var fileFormat: FileFormat {
+        let ext = pathExtension.lowercased()
+        switch ext {
+        case "mp3", "wav", "aac", "m4a":
+            return FileFormat(iconName: "music.note", color: .systemPurple)
+        case "mp4", "mov", "m4v":
+            return FileFormat(iconName: "film", color: .systemBlue)
+        case "jpg", "jpeg", "png", "gif":
+            return FileFormat(iconName: "photo", color: .systemGreen)
+        case "pdf":
+            return FileFormat(iconName: "doc.text", color: .systemRed)
+        case "txt", "rtf":
+            return FileFormat(iconName: "doc.text", color: .systemGray)
+        default:
+            return FileFormat(iconName: "doc", color: .systemGray)
+        }
+    }
+    
+    private struct FileFormat {
+        let iconName: String
+        let color: PlatformColor
+        
+        #if os(macOS)
+        typealias PlatformColor = NSColor
+        #else
+        typealias PlatformColor = UIColor
+        #endif
     }
     
     // MARK: - Private Methods
