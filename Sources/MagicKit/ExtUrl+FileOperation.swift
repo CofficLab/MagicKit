@@ -173,20 +173,6 @@ public extension URL {
         !isDirExist
     }
     
-    /// Opens the folder in the system's default file browser.
-    ///
-    /// On macOS, this opens the folder in Finder.
-    /// On iOS, this attempts to open the folder using the system's URL handling.
-    func openFolder() {
-        #if os(macOS)
-        NSWorkspace.shared.open(self)
-        #elseif os(iOS)
-        if UIApplication.shared.canOpenURL(self) {
-            UIApplication.shared.open(self)
-        }
-        #endif
-    }
-    
     /// Removes the parent folder of the current file or directory.
     ///
     /// - Throws: An error if the deletion fails or if the folder doesn't have sufficient permissions.
@@ -203,15 +189,6 @@ public extension URL {
         if condition {
             try? removeParentFolder()
         }
-    }
-    
-    /// Shows the file or folder in Finder and selects it.
-    ///
-    /// - Note: This method only works on macOS.
-    func showInFinder() {
-        #if os(macOS)
-        NSWorkspace.shared.activateFileViewerSelecting([self])
-        #endif
     }
 }
 
