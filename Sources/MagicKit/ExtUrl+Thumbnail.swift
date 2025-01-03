@@ -11,6 +11,11 @@ import MagicUI
 #endif
 
 extension URL {
+    /// 检查是否是网络 URL
+    public var isNetworkURL: Bool {
+        scheme == "http" || scheme == "https"
+    }
+    
     /// 获取文件的缩略图
     /// - Parameters:
     ///   - size: 缩略图的目标大小
@@ -18,6 +23,11 @@ extension URL {
     public func thumbnail(
         size: CGSize = CGSize(width: 120, height: 120)
     ) async throws -> Image? {
+        // 如果是网络 URL，根据文件类型返回对应图标
+        if isNetworkURL {
+            return Image(systemName: icon)
+        }
+        
         // 如果是 iCloud 文件且未下载，返回下载图标
         if isiCloud && isNotDownloaded {
             return Image(systemName: "arrow.down.circle.dotted")
@@ -39,7 +49,8 @@ extension URL {
             return try await videoThumbnail(size: size)
         }
         
-        return nil
+        // 如果无法识别类型，返回默认文档图标
+        return Image(systemName: icon)
     }
     
     // MARK: - Private Methods
@@ -138,153 +149,6 @@ extension URL {
     }
 }
 
-// MARK: - Preview
-
 #Preview("Thumbnails") {
-    ScrollView {
-        VStack(spacing: 20) {
-            Group {
-                // 文件夹
-                AsyncThumbnailView(
-                    url: .documentsDirectory,
-                    title: "文件夹缩略图"
-                )
-                
-                // 图片文件
-                AsyncThumbnailView(
-                    url: .sample_jpg_earth,
-                    title: "NASA 地球照片"
-                )
-                AsyncThumbnailView(
-                    url: .sample_jpg_mars,
-                    title: "NASA 火星照片"
-                )
-                AsyncThumbnailView(
-                    url: .sample_png_transparency,
-                    title: "PNG 透明度演示"
-                )
-                AsyncThumbnailView(
-                    url: .sample_png_gradient,
-                    title: "RGB 渐变演示"
-                )
-            }
-            
-            Group {
-                // 音频文件
-                AsyncThumbnailView(
-                    url: .sample_mp3_kennedy,
-                    title: "肯尼迪演讲"
-                )
-                AsyncThumbnailView(
-                    url: .sample_wav_mars,
-                    title: "火星音效"
-                )
-                AsyncThumbnailView(
-                    url: .sample_mp3_apollo,
-                    title: "阿波罗登月"
-                )
-            }
-            
-            Group {
-                // 视频文件
-                AsyncThumbnailView(
-                    url: .sample_mp4_bunny,
-                    title: "Big Buck Bunny"
-                )
-                AsyncThumbnailView(
-                    url: .sample_mp4_sintel,
-                    title: "Sintel 预告片"
-                )
-                AsyncThumbnailView(
-                    url: .sample_mp4_elephants,
-                    title: "Elephants Dream"
-                )
-            }
-            
-            Group {
-                // PDF 文件
-                AsyncThumbnailView(
-                    url: .sample_pdf_swift_guide,
-                    title: "Swift 入门指南"
-                )
-                AsyncThumbnailView(
-                    url: .sample_pdf_swiftui,
-                    title: "SwiftUI 文档"
-                )
-            }
-            
-            Group {
-                // 文本文件
-                AsyncThumbnailView(
-                    url: .sample_txt_mit,
-                    title: "MIT 开源协议"
-                )
-                AsyncThumbnailView(
-                    url: .sample_txt_apache,
-                    title: "Apache 开源协议"
-                )
-            }
-            
-            Group {
-                // 临时文件测试
-                AsyncThumbnailView(
-                    url: .sample_temp_mp3,
-                    title: "临时音频文件"
-                )
-                AsyncThumbnailView(
-                    url: .sample_temp_txt,
-                    title: "临时文本文件"
-                )
-                AsyncThumbnailView(
-                    url: .sample_temp_pdf,
-                    title: "临时 PDF 文件"
-                )
-            }
-        }
-        .padding()
-    }
-    .frame(width: 500, height: 600)
-    .background(MagicBackground.mint)
+    ThumbnailPreviewContainer()
 }
-
-private struct AsyncThumbnailView: View {
-    let url: URL
-    let title: String
-    @State private var thumbnail: Image?
-    @State private var error: Error?
-    
-    var body: some View {
-        HStack {
-            Group {
-                if let thumbnail = thumbnail {
-                    thumbnail
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                } else if error != nil {
-                    Image(systemName: "exclamationmark.triangle")
-                        .foregroundStyle(.red)
-                } else {
-                    ProgressView()
-                }
-            }
-            .frame(width: 60, height: 60)
-            
-            VStack(alignment: .leading) {
-                Text(title)
-                    .font(.caption)
-                if let error {
-                    Text(error.localizedDescription)
-                        .font(.caption2)
-                        .foregroundStyle(.red)
-                }
-            }
-        }
-        .task {
-            do {
-                thumbnail = try await url.thumbnail(size: CGSize(width: 120, height: 120))
-            } catch {
-                self.error = error
-            }
-        }
-    }
-} 

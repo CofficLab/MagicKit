@@ -27,6 +27,35 @@ public extension URL {
         }
         return imageExtensions.contains(pathExtension.lowercased())
     }
+    
+    /// 是否是文档文件
+    var isDocument: Bool {
+        if let type = try? resourceValues(forKeys: [.contentTypeKey]).contentType {
+            return type.conforms(to: .data)
+        }
+        return documentExtensions.contains(pathExtension.lowercased())
+    }
+    
+    /// 是否是电子书
+    var isEbook: Bool {
+        if let type = try? resourceValues(forKeys: [.contentTypeKey]).contentType {
+            return type.conforms(to: .epub) || type.conforms(to: .pdf)
+        }
+        return ebookExtensions.contains(pathExtension.lowercased())
+    }
+    
+    /// 是否是字体文件
+    var isFont: Bool {
+        if let type = try? resourceValues(forKeys: [.contentTypeKey]).contentType {
+            return type.conforms(to: .font)
+        }
+        return fontExtensions.contains(pathExtension.lowercased())
+    }
+    
+    /// 是否是代码文件
+    var isCode: Bool {
+        codeExtensions.contains(pathExtension.lowercased())
+    }
 
     /// 是否是文件夹
     var isDirectory: Bool {
@@ -88,6 +117,14 @@ public extension URL {
             return Label("Text", systemImage: icon)
         } else if isArchive {
             return Label("Archive", systemImage: icon)
+        } else if isDocument {
+            return Label("Document", systemImage: icon)
+        } else if isEbook {
+            return Label("Ebook", systemImage: icon)
+        } else if isFont {
+            return Label("Font", systemImage: icon)
+        } else if isCode {
+            return Label("Code", systemImage: icon)
         } else {
             return Label("Other", systemImage: icon)
         }
@@ -109,6 +146,16 @@ public extension URL {
             return "doc.text.fill"
         } else if isArchive {
             return "doc.zipper"
+        } else if isDocument {
+            return "doc.richtext"
+        } else if isEbook {
+            return "book"
+        } else if isFont {
+            return "textformat"
+        } else if isCode {
+            return "chevron.left.forwardslash.chevron.right"
+        } else if isNetworkURL {
+            return "globe"
         } else {
             return "doc"
         }
@@ -122,7 +169,8 @@ private extension URL {
     var audioExtensions: Set<String> {
         [
             "mp3", "m4a", "aac", "wav", "aiff", "wma",
-            "ogg", "oga", "opus", "flac", "alac",
+            "ogg", "oga", "opus", "flac", "alac", "mid",
+            "midi", "ac3", "dsf", "dff", "ape", "wv"
         ]
     }
 
@@ -130,7 +178,9 @@ private extension URL {
     var videoExtensions: Set<String> {
         [
             "mp4", "m4v", "mov", "avi", "wmv", "flv",
-            "mkv", "webm", "3gp", "mpeg", "mpg",
+            "mkv", "webm", "3gp", "mpeg", "mpg", "ts",
+            "mts", "m2ts", "vob", "ogv", "rm", "rmvb",
+            "asf", "divx", "f4v"
         ]
     }
 
@@ -138,7 +188,9 @@ private extension URL {
     var imageExtensions: Set<String> {
         [
             "jpg", "jpeg", "png", "gif", "bmp", "tiff",
-            "webp", "heic", "heif", "raw", "svg",
+            "webp", "heic", "heif", "raw", "svg", "ico",
+            "tga", "psd", "ai", "eps", "cr2", "nef",
+            "arw", "dng", "orf", "rw2"
         ]
     }
 
@@ -146,8 +198,8 @@ private extension URL {
     var textExtensions: Set<String> {
         [
             "txt", "rtf", "md", "json", "xml", "yml",
-            "yaml", "swift", "java", "cpp", "c", "h",
-            "html", "css", "js", "py", "sh"
+            "yaml", "csv", "log", "ini", "conf", "cfg",
+            "properties", "env", "toml", "tex"
         ]
     }
     
@@ -155,64 +207,50 @@ private extension URL {
     var archiveExtensions: Set<String> {
         [
             "zip", "rar", "7z", "tar", "gz", "bz2",
-            "xz", "tgz", "tbz"
+            "xz", "tgz", "tbz", "lz", "lzma", "lzo",
+            "z", "ace", "cab", "iso", "dmg"
+        ]
+    }
+    
+    /// 支持的文档文件扩展名
+    var documentExtensions: Set<String> {
+        [
+            "doc", "docx", "xls", "xlsx", "ppt", "pptx",
+            "odt", "ods", "odp", "pages", "numbers",
+            "keynote", "key", "wpd", "wps", "rtfd"
+        ]
+    }
+    
+    /// 支持的电子书扩展名
+    var ebookExtensions: Set<String> {
+        [
+            "epub", "mobi", "azw", "azw3", "fb2",
+            "lit", "lrf", "pdb", "pdf", "djvu",
+            "cbz", "cbr", "cbt", "cb7"
+        ]
+    }
+    
+    /// 支持的字体文件扩展名
+    var fontExtensions: Set<String> {
+        [
+            "ttf", "otf", "woff", "woff2", "eot",
+            "pfm", "pfb", "sfd", "bdf", "psf"
+        ]
+    }
+    
+    /// 支持的代码文件扩展名
+    var codeExtensions: Set<String> {
+        [
+            "swift", "java", "kt", "cpp", "c", "h",
+            "hpp", "cs", "py", "rb", "php", "js",
+            "ts", "html", "css", "scss", "less",
+            "sql", "go", "rs", "dart", "lua"
         ]
     }
 }
 
 // MARK: - Preview
 
-struct FileTypeExamplesView: View {
-    let examples: [(String, URL)] = [
-        // 音频文件
-        ("NASA 肯尼迪演讲", URL.sample_mp3_kennedy),
-        ("NASA 阿波罗登月", URL.sample_mp3_apollo),
-        ("NASA 火箭发射音效", URL.sample_wav_launch),
-        ("NASA 太空站音效", URL.sample_wav_iss),
-        ("NASA 火星音效", URL.sample_wav_mars),
-        
-        // 视频文件
-        ("Big Buck Bunny", URL.sample_mp4_bunny),
-        ("Sintel 预告片", URL.sample_mp4_sintel),
-        ("Elephants Dream", URL.sample_mp4_elephants),
-        
-        // 图片文件
-        ("地球 - 蓝色弹珠", URL.sample_jpg_earth),
-        ("火星 - 好奇号", URL.sample_jpg_mars),
-        ("PNG透明度演示", URL.sample_png_transparency),
-        ("RGB渐变演示", URL.sample_png_gradient),
-        
-        // 流媒体
-        ("HLS基础流", URL.sample_stream_basic),
-        ("HLS 4K流", URL.sample_stream_4k),
-        
-        // 其他文件
-        ("Swift入门指南", URL.sample_pdf_swift_guide),
-        ("SwiftUI文档", URL.sample_pdf_swiftui),
-        ("MIT开源协议", URL.sample_txt_mit),
-        ("Apache开源协议", URL.sample_txt_apache)
-    ]
-    
-    var body: some View {
-        List {
-            ForEach(examples, id: \.0) { title, url in
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(title)
-                        .font(.headline)
-                    
-                    url.label
-                        .foregroundStyle(.secondary)
-                    
-                    Text(url.lastPathComponent)
-                        .font(.caption)
-                        .foregroundStyle(.tertiary)
-                }
-                .padding(.vertical, 4)
-            }
-        }
-    }
-}
-
-#Preview {
-    FileTypeExamplesView().frame(height: 800)
-}
+#Preview("File Types") {
+    FileTypePreviewContainer()
+} 
