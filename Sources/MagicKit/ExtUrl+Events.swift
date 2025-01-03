@@ -5,12 +5,18 @@ import OSLog
 
 public extension URL {
     /// 监听文件的下载进度
-    /// - Parameter onProgress: 下载进度回调，progress 范围 0-1
+    /// - Parameters:
+    ///   - verbose: 是否打印详细日志
+    ///   - onProgress: 下载进度回调，progress 范围 0-1
     /// - Returns: 可用于取消监听的 AnyCancellable
-    func onDownloading(_ onProgress: @escaping (Double) -> Void) -> AnyCancellable {
+    func onDownloading(verbose: Bool = true, _ onProgress: @escaping (Double) -> Void) -> AnyCancellable {
         let queue = OperationQueue()
         queue.maxConcurrentOperationCount = 1
         let query = ItemQuery(queue: queue)
+        
+        if verbose {
+            os_log("\(self.t)开始监听下载进度 -> \(self.title)")
+        }
         
         let task = Task {
             let result = query.searchMetadataItems(predicates: [
@@ -19,12 +25,19 @@ public extension URL {
             
             for try await collection in result {
                 if let item = collection.first {
-                    let progress = item.downloadProgress
+                    let progress = item.downloadProgress / 100
+                    if verbose {
+                        os_log("\(self.t)下载进度: \(progress) -> \(self.title)")
+                    }
+                    
                     await MainActor.run {
                         onProgress(progress)
                     }
                     
                     if item.isDownloaded {
+                        if verbose {
+                            os_log("\(self.t)下载完成 -> \(self.title)")
+                        }
                         query.stop()
                         break
                     }
@@ -33,18 +46,27 @@ public extension URL {
         }
         
         return AnyCancellable {
+            if verbose {
+                os_log("\(self.t)停止监听下载进度 -> \(self.title)")
+            }
             task.cancel()
             query.stop()
         }
     }
     
     /// 监听文件下载完成事件
-    /// - Parameter onFinished: 下载完成回调
+    /// - Parameters:
+    ///   - verbose: 是否打印详细日志
+    ///   - onFinished: 下载完成回调
     /// - Returns: 可用于取消监听的 AnyCancellable
-    func onDownloadFinished(_ onFinished: @escaping () -> Void) -> AnyCancellable {
+    func onDownloadFinished(verbose: Bool = true, _ onFinished: @escaping () -> Void) -> AnyCancellable {
         let queue = OperationQueue()
         queue.maxConcurrentOperationCount = 1
         let query = ItemQuery(queue: queue)
+        
+        if verbose {
+            os_log("\(self.t)开始监听下载完成")
+        }
         
         let task = Task {
             let result = query.searchMetadataItems(predicates: [
@@ -53,6 +75,9 @@ public extension URL {
             
             for try await collection in result {
                 if let item = collection.first, item.isDownloaded {
+                    if verbose {
+                        os_log("\(self.t)下载完成")
+                    }
                     await MainActor.run {
                         onFinished()
                     }
@@ -63,18 +88,27 @@ public extension URL {
         }
         
         return AnyCancellable {
+            if verbose {
+                os_log("\(self.t)停止监听下载完成")
+            }
             task.cancel()
             query.stop()
         }
     }
     
     /// 监听文件的状态变化
-    /// - Parameter onChange: 状态变化回调，返回最新的元数据项
+    /// - Parameters:
+    ///   - verbose: 是否打印详细日志
+    ///   - onChange: 状态变化回调，返回最新的元数据项
     /// - Returns: 可用于取消监听的 AnyCancellable
-    func onStateChanged(_ onChange: @escaping (MetaWrapper) -> Void) -> AnyCancellable {
+    func onStateChanged(verbose: Bool = true, _ onChange: @escaping (MetaWrapper) -> Void) -> AnyCancellable {
         let queue = OperationQueue()
         queue.maxConcurrentOperationCount = 1
         let query = ItemQuery(queue: queue)
+        
+        if verbose {
+            os_log("\(self.t)开始监听状态变化")
+        }
         
         let task = Task {
             let result = query.searchMetadataItems(predicates: [
@@ -83,6 +117,9 @@ public extension URL {
             
             for try await collection in result {
                 if let item = collection.first {
+                    if verbose {
+                        os_log("\(self.t)状态已更新")
+                    }
                     await MainActor.run {
                         onChange(item)
                     }
@@ -91,6 +128,9 @@ public extension URL {
         }
         
         return AnyCancellable {
+            if verbose {
+                os_log("\(self.t)停止监听状态变化")
+            }
             task.cancel()
             query.stop()
         }

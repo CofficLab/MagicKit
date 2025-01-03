@@ -162,7 +162,7 @@ public struct MediaFileView: View {
             HStack(alignment: .center, spacing: 12) {
                 // 左侧图片区域
                 Group {
-                    if url.isDownloading {
+                    if url.isDownloading || (downloadProgress > 0 && downloadProgress < 1) {
                         // 显示下载进度
                         ZStack {
                             Circle()
@@ -253,10 +253,28 @@ public struct MediaFileView: View {
                 isLoading = false
             }
             
-            // 如果是 iCloud 文件，监听下载进度
+            // 如果是 iCloud 文件，监听下载进度和完成事件
             if url.isiCloud {
-                cancellable = url.onDownloading { progress in
+                let downloadingCancellable = url.onDownloading { progress in
                     downloadProgress = progress
+                }
+                
+                let finishedCancellable = url.onDownloadFinished {
+                    // 下载完成后重新获取缩略图
+                    Task {
+                        do {
+                            thumbnail = try await url.thumbnail(size: CGSize(width: 80, height: 80))
+                            error = nil
+                        } catch {
+                            self.error = error
+                        }
+                    }
+                }
+                
+                // 组合两个订阅
+                cancellable = AnyCancellable {
+                    downloadingCancellable.cancel()
+                    finishedCancellable.cancel()
                 }
             }
         }
