@@ -7,12 +7,12 @@ import MediaPlayer
 
 public class MagicPlayMan: ObservableObject {
     internal let _player = AVPlayer()
-    private var timeObserver: Any?
+    internal var timeObserver: Any?
     public var cancellables = Set<AnyCancellable>()
-    public let cache: AssetCache?
+    internal var cache: AssetCache?
     public var downloadTask: URLSessionDataTask?
     internal var nowPlayingInfo: [String: Any] = [:]
-    private let _playlist = Playlist()
+    internal let _playlist = Playlist()
     
     @Published public var items: [MagicAsset] = []
     @Published public var currentIndex: Int = -1
@@ -50,48 +50,6 @@ public class MagicPlayMan: ObservableObject {
         SupportedFormat.allFormats
     }
 
-    /// 初始化播放器
-    /// - Parameter cacheDirectory: 自定义缓存目录。如果为 nil，则使用系统默认缓存目录
-    public init(cacheDirectory: URL? = nil) {
-        // 初始化缓存，如果失败则禁用缓存功能
-        let tempCache: AssetCache?
-        do {
-            tempCache = try AssetCache(directory: cacheDirectory)
-        } catch {
-            tempCache = nil
-        }
-        self.cache = tempCache
-        
-        // 完成初始化后再设置其他内容
-        setupPlayer()
-        setupObservers()
-        setupRemoteControl()
-        
-        // 记录初始化日志
-        if let cacheDir = cache?.directory {
-            log("Cache directory: \(cacheDir.path)")
-        } else {
-            log("Cache disabled", level: .warning)
-        }
-        
-        // 修改监听方式
-        _playlist.$items
-            .sink { [weak self] items in
-                self?.items = items
-            }
-            .store(in: &cancellables)
-        
-        _playlist.$currentIndex
-            .sink { [weak self] index in
-                self?.currentIndex = index
-            }
-            .store(in: &cancellables)
-        
-        // 监听日志变化
-        logger.$logs
-            .assign(to: &$logs)
-    }
-
     /// 获取当前缓存目录
     public var cacheDirectory: URL? {
         cache?.directory
@@ -117,77 +75,6 @@ public class MagicPlayMan: ObservableObject {
             log("Failed to clear cache: \(error.localizedDescription)", level: .error)
             showToast("Failed to clear cache", icon: "exclamationmark.triangle", style: .error)
         }
-    }
-
-    private func setupPlayer() {
-        timeObserver = _player.addPeriodicTimeObserver(
-            forInterval: CMTime(seconds: 0.5, preferredTimescale: 600),
-            queue: .main
-        ) { [weak self] time in
-            guard let self = self else { return }
-            self.currentTime = time.seconds
-            if self.duration > 0 {
-                self.progress = self.currentTime / self.duration
-            }
-        }
-    }
-
-    private func setupObservers() {
-        // 监听播放状态
-        _player.publisher(for: \.timeControlStatus)
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] status in
-                guard let self = self else { return }
-                switch status {
-                case .playing:
-                    if case .loading = self.state {
-                        self.state = .playing
-                    }
-                    self.isBuffering = false
-                case .paused:
-                    if case .playing = self.state {
-                        self.state = self.currentTime == 0 ? .stopped : .paused
-                    }
-                case .waitingToPlayAtSpecifiedRate:
-                    self.isBuffering = true
-                    if case .playing = self.state {
-                        self.state = .loading(.buffering)
-                    }
-                @unknown default:
-                    break
-                }
-            }
-            .store(in: &cancellables)
-
-        // 监听缓冲状态
-        _player.publisher(for: \.currentItem?.isPlaybackBufferEmpty)
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] isEmpty in
-                if let isEmpty = isEmpty {
-                    self?.isBuffering = isEmpty
-                }
-            }
-            .store(in: &cancellables)
-            
-        // 监听播放列表变化
-        playlist.$items
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] items in
-                self?.items = items
-            }
-            .store(in: &cancellables)
-        
-        playlist.$currentIndex
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] index in
-                self?.currentIndex = index
-            }
-            .store(in: &cancellables)
-        
-        // 监听日志变化
-        logger.$logs
-            .receive(on: DispatchQueue.main)
-            .assign(to: &$logs)
     }
 
     private func isSampleAsset(_ asset: MagicAsset) -> Bool {
