@@ -87,14 +87,17 @@ internal extension MagicPlayMan {
                         self.state = .playing
                     }
                     self.isBuffering = false
+                    self.events.onStateChanged.send(self.state)
                 case .paused:
                     if case .playing = self.state {
                         self.state = self.currentTime == 0 ? .stopped : .paused
+                        self.events.onStateChanged.send(self.state)
                     }
                 case .waitingToPlayAtSpecifiedRate:
                     self.isBuffering = true
                     if case .playing = self.state {
                         self.state = .loading(.buffering)
+                        self.events.onStateChanged.send(self.state)
                     }
                 @unknown default:
                     break
@@ -106,8 +109,28 @@ internal extension MagicPlayMan {
         _player.publisher(for: \.currentItem?.isPlaybackBufferEmpty)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isEmpty in
+                guard let self = self else { return }
                 if let isEmpty = isEmpty {
-                    self?.isBuffering = isEmpty
+                    self.isBuffering = isEmpty
+                    self.events.onBufferingStateChanged.send(isEmpty)
+                }
+            }
+            .store(in: &cancellables)
+            
+        // 监听播放完成
+        NotificationCenter.default.publisher(for: .AVPlayerItemDidPlayToEndTime)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                
+                if !self.isPlaylistEnabled {
+                    // 如果播放列表被禁用，通知调用者播放完成
+                    if let currentAsset = self.currentAsset {
+                        self.events.onTrackFinished.send(currentAsset)
+                    }
+                } else if let nextAsset = self._playlist.playNext(mode: self.playMode) {
+                    // 如果播放列表启用，播放下一首
+                    self.load(asset: nextAsset)
                 }
             }
             .store(in: &cancellables)

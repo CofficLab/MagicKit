@@ -8,11 +8,38 @@ import MediaPlayer
 public class MagicPlayMan: ObservableObject {
     internal let _player = AVPlayer()
     internal var timeObserver: Any?
-    public var cancellables = Set<AnyCancellable>()
-    internal var cache: AssetCache?
-    public var downloadTask: URLSessionDataTask?
     internal var nowPlayingInfo: [String: Any] = [:]
     internal let _playlist = Playlist()
+    internal var cache: AssetCache?
+    
+    public var cancellables = Set<AnyCancellable>()
+    public var downloadTask: URLSessionDataTask?
+    
+    // MARK: - Publishers
+    
+    /// 播放事件发布者
+    public struct PlaybackEvents {
+        /// 单曲播放完成事件
+        /// 当播放列表被禁用时，通知调用者当前曲目播放完成
+        /// 调用者可以通过订阅这个事件来处理播放完成，并决定下一首要播放的内容
+        /// 只有在播放列表被禁用（isPlaylistEnabled = false）时才会触发
+        public let onTrackFinished = PassthroughSubject<MagicAsset, Never>()
+        
+        /// 播放失败事件
+        /// 当播放过程中发生错误时触发
+        public let onPlaybackFailed = PassthroughSubject<PlaybackState.PlaybackError, Never>()
+        
+        /// 缓冲状态变化事件
+        /// 当播放器开始或停止缓冲时触发
+        public let onBufferingStateChanged = PassthroughSubject<Bool, Never>()
+        
+        /// 播放状态变化事件
+        /// 当播放状态发生改变时触发（播放/暂停/停止等）
+        public let onStateChanged = PassthroughSubject<PlaybackState, Never>()
+    }
+    
+    /// 播放相关的事件发布者
+    public let events = PlaybackEvents()
     
     @Published public var items: [MagicAsset] = []
     @Published public var currentIndex: Int = -1

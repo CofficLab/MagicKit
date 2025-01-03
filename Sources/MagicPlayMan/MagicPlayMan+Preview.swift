@@ -24,6 +24,38 @@ public extension MagicPlayMan {
             self.showLogs = showLogs
         }
         
+        // MARK: - Event Observation
+        
+        private func setupEventObservation() {
+            // 观察播放完成事件
+            playMan.events.onTrackFinished
+                .sink { [weak playMan] track in
+                    playMan?.log("事件：单曲播放完成 - \(track.title)")
+                }
+                .store(in: &playMan.cancellables)
+            
+            // 观察缓冲状态变化
+            playMan.events.onBufferingStateChanged
+                .sink { [weak playMan] isBuffering in
+                    playMan?.log("事件：缓冲状态变化 - \(isBuffering ? "开始缓冲" : "缓冲完成")")
+                }
+                .store(in: &playMan.cancellables)
+            
+            // 观察播放状态变化
+            playMan.events.onStateChanged
+                .sink { [weak playMan] state in
+                    playMan?.log("事件：播放状态变化 - \(state)")
+                }
+                .store(in: &playMan.cancellables)
+            
+            // 观察播放错误
+            playMan.events.onPlaybackFailed
+                .sink { [weak playMan] error in
+                    playMan?.log("事件：播放失败 - \(error)", level: .error)
+                }
+                .store(in: &playMan.cancellables)
+        }
+        
         // MARK: - Body
         
         public var body: some View {
@@ -38,6 +70,9 @@ public extension MagicPlayMan {
                     }
             }
             .animation(.spring(response: 0.3, dampingFraction: 0.8), value: showPlaylist)
+            .onAppear {
+                setupEventObservation()
+            }
         }
         
         // MARK: - Main Layout Components
