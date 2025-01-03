@@ -1,6 +1,7 @@
 import AVKit
 import SwiftUI
 import MagicUI
+import Combine
 
 // MARK: - Media View Style
 /// 媒体视图的背景样式
@@ -143,6 +144,9 @@ public struct MediaFileView: View {
     @State private var error: Error?
     @State private var isLoading = false
     @State private var isHovering = false
+    @State private var downloadProgress: Double = 0
+    @State private var itemQuery: ItemQuery?
+    @State private var cancellable: AnyCancellable?
     
     /// 创建媒体文件视图
     /// - Parameters:
@@ -154,60 +158,82 @@ public struct MediaFileView: View {
     }
     
     public var body: some View {
-        HStack(spacing: 12) {
-            // 左侧图片
-            Group {
-                if let thumbnail = thumbnail {
-                    thumbnail
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                } else if isLoading {
-                    ProgressView()
-                        .controlSize(.small)
-                } else if error != nil {
-                    Image(systemName: "exclamationmark.triangle")
-                        .font(.system(size: 24))
-                        .foregroundStyle(.red)
-                } else {
-                    Image(systemName: "doc")
-                        .font(.system(size: 24))
-                        .foregroundStyle(.secondary)
+        VStack(spacing: 0) {
+            HStack(alignment: .center, spacing: 12) {
+                // 左侧图片区域
+                Group {
+                    if url.isDownloading {
+                        // 显示下载进度
+                        ZStack {
+                            Circle()
+                                .stroke(Color.secondary.opacity(0.2), lineWidth: 4)
+                            
+                            Circle()
+                                .trim(from: 0, to: downloadProgress)
+                                .stroke(Color.accentColor, style: StrokeStyle(
+                                    lineWidth: 4,
+                                    lineCap: .round
+                                ))
+                                .rotationEffect(.degrees(-90))
+                            
+                            Text("\(Int(downloadProgress * 100))%")
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                        }
+                    } else if let thumbnail = thumbnail {
+                        thumbnail
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                    } else if isLoading {
+                        ProgressView()
+                            .controlSize(.small)
+                    } else if error != nil {
+                        Image(systemName: "exclamationmark.triangle")
+                            .font(.system(size: 24))
+                            .foregroundStyle(.red)
+                    } else {
+                        Image(systemName: url.icon)
+                            .font(.system(size: 24))
+                            .foregroundStyle(.secondary)
+                    }
                 }
-            }
-            .frame(width: 40, height: 40)
-            .background(.ultraThinMaterial)
-            .apply(shape: shape)
-            .overlay {
-                if error != nil {
-                    shape.strokeShape()
+                .frame(width: 40, height: 40)
+                .background(.ultraThinMaterial)
+                .apply(shape: shape)
+                .overlay {
+                    if error != nil {
+                        shape.strokeShape()
+                    }
                 }
-            }
-            
-            // 右侧文件信息
-            VStack(alignment: .leading, spacing: 4) {
-                Text(url.lastPathComponent)
-                    .font(.headline)
-                    .lineLimit(1)
                 
-                if let error = error {
-                    ErrorMessageView(error: error)
-                } else {
-                    Text(size)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                // 右侧文件信息
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(url.lastPathComponent)
+                        .font(.headline)
+                        .lineLimit(1)
+                    
+                    if let error = error {
+                        ErrorMessageView(error: error)
+                    } else {
+                        Text(size)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                
+                Spacer()
+                
+                // 操作按钮
+                if showActions {
+                    ActionButtonsView(url: url)
+                        .opacity(isHovering ? 1 : 0)
                 }
             }
+            .padding(.horizontal, 16)
+            .padding(.vertical, verticalPadding)
             
-            Spacer()
-            
-            // 操作按钮
-            if showActions {
-                ActionButtonsView(url: url)
-                    .opacity(isHovering ? 1 : 0)
-            }
+            Divider()
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, verticalPadding)
         .modifier(MediaViewBackground(style: style))
         .onHover { hovering in
             withAnimation(.easeInOut(duration: 0.2)) {
@@ -215,8 +241,8 @@ public struct MediaFileView: View {
             }
         }
         .task {
-            // 异步加载缩略图
-            if thumbnail == nil && !isLoading {
+            // 只加载缩略图，不主动下载
+            if thumbnail == nil && !isLoading && !url.isDownloading {
                 isLoading = true
                 do {
                     thumbnail = try await url.thumbnail(size: CGSize(width: 80, height: 80))
@@ -226,6 +252,16 @@ public struct MediaFileView: View {
                 }
                 isLoading = false
             }
+            
+            // 如果是 iCloud 文件，监听下载进度
+            if url.isiCloud {
+                cancellable = url.onDownloading { progress in
+                    downloadProgress = progress
+                }
+            }
+        }
+        .onDisappear {
+            cancellable?.cancel()
         }
     }
     
@@ -307,6 +343,11 @@ public extension URL {
     func makeMediaView() -> MediaFileView {
         MediaFileView(url: self, size: self.getSizeReadable())
     }
+}
+
+// 添加通知名称
+extension Notification.Name {
+    static let iCloudDownloadProgress = Notification.Name("iCloudDownloadProgress")
 }
 
 #Preview("Media View") {
