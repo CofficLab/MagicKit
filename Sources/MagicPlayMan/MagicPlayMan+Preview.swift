@@ -27,33 +27,21 @@ public extension MagicPlayMan {
         // MARK: - Event Observation
         
         private func setupEventObservation() {
-            // 观察播放完成事件
-            playMan.events.onTrackFinished
-                .sink { [weak playMan] track in
-                    playMan?.log("事件：单曲播放完成 - \(track.title)")
+            playMan.subscribe(
+                name: "PreviewView",
+                onTrackFinished: { [weak playMan] track in
+                    playMan?.log("观察到事件：单曲播放完成 - \(track.title)")
+                },
+                onPlaybackFailed: { [weak playMan] error in
+                    playMan?.log("观察到事件：播放失败 - \(error)", level: .error)
+                },
+                onBufferingStateChanged: { [weak playMan] isBuffering in
+                    playMan?.log("观察到事件：缓冲状态变化 - \(isBuffering ? "开始缓冲" : "缓冲完成")")
+                },
+                onStateChanged: { [weak playMan] state in
+                    playMan?.log("观察到事件：播放状态变化 - \(state)")
                 }
-                .store(in: &playMan.cancellables)
-            
-            // 观察缓冲状态变化
-            playMan.events.onBufferingStateChanged
-                .sink { [weak playMan] isBuffering in
-                    playMan?.log("事件：缓冲状态变化 - \(isBuffering ? "开始缓冲" : "缓冲完成")")
-                }
-                .store(in: &playMan.cancellables)
-            
-            // 观察播放状态变化
-            playMan.events.onStateChanged
-                .sink { [weak playMan] state in
-                    playMan?.log("事件：播放状态变化 - \(state)")
-                }
-                .store(in: &playMan.cancellables)
-            
-            // 观察播放错误
-            playMan.events.onPlaybackFailed
-                .sink { [weak playMan] error in
-                    playMan?.log("事件：播放失败 - \(error)", level: .error)
-                }
-                .store(in: &playMan.cancellables)
+            )
         }
         
         // MARK: - Body
@@ -123,6 +111,7 @@ public extension MagicPlayMan {
             HStack {
                 playMan.makePlaylistButton()
                 playMan.makePlaylistToggleButton()
+                playMan.makeSubscribersButton()
                 playMan.makeSupportedFormatsButton()
                 
                 MagicButton(

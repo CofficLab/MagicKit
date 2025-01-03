@@ -115,6 +115,22 @@ public extension MagicPlayMan {
         .symbolEffect(.bounce, value: self.isPlaylistEnabled)
     }
 
+    /// 创建订阅者列表按钮
+    func makeSubscribersButton() -> some View {
+        MagicButton(
+            icon: "person.2.circle",
+            style: .secondary,
+            size: .regular,
+            shape: .circle,
+            popoverContent: AnyView(
+                SubscribersView(subscribers: events.subscribers)
+                    .frame(width: 300, height: 400)
+                    .padding()
+            ),
+            action: {}
+        )
+    }
+
     /// 创建支持的格式按钮
     func makeSupportedFormatsButton() -> some View {
         MagicButton(
