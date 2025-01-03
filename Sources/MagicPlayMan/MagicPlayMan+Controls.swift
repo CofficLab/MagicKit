@@ -6,6 +6,11 @@ import SwiftUI
 public extension MagicPlayMan {
     /// 添加资源到播放列表并播放
     func play(asset: MagicAsset) {
+        if !isPlaylistEnabled {
+            load(asset: asset)
+            return
+        }
+        
         if playlist.play(asset) {
             load(asset: asset)
         } else {
@@ -17,16 +22,28 @@ public extension MagicPlayMan {
     
     /// 添加资源到播放列表
     func append(_ asset: MagicAsset) {
+        guard isPlaylistEnabled else {
+            log("Cannot append: playlist is disabled", level: .warning)
+            return
+        }
         playlist.append(asset)
     }
     
     /// 清空播放列表
     func clearPlaylist() {
+        guard isPlaylistEnabled else {
+            log("Cannot clear: playlist is disabled", level: .warning)
+            return
+        }
         playlist.clear()
     }
     
     /// 播放下一曲
     func next() {
+        guard isPlaylistEnabled else {
+            log("Cannot play next: playlist is disabled", level: .warning)
+            return
+        }
         if let nextAsset = playlist.playNext(mode: playMode) {
             load(asset: nextAsset)
         }
@@ -34,6 +51,10 @@ public extension MagicPlayMan {
     
     /// 播放上一曲
     func previous() {
+        guard isPlaylistEnabled else {
+            log("Cannot play previous: playlist is disabled", level: .warning)
+            return
+        }
         if let prevAsset = playlist.playPrevious(mode: playMode) {
             load(asset: prevAsset)
         }
@@ -41,11 +62,19 @@ public extension MagicPlayMan {
     
     /// 从播放列表中移除指定索引的资源
     func removeFromPlaylist(at index: Int) {
+        guard isPlaylistEnabled else {
+            log("Cannot remove: playlist is disabled", level: .warning)
+            return
+        }
         playlist.remove(at: index)
     }
     
     /// 移动播放列表中的资源
     func moveInPlaylist(from: Int, to: Int) {
+        guard isPlaylistEnabled else {
+            log("Cannot move: playlist is disabled", level: .warning)
+            return
+        }
         playlist.move(from: from, to: to)
     }
     

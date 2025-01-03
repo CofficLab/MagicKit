@@ -12,7 +12,7 @@ public class MagicPlayMan: ObservableObject {
     public let cache: AssetCache?
     public var downloadTask: URLSessionDataTask?
     internal var nowPlayingInfo: [String: Any] = [:]
-    public let playlist = Playlist()
+    private let _playlist = Playlist()
     
     @Published public var items: [MagicAsset] = []
     @Published public var currentIndex: Int = -1
@@ -25,11 +25,13 @@ public class MagicPlayMan: ObservableObject {
     @Published public var progress: Double = 0
     @Published public var logs: [PlaybackLog] = []
     @Published public var currentThumbnail: Image?
+    @Published public var isPlaylistEnabled: Bool = true
 
     public var player: AVPlayer { _player }
     public var asset: MagicAsset? { self.currentAsset }
     public var playing: Bool { self.state == .playing }
     public var hasAsset: Bool { self.asset != nil }
+    public var playlist: Playlist { _playlist }
 
     /// 格式化后的当前播放时间，格式为 "mm:ss" 或 "hh:mm:ss"
     public var currentTimeForDisplay: String {
@@ -73,13 +75,13 @@ public class MagicPlayMan: ObservableObject {
         }
         
         // 修改监听方式
-        playlist.$items
+        _playlist.$items
             .sink { [weak self] items in
                 self?.items = items
             }
             .store(in: &cancellables)
         
-        playlist.$currentIndex
+        _playlist.$currentIndex
             .sink { [weak self] index in
                 self?.currentIndex = index
             }

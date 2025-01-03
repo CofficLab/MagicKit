@@ -48,9 +48,16 @@ public extension MagicPlayMan {
         
         // 加载资源
         if autoPlay {
-            play(asset: asset)
-        } else {
+            if isPlaylistEnabled {
+                play(asset: asset)
+            } else {
+                load(asset: asset)
+            }
+        } else if isPlaylistEnabled {
             append(asset)
+        } else {
+            log("Cannot append: playlist is disabled", level: .warning)
+            return false
         }
         
         log("Added URL to playlist: \(url.absoluteString)")
@@ -67,6 +74,11 @@ public extension MagicPlayMan {
         urls: [URL],
         playFirst: Bool = true
     ) -> Int {
+        guard isPlaylistEnabled || urls.count == 1 else {
+            log("Cannot play multiple URLs: playlist is disabled", level: .warning)
+            return 0
+        }
+        
         var successCount = 0
         
         for (index, url) in urls.enumerated() {

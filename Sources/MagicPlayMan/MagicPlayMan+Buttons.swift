@@ -100,6 +100,25 @@ public extension MagicPlayMan {
         )
     }
 
+    /// 创建播放列表启用/禁用按钮
+    func makePlaylistToggleButton() -> some View {
+        MagicButton(
+            icon: self.isPlaylistEnabled ? "list.bullet.circle.fill" : "list.bullet.circle",
+            style: self.isPlaylistEnabled ? .primary : .secondary,
+            size: .regular,
+            shape: .circle,
+            action: { [self] in
+                self.isPlaylistEnabled.toggle()
+                self.showToast(
+                    self.isPlaylistEnabled ? "Playlist enabled" : "Playlist disabled",
+                    icon: self.isPlaylistEnabled ? "list.bullet.circle.fill" : "list.bullet.circle",
+                    style: .info
+                )
+                self.log(self.isPlaylistEnabled ? "Playlist enabled" : "Playlist disabled")
+            }
+        )
+    }
+
     /// 创建支持的格式按钮
     func makeSupportedFormatsButton() -> some View {
         MagicButton(
