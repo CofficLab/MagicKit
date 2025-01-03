@@ -7,8 +7,13 @@ import MediaPlayer
 
 public extension MagicPlayMan {
     /// 初始化播放器
-    /// - Parameter cacheDirectory: 自定义缓存目录。如果为 nil，则使用系统默认缓存目录
-    convenience init(cacheDirectory: URL? = nil) {
+    /// - Parameters:
+    ///   - cacheDirectory: 自定义缓存目录。如果为 nil，则使用系统默认缓存目录
+    ///   - playlistEnabled: 是否启用播放列表，默认为 true
+    convenience init(
+        cacheDirectory: URL? = nil,
+        playlistEnabled: Bool = true
+    ) {
         self.init()
         
         // 初始化缓存，如果失败则禁用缓存功能
@@ -26,6 +31,12 @@ public extension MagicPlayMan {
         setupPlayer()
         setupObservers()
         setupRemoteControl()
+        
+        // 设置播放列表状态
+        self.isPlaylistEnabled = playlistEnabled
+        if !playlistEnabled {
+            log("Playlist disabled")
+        }
         
         // 修改监听方式
         _playlist.$items
