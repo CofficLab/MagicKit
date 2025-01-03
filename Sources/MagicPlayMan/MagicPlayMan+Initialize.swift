@@ -123,14 +123,32 @@ internal extension MagicPlayMan {
             .sink { [weak self] _ in
                 guard let self = self else { return }
                 
-                if !self.isPlaylistEnabled {
-                    // 如果播放列表被禁用，通知调用者播放完成
-                    if let currentAsset = self.currentAsset {
-                        self.events.onTrackFinished.send(currentAsset)
+                if let currentAsset = self.currentAsset {
+                    self.log("播放完成：\(currentAsset.title)")
+                    
+                    // 如果是单曲循环模式，重新播放当前曲目
+                    if self.playMode == .loop {
+                        self.log("单曲循环模式，重新播放：\(currentAsset.title)")
+                        Task { @MainActor in
+                            self.seek(time: 0)
+                            self.play()
+                        }
+                        return
                     }
-                } else if let nextAsset = self._playlist.playNext(mode: self.playMode) {
-                    // 如果播放列表启用，播放下一首
-                    self.load(asset: nextAsset)
+                    
+                    if !self.isPlaylistEnabled {
+                        // 如果播放列表被禁用，通知调用者播放完成
+                        self.log("播放列表已禁用，等待订阅者处理下一首")
+                        self.events.onTrackFinished.send(currentAsset)
+                    } else if let nextAsset = self._playlist.playNext(mode: self.playMode) {
+                        // 如果播放列表启用，播放下一首
+                        self.log("播放列表已启用，即将播放下一首：\(nextAsset.title)")
+                        Task { @MainActor in
+                            self.load(asset: nextAsset)
+                        }
+                    } else {
+                        self.log("播放列表已到末尾", level: .warning)
+                    }
                 }
             }
             .store(in: &cancellables)
