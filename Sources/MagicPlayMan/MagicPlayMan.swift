@@ -24,11 +24,16 @@ public class MagicPlayMan: ObservableObject {
             let id: UUID
             let name: String
             let date: Date
+            let hasNavigationHandler: Bool
             
-            public init(name: String) {
+            public init(
+                name: String,
+                hasNavigationHandler: Bool = false
+            ) {
                 self.id = UUID()
                 self.name = name
                 self.date = Date()
+                self.hasNavigationHandler = hasNavigationHandler
             }
         }
         
@@ -53,9 +58,23 @@ public class MagicPlayMan: ObservableObject {
         /// 当播放状态发生改变时触发（播放/暂停/停止等）
         public let onStateChanged = PassthroughSubject<PlaybackState, Never>()
         
+        /// 请求上一首事件
+        /// 当播放列表被禁用时，通知调用者用户请求播放上一首
+        public let onPreviousRequested = PassthroughSubject<MagicAsset, Never>()
+        
+        /// 请求下一首事件
+        /// 当播放列表被禁用时，通知调用者用户请求播放下一首
+        public let onNextRequested = PassthroughSubject<MagicAsset, Never>()
+        
         /// 添加订阅者
-        func addSubscriber(_ name: String) -> UUID {
-            let subscriber = Subscriber(name: name)
+        func addSubscriber(
+            name: String,
+            hasNavigationHandler: Bool = false
+        ) -> UUID {
+            let subscriber = Subscriber(
+                name: name,
+                hasNavigationHandler: hasNavigationHandler
+            )
             subscribers.append(subscriber)
             return subscriber.id
         }
@@ -68,6 +87,11 @@ public class MagicPlayMan: ObservableObject {
         /// 获取订阅者信息
         func getSubscriberInfo(id: UUID) -> Subscriber? {
             subscribers.first { $0.id == id }
+        }
+        
+        /// 是否有订阅者监听导航事件
+        var hasNavigationSubscribers: Bool {
+            subscribers.contains { $0.hasNavigationHandler }
         }
         
         init() {}
@@ -90,9 +114,15 @@ public class MagicPlayMan: ObservableObject {
         onTrackFinished: ((MagicAsset) -> Void)? = nil,
         onPlaybackFailed: ((PlaybackState.PlaybackError) -> Void)? = nil,
         onBufferingStateChanged: ((Bool) -> Void)? = nil,
-        onStateChanged: ((PlaybackState) -> Void)? = nil
+        onStateChanged: ((PlaybackState) -> Void)? = nil,
+        onPreviousRequested: ((MagicAsset) -> Void)? = nil,
+        onNextRequested: ((MagicAsset) -> Void)? = nil
     ) -> UUID {
-        let subscriberId = events.addSubscriber(name)
+        let hasNavigationHandler = onPreviousRequested != nil || onNextRequested != nil
+        let subscriberId = events.addSubscriber(
+            name: name,
+            hasNavigationHandler: hasNavigationHandler
+        )
         
         if let handler = onTrackFinished {
             events.onTrackFinished
@@ -126,6 +156,24 @@ public class MagicPlayMan: ObservableObject {
                 .sink { [weak self] state in
                     self?.log("事件：播放状态变化 - 将由 \(name) 处理")
                     handler(state)
+                }
+                .store(in: &cancellables)
+        }
+        
+        if let handler = onPreviousRequested {
+            events.onPreviousRequested
+                .sink { [weak self] asset in
+                    self?.log("事件：请求上一首 - 将由 \(name) 处理")
+                    handler(asset)
+                }
+                .store(in: &cancellables)
+        }
+        
+        if let handler = onNextRequested {
+            events.onNextRequested
+                .sink { [weak self] asset in
+                    self?.log("事件：请求下一首 - 将由 \(name) 处理")
+                    handler(asset)
                 }
                 .store(in: &cancellables)
         }

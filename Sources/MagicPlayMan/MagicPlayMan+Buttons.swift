@@ -23,6 +23,7 @@ public extension MagicPlayMan {
             size: .regular,
             shape: .circle,
             disabledReason: !hasAsset ? "No media loaded" :
+                (!isPlaylistEnabled && !events.hasNavigationSubscribers) ? "Playlist is disabled and no handler for previous track" :
                 currentIndex <= 0 ? "This is the first track" : nil,
             action: previous
         )
@@ -36,6 +37,7 @@ public extension MagicPlayMan {
             size: .regular,
             shape: .circle,
             disabledReason: !hasAsset ? "No media loaded" :
+                (!isPlaylistEnabled && !events.hasNavigationSubscribers) ? "Playlist is disabled and no handler for next track" :
                 currentIndex >= items.count - 1 ? "This is the last track" : nil,
             action: next
         )

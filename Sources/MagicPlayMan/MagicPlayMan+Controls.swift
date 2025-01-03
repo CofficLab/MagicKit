@@ -38,25 +38,35 @@ public extension MagicPlayMan {
         playlist.clear()
     }
     
-    /// 播放下一曲
-    func next() {
-        guard isPlaylistEnabled else {
-            log("Cannot play next: playlist is disabled", level: .warning)
-            return
-        }
-        if let nextAsset = playlist.playNext(mode: playMode) {
-            load(asset: nextAsset)
+    /// 播放下一首
+    public func next() {
+        guard hasAsset else { return }
+        
+        if isPlaylistEnabled {
+            if let nextAsset = _playlist.playNext(mode: playMode) {
+                load(asset: nextAsset)
+            }
+        } else if events.hasNavigationSubscribers {
+            // 如果播放列表被禁用但有订阅者，发送请求下一首事件
+            if let currentAsset = currentAsset {
+                events.onNextRequested.send(currentAsset)
+            }
         }
     }
     
-    /// 播放上一曲
-    func previous() {
-        guard isPlaylistEnabled else {
-            log("Cannot play previous: playlist is disabled", level: .warning)
-            return
-        }
-        if let prevAsset = playlist.playPrevious(mode: playMode) {
-            load(asset: prevAsset)
+    /// 播放上一首
+    public func previous() {
+        guard hasAsset else { return }
+        
+        if isPlaylistEnabled {
+            if let previousAsset = _playlist.playPrevious(mode: playMode) {
+                load(asset: previousAsset)
+            }
+        } else if events.hasNavigationSubscribers {
+            // 如果播放列表被禁用但有订阅者，发送请求上一首事件
+            if let currentAsset = currentAsset {
+                events.onPreviousRequested.send(currentAsset)
+            }
         }
     }
     
