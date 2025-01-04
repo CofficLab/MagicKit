@@ -67,7 +67,7 @@ private struct BasicStylesPreview: View {
                     Text("自定义背景色")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_jpg_moon
+                    URL.sample_web_jpg_moon
                         .copyView(destination: .documentsDirectory.appendingPathComponent("random.jpg"))
                         .withBackground(.blue.opacity(0.1))
                 }
@@ -77,7 +77,7 @@ private struct BasicStylesPreview: View {
                     Text("自定义阴影")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_txt_bsd
+                    URL.sample_web_txt_bsd
                         .copyView(destination: .documentsDirectory.appendingPathComponent("download.bin"))
                         .withBackground(.green.opacity(0.1))
                         .withShadow(radius: 8)
@@ -105,7 +105,7 @@ private struct ShapesPreview: View {
                     Text("圆角矩形（默认）")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_jpg_earth
+                    URL.sample_web_jpg_earth
                         .copyView(destination: .documentsDirectory)
                         .withBackground(.mint.opacity(0.1))
                 }
@@ -115,7 +115,7 @@ private struct ShapesPreview: View {
                     Text("矩形")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_jpg_earth
+                    URL.sample_web_jpg_earth
                         .copyView(destination: .documentsDirectory)
                         .withShape(.rectangle)
                         .withBackground(.orange.opacity(0.1))
@@ -126,7 +126,7 @@ private struct ShapesPreview: View {
                     Text("胶囊形状")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_jpg_earth
+                    URL.sample_web_jpg_earth
                         .copyView(destination: .documentsDirectory)
                         .withShape(.capsule)
                         .withBackground(.purple.opacity(0.1))
@@ -155,7 +155,7 @@ private struct DownloadPreview: View {
                     Text("音频文件")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_mp3_kennedy
+                    URL.sample_web_mp3_kennedy
                         .copyView(destination: .documentsDirectory)
                         .withBackground(.blue.opacity(0.1))
                 }
@@ -165,7 +165,7 @@ private struct DownloadPreview: View {
                     Text("视频文件")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_mp4_bunny
+                    URL.sample_web_mp4_bunny
                         .copyView(destination: .documentsDirectory)
                         .withBackground(.green.opacity(0.1))
                 }
@@ -175,7 +175,7 @@ private struct DownloadPreview: View {
                     Text("图片文件")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_jpg_earth
+                    URL.sample_web_jpg_earth
                         .copyView(destination: .documentsDirectory)
                         .withBackground(.purple.opacity(0.1))
                 }
@@ -185,7 +185,7 @@ private struct DownloadPreview: View {
                     Text("PDF文件")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_pdf_swift_guide
+                    URL.sample_web_pdf_swift_guide
                         .copyView(destination: .documentsDirectory)
                         .withBackground(.orange.opacity(0.1))
                 }
@@ -232,8 +232,8 @@ private struct ErrorHandlingPreview: View {
                     Text("目标位置已存在")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_txt_mit
-                        .copyView(destination: URL.sample_txt_mit)
+                    URL.sample_web_txt_mit
+                        .copyView(destination: URL.sample_web_txt_mit)
                         .withBackground(.yellow.opacity(0.1))
                 }
             }

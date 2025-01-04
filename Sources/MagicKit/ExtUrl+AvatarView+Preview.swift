@@ -3,147 +3,262 @@ import SwiftUI
 /// 头像视图的功能展示组件
 public struct AvatarDemoView: View {
     @State private var downloadProgress: Double = 0.0
+    @State private var icloudFiles: [URL] = []
+    @State private var isCreatingFiles = false
+    @State private var errorMessage: String?
     
     public init() {}
     
-    public var body: some View {
-        ScrollView {
-            VStack(spacing: 32) {
-                // 默认样式
-                demoSection("默认样式") {
-                    AvatarView(url: .sample_jpg_earth)
-                }
-                
-                // 自定义背景色
-                demoSection("自定义背景色") {
-                    HStack(spacing: 20) {
-                        AvatarView(url: .sample_jpg_earth)
-                            .magicBackground(.red.opacity(0.1))
-                        
-                        AvatarView(url: .sample_jpg_earth)
-                            .magicBackground(.green.opacity(0.1))
-                        
-                        AvatarView(url: .sample_jpg_earth)
-                            .magicBackground(.purple.opacity(0.1))
-                    }
-                }
-                
-                // 不同尺寸
-                demoSection("不同尺寸") {
-                    HStack(spacing: 20) {
-                        AvatarView(url: .sample_jpg_earth)
-                            .magicSize(32)
-                        
-                        AvatarView(url: .sample_jpg_earth)
-                            .magicSize(48)
-                        
-                        AvatarView(url: .sample_jpg_earth)
-                            .magicSize(64)
-                    }
-                }
-                
-                // 不同形状
-                demoSection("不同形状") {
-                    HStack(spacing: 20) {
-                        AvatarView(url: .sample_jpg_earth)
-                            .magicShape(.circle)
-                        
-                        AvatarView(url: .sample_jpg_earth)
-                            .magicShape(.roundedRectangle(cornerRadius: 8))
-                        
-                        AvatarView(url: .sample_jpg_earth)
-                            .magicShape(.rectangle)
-                    }
-                }
-                
-                // 下载进度
-                demoSection("下载进度") {
-                    VStack(spacing: 16) {
-                        AvatarView(url: .sample_jpg_earth)
-                            .magicDownloadProgress($downloadProgress)
-                            .magicSize(64)
-                        
-                        Slider(value: $downloadProgress, in: 0...1) {
-                            Text("下载进度")
-                        } minimumValueLabel: {
-                            Text("0%")
-                        } maximumValueLabel: {
-                            Text("100%")
-                        }
-                    }
-                    .frame(maxWidth: 300)
-                }
-                
-                // 不同文件类型
-                demoSection("不同文件类型") {
-                    HStack(spacing: 20) {
-                        // 图片文件
-                        VStack {
-                            AvatarView(url: .sample_jpg_earth)
-                            Text("图片")
-                                .font(.caption)
-                        }
-                        
-                        // 音频文件
-                        VStack {
-                            AvatarView(url: .sample_mp3_kennedy)
-                            Text("音频")
-                                .font(.caption)
-                        }
-                        
-                        // 视频文件
-                        VStack {
-                            AvatarView(url: .sample_mp4_bunny)
-                            Text("视频")
-                                .font(.caption)
-                        }
-                    }
-                }
-                
-                // 错误状态
-                demoSection("错误状态") {
-                    HStack(spacing: 20) {
-                        // 无效 URL
-                        VStack {
-                            AvatarView(url: URL(string: "invalid://url")!)
-                            Text("无效URL")
-                                .font(.caption)
-                        }
-                        
-                        // 不存在的文件
-                        VStack {
-                            AvatarView(url: URL(string: "file:///nonexistent.jpg")!)
-                            Text("不存在")
-                                .font(.caption)
-                        }
-                    }
-                }
-                
-                // 下载监控
-                demoSection("下载监控") {
-                    HStack(spacing: 20) {
-                        // 启用监控
-                        VStack {
-                            AvatarView(url: .sample_jpg_earth)
-                                .magicDownloadMonitor(true)
-                            Text("启用监控")
-                                .font(.caption)
-                        }
-                        
-                        // 禁用监控
-                        VStack {
-                            AvatarView(url: .sample_jpg_earth)
-                                .magicDownloadMonitor(false)
-                            Text("禁用监控")
-                                .font(.caption)
-                        }
-                    }
-                }
+    private func createICloudFiles() {
+        isCreatingFiles = true
+        errorMessage = nil
+        
+        URL.createICloudSamples { files, error in
+            isCreatingFiles = false
+            if let error = error {
+                errorMessage = error.localizedDescription
+            } else {
+                icloudFiles = files
             }
-            .padding()
-            .frame(width: 500)
         }
-        .frame(height: 800)
+    }
+    
+    public var body: some View {
+        TabView {
+            // 基础样式
+            ScrollView {
+                HStack {
+                    VStack(spacing: 32) {
+                        // 默认样式
+                        demoSection("默认样式") {
+                            HStack(spacing: 20) {
+                                AvatarView(url: .sample_web_jpg_earth)
+                                
+                                AvatarView(url: .sample_web_mp3_kennedy)
+                                
+                                AvatarView(url: .sample_web_mp4_bunny)
+                            }
+                        }
+                        
+                        // 自定义背景色
+                        demoSection("自定义背景色") {
+                            HStack(spacing: 20) {
+                                AvatarView(url: .sample_web_jpg_earth)
+                                    .magicBackground(.red.opacity(0.1))
+                                
+                                AvatarView(url: .sample_web_jpg_earth)
+                                    .magicBackground(.green.opacity(0.1))
+                                
+                                AvatarView(url: .sample_web_jpg_earth)
+                                    .magicBackground(.purple.opacity(0.1))
+                            }
+                        }
+                        
+                        // 不同尺寸
+                        demoSection("不同尺寸") {
+                            HStack(spacing: 20) {
+                                AvatarView(url: .sample_web_jpg_earth)
+                                    .magicSize(32)
+                                
+                                AvatarView(url: .sample_web_jpg_earth)
+                                    .magicSize(48)
+                                
+                                AvatarView(url: .sample_web_jpg_earth)
+                                    .magicSize(64)
+                            }
+                        }
+                        
+                        // 不同形状
+                        demoSection("不同形状") {
+                            HStack(spacing: 20) {
+                                AvatarView(url: .sample_web_jpg_earth)
+                                    .magicShape(.circle)
+                                
+                                AvatarView(url: .sample_web_jpg_earth)
+                                    .magicShape(.roundedRectangle(cornerRadius: 8))
+                                
+                                AvatarView(url: .sample_web_jpg_earth)
+                                    .magicShape(.rectangle)
+                            }
+                        }
+                    }
+                    .padding()
+                    .frame(maxWidth: 500)
+                }
+                .frame(maxWidth: .infinity)
+            }
+            .tabItem {
+                Label("基础样式", systemImage: "paintpalette")
+            }
+            
+            // 文件类型
+            ScrollView {
+                HStack {
+                    VStack(spacing: 32) {
+                        demoSection("不同文件类型") {
+                            HStack(spacing: 20) {
+                                // 图片文件
+                                VStack {
+                                    AvatarView(url: .sample_web_jpg_earth)
+                                    Text("图片")
+                                        .font(.caption)
+                                }
+                                
+                                // 音频文件
+                                VStack {
+                                    AvatarView(url: .sample_web_mp3_kennedy)
+                                    Text("音频")
+                                        .font(.caption)
+                                }
+                                
+                                // 视频文件
+                                VStack {
+                                    AvatarView(url: .sample_web_mp4_bunny)
+                                    Text("视频")
+                                        .font(.caption)
+                                }
+                            }
+                        }
+                    }
+                    .padding()
+                    .frame(maxWidth: 500)
+                }
+                .frame(maxWidth: .infinity)
+            }
+            .tabItem {
+                Label("文件类型", systemImage: "doc")
+            }
+            
+            // 下载状态
+            ScrollView {
+                HStack {
+                    VStack(spacing: 32) {
+                        // 下载进度
+                        demoSection("手动进度控制") {
+                            VStack {
+                                AvatarView(url: .sample_web_jpg_earth)
+                                    .magicDownloadProgress($downloadProgress)
+                                    .magicSize(64)
+                                
+                                Slider(value: $downloadProgress, in: 0...1) {
+                                    Text("下载进度")
+                                } minimumValueLabel: {
+                                    Text("0%")
+                                } maximumValueLabel: {
+                                    Text("100%")
+                                }
+                            }
+                            .frame(maxWidth: 300)
+                        }
+                        
+                        // iCloud 文件
+                        demoSection("iCloud 文件") {
+                            VStack(spacing: 16) {
+                                if isCreatingFiles {
+                                    ProgressView("正在准备 iCloud 示例文件...")
+                                } else if let error = errorMessage {
+                                    VStack(spacing: 8) {
+                                        Text("创建失败")
+                                            .foregroundStyle(.red)
+                                        Text(error)
+                                            .font(.caption)
+                                            .multilineTextAlignment(.center)
+                                        
+                                        Button("重试") {
+                                            createICloudFiles()
+                                        }
+                                        .buttonStyle(.borderedProminent)
+                                    }
+                                } else if icloudFiles.isEmpty {
+                                    Button("创建 iCloud 示例文件") {
+                                        createICloudFiles()
+                                    }
+                                    .buttonStyle(.borderedProminent)
+                                } else {
+                                    HStack(spacing: 20) {
+                                        ForEach(icloudFiles, id: \.absoluteString) { url in
+                                            VStack {
+                                                AvatarView(url: url)
+                                                    .magicSize(48)
+                                                    .magicDownloadMonitor(true)
+                                                Text(url.lastPathComponent)
+                                                    .font(.caption)
+                                            }
+                                        }
+                                    }
+                                    
+                                    Button("重置") {
+                                        icloudFiles = []
+                                        errorMessage = nil
+                                    }
+                                    .buttonStyle(.borderless)
+                                    .foregroundStyle(.secondary)
+                                }
+                            }
+                        }
+                        
+                        // 下载监控
+                        demoSection("下载监控设置") {
+                            HStack(spacing: 20) {
+                                // 启用监控
+                                VStack {
+                                    AvatarView(url: .sample_web_jpg_earth)
+                                        .magicDownloadMonitor(true)
+                                    Text("启用监控")
+                                        .font(.caption)
+                                }
+                                
+                                // 禁用监控
+                                VStack {
+                                    AvatarView(url: .sample_web_jpg_earth)
+                                        .magicDownloadMonitor(false)
+                                    Text("禁用监控")
+                                        .font(.caption)
+                                }
+                            }
+                        }
+                    }
+                    .padding()
+                    .frame(maxWidth: 500)
+                }
+                .frame(maxWidth: .infinity)
+            }
+            .tabItem {
+                Label("下载状态", systemImage: "arrow.down.circle")
+            }
+            
+            // 错误状态
+            ScrollView {
+                HStack {
+                    VStack(spacing: 32) {
+                        demoSection("错误状态") {
+                            HStack(spacing: 20) {
+                                // 无效 URL
+                                VStack {
+                                    AvatarView(url: URL(string: "invalid://url")!)
+                                    Text("无效URL")
+                                        .font(.caption)
+                                }
+                                
+                                // 不存在的文件
+                                VStack {
+                                    AvatarView(url: URL(string: "file:///nonexistent.jpg")!)
+                                    Text("不存在")
+                                        .font(.caption)
+                                }
+                            }
+                        }
+                    }
+                    .padding()
+                    .frame(maxWidth: 500)
+                }
+                .frame(maxWidth: .infinity)
+            }
+            .tabItem {
+                Label("错误状态", systemImage: "exclamationmark.triangle")
+            }
+        }
+        .frame(width: 600, height: 800)
     }
     
     private func demoSection<Content: View>(_ title: String, @ViewBuilder content: () -> Content) -> some View {

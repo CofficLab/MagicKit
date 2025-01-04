@@ -1,5 +1,6 @@
 import SwiftUI
 import Combine
+import os
 
 // MARK: - Avatar View
 /// 一个用于展示文件缩略图的头像视图组件
@@ -99,6 +100,22 @@ public struct AvatarView: View {
     public init(url: URL, size: CGSize = CGSize(width: 40, height: 40)) {
         self.url = url
         self.size = size
+        
+        // 在初始化时进行基本的 URL 检查
+        if url.isFileURL {
+            // 检查本地文件是否存在
+            if !FileManager.default.fileExists(atPath: url.path) {
+                _error = State(initialValue: URLError(.fileDoesNotExist))
+            }
+        } else {
+            // 检查 URL 格式
+            guard let scheme = url.scheme,
+                  ["http", "https"].contains(scheme),
+                  url.host != nil else {
+                _error = State(initialValue: URLError(.badURL))
+                return
+            }
+        }
     }
     
     // MARK: - Body
@@ -109,8 +126,8 @@ public struct AvatarView: View {
                 DownloadProgressView(progress: downloadProgress, size: size)
             } else if let thumbnail = thumbnail {
                 ThumbnailImageView(image: thumbnail, size: size)
-            } else if error != nil {
-                ErrorIndicatorView(size: size)
+            } else if let error = error {
+                ErrorIndicatorView(size: size, error: error)
             } else if isLoading {
                 LoadingView(size: size)
             } else {
@@ -122,7 +139,19 @@ public struct AvatarView: View {
         .clipShape(shape)
         .overlay {
             if error != nil {
-                shape.strokeBorder()
+                shape.strokeBorder(color: Color.red.opacity(0.5))
+            }
+        }
+        .task {
+            // 只有在没有初始错误时才进行进一步的检查
+            if error == nil {                
+                // 如果仍然没有错误，尝试加载缩略图
+                if error == nil {
+                    await loadThumbnail()
+                    if monitorDownload {
+                        await setupDownloadMonitor()
+                    }
+                }
             }
         }
     }
@@ -182,12 +211,53 @@ public struct AvatarView: View {
     /// 错误指示视图
     private struct ErrorIndicatorView: View {
         let size: CGSize
+        let error: Error
+        @State private var showError = false
+        @State private var isCopied = false
         
         var body: some View {
             Image(systemName: "exclamationmark.triangle")
                 .font(.system(size: min(size.width, size.height) * 0.5))
                 .foregroundStyle(.red)
                 .frame(width: size.width, height: size.height)
+                .popover(isPresented: $showError) {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("错误详情")
+                            .font(.headline)
+                        
+                        Divider()
+                        
+                        Text(error.localizedDescription)
+                            .font(.body)
+                            .foregroundStyle(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .multilineTextAlignment(.leading)
+                        
+                        Divider()
+                        
+                        Button(action: {
+                            error.localizedDescription.copy()
+                            isCopied = true
+                            
+                            // 2秒后重置复制状态
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                isCopied = false
+                            }
+                        }) {
+                            HStack {
+                                Image(systemName: isCopied ? "checkmark.circle.fill" : "doc.on.doc")
+                                Text(isCopied ? "已复制" : "复制错误信息")
+                            }
+                            .foregroundStyle(isCopied ? .green : .accentColor)
+                        }
+                        .buttonStyle(.borderless)
+                    }
+                    .padding()
+                    .frame(minWidth: 200, maxWidth: 300)
+                }
+                .onTapGesture {
+                    showError = true
+                }
         }
     }
 
@@ -221,13 +291,19 @@ public struct AvatarView: View {
     /// 加载缩略图
     @Sendable private func loadThumbnail() async {
         guard thumbnail == nil && !isLoading && !url.isDownloading else { return }
-
+        
         isLoading = true
         do {
-            thumbnail = try await url.thumbnail(size: size)
-            error = nil
+            if let image = try await url.thumbnail(size: size) {
+                thumbnail = image
+                error = nil
+            } else {
+                // 如果缩略图为空但没有抛出错误，使用默认图标
+                thumbnail = Image(systemName: url.systemIcon)
+            }
         } catch {
             self.error = error
+            os_log(.error, "加载缩略图失败: \(error.localizedDescription)")
         }
         isLoading = false
     }
@@ -235,17 +311,17 @@ public struct AvatarView: View {
     /// 设置下载监控
     @Sendable private func setupDownloadMonitor() async {
         guard monitorDownload && url.isiCloud && progressBinding == nil else { return }
-
+        
         let downloadingCancellable = url.onDownloading { progress in
             autoDownloadProgress = progress
         }
-
+        
         let finishedCancellable = url.onDownloadFinished {
             Task {
                 await loadThumbnail()
             }
         }
-
+        
         cancellable = AnyCancellable {
             downloadingCancellable.cancel()
             finishedCancellable.cancel()

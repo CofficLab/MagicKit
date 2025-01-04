@@ -33,6 +33,11 @@ extension URL {
             return Image(systemName: "arrow.down.circle.dotted")
         }
         
+        // 检查文件是否存在
+        guard FileManager.default.fileExists(atPath: path) else {
+            throw URLError(.fileDoesNotExist)
+        }
+        
         if hasDirectoryPath {
             return try await folderThumbnail(size: size)
         }
@@ -61,34 +66,30 @@ extension URL {
             let resizedIcon = folderIcon.resize(to: size)
             return Image(nsImage: resizedIcon)
         }
-        if let defaultIcon = NSImage(systemSymbolName: "folder", accessibilityDescription: nil) {
-            return Image(nsImage: defaultIcon)
-        }
+        return Image(systemName: "folder")
         #else
         if let folderIcon = UIImage(systemName: "folder.fill")?.withTintColor(.systemBlue) {
             let resizedIcon = folderIcon.resize(to: size)
             return Image(uiImage: resizedIcon)
         }
-        if let defaultIcon = UIImage(systemName: "folder")?.withTintColor(.systemBlue) {
-            return Image(uiImage: defaultIcon)
-        }
+        return Image(systemName: "folder")
         #endif
-        return nil
     }
     
     private func imageThumbnail(size: CGSize) async throws -> Image? {
         #if os(macOS)
-        if let image = NSImage(contentsOf: self) {
-            let resizedImage = image.resize(to: size)
-            return Image(nsImage: resizedImage)
+        guard let image = NSImage(contentsOf: self) else {
+            throw URLError(.cannotDecodeContentData)
         }
+        let resizedImage = image.resize(to: size)
+        return Image(nsImage: resizedImage)
         #else
-        if let image = UIImage(contentsOf: self) {
-            let resizedImage = image.resize(to: size)
-            return Image(uiImage: resizedImage)
+        guard let image = UIImage(contentsOf: self) else {
+            throw URLError(.cannotDecodeContentData)
         }
+        let resizedImage = image.resize(to: size)
+        return Image(uiImage: resizedImage)
         #endif
-        return nil
     }
     
     private func videoThumbnail(size: CGSize) async throws -> Image? {
@@ -107,7 +108,7 @@ extension URL {
             return Image(uiImage: image)
             #endif
         } catch {
-            os_log(.error, "\(self.t)生成视频缩略图失败: \(error.localizedDescription)")
+            os_log(.error, "\(self.lastPathComponent) 生成视频缩略图失败: \(error.localizedDescription)")
             throw error
         }
     }

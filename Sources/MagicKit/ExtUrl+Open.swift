@@ -110,9 +110,9 @@ private struct OpenButtonView: View {
         Group {
             Text("网络链接").font(.headline)
             
-            URL.sample_mp3_kennedy.makeOpenButton()
-            URL.sample_mp3_kennedy.makeOpenButton(showLabel: true)
-            URL.sample_mp3_kennedy.makeOpenButton(size: 40)
+            URL.sample_web_mp3_kennedy.makeOpenButton()
+            URL.sample_web_mp3_kennedy.makeOpenButton(showLabel: true)
+            URL.sample_web_mp3_kennedy.makeOpenButton(size: 40)
         }
         
         Divider()

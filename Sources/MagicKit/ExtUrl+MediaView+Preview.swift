@@ -49,7 +49,7 @@ private struct PaddingPreview: View {
                     Text("默认内边距 (12)")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_jpg_earth.makeMediaView()
+                    URL.sample_web_jpg_earth.makeMediaView()
                         .withBackground(MagicBackground.mint)
                 }
                 
@@ -58,7 +58,7 @@ private struct PaddingPreview: View {
                     Text("无内边距 (0)")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_jpg_earth.makeMediaView()
+                    URL.sample_web_jpg_earth.makeMediaView()
                         .verticalPadding(0)
                         .withBackground(MagicBackground.aurora)
                 }
@@ -68,7 +68,7 @@ private struct PaddingPreview: View {
                     Text("小内边距 (8)")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_jpg_earth.makeMediaView()
+                    URL.sample_web_jpg_earth.makeMediaView()
                         .verticalPadding(8)
                         .withBackground(MagicBackground.sunset)
                 }
@@ -78,7 +78,7 @@ private struct PaddingPreview: View {
                     Text("大内边距 (24)")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_jpg_earth.makeMediaView()
+                    URL.sample_web_jpg_earth.makeMediaView()
                         .verticalPadding(24)
                         .withBackground(MagicBackground.ocean)
                 }
@@ -98,7 +98,7 @@ private struct ShapesPreview: View {
                     Text("圆形（默认）")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_jpg_earth.makeMediaView()
+                    URL.sample_web_jpg_earth.makeMediaView()
                         .withBackground(MagicBackground.mint)
                 }
                 
@@ -107,7 +107,7 @@ private struct ShapesPreview: View {
                     Text("圆角矩形")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_jpg_earth.makeMediaView()
+                    URL.sample_web_jpg_earth.makeMediaView()
                         .thumbnailShape(.roundedRectangle(cornerRadius: 8))
                         .withBackground(MagicBackground.aurora.opacity(0.1))
                 }
@@ -117,7 +117,7 @@ private struct ShapesPreview: View {
                     Text("矩形")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_jpg_earth.makeMediaView()
+                    URL.sample_web_jpg_earth.makeMediaView()
                         .thumbnailShape(.rectangle)
                         .withBackground(MagicBackground.sunset)
                 }
@@ -127,7 +127,7 @@ private struct ShapesPreview: View {
                     Text("大圆角矩形")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_jpg_earth.makeMediaView()
+                    URL.sample_web_jpg_earth.makeMediaView()
                         .thumbnailShape(.roundedRectangle(cornerRadius: 16))
                         .withBackground(MagicBackground.ocean)
                 }
@@ -147,7 +147,7 @@ private struct RemoteFilesPreview: View {
                     Text("音频文件")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_mp3_kennedy.makeMediaView()
+                    URL.sample_web_mp3_kennedy.makeMediaView()
                         .withBackground(MagicBackground.mint)
                 }
                 
@@ -156,7 +156,7 @@ private struct RemoteFilesPreview: View {
                     Text("视频文件")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_mp4_bunny.makeMediaView()
+                    URL.sample_web_mp4_bunny.makeMediaView()
                         .noBackground()
                 }
                 
@@ -165,7 +165,7 @@ private struct RemoteFilesPreview: View {
                     Text("图片文件")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_jpg_earth.makeMediaView()
+                    URL.sample_web_jpg_earth.makeMediaView()
                         .withBackground(MagicBackground.aurora)
                 }
                 
@@ -174,7 +174,7 @@ private struct RemoteFilesPreview: View {
                     Text("PDF文件")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_pdf_swift_guide.makeMediaView()
+                    URL.sample_web_pdf_swift_guide.makeMediaView()
                         .withBackground(MagicBackground.cosmicDust)
                 }
                 
@@ -183,7 +183,7 @@ private struct RemoteFilesPreview: View {
                     Text("文本文件")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_txt_mit.makeMediaView()
+                    URL.sample_web_txt_mit.makeMediaView()
                         .noBackground()
                 }
             }

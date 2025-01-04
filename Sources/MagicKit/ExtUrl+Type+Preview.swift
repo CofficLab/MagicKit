@@ -41,25 +41,25 @@ private struct MediaFilesPreview: View {
             Group {
                 // 音频文件
                 PreviewSection(title: "音频文件") {
-                    FileTypeRow(title: "NASA 肯尼迪演讲", url: .sample_mp3_kennedy)
-                    FileTypeRow(title: "NASA 阿波罗登月", url: .sample_mp3_apollo)
-                    FileTypeRow(title: "NASA 火箭发射音效", url: .sample_wav_launch)
-                    FileTypeRow(title: "NASA 火星音效", url: .sample_wav_mars)
+                    FileTypeRow(title: "NASA 肯尼迪演讲", url: .sample_web_mp3_kennedy)
+                    FileTypeRow(title: "NASA 阿波罗登月", url: .sample_web_mp3_apollo)
+                    FileTypeRow(title: "NASA 火箭发射音效", url: .sample_web_wav_launch)
+                    FileTypeRow(title: "NASA 火星音效", url: .sample_web_wav_mars)
                 }
                 
                 // 视频文件
                 PreviewSection(title: "视频文件") {
-                    FileTypeRow(title: "Big Buck Bunny", url: .sample_mp4_bunny)
-                    FileTypeRow(title: "Sintel 预告片", url: .sample_mp4_sintel)
-                    FileTypeRow(title: "Elephants Dream", url: .sample_mp4_elephants)
+                    FileTypeRow(title: "Big Buck Bunny", url: .sample_web_mp4_bunny)
+                    FileTypeRow(title: "Sintel 预告片", url: .sample_web_mp4_sintel)
+                    FileTypeRow(title: "Elephants Dream", url: .sample_web_mp4_elephants)
                 }
                 
                 // 图片文件
                 PreviewSection(title: "图片文件") {
-                    FileTypeRow(title: "地球 - 蓝色弹珠", url: .sample_jpg_earth)
-                    FileTypeRow(title: "火星 - 好奇号", url: .sample_jpg_mars)
-                    FileTypeRow(title: "PNG透明度演示", url: .sample_png_transparency)
-                    FileTypeRow(title: "RGB渐变演示", url: .sample_png_gradient)
+                    FileTypeRow(title: "地球 - 蓝色弹珠", url: .sample_web_jpg_earth)
+                    FileTypeRow(title: "火星 - 好奇号", url: .sample_web_jpg_mars)
+                    FileTypeRow(title: "PNG透明度演示", url: .sample_web_png_transparency)
+                    FileTypeRow(title: "RGB渐变演示", url: .sample_web_png_gradient)
                 }
             }
         }
@@ -87,8 +87,8 @@ private struct DocumentFilesPreview: View {
                 
                 // 文本文件
                 PreviewSection(title: "文本文件") {
-                    FileTypeRow(title: "MIT开源协议", url: .sample_txt_mit)
-                    FileTypeRow(title: "Apache开源协议", url: .sample_txt_apache)
+                    FileTypeRow(title: "MIT开源协议", url: .sample_web_txt_mit)
+                    FileTypeRow(title: "Apache开源协议", url: .sample_web_txt_apache)
                     FileTypeRow(title: "配置文件", url: URL(fileURLWithPath: "config.yml"))
                 }
             }
@@ -134,8 +134,8 @@ private struct OtherFilesPreview: View {
                 // 网络文件
                 PreviewSection(title: "网络文件") {
                     FileTypeRow(title: "网页链接", url: URL(string: "https://example.com")!)
-                    FileTypeRow(title: "流媒体", url: .sample_stream_basic)
-                    FileTypeRow(title: "4K流", url: .sample_stream_4k)
+                    FileTypeRow(title: "流媒体", url: .sample_web_stream_basic)
+                    FileTypeRow(title: "4K流", url: .sample_web_stream_4k)
                 }
             }
         }
