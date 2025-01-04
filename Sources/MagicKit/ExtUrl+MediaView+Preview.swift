@@ -244,6 +244,7 @@ private struct LocalFilesPreview: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                     URL.sample_temp_folder.makeMediaView()
                         .withBackground(MagicBackground.mysticalForest)
+                        .showFolderContent()
                 }
             }
             .padding()

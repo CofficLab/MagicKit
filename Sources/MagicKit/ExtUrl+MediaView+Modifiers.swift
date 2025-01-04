@@ -52,6 +52,24 @@ public extension MediaFileView {
         view.monitorDownload = false
         return view
     }
+    
+    /// 展示文件夹内容
+    /// - Returns: 显示文件夹内容的视图
+    func showFolderContent() -> some View {
+        self.modifier(FolderContentModifier())
+    }
+}
+
+// MARK: - Folder Content Modifier
+struct FolderContentModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        content.background(GeometryReader { proxy in
+            if let url = (content as? MediaFileView)?.url, url.isDirectory {
+                FolderContentView(url: url)
+                    .frame(height: proxy.size.height * 0.6)
+            }
+        })
+    }
 }
 
 #Preview("Media View") {

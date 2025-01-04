@@ -107,6 +107,22 @@ private struct ActionButtonsView: View {
     }
 }
 
+// MARK: - Folder Content View
+struct FolderContentView: View {
+    let url: URL
+    
+    var body: some View {
+        if let contents = try? FileManager.default.contentsOfDirectory(at: url, includingPropertiesForKeys: nil) {
+            List(contents, id: \.path) { itemURL in
+                itemURL.makeMediaView()
+            }
+        } else {
+            Text("无法读取文件夹内容")
+                .foregroundStyle(.secondary)
+        }
+    }
+}
+
 // MARK: - Media File View
 /// 用于显示文件信息的视图组件
 /// 
