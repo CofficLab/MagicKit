@@ -45,6 +45,27 @@ public extension MediaFileView {
         return view
     }
     
+    /// 设置水平内边距
+    /// - Parameter padding: 内边距大小
+    /// - Returns: 修改后的视图
+    func magicHorizontalPadding(_ padding: CGFloat) -> MediaFileView {
+        var view = self
+        view.horizontalPadding = padding
+        return view
+    }
+    
+    /// 设置内边距
+    /// - Parameters:
+    ///   - horizontal: 水平内边距
+    ///   - vertical: 垂直内边距
+    /// - Returns: 修改后的视图
+    func magicPadding(horizontal: CGFloat = 16, vertical: CGFloat = 12) -> MediaFileView {
+        var view = self
+        view.horizontalPadding = horizontal
+        view.verticalPadding = vertical
+        return view
+    }
+    
     /// 禁用或启用下载进度监听
     /// 
     /// 当启用时，视图会自动监听 iCloud 文件的下载进度。
@@ -206,6 +227,15 @@ public extension MediaFileView {
     func magicAvatarBackground(_ color: Color) -> MediaFileView {
         var view = self
         view.avatarBackgroundColor = color
+        return view
+    }
+    
+    /// 显示或隐藏布局边框
+    /// - Parameter show: 是否显示边框
+    /// - Returns: 修改后的视图
+    public func magicShowBorder(_ show: Bool = true) -> MediaFileView {
+        var view = self
+        view.showBorder = show
         return view
     }
 }

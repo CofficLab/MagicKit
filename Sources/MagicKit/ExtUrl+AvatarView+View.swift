@@ -253,7 +253,7 @@ public struct AvatarView: View {
                         }
                         .buttonStyle(.borderless)
                     }
-                    .padding()
+                    // .padding()
                     .frame(minWidth: 200, maxWidth: 300)
                 }
                 .onTapGesture {

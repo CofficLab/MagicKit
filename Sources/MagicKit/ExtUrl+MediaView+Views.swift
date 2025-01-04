@@ -1,7 +1,8 @@
-import SwiftUI
 import Combine
+import SwiftUI
 
 // MARK: - Media View Style
+
 /// 媒体视图的背景样式
 public enum MediaViewStyle {
     /// 无背景
@@ -11,15 +12,16 @@ public enum MediaViewStyle {
 }
 
 // MARK: - Background Modifier
+
 struct MediaViewBackground: ViewModifier {
     let style: MediaViewStyle
-    
+
     func body(content: Content) -> some View {
         Group {
             switch style {
             case .none:
                 content
-            case .background(let background):
+            case let .background(background):
                 content
                     .background(background)
                     .clipShape(RoundedRectangle(cornerRadius: 12))
@@ -29,6 +31,7 @@ struct MediaViewBackground: ViewModifier {
 }
 
 // MARK: - Media File View
+
 /// 用于显示文件信息的视图组件
 ///
 /// 这个视图组件可以显示文件的缩略图、名称、大小等信息，并提供文件操作功能。
@@ -97,11 +100,13 @@ public struct MediaFileView: View {
     var avatarShape: AvatarViewShape = .circle
     var avatarBackgroundColor: Color = .blue.opacity(0.1)
     var verticalPadding: CGFloat = 12
+    var horizontalPadding: CGFloat = 16
     var monitorDownload: Bool = true
     var folderContentVisible: Bool = false
     var progressBinding: Binding<Double>? = nil
+    var showBorder: Bool = false
     @State private var isHovering = false
-    
+
     /// 创建媒体文件视图
     /// - Parameters:
     ///   - url: 文件的 URL
@@ -110,18 +115,23 @@ public struct MediaFileView: View {
         self.url = url
         self.size = size
     }
-    
+
     public var body: some View {
         mainContent
             .modifier(FolderContentModifier(url: url, isVisible: folderContentVisible))
             .modifier(MediaViewBackground(style: style))
+            .overlay(
+                RoundedRectangle(cornerRadius: 0)
+                    .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [4]))
+                    .foregroundColor(showBorder ? .red : .clear)
+            )
             .onHover { hovering in
                 withAnimation(.easeInOut(duration: 0.2)) {
                     isHovering = hovering
                 }
             }
     }
-    
+
     private var mainContent: some View {
         VStack(spacing: 0) {
             HStack(alignment: .center, spacing: 12) {
@@ -129,37 +139,68 @@ public struct MediaFileView: View {
                 url.makeAvatarView()
                     .magicAvatarShape(avatarShape)
                     .magicBackground(avatarBackgroundColor)
-                
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 0)
+                            .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [4]))
+                            .foregroundColor(showBorder ? .blue : .clear)
+                    )
+
                 // 右侧文件信息
                 VStack(alignment: .leading, spacing: 4) {
                     Text(url.lastPathComponent)
                         .font(.headline)
                         .lineLimit(1)
-                    
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 0)
+                                .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [4]))
+                                .foregroundColor(showBorder ? .green : .clear)
+                        )
+
                     Text(size)
                         .font(.caption)
                         .foregroundStyle(.secondary)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 0)
+                                .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [4]))
+                                .foregroundColor(showBorder ? .green : .clear)
+                        )
                 }
-                
+                .overlay(
+                    RoundedRectangle(cornerRadius: 0)
+                        .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [4]))
+                        .foregroundColor(showBorder ? .purple : .clear)
+                )
+
                 Spacer()
-                
+
                 // 操作按钮
                 if showActions {
                     ActionButtonsView(url: url)
                         .opacity(isHovering ? 1 : 0)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 0)
+                                .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [4]))
+                                .foregroundColor(showBorder ? .orange : .clear)
+                        )
                 }
             }
-            .padding(.horizontal, 16)
+            .overlay(
+                RoundedRectangle(cornerRadius: 0)
+                    .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [4]))
+                    .foregroundColor(showBorder ? .yellow : .clear)
+            )
+            .padding(.horizontal, horizontalPadding)
             .padding(.vertical, verticalPadding)
         }
     }
 }
 
 // MARK: - Error Message View
+
 struct ErrorMessageView: View {
     let error: Error
     @State private var isHovering = false
-    
+
     var body: some View {
         Text(error.localizedDescription)
             .font(.caption)
@@ -185,17 +226,18 @@ struct ErrorMessageView: View {
 }
 
 // MARK: - Action Buttons View
+
 struct ActionButtonsView: View {
     let url: URL
     @Environment(\.colorScheme) private var colorScheme
-    
+
     var body: some View {
         HStack(spacing: 12) {
             url.makeOpenButton()
         }
         .padding(.trailing, 8)
     }
-} 
+}
 
 #Preview("Media View") {
     MediaViewPreviewContainer()

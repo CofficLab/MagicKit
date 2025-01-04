@@ -2,196 +2,204 @@ import SwiftUI
 import MagicUI
 
 // MARK: - Preview Container
+private struct PreviewContainer<Content: View>: View {
+    let title: String
+    let content: (Bool) -> Content
+    @State private var showBorder = false
+    
+    var body: some View {
+        NavigationStack {
+            content(showBorder)
+                .navigationTitle(title)
+                .toolbar {
+                    ToolbarItem(placement: .automatic) {
+                        Button(action: {
+                            showBorder.toggle()
+                        }) {
+                            Label(showBorder ? "隐藏边框" : "显示边框", systemImage: showBorder ? "square.dashed" : "square")
+                        }
+                    }
+                }
+        }
+    }
+}
+
 struct MediaViewPreviewContainer: View {
     var body: some View {
         TabView {
             // 文件夹预览
-            FoldersPreview()
-                .tabItem {
-                    Label("文件夹", systemImage: "folder.fill")
-                }
+            PreviewContainer(title: "文件夹") { showBorder in
+                FoldersContent(showBorder: showBorder)
+            }
+            .tabItem {
+                Label("文件夹", systemImage: "folder.fill")
+            }
             
             // 形状预览
-            ShapesPreview()
-                .tabItem {
-                    Label("形状", systemImage: "square.on.circle")
-                }
+            PreviewContainer(title: "形状") { showBorder in
+                ShapesContent(showBorder: showBorder)
+            }
+            .tabItem {
+                Label("形状", systemImage: "square.on.circle")
+            }
             
             // 头像形状预览
-            AvatarShapesPreview()
-                .tabItem {
-                    Label("头像", systemImage: "person.crop.circle")
-                }
+            PreviewContainer(title: "头像形状") { showBorder in
+                AvatarShapesContent(showBorder: showBorder)
+            }
+            .tabItem {
+                Label("头像", systemImage: "person.crop.circle")
+            }
             
             // 远程文件预览
-            RemoteFilesPreview()
-                .tabItem {
-                    Label("远程文件", systemImage: "globe")
-                }
+            PreviewContainer(title: "远程") { showBorder in
+                RemoteFilesContent(showBorder: showBorder)
+            }
+            .tabItem {
+                Label("远程", systemImage: "globe")
+            }
             
             // 本地文件预览
-            LocalFilesPreview()
-                .tabItem {
-                    Label("本地文件", systemImage: "folder")
-                }
+            PreviewContainer(title: "本地") { showBorder in
+                LocalFilesContent(showBorder: showBorder)
+            }
+            .tabItem {
+                Label("本地", systemImage: "folder")
+            }
             
             // 内边距预览
-            PaddingPreview()
-                .tabItem {
-                    Label("内边距", systemImage: "ruler")
-                }
+            PreviewContainer(title: "边距") { showBorder in
+                PaddingContent(showBorder: showBorder)
+            }
+            .tabItem {
+                Label("边距", systemImage: "ruler")
+            }
         }
         .frame(width: 500, height: 600)
         .background(MagicBackground.deepOceanCurrent.opacity(0.1))
     }
 }
 
-// MARK: - Avatar Shapes Preview
-private struct AvatarShapesPreview: View {
+// MARK: - Preview Contents
+private struct FoldersContent: View {
+    let showBorder: Bool
+    
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
                 Group {
-                    // 圆形头像（默认）
+                    Text("文件夹")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    URL.sample_temp_folder.makeMediaView()
+                        .magicBackground(MagicBackground.mint)
+                        .magicShowBorder(showBorder)
+                }
+                
+                Group {
+                    Text("文件夹（展开）")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    URL.sample_temp_folder.makeMediaView()
+                        .magicBackground(MagicBackground.aurora)
+                        .magicShowFolderContent()
+                        .magicShowBorder(showBorder)
+                }
+            }
+            .padding()
+        }
+    }
+}
+
+private struct ShapesContent: View {
+    let showBorder: Bool
+    
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 20) {
+                Group {
+                    Text("默认形状")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    URL.sample_web_jpg_earth.makeMediaView()
+                        .magicBackground(MagicBackground.mint)
+                        .magicShowBorder(showBorder)
+                }
+                
+                Group {
+                    Text("圆角矩形（圆角8）")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    URL.sample_web_jpg_earth.makeMediaView()
+                        .magicBackground(MagicBackground.aurora)
+                        .magicShape(.roundedRectangle(cornerRadius: 8))
+                        .magicShowBorder(showBorder)
+                }
+                
+                Group {
+                    Text("圆角矩形（圆角16）")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    URL.sample_web_jpg_earth.makeMediaView()
+                        .magicBackground(MagicBackground.sunset)
+                        .magicShape(.roundedRectangle(cornerRadius: 16))
+                        .magicShowBorder(showBorder)
+                }
+            }
+            .padding()
+        }
+    }
+}
+
+private struct AvatarShapesContent: View {
+    let showBorder: Bool
+    
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 20) {
+                Group {
                     Text("圆形头像 + 红色背景")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     URL.sample_web_jpg_earth.makeMediaView()
-                        .magicBackground(MagicBackground.mint.opacity(0.2))
+                        .magicBackground(MagicBackground.mint)
                         .magicCircleAvatar()
                         .magicAvatarBackground(.red.opacity(0.1))
+                        .magicShowBorder(showBorder)
                 }
                 
                 Group {
-                    // 圆角矩形头像
                     Text("圆角矩形头像(圆角8) + 绿色背景")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     URL.sample_web_jpg_earth.makeMediaView()
-                        .magicBackground(MagicBackground.aurora.opacity(0.2))
+                        .magicBackground(MagicBackground.aurora.opacity(0.1))
                         .magicRoundedAvatar(8)
                         .magicAvatarBackground(.green.opacity(0.1))
+                        .magicShowBorder(showBorder)
                 }
                 
                 Group {
-                    // 矩形头像
                     Text("矩形头像 + 紫色背景")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     URL.sample_web_jpg_earth.makeMediaView()
-                        .magicBackground(MagicBackground.sunset.opacity(0.2))
+                        .magicBackground(MagicBackground.sunset)
                         .magicRectangleAvatar()
                         .magicAvatarBackground(.purple.opacity(0.1))
+                        .magicShowBorder(showBorder)
                 }
                 
                 Group {
-                    // 混合形状示例
                     Text("混合形状示例: 整体圆角矩形(16) + 圆形头像 + 黄色背景")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     URL.sample_web_jpg_earth.makeMediaView()
-                        .magicBackground(MagicBackground.ocean.opacity(0.2))
-                        .magicShape(.roundedRectangle(cornerRadius: 16))  // 整体形状
-                        .magicAvatarShape(.circle)  // 头像形状
-                        .magicAvatarBackground(.yellow.opacity(0.1))  // 头像背景色
-                }
-            }
-            .padding()
-        }
-    }
-}
-
-// MARK: - Padding Preview
-private struct PaddingPreview: View {
-    var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                Group {
-                    // 默认内边距
-                    Text("默认内边距 (12)")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_web_jpg_earth.makeMediaView()
-                        .magicBackground(MagicBackground.mint)
-                }
-                
-                Group {
-                    // 无内边距
-                    Text("无内边距 (0)")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_web_jpg_earth.makeMediaView()
-                        .magicVerticalPadding(0)
-                        .magicBackground(MagicBackground.aurora)
-                }
-                
-                Group {
-                    // 小内边距
-                    Text("小内边距 (8)")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_web_jpg_earth.makeMediaView()
-                        .magicVerticalPadding(8)
-                        .magicBackground(MagicBackground.sunset)
-                }
-                
-                Group {
-                    // 大内边距
-                    Text("大内边距 (24)")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_web_jpg_earth.makeMediaView()
-                        .magicVerticalPadding(24)
                         .magicBackground(MagicBackground.ocean)
-                }
-            }
-            .padding()
-        }
-    }
-}
-
-// MARK: - Shapes Preview
-private struct ShapesPreview: View {
-    var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                Group {
-                    // 圆形（默认）
-                    Text("圆形（默认）")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_web_jpg_earth.makeMediaView()
-                        .magicBackground(MagicBackground.mint)
-                }
-                
-                Group {
-                    // 圆角矩形
-                    Text("圆角矩形")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_web_jpg_earth.makeMediaView()
-                        .magicShape(.roundedRectangle(cornerRadius: 8))
-                        .magicBackground(MagicBackground.aurora.opacity(0.1))
-                }
-                
-                Group {
-                    // 矩形
-                    Text("矩形")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_web_jpg_earth.makeMediaView()
-                        .magicShape(.rectangle)
-                        .magicBackground(MagicBackground.sunset)
-                }
-                
-                Group {
-                    // 大圆角矩形
-                    Text("大圆角矩形")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_web_jpg_earth.makeMediaView()
                         .magicShape(.roundedRectangle(cornerRadius: 16))
-                        .magicBackground(MagicBackground.ocean)
+                        .magicAvatarShape(.circle)
+                        .magicAvatarBackground(.yellow.opacity(0.1))
+                        .magicShowBorder(showBorder)
                 }
             }
             .padding()
@@ -199,149 +207,117 @@ private struct ShapesPreview: View {
     }
 }
 
-// MARK: - Remote Files Preview
-private struct RemoteFilesPreview: View {
+private struct RemoteFilesContent: View {
+    let showBorder: Bool
+    
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
                 Group {
-                    // 音频文件预览
-                    Text("音频文件")
+                    Text("远程图片")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    URL.sample_web_jpg_earth.makeMediaView()
+                        .magicBackground(MagicBackground.mint)
+                        .magicShowBorder(showBorder)
+                }
+                
+                Group {
+                    Text("远程音频")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     URL.sample_web_mp3_kennedy.makeMediaView()
-                        .magicBackground(MagicBackground.mint)
+                        .magicBackground(MagicBackground.aurora)
+                        .magicShowBorder(showBorder)
                 }
-                
+            }
+            .padding()
+        }
+    }
+}
+
+private struct LocalFilesContent: View {
+    let showBorder: Bool
+    
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 20) {
                 Group {
-                    // 视频文件预览
-                    Text("视频文件")
+                    Text("本地图片")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_web_mp4_bunny.makeMediaView()
-                        .magicNoBackground()
+                    URL.sample_temp_jpg.makeMediaView()
+                        .magicBackground(MagicBackground.mint)
+                        .magicShowBorder(showBorder)
                 }
                 
                 Group {
-                    // 图片文件预览
-                    Text("图片文件")
+                    Text("本地音频")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    URL.sample_temp_mp3.makeMediaView()
+                        .magicBackground(MagicBackground.aurora)
+                        .magicShowBorder(showBorder)
+                }
+            }
+            .padding()
+        }
+    }
+}
+
+private struct PaddingContent: View {
+    let showBorder: Bool
+    
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 20) {
+                Group {
+                    Text("默认内边距 (水平16, 垂直12)")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    URL.sample_web_jpg_earth.makeMediaView()
+                        .magicBackground(MagicBackground.mint)
+                        .magicShowBorder(showBorder)
+                }
+                
+                Group {
+                    Text("无内边距 (水平0, 垂直0)")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    URL.sample_web_jpg_earth.makeMediaView()
+                        .magicBackground(MagicBackground.mint)
+                        .magicPadding(horizontal: 0, vertical: 0)
+                        .magicShowBorder(showBorder)
+                }
+                
+                Group {
+                    Text("自定义垂直内边距 (水平16, 垂直24)")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     URL.sample_web_jpg_earth.makeMediaView()
                         .magicBackground(MagicBackground.aurora)
+                        .magicVerticalPadding(24)
+                        .magicShowBorder(showBorder)
                 }
                 
                 Group {
-                    // PDF文件预览
-                    Text("PDF文件")
+                    Text("自定义水平内边距 (水平32, 垂直12)")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_web_pdf_swift_guide.makeMediaView()
-                        .magicBackground(MagicBackground.cosmicDust)
-                }
-                
-                Group {
-                    // 文本文件预览
-                    Text("文本文件")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_web_txt_mit.makeMediaView()
-                        .magicNoBackground()
-                }
-            }
-            .padding()
-        }
-    }
-}
-
-// MARK: - Local Files Preview
-private struct LocalFilesPreview: View {
-    var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                Group {
-                    // 临时文本文件
-                    Text("临时文本文件")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_temp_txt.makeMediaView()
-                        .magicBackground(MagicBackground.serenity)
-                }
-                
-                Group {
-                    // 临时音频文件
-                    Text("临时音频文件")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_temp_mp3.makeMediaView()
-                        .magicBackground(MagicBackground.lavender)
-                }
-                
-                Group {
-                    // 临时视频文件
-                    Text("临时视频文件")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_temp_mp4.makeMediaView()
+                    URL.sample_web_jpg_earth.makeMediaView()
                         .magicBackground(MagicBackground.sunset)
+                        .magicHorizontalPadding(32)
+                        .magicShowBorder(showBorder)
                 }
                 
                 Group {
-                    // 临时图片文件
-                    Text("临时图片文件")
+                    Text("自定义水平和垂直内边距 (水平32, 垂直24)")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_temp_jpg.makeMediaView()
+                    URL.sample_web_jpg_earth.makeMediaView()
                         .magicBackground(MagicBackground.ocean)
-                }
-                
-                Group {
-                    // 临时PDF文件
-                    Text("临时PDF文件")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_temp_pdf.makeMediaView()
-                        .magicBackground(MagicBackground.galaxySpiral)
-                }
-            }
-            .padding()
-        }
-    }
-}
-
-// MARK: - Folders Preview
-private struct FoldersPreview: View {
-    var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                Group {
-                    // 默认文件夹预览
-                    Text("默认文件夹预览")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_temp_folder.makeMediaView()
-                        .magicBackground(MagicBackground.mint)
-                        .magicShape(.rectangle)
-                }
-                
-                Group {
-                    // 展开的文件夹预览
-                    Text("展开的文件夹预览")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_temp_folder.makeMediaView()
-                        .magicBackground(MagicBackground.aurora.opacity(0.2))
-                        .magicShowFolderContent()
-                }
-                
-                Group {
-                    // 嵌套文件夹预览
-                    Text("嵌套文件夹预览")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_temp_folder.appendingPathComponent("subfolder").makeMediaView()
-                        .magicBackground(MagicBackground.sunset)
-                        .magicShowFolderContent()
+                        .magicPadding(horizontal: 32, vertical: 24)
+                        .magicShowBorder(showBorder)
                 }
             }
             .padding()
