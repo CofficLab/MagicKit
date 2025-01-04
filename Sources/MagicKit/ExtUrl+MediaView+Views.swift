@@ -71,23 +71,7 @@ public struct MediaFileView: View {
     var monitorDownload: Bool = true
     var folderContentVisible: Bool = false
     var progressBinding: Binding<Double>? = nil
-    @State private var thumbnail: Image?
-    @State private var error: Error?
-    @State private var isLoading = false
     @State private var isHovering = false
-    @State private var autoDownloadProgress: Double = 0
-    @State private var itemQuery: ItemQuery?
-    @State private var cancellable: AnyCancellable?
-    
-    /// 当前的下载进度
-    private var downloadProgress: Double {
-        progressBinding?.wrappedValue ?? autoDownloadProgress
-    }
-    
-    /// 是否正在下载
-    private var isDownloading: Bool {
-        (progressBinding != nil && progressBinding!.wrappedValue < 1) || (downloadProgress > 0 && downloadProgress < 1)
-    }
     
     /// 创建媒体文件视图
     /// - Parameters:
@@ -107,108 +91,16 @@ public struct MediaFileView: View {
                     isHovering = hovering
                 }
             }
-            .onChange(of: downloadProgress) {
-                // 下载完成后重新获取缩略图
-                        Task {
-                            do {
-                                thumbnail = try await url.thumbnail(size: CGSize(width: 80, height: 80))
-                                error = nil
-                            } catch {
-                                self.error = error
-                            }
-                        }
-            }
-            .task {
-                // 只加载缩略图，不主动下载
-                if thumbnail == nil && !isLoading && !url.isDownloading {
-                    isLoading = true
-                    do {
-                        thumbnail = try await url.thumbnail(size: CGSize(width: 80, height: 80))
-                        error = nil
-                    } catch {
-                        self.error = error
-                    }
-                    isLoading = false
-                }
-                
-                // 如果启用了监听且是 iCloud 文件，监听下载进度和完成事件
-                if monitorDownload && url.isiCloud && progressBinding == nil {
-                    let downloadingCancellable = url.onDownloading { progress in
-                        autoDownloadProgress = progress
-                    }
-                    
-                    let finishedCancellable = url.onDownloadFinished {
-                        // 下载完成后重新获取缩略图
-                        Task {
-                            do {
-                                thumbnail = try await url.thumbnail(size: CGSize(width: 80, height: 80))
-                                error = nil
-                            } catch {
-                                self.error = error
-                            }
-                        }
-                    }
-                    
-                    // 组合两个订阅
-                    cancellable = AnyCancellable {
-                        downloadingCancellable.cancel()
-                        finishedCancellable.cancel()
-                    }
-                }
-            }
-            .onDisappear {
-                cancellable?.cancel()
-            }
     }
     
     private var mainContent: some View {
         VStack(spacing: 0) {
             HStack(alignment: .center, spacing: 12) {
-                // 左侧图片区域
-                Group {
-                    if isDownloading {
-                        // 显示下载进度
-                        ZStack {
-                            Circle()
-                                .stroke(Color.secondary.opacity(0.2), lineWidth: 4)
-                            
-                            Circle()
-                                .trim(from: 0, to: downloadProgress)
-                                .stroke(Color.accentColor, style: StrokeStyle(
-                                    lineWidth: 4,
-                                    lineCap: .round
-                                ))
-                                .rotationEffect(.degrees(-90))
-                            
-                            Text("\(Int(downloadProgress * 100))%")
-                                .font(.caption2)
-                                .foregroundStyle(.secondary)
-                        }
-                    } else if let thumbnail = thumbnail {
-                        thumbnail
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                    } else if isLoading {
-                        ProgressView()
-                            .controlSize(.small)
-                    } else if error != nil {
-                        Image(systemName: "exclamationmark.triangle")
-                            .font(.system(size: 24))
-                            .foregroundStyle(.red)
-                    } else {
-                        Image(systemName: url.icon)
-                            .font(.system(size: 24))
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                .frame(width: 40, height: 40)
-                .background(.ultraThinMaterial)
-                .apply(shape: shape)
-                .overlay {
-                    if error != nil {
-                        shape.strokeShape()
-                    }
-                }
+                // 左侧缩略图
+                HeroView(url: url)
+                    .shape(shape)
+                    .apply(progressBinding: progressBinding)
+                    .apply(monitorDownload: monitorDownload)
                 
                 // 右侧文件信息
                 VStack(alignment: .leading, spacing: 4) {
@@ -216,13 +108,9 @@ public struct MediaFileView: View {
                         .font(.headline)
                         .lineLimit(1)
                     
-                    if let error = error {
-                        ErrorMessageView(error: error)
-                    } else {
-                        Text(size)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
+                    Text(size)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                 }
                 
                 Spacer()
@@ -238,7 +126,6 @@ public struct MediaFileView: View {
         }
     }
 }
-
 
 // MARK: - Error Message View
 struct ErrorMessageView: View {
@@ -281,3 +168,7 @@ struct ActionButtonsView: View {
         .padding(.trailing, 8)
     }
 } 
+
+#Preview("Media View") {
+    MediaViewPreviewContainer()
+}

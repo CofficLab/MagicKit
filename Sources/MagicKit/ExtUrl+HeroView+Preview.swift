@@ -2,7 +2,7 @@ import SwiftUI
 import MagicUI
 
 // MARK: - Preview Container
-struct ThumbnailPreviewContainer: View {
+struct HeroViewPreviewContainer: View {
     var body: some View {
         TabView {
             // 文件类型预览
@@ -265,5 +265,5 @@ private struct AsyncThumbnailView: View {
 }
 
 #Preview("Thumbnails") {
-    ThumbnailPreviewContainer()
+    HeroViewPreviewContainer()
 } 

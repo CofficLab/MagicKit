@@ -150,5 +150,5 @@ extension URL {
 }
 
 #Preview("Thumbnails") {
-    ThumbnailPreviewContainer()
+    HeroViewPreviewContainer()
 }
