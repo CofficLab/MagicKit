@@ -136,10 +136,11 @@ private struct ActionButtonsView: View {
 public struct MediaFileView: View {
     let url: URL
     let size: String
-    fileprivate var style: MediaViewStyle = .none
-    fileprivate var showActions: Bool = true
-    fileprivate var shape: MediaViewShape = .circle
-    fileprivate var verticalPadding: CGFloat = 12
+    var style: MediaViewStyle = .none
+    var showActions: Bool = true
+    var shape: MediaViewShape = .circle
+    var verticalPadding: CGFloat = 12
+    var monitorDownload: Bool = true
     @State private var thumbnail: Image?
     @State private var error: Error?
     @State private var isLoading = false
@@ -231,8 +232,6 @@ public struct MediaFileView: View {
             }
             .padding(.horizontal, 16)
             .padding(.vertical, verticalPadding)
-            
-            Divider()
         }
         .modifier(MediaViewBackground(style: style))
         .onHover { hovering in
@@ -253,8 +252,8 @@ public struct MediaFileView: View {
                 isLoading = false
             }
             
-            // 如果是 iCloud 文件，监听下载进度和完成事件
-            if url.isiCloud {
+            // 如果启用了监听且是 iCloud 文件，监听下载进度和完成事件
+            if monitorDownload && url.isiCloud {
                 let downloadingCancellable = url.onDownloading { progress in
                     downloadProgress = progress
                 }
@@ -281,49 +280,6 @@ public struct MediaFileView: View {
         .onDisappear {
             cancellable?.cancel()
         }
-    }
-    
-    /// 移除背景样式
-    /// - Returns: 无背景样式的视图
-    public func noBackground() -> MediaFileView {
-        var view = self
-        view.style = .none
-        return view
-    }
-    
-    /// 添加自定义背景
-    /// - Parameter background: 背景视图
-    /// - Returns: 带有指定背景的视图
-    public func withBackground<Background: View>(_ background: Background) -> MediaFileView {
-        var view = self
-        view.style = .background(AnyView(background))
-        return view
-    }
-    
-    /// 隐藏操作按钮
-    /// - Returns: 不显示操作按钮的视图
-    public func hideActions() -> MediaFileView {
-        var view = self
-        view.showActions = false
-        return view
-    }
-    
-    /// 设置缩略图形状
-    /// - Parameter shape: 要应用的形状
-    /// - Returns: 使用指定形状的视图
-    public func thumbnailShape(_ shape: MediaViewShape) -> MediaFileView {
-        var view = self
-        view.shape = shape
-        return view
-    }
-    
-    /// 设置垂直内边距
-    /// - Parameter padding: 内边距大小（点）
-    /// - Returns: 使用指定内边距的视图
-    public func verticalPadding(_ padding: CGFloat) -> MediaFileView {
-        var view = self
-        view.verticalPadding = padding
-        return view
     }
 }
 
@@ -361,11 +317,6 @@ public extension URL {
     func makeMediaView() -> MediaFileView {
         MediaFileView(url: self, size: self.getSizeReadable())
     }
-}
-
-// 添加通知名称
-extension Notification.Name {
-    static let iCloudDownloadProgress = Notification.Name("iCloudDownloadProgress")
 }
 
 #Preview("Media View") {
