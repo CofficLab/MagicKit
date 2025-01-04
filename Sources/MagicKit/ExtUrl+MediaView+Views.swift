@@ -86,7 +86,7 @@ public struct MediaFileView: View {
     
     /// 是否正在下载
     private var isDownloading: Bool {
-        progressBinding != nil || (downloadProgress > 0 && downloadProgress < 1)
+        (progressBinding != nil && progressBinding?.wrappedValue < 1) || (downloadProgress > 0 && downloadProgress < 1)
     }
     
     /// 创建媒体文件视图
