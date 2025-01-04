@@ -308,6 +308,14 @@ public extension URL {
             completion(createdFiles, lastError)
         }
     }
+    
+    // MARK: - 错误示例
+    /// 无效的 URL 示例
+    static let sample_invalid_url = URL(string: "invalid://url.example")!
+    
+    /// 不存在的文件示例
+    static let sample_nonexistent_file = FileManager.default.temporaryDirectory
+        .appendingPathComponent("nonexistent_file.jpg")
 }
 
 // MARK: - FileManager Extension

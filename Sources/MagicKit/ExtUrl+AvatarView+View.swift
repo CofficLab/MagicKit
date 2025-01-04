@@ -144,7 +144,7 @@ public struct AvatarView: View {
         }
         .task {
             // 只有在没有初始错误时才进行进一步的检查
-            if error == nil {                
+            if error == nil {
                 // 如果仍然没有错误，尝试加载缩略图
                 if error == nil {
                     await loadThumbnail()

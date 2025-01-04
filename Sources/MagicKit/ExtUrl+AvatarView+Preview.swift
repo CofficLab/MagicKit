@@ -32,24 +32,24 @@ public struct AvatarDemoView: View {
                         // 默认样式
                         demoSection("默认样式") {
                             HStack(spacing: 20) {
-                                AvatarView(url: .sample_web_jpg_earth)
+                                URL.sample_web_jpg_earth.makeAvatarView()
                                 
-                                AvatarView(url: .sample_web_mp3_kennedy)
+                                URL.sample_web_mp3_kennedy.makeAvatarView()
                                 
-                                AvatarView(url: .sample_web_mp4_bunny)
+                                URL.sample_web_mp4_bunny.makeAvatarView()
                             }
                         }
                         
                         // 自定义背景色
                         demoSection("自定义背景色") {
                             HStack(spacing: 20) {
-                                AvatarView(url: .sample_web_jpg_earth)
+                                URL.sample_web_jpg_earth.makeAvatarView()
                                     .magicBackground(.red.opacity(0.1))
                                 
-                                AvatarView(url: .sample_web_jpg_earth)
+                                URL.sample_web_jpg_earth.makeAvatarView()
                                     .magicBackground(.green.opacity(0.1))
                                 
-                                AvatarView(url: .sample_web_jpg_earth)
+                                URL.sample_web_jpg_earth.makeAvatarView()
                                     .magicBackground(.purple.opacity(0.1))
                             }
                         }
@@ -57,13 +57,13 @@ public struct AvatarDemoView: View {
                         // 不同尺寸
                         demoSection("不同尺寸") {
                             HStack(spacing: 20) {
-                                AvatarView(url: .sample_web_jpg_earth)
+                                URL.sample_web_jpg_earth.makeAvatarView()
                                     .magicSize(32)
                                 
-                                AvatarView(url: .sample_web_jpg_earth)
+                                URL.sample_web_jpg_earth.makeAvatarView()
                                     .magicSize(48)
                                 
-                                AvatarView(url: .sample_web_jpg_earth)
+                                URL.sample_web_jpg_earth.makeAvatarView()
                                     .magicSize(64)
                             }
                         }
@@ -71,13 +71,13 @@ public struct AvatarDemoView: View {
                         // 不同形状
                         demoSection("不同形状") {
                             HStack(spacing: 20) {
-                                AvatarView(url: .sample_web_jpg_earth)
+                                URL.sample_web_jpg_earth.makeAvatarView()
                                     .magicShape(.circle)
                                 
-                                AvatarView(url: .sample_web_jpg_earth)
+                                URL.sample_web_jpg_earth.makeAvatarView()
                                     .magicShape(.roundedRectangle(cornerRadius: 8))
                                 
-                                AvatarView(url: .sample_web_jpg_earth)
+                                URL.sample_web_jpg_earth.makeAvatarView()
                                     .magicShape(.rectangle)
                             }
                         }
@@ -99,21 +99,21 @@ public struct AvatarDemoView: View {
                             HStack(spacing: 20) {
                                 // 图片文件
                                 VStack {
-                                    AvatarView(url: .sample_web_jpg_earth)
+                                    URL.sample_web_jpg_earth.makeAvatarView()
                                     Text("图片")
                                         .font(.caption)
                                 }
                                 
                                 // 音频文件
                                 VStack {
-                                    AvatarView(url: .sample_web_mp3_kennedy)
+                                    URL.sample_web_mp3_kennedy.makeAvatarView()
                                     Text("音频")
                                         .font(.caption)
                                 }
                                 
                                 // 视频文件
                                 VStack {
-                                    AvatarView(url: .sample_web_mp4_bunny)
+                                    URL.sample_web_mp4_bunny.makeAvatarView()
                                     Text("视频")
                                         .font(.caption)
                                 }
@@ -136,7 +136,7 @@ public struct AvatarDemoView: View {
                         // 下载进度
                         demoSection("手动进度控制") {
                             VStack {
-                                AvatarView(url: .sample_web_jpg_earth)
+                                URL.sample_web_jpg_earth.makeAvatarView()
                                     .magicDownloadProgress($downloadProgress)
                                     .magicSize(64)
                                 
@@ -178,7 +178,7 @@ public struct AvatarDemoView: View {
                                     HStack(spacing: 20) {
                                         ForEach(icloudFiles, id: \.absoluteString) { url in
                                             VStack {
-                                                AvatarView(url: url)
+                                                url.makeAvatarView()
                                                     .magicSize(48)
                                                     .magicDownloadMonitor(true)
                                                 Text(url.lastPathComponent)
@@ -202,7 +202,7 @@ public struct AvatarDemoView: View {
                             HStack(spacing: 20) {
                                 // 启用监控
                                 VStack {
-                                    AvatarView(url: .sample_web_jpg_earth)
+                                    URL.sample_web_jpg_earth.makeAvatarView()
                                         .magicDownloadMonitor(true)
                                     Text("启用监控")
                                         .font(.caption)
@@ -210,7 +210,7 @@ public struct AvatarDemoView: View {
                                 
                                 // 禁用监控
                                 VStack {
-                                    AvatarView(url: .sample_web_jpg_earth)
+                                    URL.sample_web_jpg_earth.makeAvatarView()
                                         .magicDownloadMonitor(false)
                                     Text("禁用监控")
                                         .font(.caption)
@@ -235,14 +235,14 @@ public struct AvatarDemoView: View {
                             HStack(spacing: 20) {
                                 // 无效 URL
                                 VStack {
-                                    AvatarView(url: URL(string: "invalid://url")!)
+                                    URL.sample_invalid_url.makeAvatarView()
                                     Text("无效URL")
                                         .font(.caption)
                                 }
                                 
                                 // 不存在的文件
                                 VStack {
-                                    AvatarView(url: URL(string: "file:///nonexistent.jpg")!)
+                                    URL.sample_nonexistent_file.makeAvatarView()
                                     Text("不存在")
                                         .font(.caption)
                                 }
