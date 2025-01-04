@@ -8,7 +8,8 @@ public extension URL {
     /// - 自动生成并显示文件缩略图
     /// - 展示文件下载进度
     /// - 处理错误状态
-    /// - 支持自定义形状
+    /// - 支持自定义形状和背景色
+    /// - 支持多种尺寸设置方式
     /// 
     /// # 基础用法
     /// ```swift
@@ -18,6 +19,21 @@ public extension URL {
     /// // 自定义形状
     /// let customView = url.makeAvatarView()
     ///     .magicShape(.roundedRectangle(cornerRadius: 8))
+    /// ```
+    /// 
+    /// # 自定义外观
+    /// ```swift
+    /// // 设置背景色
+    /// let coloredView = url.makeAvatarView()
+    ///     .magicBackground(.blue.opacity(0.1))
+    /// 
+    /// // 设置尺寸
+    /// let sizedView = url.makeAvatarView()
+    ///     .magicSize(64)  // 正方形边长
+    /// 
+    /// // 自定义宽高
+    /// let rectangleView = url.makeAvatarView()
+    ///     .magicSize(width: 80, height: 60)
     /// ```
     /// 
     /// # 下载进度
