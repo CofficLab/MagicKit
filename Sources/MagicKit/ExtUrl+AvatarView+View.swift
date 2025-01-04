@@ -1,8 +1,9 @@
-import SwiftUI
 import Combine
 import os
+import SwiftUI
 
 // MARK: - Avatar View
+
 /// 一个用于展示文件缩略图的头像视图组件
 ///
 /// `AvatarView` 是一个多功能的视图组件，专门用于展示文件的缩略图和状态。
@@ -31,49 +32,49 @@ import os
 /// ```
 public struct AvatarView: View {
     // MARK: - Properties
-    
+
     /// 文件的URL
     let url: URL
-    
+
     /// 视图的形状
     var shape: AvatarViewShape = .circle
-    
+
     /// 是否监控下载进度
     var monitorDownload: Bool = true
-    
+
     /// 下载进度绑定
-    var progressBinding: Binding<Double>? = nil
-    
+    var progressBinding: Binding<Double>?
+
     /// 视图尺寸
     var size: CGSize = CGSize(width: 40, height: 40)
-    
+
     /// 视图背景色
     var backgroundColor: Color = .blue.opacity(0.1)
-    
+
     // MARK: - State Properties
-    
+
     /// 缩略图
     @State private var thumbnail: Image?
-    
+
     /// 错误状态
     @State private var error: Error?
-    
+
     /// 加载状态
     @State private var isLoading = false
-    
+
     /// 自动下载进度
     @State private var autoDownloadProgress: Double = 0
-    
+
     /// 取消订阅存储
     @State private var cancellable: AnyCancellable?
-    
+
     // MARK: - Computed Properties
-    
+
     /// 当前的下载进度
     private var downloadProgress: Double {
         progressBinding?.wrappedValue ?? autoDownloadProgress
     }
-    
+
     /// 是否正在下载
     private var isDownloading: Bool {
         // 检查手动控制的进度
@@ -82,17 +83,17 @@ public struct AvatarView: View {
                 return true
             }
         }
-        
+
         // 检查自动监控的进度
         if downloadProgress > 0 && downloadProgress < 1 {
             return true
         }
-        
+
         return false
     }
-    
+
     // MARK: - Initialization
-    
+
     /// 创建一个新的头像视图
     /// - Parameters:
     ///   - url: 要显示的文件URL
@@ -100,7 +101,7 @@ public struct AvatarView: View {
     public init(url: URL, size: CGSize = CGSize(width: 40, height: 40)) {
         self.url = url
         self.size = size
-        
+
         // 在初始化时进行基本的 URL 检查
         if url.isFileURL {
             // 检查本地文件是否存在
@@ -117,21 +118,21 @@ public struct AvatarView: View {
             }
         }
     }
-    
+
     // MARK: - Body
-    
+
     public var body: some View {
         Group {
             if isDownloading {
-                DownloadProgressView(progress: downloadProgress, size: size)
+                DownloadProgressView(progress: downloadProgress)
             } else if let thumbnail = thumbnail {
-                ThumbnailImageView(image: thumbnail, size: size)
+                ThumbnailImageView(image: thumbnail)
             } else if let error = error {
-                ErrorIndicatorView(size: size, error: error)
+                ErrorIndicatorView(error: error)
             } else if isLoading {
-                LoadingView(size: size)
+                LoadingView()
             } else {
-                DefaultIconView(icon: url.systemIcon, size: size)
+                DefaultIconView(icon: url.systemIcon)
             }
         }
         .frame(width: size.width, height: size.height)
@@ -156,13 +157,12 @@ public struct AvatarView: View {
             }
         }
     }
-    
+
     // MARK: - Private Views
-    
+
     /// 下载进度视图
     private struct DownloadProgressView: View {
         let progress: Double
-        let size: CGSize
 
         var body: some View {
             ZStack {
@@ -181,65 +181,56 @@ public struct AvatarView: View {
                     .font(.caption2)
                     .foregroundStyle(.secondary)
             }
-            .frame(width: size.width, height: size.height)
         }
     }
 
     /// 缩略图显示视图
     private struct ThumbnailImageView: View {
         let image: Image
-        let size: CGSize
 
         var body: some View {
             image
                 .resizable()
                 .aspectRatio(contentMode: .fill)
-                .frame(width: size.width, height: size.height)
         }
     }
 
     /// 加载中视图
     private struct LoadingView: View {
-        let size: CGSize
-        
         var body: some View {
             ProgressView()
                 .controlSize(.small)
-                .frame(width: size.width, height: size.height)
         }
     }
 
     /// 错误指示视图
     private struct ErrorIndicatorView: View {
-        let size: CGSize
         let error: Error
         @State private var showError = false
         @State private var isCopied = false
-        
+
         var body: some View {
             Image(systemName: "exclamationmark.triangle")
-                .font(.system(size: min(size.width, size.height) * 0.5))
                 .foregroundStyle(.red)
-                .frame(width: size.width, height: size.height)
                 .popover(isPresented: $showError) {
                     VStack(alignment: .leading, spacing: 12) {
                         Text("错误详情")
                             .font(.headline)
-                        
+
                         Divider()
-                        
+
                         Text(error.localizedDescription)
                             .font(.body)
                             .foregroundStyle(.secondary)
                             .fixedSize(horizontal: false, vertical: true)
                             .multilineTextAlignment(.leading)
-                        
+
                         Divider()
-                        
+
                         Button(action: {
                             error.localizedDescription.copy()
                             isCopied = true
-                            
+
                             // 2秒后重置复制状态
                             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                 isCopied = false
@@ -265,18 +256,15 @@ public struct AvatarView: View {
     /// 默认图标视图
     private struct DefaultIconView: View {
         let icon: String
-        let size: CGSize
 
         var body: some View {
             Image(systemName: icon)
-                .font(.system(size: min(size.width, size.height) * 0.5))
                 .foregroundStyle(.secondary)
-                .frame(width: size.width, height: size.height)
         }
     }
-    
+
     // MARK: - Private Methods
-    
+
     /// 处理下载进度变化
     private func handleDownloadProgress() {
         Task {
@@ -288,11 +276,11 @@ public struct AvatarView: View {
             }
         }
     }
-    
+
     /// 加载缩略图
     @Sendable private func loadThumbnail() async {
         guard thumbnail == nil && !isLoading && !url.isDownloading else { return }
-        
+
         isLoading = true
         do {
             if let image = try await url.thumbnail(size: size) {
@@ -308,21 +296,21 @@ public struct AvatarView: View {
         }
         isLoading = false
     }
-    
+
     /// 设置下载监控
     @Sendable private func setupDownloadMonitor() async {
         guard monitorDownload && url.isiCloud && progressBinding == nil else { return }
-        
+
         let downloadingCancellable = url.onDownloading { progress in
             autoDownloadProgress = progress
         }
-        
+
         let finishedCancellable = url.onDownloadFinished {
             Task {
                 await loadThumbnail()
             }
         }
-        
+
         cancellable = AnyCancellable {
             downloadingCancellable.cancel()
             finishedCancellable.cancel()
@@ -331,6 +319,7 @@ public struct AvatarView: View {
 }
 
 // MARK: - Preview
+
 #Preview("头像视图") {
     AvatarDemoView()
 }
