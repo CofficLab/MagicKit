@@ -143,6 +143,17 @@ public struct AvatarView: View {
                 shape.strokeBorder(color: Color.red.opacity(0.5))
             }
         }
+        .onChange(of: progressBinding?.wrappedValue) { newProgress in
+            // 当用户传入的进度值达到1.0时，重新生成缩略图
+            if let progress = newProgress, progress >= 1.0 {
+                Task {
+                    // 清除当前缩略图，以便重新生成
+                    thumbnail = nil
+                    // 重新加载缩略图
+                    await loadThumbnail()
+                }
+            }
+        }
         .task {
             // 只有在没有初始错误时才进行进一步的检查
             if error == nil {
