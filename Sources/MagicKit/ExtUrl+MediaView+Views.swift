@@ -141,6 +141,7 @@ public struct MediaFileView: View {
                     .magicSize(avatarSize)
                     .magicAvatarShape(avatarShape)
                     .magicBackground(avatarBackgroundColor)
+                    .magicDownloadMonitor(monitorDownload)
                     .overlay(
                         RoundedRectangle(cornerRadius: 0)
                             .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [4]))

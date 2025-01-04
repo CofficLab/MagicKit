@@ -309,6 +309,35 @@ public extension MediaFileView {
         view.avatarSize = preset.size
         return view
     }
+    
+    /// 设置是否监控下载进度
+    /// 
+    /// 这个修改器允许你控制是否监控内部头像视图的下载进度。
+    /// 
+    /// 示例：
+    /// ```swift
+    /// // 启用下载进度监控
+    /// url.makeMediaView()
+    ///     .magicAvatarDownloadMonitor(true)
+    /// 
+    /// // 禁用下载进度监控
+    /// url.makeMediaView()
+    ///     .magicAvatarDownloadMonitor(false)
+    /// 
+    /// // 组合使用
+    /// url.makeMediaView()
+    ///     .magicAvatarDownloadMonitor(true)
+    ///     .magicAvatarSize(.large)
+    ///     .magicCircleAvatar()
+    /// ```
+    /// 
+    /// - Parameter monitor: 是否监控下载进度
+    /// - Returns: 配置了下载进度监控的视图
+    func magicAvatarDownloadMonitor(_ monitor: Bool) -> MediaFileView {
+        var view = self
+        view.monitorDownload = monitor
+        return view
+    }
 }
 
 #Preview("Media View") {
