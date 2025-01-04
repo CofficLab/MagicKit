@@ -163,6 +163,34 @@ public extension URL {
         
         return tempFile
     }
+    
+    /// 临时目录中的测试文件夹
+    static var sample_temp_folder: URL {
+        let tempFolder = FileManager.default.temporaryDirectory
+            .appendingPathComponent("magic_kit_test_folder")
+        
+        if !FileManager.default.fileExists(atPath: tempFolder.path) {
+            try? FileManager.default.createDirectory(at: tempFolder, withIntermediateDirectories: true)
+            
+            // 创建一些测试文件
+            let testFiles = [
+                ("test1.txt", "这是测试文件1"),
+                ("test2.txt", "这是测试文件2"),
+                ("subfolder", nil)
+            ]
+            
+            for (name, content) in testFiles {
+                let fileURL = tempFolder.appendingPathComponent(name)
+                if let content = content {
+                    try? content.write(to: fileURL, atomically: true, encoding: .utf8)
+                } else {
+                    try? FileManager.default.createDirectory(at: fileURL, withIntermediateDirectories: true)
+                }
+            }
+        }
+        
+        return tempFolder
+    }
 }
 
 // MARK: - FileManager Extension

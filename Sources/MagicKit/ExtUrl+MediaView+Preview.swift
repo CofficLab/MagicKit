@@ -236,6 +236,15 @@ private struct LocalFilesPreview: View {
                     URL.sample_temp_pdf.makeMediaView()
                         .withBackground(MagicBackground.galaxySpiral)
                 }
+                
+                Group {
+                    // 临时文件夹
+                    Text("临时文件夹")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    URL.sample_temp_folder.makeMediaView()
+                        .withBackground(MagicBackground.mysticalForest)
+                }
             }
             .padding()
         }
