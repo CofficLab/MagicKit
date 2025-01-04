@@ -26,3 +26,8 @@ public enum AvatarSize {
         }
     }
 }
+
+// MARK: - Preview
+#Preview("头像视图") {
+    AvatarDemoView()
+}

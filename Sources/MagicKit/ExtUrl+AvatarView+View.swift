@@ -46,6 +46,9 @@ public struct AvatarView: View {
     /// 视图尺寸
     var size: CGSize = CGSize(width: 40, height: 40)
     
+    /// 视图背景色
+    var backgroundColor: Color = .blue.opacity(0.1)
+    
     // MARK: - State Properties
     
     /// 缩略图
@@ -115,7 +118,7 @@ public struct AvatarView: View {
             }
         }
         .frame(width: size.width, height: size.height)
-        .background(.blue.opacity(0.1))
+        .background(backgroundColor)
         .clipShape(shape)
         .overlay {
             if error != nil {
@@ -252,5 +255,5 @@ public struct AvatarView: View {
 
 // MARK: - Preview
 #Preview("头像视图") {
-    AvatarViewPreviewContainer()
+    AvatarDemoView()
 }

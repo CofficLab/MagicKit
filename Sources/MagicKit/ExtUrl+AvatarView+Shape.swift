@@ -113,5 +113,6 @@ public enum AvatarViewShape: Shape {
 
 // MARK: - Preview
 #Preview("头像视图") {
-    AvatarViewPreviewContainer()
+    AvatarDemoView()
 }
+

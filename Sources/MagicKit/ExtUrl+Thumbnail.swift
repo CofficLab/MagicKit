@@ -149,6 +149,8 @@ extension URL {
     }
 }
 
-#Preview("Thumbnails") {
-    AvatarViewPreviewContainer()
+// MARK: - Preview
+#Preview("头像视图") {
+    AvatarDemoView()
 }
+

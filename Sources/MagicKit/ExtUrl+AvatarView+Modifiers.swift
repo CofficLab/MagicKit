@@ -71,4 +71,18 @@ public extension AvatarView {
     func magicSize(_ dimension: CGFloat) -> AvatarView {
         magicSize(.custom(dimension))
     }
+    
+    /// 设置视图背景色
+    /// - Parameter color: 要应用的背景色
+    /// - Returns: 修改后的视图
+    func magicBackground(_ color: Color) -> AvatarView {
+        var view = self
+        view.backgroundColor = color
+        return view
+    }
+}
+
+// MARK: - Preview
+#Preview("头像视图") {
+    AvatarDemoView()
 }

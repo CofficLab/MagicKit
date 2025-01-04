@@ -45,5 +45,5 @@ public extension URL {
 
 // MARK: - Preview
 #Preview("头像视图") {
-    AvatarViewPreviewContainer()
+    AvatarDemoView()
 }
