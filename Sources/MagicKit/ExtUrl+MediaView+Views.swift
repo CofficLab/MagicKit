@@ -107,6 +107,17 @@ public struct MediaFileView: View {
                     isHovering = hovering
                 }
             }
+            .onChange(of: downloadProgress) {
+                // 下载完成后重新获取缩略图
+                        Task {
+                            do {
+                                thumbnail = try await url.thumbnail(size: CGSize(width: 80, height: 80))
+                                error = nil
+                            } catch {
+                                self.error = error
+                            }
+                        }
+            }
             .task {
                 // 只加载缩略图，不主动下载
                 if thumbnail == nil && !isLoading && !url.isDownloading {
