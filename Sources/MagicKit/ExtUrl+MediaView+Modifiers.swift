@@ -89,61 +89,6 @@ public extension MediaFileView {
         return view
     }
     
-    /// 设置下载进度
-    /// 
-    /// 这个修改器允许你通过一个 `Binding<Double>` 来控制下载进度的显示。
-    /// 进度值应该在 0.0（未开始）到 1.0（完成）之间。
-    /// 
-    /// 基本用法：
-    /// ```swift
-    /// struct ContentView: View {
-    ///     @State private var progress: Double = 0.0
-    ///     
-    ///     var body: some View {
-    ///         url.makeMediaView()
-    ///             .magicDownloadProgress($progress)
-    ///     }
-    /// }
-    /// ```
-    /// 
-    /// 与其他控件集成：
-    /// ```swift
-    /// struct DownloadView: View {
-    ///     @State private var progress: Double = 0.0
-    ///     
-    ///     var body: some View {
-    ///         VStack {
-    ///             url.makeMediaView()
-    ///                 .magicDownloadProgress($progress)
-    ///             
-    ///             // 使用滑块控制进度
-    ///             Slider(value: $progress, in: 0...1)
-    ///             
-    ///             // 添加动画效果
-    ///             Button("开始下载") {
-    ///                 withAnimation(.linear(duration: 3)) {
-    ///                     progress = 1.0
-    ///                 }
-    ///             }
-    ///         }
-    ///     }
-    /// }
-    /// ```
-    /// 
-    /// 注意：
-    /// - 当使用此修改器时，自动进度监听将被禁用
-    /// - 进度值会自动限制在 0.0 到 1.0 之间
-    /// - 支持动画效果
-    /// - 可以随时通过更新绑定的值来更新进度
-    ///
-    /// - Parameter progress: 下载进度的绑定（0.0 到 1.0）
-    /// - Returns: 使用指定下载进度的视图
-    func magicDownloadProgress(_ progress: Binding<Double>) -> MediaFileView {
-        var view = self
-        view.progressBinding = progress
-        return view
-    }
-    
     /// 展示文件夹内容
     /// 
     /// 当应用于文件夹的 `MediaView` 时，这个修改器会在文件夹信息下方显示其内容列表。
@@ -336,6 +281,61 @@ public extension MediaFileView {
     func magicAvatarDownloadMonitor(_ monitor: Bool) -> MediaFileView {
         var view = self
         view.monitorDownload = monitor
+        return view
+    }
+    
+    /// 设置内部头像的下载进度绑定
+    /// 
+    /// 这个修改器允许你通过一个 `Binding<Double>` 来控制内部头像视图的下载进度显示。
+    /// 进度值应该在 0.0（未开始）到 1.0（完成）之间。
+    /// 
+    /// 基本用法：
+    /// ```swift
+    /// struct ContentView: View {
+    ///     @State private var progress: Double = 0.0
+    ///     
+    ///     var body: some View {
+    ///         url.makeMediaView()
+    ///             .magicAvatarDownloadProgress($progress)
+    ///     }
+    /// }
+    /// ```
+    /// 
+    /// 与其他控件集成：
+    /// ```swift
+    /// struct DownloadView: View {
+    ///     @State private var progress: Double = 0.0
+    ///     
+    ///     var body: some View {
+    ///         VStack {
+    ///             url.makeMediaView()
+    ///                 .magicAvatarDownloadProgress($progress)
+    ///             
+    ///             // 使用滑块控制进度
+    ///             Slider(value: $progress, in: 0...1)
+    ///             
+    ///             // 添加动画效果
+    ///             Button("开始下载") {
+    ///                 withAnimation(.linear(duration: 3)) {
+    ///                     progress = 1.0
+    ///                 }
+    ///             }
+    ///         }
+    ///     }
+    /// }
+    /// ```
+    /// 
+    /// 注意：
+    /// - 当使用此修改器时，自动进度监听将被禁用
+    /// - 进度值会自动限制在 0.0 到 1.0 之间
+    /// - 支持动画效果
+    /// - 可以随时通过更新绑定的值来更新进度
+    ///
+    /// - Parameter progress: 下载进度的绑定（0.0 到 1.0）
+    /// - Returns: 配置了头像下载进度的视图
+    func magicAvatarDownloadProgress(_ progress: Binding<Double>?) -> MediaFileView {
+        var view = self
+        view.avatarProgressBinding = progress
         return view
     }
 }

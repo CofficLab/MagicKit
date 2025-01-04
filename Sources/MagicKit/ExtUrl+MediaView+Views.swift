@@ -104,7 +104,7 @@ public struct MediaFileView: View {
     var horizontalPadding: CGFloat = 16
     var monitorDownload: Bool = true
     var folderContentVisible: Bool = false
-    var progressBinding: Binding<Double>? = nil
+    var avatarProgressBinding: Binding<Double>? = nil
     var showBorder: Bool = false
     @State private var isHovering = false
 
@@ -137,17 +137,26 @@ public struct MediaFileView: View {
         VStack(spacing: 0) {
             HStack(alignment: .center, spacing: 12) {
                 // 左侧缩略图
-                url.makeAvatarView()
+                let avatarView = url.makeAvatarView()
                     .magicSize(avatarSize)
                     .magicAvatarShape(avatarShape)
                     .magicBackground(avatarBackgroundColor)
                     .magicDownloadMonitor(monitorDownload)
+                
+                // 根据是否有进度绑定来决定是否应用进度修改器
+                let finalAvatarView = if let progress = avatarProgressBinding {
+                    avatarView.magicDownloadProgress(progress)
+                } else {
+                    avatarView
+                }
+                
+                finalAvatarView
                     .overlay(
                         RoundedRectangle(cornerRadius: 0)
                             .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [4]))
                             .foregroundColor(showBorder ? .blue : .clear)
                     )
-
+                
                 // 右侧文件信息
                 VStack(alignment: .leading, spacing: 4) {
                     Text(url.lastPathComponent)
@@ -158,7 +167,7 @@ public struct MediaFileView: View {
                                 .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [4]))
                                 .foregroundColor(showBorder ? .green : .clear)
                         )
-
+                    
                     Text(size)
                         .font(.caption)
                         .foregroundStyle(.secondary)
@@ -173,9 +182,9 @@ public struct MediaFileView: View {
                         .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [4]))
                         .foregroundColor(showBorder ? .purple : .clear)
                 )
-
+                
                 Spacer()
-
+                
                 // 操作按钮
                 if showActions {
                     ActionButtonsView(url: url)
