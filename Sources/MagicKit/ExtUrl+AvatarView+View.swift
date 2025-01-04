@@ -116,7 +116,7 @@ public struct AvatarView: View {
         }
         .frame(width: size.width, height: size.height)
         .background(.blue.opacity(0.1))
-        .apply(shape: shape)
+        .clipShape(shape)
         .overlay {
             if error != nil {
                 shape.strokeBorder()
@@ -247,53 +247,6 @@ public struct AvatarView: View {
             downloadingCancellable.cancel()
             finishedCancellable.cancel()
         }
-    }
-}
-
-// MARK: - View Modifiers
-public extension AvatarView {
-    /// 设置视图的形状
-    /// - Parameter shape: 要应用的形状
-    /// - Returns: 修改后的视图
-    func magicShape(_ shape: AvatarViewShape) -> AvatarView {
-        var view = self
-        view.shape = shape
-        return view
-    }
-
-    /// 设置下载进度绑定
-    /// - Parameter progress: 进度绑定
-    /// - Returns: 修改后的视图
-    func magicDownloadProgress(_ progress: Binding<Double>) -> AvatarView {
-        var view = self
-        view.progressBinding = progress
-        return view
-    }
-
-    /// 设置是否监控下载进度
-    /// - Parameter monitor: 是否监控
-    /// - Returns: 修改后的视图
-    func magicDownloadMonitor(_ monitor: Bool) -> AvatarView {
-        var view = self
-        view.monitorDownload = monitor
-        return view
-    }
-
-    /// 设置视图尺寸
-    /// - Parameter size: 目标尺寸
-    /// - Returns: 修改后的视图
-    func magicSize(_ size: CGSize) -> AvatarView {
-        var view = self
-        view.size = size
-        return view
-    }
-}
-
-// MARK: - Private View Extensions
-private extension View {
-    /// 应用形状到视图
-    func apply(shape: AvatarViewShape) -> some View {
-        clipShape(shape.shape)
     }
 }
 
