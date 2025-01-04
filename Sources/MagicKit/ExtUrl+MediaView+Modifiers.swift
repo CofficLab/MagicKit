@@ -4,7 +4,7 @@ import SwiftUI
 public extension MediaFileView {
     /// 移除背景样式
     /// - Returns: 无背景样式的视图
-    func noBackground() -> MediaFileView {
+    func magicNoBackground() -> MediaFileView {
         var view = self
         view.style = .none
         return view
@@ -13,7 +13,7 @@ public extension MediaFileView {
     /// 添加自定义背景
     /// - Parameter background: 背景视图
     /// - Returns: 带有指定背景的视图
-    func withBackground<Background: View>(_ background: Background) -> MediaFileView {
+    func magicBackground<Background: View>(_ background: Background) -> MediaFileView {
         var view = self
         view.style = .background(AnyView(background))
         return view
@@ -21,7 +21,7 @@ public extension MediaFileView {
     
     /// 隐藏操作按钮
     /// - Returns: 不显示操作按钮的视图
-    func hideActions() -> MediaFileView {
+    func magicHideActions() -> MediaFileView {
         var view = self
         view.showActions = false
         return view
@@ -30,7 +30,7 @@ public extension MediaFileView {
     /// 设置缩略图形状
     /// - Parameter shape: 要应用的形状
     /// - Returns: 使用指定形状的视图
-    func thumbnailShape(_ shape: AvatarViewShape) -> MediaFileView {
+    func magicShape(_ shape: AvatarViewShape) -> MediaFileView {
         var view = self
         view.shape = shape
         return view
@@ -39,7 +39,7 @@ public extension MediaFileView {
     /// 设置垂直内边距
     /// - Parameter padding: 内边距大小（点）
     /// - Returns: 使用指定内边距的视图
-    func verticalPadding(_ padding: CGFloat) -> MediaFileView {
+    func magicVerticalPadding(_ padding: CGFloat) -> MediaFileView {
         var view = self
         view.verticalPadding = padding
         return view
@@ -48,21 +48,21 @@ public extension MediaFileView {
     /// 禁用或启用下载进度监听
     /// 
     /// 当启用时，视图会自动监听 iCloud 文件的下载进度。
-    /// 当禁用时，你可以通过 `downloadProgress` 修改器手动控制进度显示。
+    /// 当禁用时，你可以通过 `magicDownloadProgress` 修改器手动控制进度显示。
     ///
     /// 示例：
     /// ```swift
     /// // 禁用自动进度监听
     /// url.makeMediaView()
-    ///     .disableDownloadMonitor()
+    ///     .magicDisableDownloadMonitor()
     ///
     /// // 启用自动进度监听（默认）
     /// url.makeMediaView()
-    ///     .disableDownloadMonitor(false)
+    ///     .magicDisableDownloadMonitor(false)
     /// ```
     ///
     /// - Returns: 配置了下载监听的视图
-    func disableDownloadMonitor() -> MediaFileView {
+    func magicDisableDownloadMonitor() -> MediaFileView {
         var view = self
         view.monitorDownload = false
         return view
@@ -80,7 +80,7 @@ public extension MediaFileView {
     ///     
     ///     var body: some View {
     ///         url.makeMediaView()
-    ///             .downloadProgress($progress)
+    ///             .magicDownloadProgress($progress)
     ///     }
     /// }
     /// ```
@@ -93,7 +93,7 @@ public extension MediaFileView {
     ///     var body: some View {
     ///         VStack {
     ///             url.makeMediaView()
-    ///                 .downloadProgress($progress)
+    ///                 .magicDownloadProgress($progress)
     ///             
     ///             // 使用滑块控制进度
     ///             Slider(value: $progress, in: 0...1)
@@ -117,7 +117,7 @@ public extension MediaFileView {
     ///
     /// - Parameter progress: 下载进度的绑定（0.0 到 1.0）
     /// - Returns: 使用指定下载进度的视图
-    func downloadProgress(_ progress: Binding<Double>) -> MediaFileView {
+    func magicDownloadProgress(_ progress: Binding<Double>) -> MediaFileView {
         var view = self
         view.progressBinding = progress
         return view
@@ -132,12 +132,12 @@ public extension MediaFileView {
     /// ```swift
     /// // 显示文件夹内容
     /// folderURL.makeMediaView()
-    ///     .showFolderContent()
-    ///     .withBackground(MagicBackground.mint)
+    ///     .magicShowFolderContent()
+    ///     .magicBackground(MagicBackground.mint)
     /// ```
     ///
     /// - Returns: 显示文件夹内容的视图
-    func showFolderContent() -> MediaFileView {
+    func magicShowFolderContent() -> MediaFileView {
         var view = self
         view.folderContentVisible = true
         return view

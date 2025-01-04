@@ -48,6 +48,7 @@ public struct AvatarDemoView: View {
                                 
                                 URL.sample_web_jpg_earth.makeAvatarView()
                                     .magicBackground(.green.opacity(0.1))
+                                    .magicAvatarShape(.hexagon)
                                 
                                 URL.sample_web_jpg_earth.makeAvatarView()
                                     .magicBackground(.purple.opacity(0.1))
@@ -72,13 +73,13 @@ public struct AvatarDemoView: View {
                         demoSection("不同形状") {
                             HStack(spacing: 20) {
                                 URL.sample_web_jpg_earth.makeAvatarView()
-                                    .magicShape(.circle)
+                                    .magicAvatarShape(.circle)
                                 
                                 URL.sample_web_jpg_earth.makeAvatarView()
-                                    .magicShape(.roundedRectangle(cornerRadius: 8))
+                                    .magicAvatarShape(.roundedRectangle(cornerRadius: 8))
                                 
                                 URL.sample_web_jpg_earth.makeAvatarView()
-                                    .magicShape(.rectangle)
+                                    .magicAvatarShape(.rectangle)
                             }
                         }
                     }

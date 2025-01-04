@@ -5,7 +5,7 @@ public extension AvatarView {
     /// 设置视图的形状
     /// - Parameter shape: 要应用的形状
     /// - Returns: 修改后的视图
-    func magicShape(_ shape: AvatarViewShape) -> AvatarView {
+    func magicAvatarShape(_ shape: AvatarViewShape) -> AvatarView {
         var view = self
         view.shape = shape
         return view

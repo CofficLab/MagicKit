@@ -50,7 +50,7 @@ private struct PaddingPreview: View {
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     URL.sample_web_jpg_earth.makeMediaView()
-                        .withBackground(MagicBackground.mint)
+                        .magicBackground(MagicBackground.mint)
                 }
                 
                 Group {
@@ -59,8 +59,8 @@ private struct PaddingPreview: View {
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     URL.sample_web_jpg_earth.makeMediaView()
-                        .verticalPadding(0)
-                        .withBackground(MagicBackground.aurora)
+                        .magicVerticalPadding(0)
+                        .magicBackground(MagicBackground.aurora)
                 }
                 
                 Group {
@@ -69,8 +69,8 @@ private struct PaddingPreview: View {
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     URL.sample_web_jpg_earth.makeMediaView()
-                        .verticalPadding(8)
-                        .withBackground(MagicBackground.sunset)
+                        .magicVerticalPadding(8)
+                        .magicBackground(MagicBackground.sunset)
                 }
                 
                 Group {
@@ -79,8 +79,8 @@ private struct PaddingPreview: View {
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     URL.sample_web_jpg_earth.makeMediaView()
-                        .verticalPadding(24)
-                        .withBackground(MagicBackground.ocean)
+                        .magicVerticalPadding(24)
+                        .magicBackground(MagicBackground.ocean)
                 }
             }
             .padding()
@@ -99,7 +99,7 @@ private struct ShapesPreview: View {
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     URL.sample_web_jpg_earth.makeMediaView()
-                        .withBackground(MagicBackground.mint)
+                        .magicBackground(MagicBackground.mint)
                 }
                 
                 Group {
@@ -108,8 +108,8 @@ private struct ShapesPreview: View {
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     URL.sample_web_jpg_earth.makeMediaView()
-                        .thumbnailShape(.roundedRectangle(cornerRadius: 8))
-                        .withBackground(MagicBackground.aurora.opacity(0.1))
+                        .magicShape(.roundedRectangle(cornerRadius: 8))
+                        .magicBackground(MagicBackground.aurora.opacity(0.1))
                 }
                 
                 Group {
@@ -118,8 +118,8 @@ private struct ShapesPreview: View {
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     URL.sample_web_jpg_earth.makeMediaView()
-                        .thumbnailShape(.rectangle)
-                        .withBackground(MagicBackground.sunset)
+                        .magicShape(.rectangle)
+                        .magicBackground(MagicBackground.sunset)
                 }
                 
                 Group {
@@ -128,8 +128,8 @@ private struct ShapesPreview: View {
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     URL.sample_web_jpg_earth.makeMediaView()
-                        .thumbnailShape(.roundedRectangle(cornerRadius: 16))
-                        .withBackground(MagicBackground.ocean)
+                        .magicShape(.roundedRectangle(cornerRadius: 16))
+                        .magicBackground(MagicBackground.ocean)
                 }
             }
             .padding()
@@ -148,7 +148,7 @@ private struct RemoteFilesPreview: View {
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     URL.sample_web_mp3_kennedy.makeMediaView()
-                        .withBackground(MagicBackground.mint)
+                        .magicBackground(MagicBackground.mint)
                 }
                 
                 Group {
@@ -157,7 +157,7 @@ private struct RemoteFilesPreview: View {
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     URL.sample_web_mp4_bunny.makeMediaView()
-                        .noBackground()
+                        .magicNoBackground()
                 }
                 
                 Group {
@@ -166,7 +166,7 @@ private struct RemoteFilesPreview: View {
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     URL.sample_web_jpg_earth.makeMediaView()
-                        .withBackground(MagicBackground.aurora)
+                        .magicBackground(MagicBackground.aurora)
                 }
                 
                 Group {
@@ -175,7 +175,7 @@ private struct RemoteFilesPreview: View {
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     URL.sample_web_pdf_swift_guide.makeMediaView()
-                        .withBackground(MagicBackground.cosmicDust)
+                        .magicBackground(MagicBackground.cosmicDust)
                 }
                 
                 Group {
@@ -184,7 +184,7 @@ private struct RemoteFilesPreview: View {
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     URL.sample_web_txt_mit.makeMediaView()
-                        .noBackground()
+                        .magicNoBackground()
                 }
             }
             .padding()
@@ -203,7 +203,7 @@ private struct LocalFilesPreview: View {
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     URL.sample_temp_txt.makeMediaView()
-                        .withBackground(MagicBackground.serenity)
+                        .magicBackground(MagicBackground.serenity)
                 }
                 
                 Group {
@@ -212,7 +212,7 @@ private struct LocalFilesPreview: View {
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     URL.sample_temp_mp3.makeMediaView()
-                        .withBackground(MagicBackground.lavender)
+                        .magicBackground(MagicBackground.lavender)
                 }
                 
                 Group {
@@ -221,7 +221,7 @@ private struct LocalFilesPreview: View {
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     URL.sample_temp_mp4.makeMediaView()
-                        .withBackground(MagicBackground.sunset)
+                        .magicBackground(MagicBackground.sunset)
                 }
                 
                 Group {
@@ -230,7 +230,7 @@ private struct LocalFilesPreview: View {
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     URL.sample_temp_jpg.makeMediaView()
-                        .withBackground(MagicBackground.ocean)
+                        .magicBackground(MagicBackground.ocean)
                 }
                 
                 Group {
@@ -239,7 +239,7 @@ private struct LocalFilesPreview: View {
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     URL.sample_temp_pdf.makeMediaView()
-                        .withBackground(MagicBackground.galaxySpiral)
+                        .magicBackground(MagicBackground.galaxySpiral)
                 }
             }
             .padding()
@@ -258,8 +258,8 @@ private struct FoldersPreview: View {
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     URL.sample_temp_folder.makeMediaView()
-                        .withBackground(MagicBackground.mint)
-                        .withShape(.rectangle)
+                        .magicBackground(MagicBackground.mint)
+                        .magicShape(.rectangle)
                 }
                 
                 Group {
@@ -268,8 +268,8 @@ private struct FoldersPreview: View {
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     URL.sample_temp_folder.makeMediaView()
-                        .withBackground(MagicBackground.aurora.opacity(0.2))
-                        .showFolderContent()
+                        .magicBackground(MagicBackground.aurora.opacity(0.2))
+                        .magicShowFolderContent()
                 }
                 
                 Group {
@@ -278,8 +278,8 @@ private struct FoldersPreview: View {
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     URL.sample_temp_folder.appendingPathComponent("subfolder").makeMediaView()
-                        .withBackground(MagicBackground.sunset)
-                        .showFolderContent()
+                        .magicBackground(MagicBackground.sunset)
+                        .magicShowFolderContent()
                 }
             }
             .padding()

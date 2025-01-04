@@ -125,7 +125,7 @@ public struct MediaFileView: View {
             HStack(alignment: .center, spacing: 12) {
                 // 左侧缩略图
                 url.makeAvatarView()
-                    .magicShape(shape)
+                    .magicAvatarShape(shape)
                 
                 // 右侧文件信息
                 VStack(alignment: .leading, spacing: 4) {

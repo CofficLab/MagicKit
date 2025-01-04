@@ -17,8 +17,8 @@ struct FolderContentView: View {
                     List(contents, id: \.path) { itemURL in
                         itemURL
                             .makeMediaView()
-                            .verticalPadding(0)
-                            .hideActions()
+                            .magicVerticalPadding(0)
+                            .magicHideActions()
                     }
                     .border(.blue)
                     .listStyle(.plain)
