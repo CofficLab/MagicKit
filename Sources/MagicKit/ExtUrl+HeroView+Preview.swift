@@ -29,7 +29,7 @@ struct HeroViewPreviewContainer: View {
                 .tabItem { Label("尺寸", systemImage: "ruler") }
         }
         .frame(width: 500, height: 600)
-        .background(MagicBackground.mysticalForest)
+        .background(MagicBackground.deepOceanCurrent.opacity(0.1))
     }
 }
 
