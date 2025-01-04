@@ -23,6 +23,12 @@ struct MediaViewPreviewContainer: View {
                     Label("本地文件", systemImage: "folder")
                 }
             
+            // 文件夹预览
+            FoldersPreview()
+                .tabItem {
+                    Label("文件夹", systemImage: "folder.fill")
+                }
+            
             // 内边距预览
             PaddingPreview()
                 .tabItem {
@@ -236,14 +242,44 @@ private struct LocalFilesPreview: View {
                     URL.sample_temp_pdf.makeMediaView()
                         .withBackground(MagicBackground.galaxySpiral)
                 }
-                
+            }
+            .padding()
+        }
+    }
+}
+
+// MARK: - Folders Preview
+private struct FoldersPreview: View {
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 20) {
                 Group {
-                    // 临时文件夹
-                    Text("临时文件夹")
+                    // 默认文件夹预览
+                    Text("默认文件夹预览")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     URL.sample_temp_folder.makeMediaView()
-                        .withBackground(MagicBackground.mysticalForest)
+                        .withBackground(MagicBackground.mint)
+                        .withShape(.rectangle)
+                }
+                
+                Group {
+                    // 展开的文件夹预览
+                    Text("展开的文件夹预览")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    URL.sample_temp_folder.makeMediaView()
+                        .withBackground(MagicBackground.aurora)
+                        .showFolderContent()
+                }
+                
+                Group {
+                    // 嵌套文件夹预览
+                    Text("嵌套文件夹预览")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    URL.sample_temp_folder.appendingPathComponent("subfolder").makeMediaView()
+                        .withBackground(MagicBackground.sunset)
                         .showFolderContent()
                 }
             }

@@ -107,22 +107,6 @@ private struct ActionButtonsView: View {
     }
 }
 
-// MARK: - Folder Content View
-struct FolderContentView: View {
-    let url: URL
-    
-    var body: some View {
-        if let contents = try? FileManager.default.contentsOfDirectory(at: url, includingPropertiesForKeys: nil) {
-            List(contents, id: \.path) { itemURL in
-                itemURL.makeMediaView()
-            }
-        } else {
-            Text("无法读取文件夹内容")
-                .foregroundStyle(.secondary)
-        }
-    }
-}
-
 // MARK: - Media File View
 /// 用于显示文件信息的视图组件
 /// 
@@ -157,6 +141,7 @@ public struct MediaFileView: View {
     var shape: MediaViewShape = .circle
     var verticalPadding: CGFloat = 12
     var monitorDownload: Bool = true
+    var folderContentVisible: Bool = false
     @State private var thumbnail: Image?
     @State private var error: Error?
     @State private var isLoading = false
@@ -175,6 +160,58 @@ public struct MediaFileView: View {
     }
     
     public var body: some View {
+        mainContent
+            .modifier(FolderContentModifier(url: url, isVisible: folderContentVisible))
+            .modifier(MediaViewBackground(style: style))
+            .onHover { hovering in
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    isHovering = hovering
+                }
+            }
+            .task {
+                // 只加载缩略图，不主动下载
+                if thumbnail == nil && !isLoading && !url.isDownloading {
+                    isLoading = true
+                    do {
+                        thumbnail = try await url.thumbnail(size: CGSize(width: 80, height: 80))
+                        error = nil
+                    } catch {
+                        self.error = error
+                    }
+                    isLoading = false
+                }
+                
+                // 如果启用了监听且是 iCloud 文件，监听下载进度和完成事件
+                if monitorDownload && url.isiCloud {
+                    let downloadingCancellable = url.onDownloading { progress in
+                        downloadProgress = progress
+                    }
+                    
+                    let finishedCancellable = url.onDownloadFinished {
+                        // 下载完成后重新获取缩略图
+                        Task {
+                            do {
+                                thumbnail = try await url.thumbnail(size: CGSize(width: 80, height: 80))
+                                error = nil
+                            } catch {
+                                self.error = error
+                            }
+                        }
+                    }
+                    
+                    // 组合两个订阅
+                    cancellable = AnyCancellable {
+                        downloadingCancellable.cancel()
+                        finishedCancellable.cancel()
+                    }
+                }
+            }
+            .onDisappear {
+                cancellable?.cancel()
+            }
+    }
+    
+    private var mainContent: some View {
         VStack(spacing: 0) {
             HStack(alignment: .center, spacing: 12) {
                 // 左侧图片区域
@@ -248,53 +285,6 @@ public struct MediaFileView: View {
             }
             .padding(.horizontal, 16)
             .padding(.vertical, verticalPadding)
-        }
-        .modifier(MediaViewBackground(style: style))
-        .onHover { hovering in
-            withAnimation(.easeInOut(duration: 0.2)) {
-                isHovering = hovering
-            }
-        }
-        .task {
-            // 只加载缩略图，不主动下载
-            if thumbnail == nil && !isLoading && !url.isDownloading {
-                isLoading = true
-                do {
-                    thumbnail = try await url.thumbnail(size: CGSize(width: 80, height: 80))
-                    error = nil
-                } catch {
-                    self.error = error
-                }
-                isLoading = false
-            }
-            
-            // 如果启用了监听且是 iCloud 文件，监听下载进度和完成事件
-            if monitorDownload && url.isiCloud {
-                let downloadingCancellable = url.onDownloading { progress in
-                    downloadProgress = progress
-                }
-                
-                let finishedCancellable = url.onDownloadFinished {
-                    // 下载完成后重新获取缩略图
-                    Task {
-                        do {
-                            thumbnail = try await url.thumbnail(size: CGSize(width: 80, height: 80))
-                            error = nil
-                        } catch {
-                            self.error = error
-                        }
-                    }
-                }
-                
-                // 组合两个订阅
-                cancellable = AnyCancellable {
-                    downloadingCancellable.cancel()
-                    finishedCancellable.cancel()
-                }
-            }
-        }
-        .onDisappear {
-            cancellable?.cancel()
         }
     }
 }
