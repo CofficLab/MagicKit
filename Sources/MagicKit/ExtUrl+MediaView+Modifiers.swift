@@ -238,6 +238,77 @@ public extension MediaFileView {
         view.showBorder = show
         return view
     }
+    
+    /// 设置内部头像的尺寸
+    /// 
+    /// 这个修改器允许你设置 MediaView 中头像部分的尺寸。
+    /// 
+    /// 示例：
+    /// ```swift
+    /// // 设置头像尺寸为 60x60
+    /// url.makeMediaView()
+    ///     .magicAvatarSize(width: 60, height: 60)
+    /// 
+    /// // 设置头像为正方形
+    /// url.makeMediaView()
+    ///     .magicAvatarSize(40)
+    /// 
+    /// // 组合使用尺寸和其他修改器
+    /// url.makeMediaView()
+    ///     .magicAvatarSize(50)
+    ///     .magicCircleAvatar()
+    ///     .magicAvatarBackground(.blue.opacity(0.1))
+    /// ```
+    /// 
+    /// - Parameters:
+    ///   - width: 头像宽度
+    ///   - height: 头像高度
+    /// - Returns: 配置了头像尺寸的视图
+    func magicAvatarSize(width: CGFloat, height: CGFloat) -> MediaFileView {
+        var view = self
+        view.avatarSize = CGSize(width: width, height: height)
+        return view
+    }
+    
+    /// 设置内部头像为正方形
+    /// 
+    /// 这个修改器是 `magicAvatarSize(width:height:)` 的简化版本，用于设置正方形头像。
+    /// 
+    /// 示例：
+    /// ```swift
+    /// // 设置头像为 50x50 的正方形
+    /// url.makeMediaView()
+    ///     .magicAvatarSize(50)
+    /// ```
+    /// 
+    /// - Parameter dimension: 正方形边长
+    /// - Returns: 配置了头像尺寸的视图
+    func magicAvatarSize(_ dimension: CGFloat) -> MediaFileView {
+        magicAvatarSize(width: dimension, height: dimension)
+    }
+    
+    /// 设置内部头像的预设尺寸
+    /// 
+    /// 这个修改器允许你使用预定义的尺寸来设置头像大小。
+    /// 
+    /// 示例：
+    /// ```swift
+    /// // 使用小尺寸
+    /// url.makeMediaView()
+    ///     .magicAvatarSize(.small)
+    /// 
+    /// // 使用大尺寸
+    /// url.makeMediaView()
+    ///     .magicAvatarSize(.large)
+    /// ```
+    /// 
+    /// - Parameter preset: 预设尺寸
+    /// - Returns: 配置了头像尺寸的视图
+    func magicAvatarSize(_ preset: AvatarSize) -> MediaFileView {
+        var view = self
+        view.avatarSize = preset.size
+        return view
+    }
 }
 
 #Preview("Media View") {

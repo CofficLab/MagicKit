@@ -158,7 +158,7 @@ private struct AvatarShapesContent: View {
         ScrollView {
             VStack(spacing: 20) {
                 Group {
-                    Text("圆形头像 + 红色背景")
+                    Text("默认尺寸(40x40) + 圆形 + 红色背景")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     URL.sample_web_jpg_earth.makeMediaView()
@@ -169,33 +169,36 @@ private struct AvatarShapesContent: View {
                 }
                 
                 Group {
-                    Text("圆角矩形头像(圆角8) + 绿色背景")
+                    Text("小尺寸(32x32) + 圆角矩形(8) + 绿色背景")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     URL.sample_web_jpg_earth.makeMediaView()
                         .magicBackground(MagicBackground.aurora.opacity(0.1))
+                        .magicAvatarSize(.small)
                         .magicRoundedAvatar(8)
                         .magicAvatarBackground(.green.opacity(0.1))
                         .magicShowBorder(showBorder)
                 }
                 
                 Group {
-                    Text("矩形头像 + 紫色背景")
+                    Text("大尺寸(64x64) + 矩形 + 紫色背景")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     URL.sample_web_jpg_earth.makeMediaView()
                         .magicBackground(MagicBackground.sunset)
+                        .magicAvatarSize(.large)
                         .magicRectangleAvatar()
                         .magicAvatarBackground(.purple.opacity(0.1))
                         .magicShowBorder(showBorder)
                 }
                 
                 Group {
-                    Text("混合形状示例: 整体圆角矩形(16) + 圆形头像 + 黄色背景")
+                    Text("自定义尺寸(80x60) + 圆角矩形(16) + 黄色背景")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     URL.sample_web_jpg_earth.makeMediaView()
                         .magicBackground(MagicBackground.ocean)
+                        .magicAvatarSize(width: 80, height: 60)
                         .magicShape(.roundedRectangle(cornerRadius: 16))
                         .magicAvatarShape(.circle)
                         .magicAvatarBackground(.yellow.opacity(0.1))

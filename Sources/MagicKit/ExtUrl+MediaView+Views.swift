@@ -99,6 +99,7 @@ public struct MediaFileView: View {
     var shape: AvatarViewShape = .circle
     var avatarShape: AvatarViewShape = .circle
     var avatarBackgroundColor: Color = .blue.opacity(0.1)
+    var avatarSize: CGSize = CGSize(width: 40, height: 40)
     var verticalPadding: CGFloat = 12
     var horizontalPadding: CGFloat = 16
     var monitorDownload: Bool = true
@@ -137,6 +138,7 @@ public struct MediaFileView: View {
             HStack(alignment: .center, spacing: 12) {
                 // 左侧缩略图
                 url.makeAvatarView()
+                    .magicSize(avatarSize)
                     .magicAvatarShape(avatarShape)
                     .magicBackground(avatarBackgroundColor)
                     .overlay(
