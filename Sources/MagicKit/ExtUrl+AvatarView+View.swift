@@ -135,6 +135,7 @@ public struct AvatarView: View {
             }
         }
         .frame(width: size.width, height: size.height)
+        .padding()
         .background(backgroundColor)
         .clipShape(shape)
         .overlay {
