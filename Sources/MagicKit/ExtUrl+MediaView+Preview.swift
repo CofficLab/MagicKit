@@ -35,7 +35,7 @@ struct MediaViewPreviewContainer: View {
                 }
         }
         .frame(width: 500, height: 600)
-        .background(MagicBackground.mysticalForest)
+        .background(MagicBackground.deepOceanCurrent.opacity(0.1))
     }
 }
 
