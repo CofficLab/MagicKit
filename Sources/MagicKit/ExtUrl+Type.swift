@@ -160,6 +160,8 @@ public extension URL {
             return "doc"
         }
     }
+    
+    var systemIcon: String { icon }
 }
 
 // MARK: - Supported Extensions

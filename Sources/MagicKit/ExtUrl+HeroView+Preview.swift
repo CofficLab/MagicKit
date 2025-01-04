@@ -315,12 +315,12 @@ private struct PreviewItem: View {
             HStack(alignment: .center, spacing: 12) {
                 // 主角视图
                 let heroView = HeroView(url: url)
-                    .shape(shape)
-                    .monitorDownload(monitorDownload)
-                    .size(size)
+                    .magicShape(shape)
+                    .magicDownloadMonitor(monitorDownload)
+                    .magicSize(size)
                 
                 if let binding = progressBinding {
-                    heroView.downloadProgress(binding)
+                    heroView.magicDownloadProgress(binding)
                 } else {
                     heroView
                 }

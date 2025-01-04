@@ -22,12 +22,12 @@ import SwiftUI
 ///
 /// // 自定义形状
 /// HeroView(url: fileURL)
-///     .shape(.roundedRectangle(cornerRadius: 8))
+///     .magicShape(.roundedRectangle(cornerRadius: 8))
 ///
 /// // 下载进度控制
 /// @State var progress: Double = 0
 /// HeroView(url: fileURL)
-///     .downloadProgress($progress)
+///     .magicDownloadProgress($progress)
 /// ```
 public struct HeroView: View {
     // MARK: - Properties
@@ -104,15 +104,15 @@ public struct HeroView: View {
     public var body: some View {
         Group {
             if isDownloading {
-                DownloadProgressView(progress: downloadProgress)
+                DownloadProgressView(progress: downloadProgress, size: size)
             } else if let thumbnail = thumbnail {
-                ThumbnailImageView(image: thumbnail)
+                ThumbnailImageView(image: thumbnail, size: size)
             } else if error != nil {
-                ErrorIndicatorView()
+                ErrorIndicatorView(size: size)
             } else if isLoading {
-                LoadingView()
+                LoadingView(size: size)
             } else {
-                DefaultIconView(icon: url.icon)
+                DefaultIconView(icon: url.icon, size: size)
             }
         }
         .frame(width: size.width, height: size.height)
@@ -125,6 +125,7 @@ public struct HeroView: View {
     /// 下载进度视图
     private struct DownloadProgressView: View {
         let progress: Double
+        let size: CGSize
 
         var body: some View {
             ZStack {
@@ -143,45 +144,56 @@ public struct HeroView: View {
                     .font(.caption2)
                     .foregroundStyle(.secondary)
             }
+            .frame(width: size.width, height: size.height)
         }
     }
 
     /// 缩略图显示视图
     private struct ThumbnailImageView: View {
         let image: Image
+        let size: CGSize
 
         var body: some View {
             image
                 .resizable()
                 .aspectRatio(contentMode: .fill)
+                .frame(width: size.width, height: size.height)
         }
     }
 
     /// 加载中视图
     private struct LoadingView: View {
+        let size: CGSize
+        
         var body: some View {
             ProgressView()
                 .controlSize(.small)
+                .frame(width: size.width, height: size.height)
         }
     }
 
     /// 错误指示视图
     private struct ErrorIndicatorView: View {
+        let size: CGSize
+        
         var body: some View {
             Image(systemName: "exclamationmark.triangle")
-                .font(.system(size: 24))
+                .font(.system(size: min(size.width, size.height) * 0.5))
                 .foregroundStyle(.red)
+                .frame(width: size.width, height: size.height)
         }
     }
 
     /// 默认图标视图
     private struct DefaultIconView: View {
         let icon: String
+        let size: CGSize
 
         var body: some View {
             Image(systemName: icon)
-                .font(.system(size: 24))
+                .font(.system(size: min(size.width, size.height) * 0.5))
                 .foregroundStyle(.secondary)
+                .frame(width: size.width, height: size.height)
         }
     }
 
@@ -191,7 +203,7 @@ public struct HeroView: View {
     private func handleDownloadProgress() {
         Task {
             do {
-                thumbnail = try await url.thumbnail(size: CGSize(width: 80, height: 80))
+                thumbnail = try await url.thumbnail(size: size)
                 error = nil
             } catch {
                 self.error = error
@@ -205,7 +217,7 @@ public struct HeroView: View {
 
         isLoading = true
         do {
-            thumbnail = try await url.thumbnail(size: CGSize(width: 80, height: 80))
+            thumbnail = try await url.thumbnail(size: size)
             error = nil
         } catch {
             self.error = error
@@ -284,7 +296,7 @@ public extension HeroView {
     /// 设置视图的形状
     /// - Parameter shape: 要应用的形状
     /// - Returns: 修改后的视图
-    func shape(_ shape: HeroViewShape) -> HeroView {
+    func magicShape(_ shape: HeroViewShape) -> HeroView {
         var view = self
         view.shape = shape
         return view
@@ -293,7 +305,7 @@ public extension HeroView {
     /// 设置下载进度绑定
     /// - Parameter progress: 进度绑定
     /// - Returns: 修改后的视图
-    func downloadProgress(_ progress: Binding<Double>) -> HeroView {
+    func magicDownloadProgress(_ progress: Binding<Double>) -> HeroView {
         var view = self
         view.progressBinding = progress
         return view
@@ -302,7 +314,7 @@ public extension HeroView {
     /// 设置是否监控下载进度
     /// - Parameter monitor: 是否监控
     /// - Returns: 修改后的视图
-    func monitorDownload(_ monitor: Bool) -> HeroView {
+    func magicDownloadMonitor(_ monitor: Bool) -> HeroView {
         var view = self
         view.monitorDownload = monitor
         return view
@@ -311,7 +323,7 @@ public extension HeroView {
     /// 设置视图尺寸
     /// - Parameter size: 目标尺寸
     /// - Returns: 修改后的视图
-    func size(_ size: CGSize) -> HeroView {
+    func magicSize(_ size: CGSize) -> HeroView {
         var view = self
         view.size = size
         return view

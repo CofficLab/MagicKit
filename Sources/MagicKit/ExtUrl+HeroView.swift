@@ -17,7 +17,7 @@ public extension URL {
     /// 
     /// // 自定义形状
     /// let customView = url.makeHeroView()
-    ///     .shape(.roundedRectangle(cornerRadius: 8))
+    ///     .magicShape(.roundedRectangle(cornerRadius: 8))
     /// ```
     /// 
     /// # 下载进度
@@ -28,7 +28,7 @@ public extension URL {
     /// // 手动控制进度
     /// @State var progress: Double = 0
     /// let progressView = url.makeHeroView()
-    ///     .downloadProgress($progress)
+    ///     .magicDownloadProgress($progress)
     /// ```
     /// 
     /// # 错误处理
