@@ -109,7 +109,7 @@ private struct ShapesPreview: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                     URL.sample_jpg_earth.makeMediaView()
                         .thumbnailShape(.roundedRectangle(cornerRadius: 8))
-                        .withBackground(MagicBackground.aurora)
+                        .withBackground(MagicBackground.aurora.opacity(0.1))
                 }
                 
                 Group {

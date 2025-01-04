@@ -10,6 +10,7 @@ import MagicUI
 /// - iCloud文件：展示云端文件的下载状态
 /// - 下载进度：展示进度控制效果
 /// - 尺寸变化：展示不同尺寸下的显示效果
+/// - 形状变化：展示不同形状下的显示效果
 struct HeroViewPreviewContainer: View {
     var body: some View {
         TabView {
@@ -27,6 +28,9 @@ struct HeroViewPreviewContainer: View {
             
             SizesPreview()
                 .tabItem { Label("尺寸", systemImage: "ruler") }
+            
+            ShapesPreview()
+                .tabItem { Label("形状", systemImage: "square.on.circle") }
         }
         .frame(width: 500, height: 600)
         .background(MagicBackground.deepOceanCurrent.opacity(0.1))
@@ -245,6 +249,41 @@ private struct SizesPreview: View {
     }
 }
 
+// MARK: - Shapes Preview
+/// 展示不同形状的预览
+private struct ShapesPreview: View {
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 20) {
+                // 圆形（默认）
+                PreviewSection(title: "圆形（默认）") {
+                    PreviewItem(url: .sample_jpg_earth, title: "默认圆形")
+                }
+                
+                // 圆角矩形
+                PreviewSection(title: "圆角矩形") {
+                    PreviewItem(url: .sample_jpg_earth, title: "圆角矩形")
+                        .shape(.roundedRectangle(cornerRadius: 8))
+                }
+                
+                // 矩形
+                PreviewSection(title: "矩形") {
+                    PreviewItem(url: .sample_jpg_earth, title: "矩形")
+                        .shape(.rectangle)
+                }
+                
+                // 胶囊形状
+                PreviewSection(title: "胶囊形状") {
+                    PreviewItem(url: .sample_jpg_earth, title: "胶囊形状",
+                                size: CGSize(width: 120, height: 64))
+                        .shape(.capsule)
+                }
+            }
+            .padding()
+        }
+    }
+}
+
 // MARK: - Preview Components
 /// 预览项目组件
 private struct PreviewItem: View {
@@ -253,30 +292,38 @@ private struct PreviewItem: View {
     let size: CGSize
     var progressBinding: Binding<Double>? = nil
     var monitorDownload: Bool = true
+    var shape: HeroViewShape = .circle
     
     init(
         url: URL,
         title: String,
         size: CGSize = CGSize(width: 40, height: 40),
         progressBinding: Binding<Double>? = nil,
-        monitorDownload: Bool = true
+        monitorDownload: Bool = true,
+        shape: HeroViewShape = .circle
     ) {
         self.url = url
         self.title = title
         self.size = size
         self.progressBinding = progressBinding
         self.monitorDownload = monitorDownload
+        self.shape = shape
     }
     
     var body: some View {
         VStack(spacing: 0) {
             HStack(alignment: .center, spacing: 12) {
                 // 主角视图
-                HeroView(url: url)
-                    .shape(.roundedRectangle(cornerRadius: 8))
-                    .apply(progressBinding: progressBinding)
-                    .apply(monitorDownload: monitorDownload)
+                let heroView = HeroView(url: url)
+                    .shape(shape)
+                    .monitorDownload(monitorDownload)
                     .size(size)
+                
+                if let binding = progressBinding {
+                    heroView.downloadProgress(binding)
+                } else {
+                    heroView
+                }
                 
                 // 文件信息
                 VStack(alignment: .leading, spacing: 4) {
@@ -307,6 +354,13 @@ private struct PreviewItem: View {
     func disableDownloadMonitor() -> PreviewItem {
         var view = self
         view.monitorDownload = false
+        return view
+    }
+    
+    /// 设置形状
+    func shape(_ shape: HeroViewShape) -> PreviewItem {
+        var view = self
+        view.shape = shape
         return view
     }
 }

@@ -1,6 +1,33 @@
 import SwiftUI
 import Combine
 
+// MARK: - Media View Style
+/// 媒体视图的背景样式
+public enum MediaViewStyle {
+    /// 无背景
+    case none
+    /// 自定义背景视图
+    case background(AnyView)
+}
+
+// MARK: - Background Modifier
+struct MediaViewBackground: ViewModifier {
+    let style: MediaViewStyle
+    
+    func body(content: Content) -> some View {
+        Group {
+            switch style {
+            case .none:
+                content
+            case .background(let background):
+                content
+                    .background(background)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+            }
+        }
+    }
+}
+
 // MARK: - Media File View
 /// 用于显示文件信息的视图组件
 ///
@@ -66,7 +93,7 @@ public struct MediaFileView: View {
     let size: String
     var style: MediaViewStyle = .none
     var showActions: Bool = true
-    var shape: MediaViewShape = .circle
+    var shape: HeroViewShape = .circle
     var verticalPadding: CGFloat = 12
     var monitorDownload: Bool = true
     var folderContentVisible: Bool = false
@@ -99,8 +126,6 @@ public struct MediaFileView: View {
                 // 左侧缩略图
                 HeroView(url: url)
                     .shape(shape)
-                    .apply(progressBinding: progressBinding)
-                    .apply(monitorDownload: monitorDownload)
                 
                 // 右侧文件信息
                 VStack(alignment: .leading, spacing: 4) {

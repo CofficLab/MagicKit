@@ -30,7 +30,7 @@ public extension MediaFileView {
     /// 设置缩略图形状
     /// - Parameter shape: 要应用的形状
     /// - Returns: 使用指定形状的视图
-    func thumbnailShape(_ shape: MediaViewShape) -> MediaFileView {
+    func thumbnailShape(_ shape: HeroViewShape) -> MediaFileView {
         var view = self
         view.shape = shape
         return view
