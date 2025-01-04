@@ -5,6 +5,12 @@ import MagicUI
 struct MediaViewPreviewContainer: View {
     var body: some View {
         TabView {
+            // 文件夹预览
+            FoldersPreview()
+                .tabItem {
+                    Label("文件夹", systemImage: "folder.fill")
+                }
+
             // 形状预览
             ShapesPreview()
                 .tabItem {
@@ -22,13 +28,6 @@ struct MediaViewPreviewContainer: View {
                 .tabItem {
                     Label("本地文件", systemImage: "folder")
                 }
-            
-            // 文件夹预览
-            FoldersPreview()
-                .tabItem {
-                    Label("文件夹", systemImage: "folder.fill")
-                }
-            
             // 内边距预览
             PaddingPreview()
                 .tabItem {
@@ -269,7 +268,7 @@ private struct FoldersPreview: View {
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     URL.sample_temp_folder.makeMediaView()
-                        .withBackground(MagicBackground.aurora)
+                        .withBackground(MagicBackground.aurora.opacity(0.2))
                         .showFolderContent()
                 }
                 
