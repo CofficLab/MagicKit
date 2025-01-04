@@ -1,17 +1,17 @@
 import SwiftUI
 import MagicUI
 
-// MARK: - Hero View Preview Container
-/// 主角视图的预览容器
+// MARK: - Avatar View Preview Container
+/// 头像视图的预览容器
 ///
-/// 这个容器包含了多个预览场景，用于展示 `HeroView` 在不同情况下的表现：
+/// 这个容器包含了多个预览场景，用于展示 `AvatarView` 在不同情况下的表现：
 /// - 文件类型：展示不同类型文件的显示效果
 /// - 网络文件：展示远程文件的处理方式
 /// - iCloud文件：展示云端文件的下载状态
 /// - 下载进度：展示进度控制效果
 /// - 尺寸变化：展示不同尺寸下的显示效果
 /// - 形状变化：展示不同形状下的显示效果
-struct HeroViewPreviewContainer: View {
+struct AvatarViewPreviewContainer: View {
     var body: some View {
         TabView {
             FileTypesPreview()
@@ -292,7 +292,7 @@ private struct PreviewItem: View {
     let size: CGSize
     var progressBinding: Binding<Double>? = nil
     var monitorDownload: Bool = true
-    var shape: HeroViewShape = .circle
+    var shape: AvatarViewShape = .circle
     
     init(
         url: URL,
@@ -300,7 +300,7 @@ private struct PreviewItem: View {
         size: CGSize = CGSize(width: 40, height: 40),
         progressBinding: Binding<Double>? = nil,
         monitorDownload: Bool = true,
-        shape: HeroViewShape = .circle
+        shape: AvatarViewShape = .circle
     ) {
         self.url = url
         self.title = title
@@ -313,16 +313,16 @@ private struct PreviewItem: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack(alignment: .center, spacing: 12) {
-                // 主角视图
-                let heroView = HeroView(url: url)
+                // 头像视图
+                let avatarView = AvatarView(url: url)
                     .magicShape(shape)
                     .magicDownloadMonitor(monitorDownload)
                     .magicSize(size)
                 
                 if let binding = progressBinding {
-                    heroView.magicDownloadProgress(binding)
+                    avatarView.magicDownloadProgress(binding)
                 } else {
-                    heroView
+                    avatarView
                 }
                 
                 // 文件信息
@@ -358,7 +358,7 @@ private struct PreviewItem: View {
     }
     
     /// 设置形状
-    func shape(_ shape: HeroViewShape) -> PreviewItem {
+    func shape(_ shape: AvatarViewShape) -> PreviewItem {
         var view = self
         view.shape = shape
         return view
@@ -388,5 +388,5 @@ private struct PreviewSection<Content: View>: View {
 
 // MARK: - Preview
 #Preview("主角视图") {
-    HeroViewPreviewContainer()
+    AvatarViewPreviewContainer()
 } 

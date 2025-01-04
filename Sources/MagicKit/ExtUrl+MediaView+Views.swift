@@ -93,7 +93,7 @@ public struct MediaFileView: View {
     let size: String
     var style: MediaViewStyle = .none
     var showActions: Bool = true
-    var shape: HeroViewShape = .circle
+    var shape: AvatarViewShape = .circle
     var verticalPadding: CGFloat = 12
     var monitorDownload: Bool = true
     var folderContentVisible: Bool = false
@@ -124,7 +124,7 @@ public struct MediaFileView: View {
         VStack(spacing: 0) {
             HStack(alignment: .center, spacing: 12) {
                 // 左侧缩略图
-                HeroView(url: url)
+                url.makeAvatarView()
                     .magicShape(shape)
                 
                 // 右侧文件信息

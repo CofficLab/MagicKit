@@ -1,10 +1,10 @@
 import SwiftUI
 
-// MARK: - URL Hero View Extension
+// MARK: - URL Avatar View Extension
 public extension URL {
-    /// 为 URL 创建一个主角视图
+    /// 为 URL 创建一个头像视图
     /// 
-    /// 主角视图是一个突出显示文件缩略图的视图组件，它可以：
+    /// 头像视图是一个突出显示文件缩略图的视图组件，它可以：
     /// - 自动生成并显示文件缩略图
     /// - 展示文件下载进度
     /// - 处理错误状态
@@ -13,21 +13,21 @@ public extension URL {
     /// # 基础用法
     /// ```swift
     /// // 创建基础视图
-    /// let heroView = url.makeHeroView()
+    /// let avatarView = url.makeAvatarView()
     /// 
     /// // 自定义形状
-    /// let customView = url.makeHeroView()
+    /// let customView = url.makeAvatarView()
     ///     .magicShape(.roundedRectangle(cornerRadius: 8))
     /// ```
     /// 
     /// # 下载进度
     /// ```swift
     /// // 自动监听 iCloud 文件
-    /// let cloudView = url.makeHeroView()
+    /// let cloudView = url.makeAvatarView()
     /// 
     /// // 手动控制进度
     /// @State var progress: Double = 0
-    /// let progressView = url.makeHeroView()
+    /// let progressView = url.makeAvatarView()
     ///     .magicDownloadProgress($progress)
     /// ```
     /// 
@@ -37,13 +37,13 @@ public extension URL {
     /// - 文件访问错误
     /// - 下载失败
     /// 
-    /// - Returns: 配置好的主角视图
-    func makeHeroView() -> HeroView {
-        HeroView(url: self)
+    /// - Returns: 配置好的头像视图
+    func makeAvatarView() -> AvatarView {
+        AvatarView(url: self)
     }
 }
 
 // MARK: - Preview
-#Preview("主角视图") {
-    HeroViewPreviewContainer()
+#Preview("头像视图") {
+    AvatarViewPreviewContainer()
 }
