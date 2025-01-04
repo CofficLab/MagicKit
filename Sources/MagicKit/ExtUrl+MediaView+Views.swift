@@ -94,6 +94,8 @@ public struct MediaFileView: View {
     var style: MediaViewStyle = .none
     var showActions: Bool = true
     var shape: AvatarViewShape = .circle
+    var avatarShape: AvatarViewShape = .circle
+    var avatarBackgroundColor: Color = .blue.opacity(0.1)
     var verticalPadding: CGFloat = 12
     var monitorDownload: Bool = true
     var folderContentVisible: Bool = false
@@ -125,7 +127,8 @@ public struct MediaFileView: View {
             HStack(alignment: .center, spacing: 12) {
                 // 左侧缩略图
                 url.makeAvatarView()
-                    .magicAvatarShape(shape)
+                    .magicAvatarShape(avatarShape)
+                    .magicBackground(avatarBackgroundColor)
                 
                 // 右侧文件信息
                 VStack(alignment: .leading, spacing: 4) {

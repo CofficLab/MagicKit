@@ -142,6 +142,72 @@ public extension MediaFileView {
         view.folderContentVisible = true
         return view
     }
+    
+    /// 设置内部头像视图的形状
+    /// 
+    /// 这个修改器允许你设置 MediaView 中头像部分的形状，而不影响整个视图的形状。
+    /// 
+    /// 示例：
+    /// ```swift
+    /// // 设置头像为圆形
+    /// url.makeMediaView()
+    ///     .magicAvatarShape(.circle)
+    /// 
+    /// // 设置头像为圆角矩形
+    /// url.makeMediaView()
+    ///     .magicAvatarShape(.roundedRectangle(cornerRadius: 8))
+    /// ```
+    /// 
+    /// - Parameter shape: 要应用的头像形状
+    /// - Returns: 配置了头像形状的视图
+    func magicAvatarShape(_ shape: AvatarViewShape) -> MediaFileView {
+        var view = self
+        view.avatarShape = shape
+        return view
+    }
+    
+    /// 设置内部头像为圆形
+    /// - Returns: 头像为圆形的视图
+    func magicCircleAvatar() -> MediaFileView {
+        magicAvatarShape(.circle)
+    }
+    
+    /// 设置内部头像为圆角矩形
+    /// - Parameter cornerRadius: 圆角半径
+    /// - Returns: 头像为圆角矩形的视图
+    func magicRoundedAvatar(_ cornerRadius: CGFloat = 8) -> MediaFileView {
+        magicAvatarShape(.roundedRectangle(cornerRadius: cornerRadius))
+    }
+    
+    /// 设置内部头像为矩形
+    /// - Returns: 头像为矩形的视图
+    func magicRectangleAvatar() -> MediaFileView {
+        magicAvatarShape(.rectangle)
+    }
+    
+    /// 设置内部头像的背景色
+    /// 
+    /// 这个修改器允许你设置 MediaView 中头像部分的背景色，而不影响整个视图的背景。
+    /// 
+    /// 示例：
+    /// ```swift
+    /// // 设置头像背景为红色
+    /// url.makeMediaView()
+    ///     .magicAvatarBackground(.red.opacity(0.1))
+    /// 
+    /// // 组合使用形状和背景色
+    /// url.makeMediaView()
+    ///     .magicCircleAvatar()
+    ///     .magicAvatarBackground(.blue.opacity(0.1))
+    /// ```
+    /// 
+    /// - Parameter color: 要应用的背景色
+    /// - Returns: 配置了头像背景色的视图
+    func magicAvatarBackground(_ color: Color) -> MediaFileView {
+        var view = self
+        view.avatarBackgroundColor = color
+        return view
+    }
 }
 
 #Preview("Media View") {

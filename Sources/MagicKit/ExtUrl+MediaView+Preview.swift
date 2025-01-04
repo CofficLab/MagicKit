@@ -10,11 +10,17 @@ struct MediaViewPreviewContainer: View {
                 .tabItem {
                     Label("文件夹", systemImage: "folder.fill")
                 }
-
+            
             // 形状预览
             ShapesPreview()
                 .tabItem {
                     Label("形状", systemImage: "square.on.circle")
+                }
+            
+            // 头像形状预览
+            AvatarShapesPreview()
+                .tabItem {
+                    Label("头像", systemImage: "person.crop.circle")
                 }
             
             // 远程文件预览
@@ -28,6 +34,7 @@ struct MediaViewPreviewContainer: View {
                 .tabItem {
                     Label("本地文件", systemImage: "folder")
                 }
+            
             // 内边距预览
             PaddingPreview()
                 .tabItem {
@@ -36,6 +43,61 @@ struct MediaViewPreviewContainer: View {
         }
         .frame(width: 500, height: 600)
         .background(MagicBackground.deepOceanCurrent.opacity(0.1))
+    }
+}
+
+// MARK: - Avatar Shapes Preview
+private struct AvatarShapesPreview: View {
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 20) {
+                Group {
+                    // 圆形头像（默认）
+                    Text("圆形头像 + 红色背景")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    URL.sample_web_jpg_earth.makeMediaView()
+                        .magicBackground(MagicBackground.mint.opacity(0.2))
+                        .magicCircleAvatar()
+                        .magicAvatarBackground(.red.opacity(0.1))
+                }
+                
+                Group {
+                    // 圆角矩形头像
+                    Text("圆角矩形头像(圆角8) + 绿色背景")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    URL.sample_web_jpg_earth.makeMediaView()
+                        .magicBackground(MagicBackground.aurora.opacity(0.2))
+                        .magicRoundedAvatar(8)
+                        .magicAvatarBackground(.green.opacity(0.1))
+                }
+                
+                Group {
+                    // 矩形头像
+                    Text("矩形头像 + 紫色背景")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    URL.sample_web_jpg_earth.makeMediaView()
+                        .magicBackground(MagicBackground.sunset.opacity(0.2))
+                        .magicRectangleAvatar()
+                        .magicAvatarBackground(.purple.opacity(0.1))
+                }
+                
+                Group {
+                    // 混合形状示例
+                    Text("混合形状示例: 整体圆角矩形(16) + 圆形头像 + 黄色背景")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    URL.sample_web_jpg_earth.makeMediaView()
+                        .magicBackground(MagicBackground.ocean.opacity(0.2))
+                        .magicShape(.roundedRectangle(cornerRadius: 16))  // 整体形状
+                        .magicAvatarShape(.circle)  // 头像形状
+                        .magicAvatarBackground(.yellow.opacity(0.1))  // 头像背景色
+                }
+            }
+            .padding()
+        }
     }
 }
 
