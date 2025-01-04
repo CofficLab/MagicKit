@@ -306,6 +306,11 @@ public struct AvatarView: View {
 
         let finishedCancellable = url.onDownloadFinished {
             Task {
+                // 重置进度
+                autoDownloadProgress = 0
+                // 清除当前缩略图，以便重新生成
+                thumbnail = nil
+                // 重新加载缩略图
                 await loadThumbnail()
             }
         }
