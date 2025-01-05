@@ -1,5 +1,7 @@
 import Foundation
 import SwiftUI
+import MagicUI
+import MagicKit
 
 // MARK: - Empty Playlist View
 public struct EmptyPlaylistView: View {

@@ -75,7 +75,7 @@ private struct OpenButtonView: View {
     }
     
     private var iconName: String {
-        isWebLink ? "safari" : "folder"
+        isWebLink ? .iconSafari : .iconShowInFinder
     }
     
     private var buttonLabel: String {

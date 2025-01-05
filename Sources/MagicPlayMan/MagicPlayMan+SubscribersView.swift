@@ -1,5 +1,6 @@
 import SwiftUI
 import MagicUI
+import MagicKit
 
 public extension MagicPlayMan {
     /// 订阅者列表视图
@@ -14,8 +15,8 @@ public extension MagicPlayMan {
                 if subscribers.isEmpty {
                     ContentUnavailableView(
                         "No Subscribers",
-                        systemImage: "person.2.slash",
-                        description: Text("No one is listening to events")
+                        systemImage: .iconPersonGroupSlash,
+                        description: Text("No subscribers are currently registered.")
                     )
                 } else {
                     subscribersList

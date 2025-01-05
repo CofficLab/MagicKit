@@ -14,29 +14,29 @@ struct CopyViewPreviewContainer: View {
             // 基础样式预览
             BasicStylesPreview()
                 .tabItem {
-                    Label("基础样式", systemImage: "paintbrush")
+                    Label("基础样式", systemImage: .iconPaintbrush)
                 }
             
             // 形状预览
             ShapesPreview()
                 .tabItem {
-                    Label("形状", systemImage: "square.on.circle")
+                    Label("形状", systemImage: .iconSquareOnCircle)
                 }
             
             // 下载预览
             DownloadPreview()
                 .tabItem {
-                    Label("下载", systemImage: "icloud.and.arrow.down")
+                    Label("下载", systemImage: .iconICloudDownloadAlt)
                 }
             
             // 错误处理预览
             ErrorHandlingPreview()
                 .tabItem {
-                    Label("错误处理", systemImage: "exclamationmark.triangle")
+                    Label("错误处理", systemImage: .iconWarning)
                 }
         }
         .frame(width: 500, height: 600)
-        .background(MagicBackground.mysticalForest)
+        .background(MagicBackground.deepOceanCurrent.opacity(0.1))
     }
 }
 

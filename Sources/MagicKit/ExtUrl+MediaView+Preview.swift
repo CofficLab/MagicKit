@@ -16,7 +16,7 @@ private struct PreviewContainer<Content: View>: View {
                         Button(action: {
                             showBorder.toggle()
                         }) {
-                            Label(showBorder ? "隐藏边框" : "显示边框", systemImage: showBorder ? "square.dashed" : "square")
+                            Label(showBorder ? "隐藏边框" : "显示边框", systemImage: showBorder ? .iconSquareDashed : .iconSquare)
                         }
                     }
                 }
@@ -32,7 +32,7 @@ struct MediaViewPreviewContainer: View {
                 FoldersContent(showBorder: showBorder)
             }
             .tabItem {
-                Label("文件夹", systemImage: "folder.fill")
+                Label("文件夹", systemImage: .iconFolderFill)
             }
             
             // 形状预览
@@ -40,7 +40,7 @@ struct MediaViewPreviewContainer: View {
                 ShapesContent(showBorder: showBorder)
             }
             .tabItem {
-                Label("形状", systemImage: "square.on.circle")
+                Label("形状", systemImage: .iconSquareOnCircle)
             }
             
             // 头像形状预览
@@ -48,7 +48,7 @@ struct MediaViewPreviewContainer: View {
                 AvatarShapesContent(showBorder: showBorder)
             }
             .tabItem {
-                Label("头像", systemImage: "person.crop.circle")
+                Label("头像", systemImage: .iconPersonCropCircle)
             }
             
             // 远程文件预览
@@ -56,7 +56,7 @@ struct MediaViewPreviewContainer: View {
                 RemoteFilesContent(showBorder: showBorder)
             }
             .tabItem {
-                Label("远程", systemImage: "globe")
+                Label("远程", systemImage: .iconGlobe)
             }
             
             // 本地文件预览
@@ -64,7 +64,7 @@ struct MediaViewPreviewContainer: View {
                 LocalFilesContent(showBorder: showBorder)
             }
             .tabItem {
-                Label("本地", systemImage: "folder")
+                Label("本地", systemImage: .iconFolder)
             }
             
             // 内边距预览
@@ -72,7 +72,7 @@ struct MediaViewPreviewContainer: View {
                 PaddingContent(showBorder: showBorder)
             }
             .tabItem {
-                Label("边距", systemImage: "ruler")
+                Label("边距", systemImage: .iconRuler)
             }
         }
         .frame(width: 500, height: 600)

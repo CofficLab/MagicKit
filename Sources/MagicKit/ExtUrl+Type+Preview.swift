@@ -8,25 +8,25 @@ struct FileTypePreviewContainer: View {
             // 媒体文件预览
             MediaFilesPreview()
                 .tabItem {
-                    Label("媒体", systemImage: "play.circle")
+                    Label("媒体", systemImage: .iconPlay)
                 }
             
             // 文档文件预览
             DocumentFilesPreview()
                 .tabItem {
-                    Label("文档", systemImage: "doc")
+                    Label("文档", systemImage: .iconDocument)
                 }
             
             // 开发文件预览
             DeveloperFilesPreview()
                 .tabItem {
-                    Label("开发", systemImage: "chevron.left.forwardslash.chevron.right")
+                    Label("开发", systemImage: .iconCode)
                 }
             
             // 其他文件预览
             OtherFilesPreview()
                 .tabItem {
-                    Label("其他", systemImage: "ellipsis")
+                    Label("其他", systemImage: .iconMore)
                 }
         }
         .frame(width: 500, height: 600)

@@ -89,7 +89,7 @@ public struct AvatarDemoView: View {
                 .frame(maxWidth: .infinity)
             }
             .tabItem {
-                Label("基础样式", systemImage: "paintpalette")
+                Label("基础样式", systemImage: .iconPaintpalette)
             }
             
             // 文件类型
@@ -127,7 +127,7 @@ public struct AvatarDemoView: View {
                 .frame(maxWidth: .infinity)
             }
             .tabItem {
-                Label("文件类型", systemImage: "doc")
+                Label("文件类型", systemImage: .iconDocument)
             }
             
             // 下载状态
@@ -225,7 +225,7 @@ public struct AvatarDemoView: View {
                 .frame(maxWidth: .infinity)
             }
             .tabItem {
-                Label("下载状态", systemImage: "arrow.down.circle")
+                Label("下载状态", systemImage: .iconDownload)
             }
             
             // 错误状态
@@ -256,7 +256,7 @@ public struct AvatarDemoView: View {
                 .frame(maxWidth: .infinity)
             }
             .tabItem {
-                Label("错误状态", systemImage: "exclamationmark.triangle")
+                Label("错误状态", systemImage: .iconWarning)
             }
         }
         .frame(width: 600, height: 800)
