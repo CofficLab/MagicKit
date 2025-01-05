@@ -1,7 +1,7 @@
 import SwiftUI
 
 #if DEBUG
-// MARK: - Basic Buttons Preview
+// MARK: - Basic Preview
 private struct BasicButtonsPreview: View {
     var body: some View {
         VStack(spacing: 20) {
@@ -23,8 +23,8 @@ private struct BasicButtonsPreview: View {
     }
 }
 
-// MARK: - Size Variations Preview
-private struct SizeVariationsPreview: View {
+// MARK: - Size Preview
+private struct SizeButtonsPreview: View {
     var body: some View {
         VStack(spacing: 20) {
             Text("尺寸变体")
@@ -55,8 +55,8 @@ private struct SizeVariationsPreview: View {
     }
 }
 
-// MARK: - Shape Variations Preview
-private struct ShapeVariationsPreview: View {
+// MARK: - Shape Preview
+private struct ShapeButtonsPreview: View {
     var body: some View {
         VStack(spacing: 20) {
             Text("形状变体")
@@ -85,13 +85,99 @@ private struct ShapeVariationsPreview: View {
                         .magicShape(.capsule)
                 }
             }
+            
+            Group {
+                Text("矩形").font(.subheadline)
+                HStack {
+                    MagicButton(icon: "star", action: {})
+                        .magicShape(.rectangle)
+                    
+                    MagicButton(icon: "star", action: {})
+                        .magicTitle("Rectangle")
+                        .magicShape(.rectangle)
+                }
+            }
+            
+            Group {
+                Text("圆角矩形").font(.subheadline)
+                HStack {
+                    MagicButton(icon: "star", action: {})
+                        .magicShape(.roundedRectangle)
+                    
+                    MagicButton(icon: "star", action: {})
+                        .magicTitle("Rounded Rectangle")
+                        .magicShape(.roundedRectangle)
+                }
+            }
         }
         .padding()
     }
 }
 
-// MARK: - Interactive Features Preview
-private struct InteractiveFeaturesPreview: View {
+// MARK: - Custom Shape Preview
+private struct CustomShapeButtonsPreview: View {
+    var body: some View {
+        VStack(spacing: 20) {
+            Text("自定义形状")
+                .font(.headline)
+            
+            Group {
+                Text("自定义圆角矩形").font(.subheadline)
+                VStack(spacing: 12) {
+                    MagicButton(icon: "star", action: {})
+                        .magicTitle("仅上圆角")
+                        .magicShape(.customRoundedRectangle(
+                            topLeft: 16,
+                            topRight: 16,
+                            bottomLeft: 0,
+                            bottomRight: 0
+                        ))
+                    
+                    MagicButton(icon: "star", action: {})
+                        .magicTitle("仅右圆角")
+                        .magicShape(.customRoundedRectangle(
+                            topLeft: 0,
+                            topRight: 16,
+                            bottomLeft: 0,
+                            bottomRight: 16
+                        ))
+                    
+                    MagicButton(icon: "star", action: {})
+                        .magicTitle("不同圆角")
+                        .magicShape(.customRoundedRectangle(
+                            topLeft: 8,
+                            topRight: 16,
+                            bottomLeft: 16,
+                            bottomRight: 8
+                        ))
+                }
+            }
+            
+            Group {
+                Text("自定义胶囊形").font(.subheadline)
+                VStack(spacing: 12) {
+                    MagicButton(icon: "star", action: {})
+                        .magicTitle("左大右小")
+                        .magicShape(.customCapsule(
+                            leftRadius: 24,
+                            rightRadius: 8
+                        ))
+                    
+                    MagicButton(icon: "star", action: {})
+                        .magicTitle("左小右大")
+                        .magicShape(.customCapsule(
+                            leftRadius: 8,
+                            rightRadius: 24
+                        ))
+                }
+            }
+        }
+        .padding()
+    }
+}
+
+// MARK: - Interactive Preview
+private struct InteractiveButtonsPreview: View {
     var body: some View {
         VStack(spacing: 20) {
             Text("交互特性")
@@ -125,52 +211,10 @@ private struct InteractiveFeaturesPreview: View {
     }
 }
 
-// MARK: - Theme Preview
-private struct ThemePreview: View {
-    @Environment(\.colorScheme) private var colorScheme
-    
-    var body: some View {
-        VStack(spacing: 20) {
-            Text("主题适配")
-                .font(.headline)
-            
-            Group {
-                Text("主要样式").font(.subheadline)
-                HStack {
-                    MagicButton(icon: "star", action: {})
-                        .magicTitle("Primary")
-                        .magicStyle(.primary)
-                    
-                    MagicButton(icon: "star", action: {})
-                        .magicStyle(.primary)
-                }
-            }
-            
-            Group {
-                Text("次要样式").font(.subheadline)
-                HStack {
-                    MagicButton(icon: "star", action: {})
-                        .magicTitle("Secondary")
-                        .magicStyle(.secondary)
-                    
-                    MagicButton(icon: "star", action: {})
-                        .magicStyle(.secondary)
-                }
-            }
-            
-            Text("当前主题：\(colorScheme == .dark ? "深色" : "浅色")")
-                .font(.caption)
-        }
-        .padding()
-    }
-}
-
 // MARK: - Main Preview
 struct MagicButtonPreview: View {
-    @State private var selectedTab = 0
-    
     var body: some View {
-        TabView(selection: $selectedTab) {
+        TabView {
             MagicThemePreview {
                 BasicButtonsPreview()
             }
@@ -178,45 +222,40 @@ struct MagicButtonPreview: View {
                 Image(systemName: "1.circle.fill")
                 Text("基础")
             }
-            .tag(0)
             
             MagicThemePreview {
-                SizeVariationsPreview()
+                SizeButtonsPreview()
             }
             .tabItem {
                 Image(systemName: "2.circle.fill")
                 Text("尺寸")
             }
-            .tag(1)
             
             MagicThemePreview {
-                ShapeVariationsPreview()
+                ShapeButtonsPreview()
             }
+            .frame(maxHeight: .infinity)
             .tabItem {
                 Image(systemName: "3.circle.fill")
                 Text("形状")
             }
-            .tag(2)
             
             MagicThemePreview {
-                InteractiveFeaturesPreview()
+                CustomShapeButtonsPreview()
             }
             .tabItem {
                 Image(systemName: "4.circle.fill")
-                Text("交互")
+                Text("自定义")
             }
-            .tag(3)
             
             MagicThemePreview {
-                ThemePreview()
+                InteractiveButtonsPreview()
             }
             .tabItem {
                 Image(systemName: "5.circle.fill")
-                Text("主题")
+                Text("交互")
             }
-            .tag(4)
         }
-        .frame(height: 500)
     }
 }
 

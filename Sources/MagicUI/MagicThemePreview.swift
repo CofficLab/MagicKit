@@ -4,32 +4,42 @@ import SwiftUI
 public struct MagicThemePreview<Content: View>: View {
     private let content: Content
     private let spacing: CGFloat
+    private let showsIndicators: Bool
     
     /// 创建主题预览容器
     /// - Parameters:
     ///   - spacing: 亮暗主题之间的间距，默认为 0
+    ///   - showsIndicators: 是否显示滚动条，默认为 true
     ///   - content: 要预览的内容视图
     public init(
         spacing: CGFloat = 0,
+        showsIndicators: Bool = true,
         @ViewBuilder content: () -> Content
     ) {
         self.content = content()
         self.spacing = spacing
+        self.showsIndicators = showsIndicators
     }
     
     public var body: some View {
         HStack(spacing: spacing) {
             // 亮色主题
-            content
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color(nsColor: .windowBackgroundColor))
-                .environment(\.colorScheme, .light)
+            ScrollView(.vertical, showsIndicators: showsIndicators) {
+                content
+                    .frame(maxWidth: .infinity)
+                    .background(Color(nsColor: .windowBackgroundColor))
+                    .environment(\.colorScheme, .light)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             
             // 暗色主题
-            content
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color(nsColor: .darkGray))
-                .environment(\.colorScheme, .dark)
+            ScrollView(.vertical, showsIndicators: showsIndicators) {
+                content
+                    .frame(maxWidth: .infinity)
+                    .background(Color(nsColor: .darkGray))
+                    .environment(\.colorScheme, .dark)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }
 }
@@ -77,6 +87,36 @@ public struct MagicThemePreview<Content: View>: View {
             .padding()
         }
         .frame(height: 200)
+        
+        // 示例 4：长内容滚动
+        MagicThemePreview {
+            VStack(spacing: 16) {
+                ForEach(1...10, id: \.self) { index in
+                    HStack {
+                        Circle()
+                            .fill(.blue.opacity(0.2))
+                            .frame(width: 40, height: 40)
+                            .overlay {
+                                Text("\(index)")
+                                    .foregroundStyle(.blue)
+                            }
+                        
+                        VStack(alignment: .leading) {
+                            Text("Item \(index)")
+                                .font(.headline)
+                            Text("This is a long description for item \(index) to demonstrate scrolling behavior")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .padding()
+                    .background(.ultraThinMaterial)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                }
+            }
+            .padding()
+        }
+        .frame(height: 300)
     }
     .padding()
 } 
