@@ -16,15 +16,21 @@ extension URL {
         scheme == "http" || scheme == "https"
     }
     
-    /// 获取文件的缩略图 CGImage
-    /// - Parameter size: 缩略图的目标大小
-    /// - Returns: 生成的 CGImage 缩略图
-    public func thumbnailCGImage(
+    /// 获取文件的缩略图
+    /// - Parameters:
+    ///   - size: 缩略图的目标大小
+    /// - Returns: 生成的缩略图，如果无法生成则返回 nil
+    public func thumbnail(
         size: CGSize = CGSize(width: 120, height: 120)
-    ) async throws -> CGImage? {
-        // 如果是网络 URL 或系统图标，返回系统图标
-        if isNetworkURL || isiCloud && isNotDownloaded {
-            return try await systemIconCGImage(name: icon)
+    ) async throws -> Image? {
+        // 如果是网络 URL，根据文件类型返回对应图标
+        if isNetworkURL {
+            return Image(systemName: icon)
+        }
+        
+        // 如果是 iCloud 文件且未下载，返回下载图标
+        if isiCloud && isNotDownloaded {
+            return Image(systemName: "arrow.down.circle.dotted")
         }
         
         // 检查文件是否存在
@@ -33,126 +39,113 @@ extension URL {
         }
         
         if hasDirectoryPath {
-            return try await systemIconCGImage(name: "folder.fill")
+            return try await folderThumbnail(size: size)
         }
         
         if isImage {
-            return try await imageCGImage()
-        }
-        
-        if isVideo {
-            return try await videoCGImage(size: size)
+            return try await imageThumbnail(size: size)
         }
         
         if isAudio {
-            return try await audioCGImage(size: size)
+            return try await audioThumbnail(size: size)
         }
         
-        // 默认文档图标
-        return try await systemIconCGImage(name: icon)
-    }
-    
-    /// 获取文件的缩略图
-    /// - Parameter size: 缩略图的目标大小
-    /// - Returns: SwiftUI Image
-    public func thumbnail(
-        size: CGSize = CGSize(width: 120, height: 120)
-    ) async throws -> Image? {
-        if let cgImage = try await thumbnailCGImage(size: size) {
-            #if os(macOS)
-            return Image(nsImage: NSImage(cgImage: cgImage, size: size))
-            #else
-            return Image(uiImage: UIImage(cgImage: cgImage))
-            #endif
+        if isVideo {
+            return try await videoThumbnail(size: size)
         }
-        return nil
-    }
-    
-    /// 获取文件的缩略图
-    /// - Parameter size: 缩略图的目标大小
-    /// - Returns: 平台特定的图片类型 (NSImage/UIImage)
-    public func thumbnailPlatformImage(
-        size: CGSize = CGSize(width: 120, height: 120)
-    ) async throws -> PlatformImage? {
-        if let cgImage = try await thumbnailCGImage(size: size) {
-            #if os(macOS)
-            return NSImage(cgImage: cgImage, size: size)
-            #else
-            return UIImage(cgImage: cgImage)
-            #endif
-        }
-        return nil
+        
+        // 如果无法识别类型，返回默认文档图标
+        return Image(systemName: icon)
     }
     
     // MARK: - Private Methods
     
-    private func systemIconCGImage(name: String) async throws -> CGImage? {
+    private func folderThumbnail(size: CGSize) async throws -> Image? {
         #if os(macOS)
-        return NSImage(systemSymbolName: name, accessibilityDescription: nil)?
-            .cgImage(forProposedRect: nil, context: nil, hints: nil)
+        if let folderIcon = NSImage(systemSymbolName: "folder.fill", accessibilityDescription: nil) {
+            let resizedIcon = folderIcon.resize(to: size)
+            return Image(nsImage: resizedIcon)
+        }
+        return Image(systemName: "folder")
         #else
-        return UIImage(systemName: name)?
-            .withTintColor(.systemBlue)
-            .cgImage
+        if let folderIcon = UIImage(systemName: "folder.fill")?.withTintColor(.systemBlue) {
+            let resizedIcon = folderIcon.resize(to: size)
+            return Image(uiImage: resizedIcon)
+        }
+        return Image(systemName: "folder")
         #endif
     }
     
-    private func imageCGImage() async throws -> CGImage? {
+    private func imageThumbnail(size: CGSize) async throws -> Image? {
         #if os(macOS)
         guard let image = NSImage(contentsOf: self) else {
             throw URLError(.cannotDecodeContentData)
         }
-        return image.cgImage(forProposedRect: nil, context: nil, hints: nil)
+        let resizedImage = image.resize(to: size)
+        return Image(nsImage: resizedImage)
         #else
         guard let image = UIImage(contentsOf: self) else {
             throw URLError(.cannotDecodeContentData)
         }
-        return image.cgImage
+        let resizedImage = image.resize(to: size)
+        return Image(uiImage: resizedImage)
         #endif
     }
     
-    private func videoCGImage(size: CGSize) async throws -> CGImage? {
+    private func videoThumbnail(size: CGSize) async throws -> Image? {
         let asset = AVAsset(url: self)
         let imageGenerator = AVAssetImageGenerator(asset: asset)
         imageGenerator.appliesPreferredTrackTransform = true
         imageGenerator.maximumSize = size
         
         do {
-            return try await imageGenerator.image(at: .zero).image
+            let cgImage = try await imageGenerator.image(at: .zero).image
+            #if os(macOS)
+            let image = NSImage(cgImage: cgImage, size: size)
+            return Image(nsImage: image)
+            #else
+            let image = UIImage(cgImage: cgImage)
+            return Image(uiImage: image)
+            #endif
         } catch {
             os_log(.error, "\(self.lastPathComponent) 生成视频缩略图失败: \(error.localizedDescription)")
             throw error
         }
     }
     
-    private func audioCGImage(size: CGSize) async throws -> CGImage? {
+    private func audioThumbnail(size: CGSize) async throws -> Image? {
         let asset = AVAsset(url: self)
         do {
             let metadata = try await asset.load(.metadata)
             
             // 尝试从元数据中获取封面图片
             for item in metadata {
-                // 检查常见的音频封面标签
-                if let identifier = item.identifier {
-                    let keyString = identifier.rawValue
-                    if identifier == .commonIdentifierArtwork || // 通用封面标识符
-                       keyString == "APIC" || // ID3 picture tag
-                       keyString == "covr" || // iTunes cover art
-                       keyString == "©ART" { // Another common artwork key
-                        if let imageData = try await item.load(.dataValue),
-                           let source = CGImageSourceCreateWithData(imageData as CFData, nil),
-                           let cgImage = CGImageSourceCreateImageAtIndex(source, 0, nil) {
-                            return cgImage
+                let keyString = item.key as? String
+                if item.identifier == AVMetadataIdentifier.commonIdentifierArtwork ||
+                    keyString == "APIC" || // ID3 picture tag
+                    keyString == "covr" || // iTunes cover art
+                    keyString == "©ART" { // Another common artwork key
+                    if let data = try await item.load(.dataValue) {
+                        #if os(macOS)
+                        if let image = NSImage(data: data) {
+                            let resizedImage = image.resize(to: size)
+                            return Image(nsImage: resizedImage)
                         }
+                        #else
+                        if let image = UIImage(data: data) {
+                            let resizedImage = image.resize(to: size)
+                            return Image(uiImage: resizedImage)
+                        }
+                        #endif
                     }
                 }
             }
             
             // 如果没有找到封面图，返回默认音乐图标
-            return try await systemIconCGImage(name: "music.note")
+            return defaultAudioThumbnail(size: size)
         } catch {
             os_log(.error, "读取音频元数据失败: \(error.localizedDescription)")
-            return try await systemIconCGImage(name: "music.note")
+            return defaultAudioThumbnail(size: size)
         }
     }
 }
