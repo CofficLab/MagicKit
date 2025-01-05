@@ -23,21 +23,6 @@ public class PlayLogger: ObservableObject, SuperLog {
     ) {
         let log = PlaybackLog(message: message, level: level)
         
-        // 使用 OSLog API 记录日志，使用调用者的文件名和行号
-        #if DEBUG
-        os_log(
-            level.osLogType,
-            dso: #dsohandle,
-            log: .default,
-            "%{public}@:%d %{public}@",
-            (file as NSString).lastPathComponent,
-            line,
-            message
-        )
-        #else
-        os_log(level.osLogType, "%{public}@", message)
-        #endif
-        
         DispatchQueue.main.async {
             self.logs.append(log)
             if self.logs.count > self.maxLogs {

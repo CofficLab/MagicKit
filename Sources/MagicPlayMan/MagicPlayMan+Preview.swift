@@ -118,14 +118,7 @@ public extension MagicPlayMan {
                 playMan.makePlaylistToggleButton()
                 playMan.makeSubscribersButton()
                 playMan.makeSupportedFormatsButton()
-                
-                MagicButton(
-                    icon: "apple.terminal",
-                    style: .secondary,
-                    size: .regular,
-                    shape: .circle,
-                    action: { showLogs.toggle() }
-                )
+                playMan.makeLogButton()
             }
         }
         
