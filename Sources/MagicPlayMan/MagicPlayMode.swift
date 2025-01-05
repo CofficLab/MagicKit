@@ -1,5 +1,6 @@
 import SwiftUI
 import MagicUI
+import MagicKit
 
 public enum MagicPlayMode: String, CaseIterable {
     case sequence
@@ -32,10 +33,10 @@ public enum MagicPlayMode: String, CaseIterable {
     /// 播放模式的图标名称
     public var iconName: String {
         switch self {
-        case .sequence: return "arrow.right"
-        case .loop: return "repeat.1"
-        case .shuffle: return "shuffle"
-        case .repeatAll: return "repeat"
+        case .sequence: return .iconMusicNoteList
+        case .loop: return .iconRepeat1
+        case .shuffle: return .iconShuffle
+        case .repeatAll: return .iconRepeatAll
         }
     }
     

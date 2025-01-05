@@ -1,11 +1,12 @@
 import MagicUI
 import SwiftUI
+import MagicKit
 
 public extension MagicPlayMan {
     /// 创建播放/暂停按钮
     func makePlayPauseButton() -> some View {
         MagicButton(
-            icon: state == .playing ? "pause.fill" : "play.fill",
+            icon: state == .playing ? .iconPauseFill : .iconPlayFill,
             style: state == .playing ? .primary : .secondary,
             size: .large,
             shape: .circle,
@@ -36,7 +37,7 @@ public extension MagicPlayMan {
         }
         
         return MagicButton(
-            icon: "backward.end.fill",
+            icon: .iconBackwardEndFill,
             style: .secondary,
             size: .regular,
             shape: .circle,
@@ -67,7 +68,7 @@ public extension MagicPlayMan {
         }
         
         return MagicButton(
-            icon: "forward.end.fill",
+            icon: .iconForwardEndFill,
             style: .secondary,
             size: .regular,
             shape: .circle,
@@ -79,7 +80,7 @@ public extension MagicPlayMan {
     /// 创建快退按钮
     func makeRewindButton() -> some View {
         MagicButton(
-            icon: "gobackward.10",
+            icon: .iconGobackward10,
             style: .secondary,
             size: .regular,
             shape: .circle,
@@ -94,7 +95,7 @@ public extension MagicPlayMan {
     /// 创建快进按钮
     func makeForwardButton() -> some View {
         MagicButton(
-            icon: "goforward.10",
+            icon: .iconGoforward10,
             style: .secondary,
             size: .regular,
             shape: .circle,
@@ -120,7 +121,7 @@ public extension MagicPlayMan {
     /// 创建播放列表按钮
     func makePlaylistButton() -> some View {
         MagicButton(
-            icon: "list.bullet",
+            icon: .iconList,
             style: .secondary,
             size: .regular,
             shape: .circle,
@@ -145,7 +146,7 @@ public extension MagicPlayMan {
     ///             订阅者可以通过这些事件来响应状态变化
     func makePlaylistToggleButton() -> some View {
         MagicButton(
-            icon: self.isPlaylistEnabled ? "list.bullet.circle.fill" : "list.bullet.circle",
+            icon: self.isPlaylistEnabled ? .iconListCircleFill : .iconListCircle,
             style: self.isPlaylistEnabled ? .primary : .secondary,
             size: .regular,
             shape: .circle,
@@ -159,7 +160,7 @@ public extension MagicPlayMan {
     /// 创建订阅者列表按钮
     func makeSubscribersButton() -> some View {
         MagicButton(
-            icon: "person.2.circle",
+            icon: .iconPersonGroup,
             style: .secondary,
             size: .regular,
             shape: .circle,
@@ -175,7 +176,7 @@ public extension MagicPlayMan {
     /// 创建支持的格式按钮
     func makeSupportedFormatsButton() -> some View {
         MagicButton(
-            icon: "music.note",
+            icon: .iconMusicNote,
             style: .secondary,
             size: .regular,
             shape: .circle,
@@ -193,7 +194,7 @@ public extension MagicPlayMan {
     /// - Note: 点击按钮会显示一个包含日志内容的弹出窗口
     func makeLogButton() -> some View {
         MagicButton(
-            icon: "terminal",
+            icon: .iconTerminal,
             style: .secondary,
             size: .regular,
             shape: .circle,
