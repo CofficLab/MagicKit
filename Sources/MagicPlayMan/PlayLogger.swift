@@ -17,7 +17,21 @@ public class PlayLogger: ObservableObject, SuperLog {
     /// 添加日志
     public func log(_ message: String, level: PlaybackLog.Level = .info) {
         let log = PlaybackLog(message: message, level: level)
-        os_log("\(self.t) \(message)")
+        
+        // 使用 OSLog API 记录日志，包含文件名和行号
+        #if DEBUG
+        os_log(
+            level.osLogType,
+            dso: #dsohandle,
+            log: .default,
+            "%{public}@:%d %{public}@",
+            (#file as NSString).lastPathComponent,
+            #line,
+            message
+        )
+        #else
+        os_log(level.osLogType, "%{public}@", message)
+        #endif
         
         DispatchQueue.main.async {
             self.logs.append(log)
@@ -90,17 +104,6 @@ public struct PlaybackLog: Identifiable {
 }
 
 // MARK: - Preview
-
-#Preview {
-    let logger = PlayLogger()
-    
-    // 添加一些测试日志
-    logger.log("Started playback", level: .info)
-    logger.log("Network connection slow", level: .warning)
-    logger.log("Failed to load media", level: .error)
-    
-    return logger.makeLogView()
-        .frame(height: 200)
-        .padding()
-        .background(.ultraThinMaterial)
-} 
+#Preview("MagicPlayMan") {
+    MagicPlayMan.PreviewView()
+}
