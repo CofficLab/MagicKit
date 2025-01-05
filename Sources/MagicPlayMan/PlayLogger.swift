@@ -15,18 +15,23 @@ public class PlayLogger: ObservableObject, SuperLog {
     }
     
     /// 添加日志
-    public func log(_ message: String, level: PlaybackLog.Level = .info) {
+    public func log(
+        _ message: String, 
+        level: PlaybackLog.Level = .info,
+        file: String = #file,
+        line: Int = #line
+    ) {
         let log = PlaybackLog(message: message, level: level)
         
-        // 使用 OSLog API 记录日志，包含文件名和行号
+        // 使用 OSLog API 记录日志，使用调用者的文件名和行号
         #if DEBUG
         os_log(
             level.osLogType,
             dso: #dsohandle,
             log: .default,
             "%{public}@:%d %{public}@",
-            (#file as NSString).lastPathComponent,
-            #line,
+            (file as NSString).lastPathComponent,
+            line,
             message
         )
         #else
@@ -35,7 +40,6 @@ public class PlayLogger: ObservableObject, SuperLog {
         
         DispatchQueue.main.async {
             self.logs.append(log)
-            // 保持日志数量在限制范围内
             if self.logs.count > self.maxLogs {
                 self.logs.removeFirst(self.logs.count - self.maxLogs)
             }
