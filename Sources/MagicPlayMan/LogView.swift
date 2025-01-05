@@ -1,21 +1,22 @@
-import SwiftUI
 import MagicUI
+import SwiftUI
 
 struct LogView: View {
     let logs: [PlaybackLog]
     let onClear: () -> Void
     @State private var copiedLogId: UUID?
-    @State private var showCopyAllToast = false
-    
+    @State private var showToast = false
+    @State private var toastMessage = ""
+
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack {
                 Text("Logs")
                     .font(.headline)
                     .foregroundStyle(.secondary)
-                
+
                 Spacer()
-                
+
                 MagicButton(
                     icon: "doc.on.doc",
                     title: "Copy All",
@@ -24,7 +25,7 @@ struct LogView: View {
                     shape: .capsule,
                     action: copyAllLogs
                 )
-                
+
                 MagicButton(
                     icon: "trash",
                     title: "Clear",
@@ -35,8 +36,8 @@ struct LogView: View {
                 )
             }
             .overlay {
-                if showCopyAllToast {
-                    Text("All logs copied!")
+                if showToast {
+                    Text(toastMessage)
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .padding(.horizontal, 8)
@@ -46,60 +47,66 @@ struct LogView: View {
                         .transition(.scale.combined(with: .opacity))
                 }
             }
-            
+
             Table(logs.reversed()) {
-                TableColumn("Level") { log in
-                    Circle()
-                        .fill(logColor(for: log.level))
-                        .frame(width: 8, height: 8)
-                }
-                .width(20)
-                
                 TableColumn("Time") { log in
                     Text(log.timestamp.logTime)
                         .font(.caption.monospaced())
                         .foregroundStyle(.secondary)
                 }
-                .width(70)
-                
+                .width(50)
+
                 TableColumn("Message") { log in
-                    Text(log.message)
-                        .font(.caption)
-                        .foregroundStyle(log.level == .error ? .red : .primary)
+                    HStack {
+                        Circle()
+                            .fill(logColor(for: log.level))
+                            .frame(width: 8, height: 8)
+
+                        Text(log.message)
+                            .font(.caption)
+                            .foregroundStyle(log.level == .error ? .red : .primary)
+                    }
                 }
-                
+
                 TableColumn("") { log in
                     CopyColumn(log: log, copiedLogId: copiedLogId, onCopy: copyLog)
                 }
-                .width(50)
+                .width(30)
             }
         }
     }
-    
+
+    private func showToastMessage(_ message: String) {
+        toastMessage = message
+        withAnimation {
+            showToast = true
+        }
+
+        // 2秒后隐藏提示
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            withAnimation {
+                showToast = false
+            }
+        }
+    }
+
     private func copyAllLogs() {
         logs.map { formatLogEntry($0) }
             .joined(separator: "\n")
             .copy()
-        
-        withAnimation {
-            showCopyAllToast = true
-        }
-        
-        // 2秒后隐藏提示
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            withAnimation {
-                showCopyAllToast = false
-            }
-        }
+
+        showToastMessage("所有日志已复制")
     }
-    
+
     private func copyLog(_ log: PlaybackLog) {
         formatLogEntry(log).copy()
-        
+
         withAnimation {
             copiedLogId = log.id
         }
-        
+
+        showToastMessage("日志已复制")
+
         // 2秒后清除复制状态
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             withAnimation {
@@ -109,11 +116,11 @@ struct LogView: View {
             }
         }
     }
-    
+
     private func formatLogEntry(_ log: PlaybackLog) -> String {
         "\(log.timestamp.logTime) [\(log.level)] \(log.message)"
     }
-    
+
     private func logColor(for level: PlaybackLog.Level) -> Color {
         switch level {
         case .info:
@@ -124,12 +131,12 @@ struct LogView: View {
             return .red
         }
     }
-    
+
     private struct CopyColumn: View {
         let log: PlaybackLog
         let copiedLogId: UUID?
         let onCopy: (PlaybackLog) -> Void
-        
+
         var body: some View {
             HStack {
                 if copiedLogId == log.id {
@@ -138,7 +145,7 @@ struct LogView: View {
                         .font(.caption)
                         .transition(.scale.combined(with: .opacity))
                 }
-                
+
                 Button(action: { onCopy(log) }) {
                     Image(systemName: "doc.on.doc")
                         .foregroundStyle(.secondary)
@@ -153,9 +160,4 @@ struct LogView: View {
 
 #Preview("With Logs") {
     MagicPlayMan.PreviewView(showLogs: true)
-        .frame(width: 650, height: 650)
-        .background(.background)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .shadow(radius: 5)
-        .padding()
 }
