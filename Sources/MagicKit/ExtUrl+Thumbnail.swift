@@ -3,11 +3,14 @@ import SwiftUI
 import AVFoundation
 import OSLog
 import MagicUI
+import AVKit
 
 #if os(macOS)
     import AppKit
+    public typealias PlatformImage = NSImage
 #else
     import UIKit
+    public typealias PlatformImage = UIImage
 #endif
 
 extension URL {
@@ -23,14 +26,39 @@ extension URL {
     public func thumbnail(
         size: CGSize = CGSize(width: 120, height: 120)
     ) async throws -> Image? {
+        if let platformImage = try await platformThumbnail(size: size) {
+            #if os(macOS)
+            return Image(nsImage: platformImage)
+            #else
+            return Image(uiImage: platformImage)
+            #endif
+        }
+        return nil
+    }
+    
+    /// 获取文件的缩略图（原生图片格式）
+    /// - Parameters:
+    ///   - size: 缩略图的目标大小
+    /// - Returns: 生成的缩略图，如果无法生成则返回 nil
+    public func platformThumbnail(
+        size: CGSize = CGSize(width: 120, height: 120)
+    ) async throws -> PlatformImage? {
         // 如果是网络 URL，根据文件类型返回对应图标
         if isNetworkURL {
-            return Image(systemName: icon)
+            #if os(macOS)
+            return NSImage(systemSymbolName: icon, accessibilityDescription: nil)
+            #else
+            return UIImage(systemName: icon)
+            #endif
         }
         
         // 如果是 iCloud 文件且未下载，返回下载图标
         if isiCloud && isNotDownloaded {
-            return Image(systemName: "arrow.down.circle.dotted")
+            #if os(macOS)
+            return NSImage(systemSymbolName: "arrow.down.circle.dotted", accessibilityDescription: nil)
+            #else
+            return UIImage(systemName: "arrow.down.circle.dotted")
+            #endif
         }
         
         // 检查文件是否存在
@@ -39,60 +67,60 @@ extension URL {
         }
         
         if hasDirectoryPath {
-            return try await folderThumbnail(size: size)
+            return try await platformFolderThumbnail(size: size)
         }
         
         if isImage {
-            return try await imageThumbnail(size: size)
+            return try await platformImageThumbnail(size: size)
         }
         
         if isAudio {
-            return try await audioThumbnail(size: size)
+            return try await platformAudioThumbnail(size: size)
         }
         
         if isVideo {
-            return try await videoThumbnail(size: size)
+            return try await platformVideoThumbnail(size: size)
         }
         
         // 如果无法识别类型，返回默认文档图标
-        return Image(systemName: icon)
-    }
-    
-    // MARK: - Private Methods
-    
-    private func folderThumbnail(size: CGSize) async throws -> Image? {
         #if os(macOS)
-        if let folderIcon = NSImage(systemSymbolName: "folder.fill", accessibilityDescription: nil) {
-            let resizedIcon = folderIcon.resize(to: size)
-            return Image(nsImage: resizedIcon)
-        }
-        return Image(systemName: "folder")
+        return NSImage(systemSymbolName: icon, accessibilityDescription: nil)
         #else
-        if let folderIcon = UIImage(systemName: "folder.fill")?.withTintColor(.systemBlue) {
-            let resizedIcon = folderIcon.resize(to: size)
-            return Image(uiImage: resizedIcon)
-        }
-        return Image(systemName: "folder")
+        return UIImage(systemName: icon)
         #endif
     }
     
-    private func imageThumbnail(size: CGSize) async throws -> Image? {
+    // MARK: - Private Platform Image Methods
+    
+    private func platformFolderThumbnail(size: CGSize) async throws -> PlatformImage? {
+        #if os(macOS)
+        if let folderIcon = NSImage(systemSymbolName: "folder.fill", accessibilityDescription: nil) {
+            return folderIcon.resize(to: size)
+        }
+        return NSImage(systemSymbolName: "folder", accessibilityDescription: nil)
+        #else
+        if let folderIcon = UIImage(systemName: "folder.fill")?.withTintColor(.systemBlue) {
+            return folderIcon.resize(to: size)
+        }
+        return UIImage(systemName: "folder")
+        #endif
+    }
+    
+    private func platformImageThumbnail(size: CGSize) async throws -> PlatformImage? {
         #if os(macOS)
         guard let image = NSImage(contentsOf: self) else {
             throw URLError(.cannotDecodeContentData)
         }
-        let resizedImage = image.resize(to: size)
-        return Image(nsImage: resizedImage)
+        return image.resize(to: size)
         #else
         guard let image = UIImage(contentsOf: self) else {
             throw URLError(.cannotDecodeContentData)
         }
-        let resizedImage = image.resize(to: size)
-        return Image(uiImage: resizedImage)
+        return image.resize(to: size)
         #endif
     }
     
-    private func videoThumbnail(size: CGSize) async throws -> Image? {
+    private func platformVideoThumbnail(size: CGSize) async throws -> PlatformImage? {
         let asset = AVAsset(url: self)
         let imageGenerator = AVAssetImageGenerator(asset: asset)
         imageGenerator.appliesPreferredTrackTransform = true
@@ -101,11 +129,9 @@ extension URL {
         do {
             let cgImage = try await imageGenerator.image(at: .zero).image
             #if os(macOS)
-            let image = NSImage(cgImage: cgImage, size: size)
-            return Image(nsImage: image)
+            return NSImage(cgImage: cgImage, size: size)
             #else
-            let image = UIImage(cgImage: cgImage)
-            return Image(uiImage: image)
+            return UIImage(cgImage: cgImage)
             #endif
         } catch {
             os_log(.error, "\(self.lastPathComponent) 生成视频缩略图失败: \(error.localizedDescription)")
@@ -113,40 +139,43 @@ extension URL {
         }
     }
     
-    private func audioThumbnail(size: CGSize) async throws -> Image? {
-        let asset = AVAsset(url: self)
-        do {
-            let metadata = try await asset.load(.metadata)
-            
-            // 尝试从元数据中获取封面图片
-            for item in metadata {
-                let keyString = item.key as? String
-                if item.identifier == AVMetadataIdentifier.commonIdentifierArtwork ||
-                    keyString == "APIC" || // ID3 picture tag
-                    keyString == "covr" || // iTunes cover art
-                    keyString == "©ART" { // Another common artwork key
-                    if let data = try await item.load(.dataValue) {
-                        #if os(macOS)
-                        if let image = NSImage(data: data) {
-                            let resizedImage = image.resize(to: size)
-                            return Image(nsImage: resizedImage)
-                        }
-                        #else
-                        if let image = UIImage(data: data) {
-                            let resizedImage = image.resize(to: size)
-                            return Image(uiImage: resizedImage)
-                        }
-                        #endif
-                    }
-                }
-            }
-            
-            // 如果没有找到封面图，返回默认音乐图标
-            return defaultAudioThumbnail(size: size)
-        } catch {
-            os_log(.error, "读取音频元数据失败: \(error.localizedDescription)")
-            return defaultAudioThumbnail(size: size)
+    private func platformAudioThumbnail(size: CGSize) async throws -> PlatformImage? {
+        // 尝试从音频元数据中获取封面
+        if let coverImage = try await getPlatformCoverFromMetadata() {
+            return coverImage
         }
+        
+        // 如果没有找到封面，返回默认音频图标
+        #if os(macOS)
+        return NSImage(systemSymbolName: "music.note", accessibilityDescription: nil)
+        #else
+        return UIImage(systemName: "music.note")
+        #endif
+    }
+    
+    /// 从音频文件的元数据中获取封面图片（原生图片格式）
+    private func getPlatformCoverFromMetadata() async throws -> PlatformImage? {
+        let asset = AVURLAsset(url: self)
+        let commonMetadata = try await asset.load(.commonMetadata)
+        let artworkItems = AVMetadataItem.metadataItems(
+            from: commonMetadata,
+            withKey: AVMetadataKey.commonKeyArtwork,
+            keySpace: .common
+        )
+        
+        if let artworkItem = artworkItems.first {
+            if let artworkData = try await artworkItem.load(.value) as? Data {
+                #if os(macOS)
+                return NSImage(data: artworkData)
+                #else
+                return UIImage(data: artworkData)
+                #endif
+            } else if let artworkImage = try await artworkItem.load(.value) as? PlatformImage {
+                return artworkImage
+            }
+        }
+        
+        return nil
     }
 }
 

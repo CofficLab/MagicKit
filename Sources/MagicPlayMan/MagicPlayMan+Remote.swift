@@ -134,26 +134,23 @@ extension MagicPlayMan {
         log("Generating thumbnail")
         Task {
             do {
-                let generator = AVAssetImageGenerator(asset: AVAsset(url: asset.url))
-                generator.appliesPreferredTrackTransform = true
-                let time = CMTime(seconds: 0, preferredTimescale: 600)
-                let cgImage = try generator.copyCGImage(at: time, actualTime: nil)
-                
-                #if os(macOS)
-                let platformImage = NSImage(cgImage: cgImage, size: .zero)
-                #else
-                let platformImage = UIImage(cgImage: cgImage)
-                #endif
-                
-                info[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(
-                    boundsSize: platformImage.size,
-                    requestHandler: { _ in platformImage }
-                )
-                
-                DispatchQueue.main.async {
+                if let platformImage = try await asset.url.platformThumbnail(
+                    size: CGSize(width: 600, height: 600)
+                ) {
+                    info[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(
+                        boundsSize: platformImage.size,
+                        requestHandler: { _ in platformImage }
+                    )
+                    
+                    DispatchQueue.main.async {
+                        MPNowPlayingInfoCenter.default().nowPlayingInfo = info
+                        self.nowPlayingInfo = info
+                        self.log("Now playing info updated with thumbnail")
+                    }
+                } else {
                     MPNowPlayingInfoCenter.default().nowPlayingInfo = info
                     self.nowPlayingInfo = info
-                    self.log("Now playing info updated with thumbnail")
+                    self.log("No thumbnail available")
                 }
             } catch {
                 log("Failed to generate thumbnail: \(error.localizedDescription)", level: .warning)
