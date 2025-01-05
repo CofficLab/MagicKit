@@ -2,6 +2,7 @@ import Foundation
 import MediaPlayer
 import AVFoundation
 import SwiftUI
+import MagicUI
 
 #if os(macOS)
 import AppKit
@@ -129,62 +130,36 @@ extension MagicPlayMan {
         info[MPMediaItemPropertyMediaType] = asset.type == .audio ? 
             MPMediaType.music.rawValue : MPMediaType.movie.rawValue
         
-        // 如果是视频，添加缩略图
-        if asset.type == .video {
-            log("Generating thumbnail for video")
-            Task {
-                if let image = try? await generateThumbnail() {
-                    log("Thumbnail generated successfully")
-                    #if os(macOS)
-                    let size = image.size
-                    info[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(
-                        boundsSize: size,
-                        requestHandler: { _ in image }
-                    )
-                    #else
-                    let size = image.size
-                    info[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(
-                        boundsSize: size,
-                        requestHandler: { _ in image }
-                    )
-                    #endif
-                    
-                    DispatchQueue.main.async {
-                        MPNowPlayingInfoCenter.default().nowPlayingInfo = info
-                        self.log("Now playing info updated with thumbnail")
-                    }
-                } else {
-                    log("Failed to generate thumbnail", level: .warning)
+        // 添加缩略图
+        log("Generating thumbnail")
+        Task {
+            do {
+                let generator = AVAssetImageGenerator(asset: AVAsset(url: asset.url))
+                generator.appliesPreferredTrackTransform = true
+                let time = CMTime(seconds: 0, preferredTimescale: 600)
+                let cgImage = try generator.copyCGImage(at: time, actualTime: nil)
+                
+                #if os(macOS)
+                let platformImage = NSImage(cgImage: cgImage, size: .zero)
+                #else
+                let platformImage = UIImage(cgImage: cgImage)
+                #endif
+                
+                info[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(
+                    boundsSize: platformImage.size,
+                    requestHandler: { _ in platformImage }
+                )
+                
+                DispatchQueue.main.async {
+                    MPNowPlayingInfoCenter.default().nowPlayingInfo = info
+                    self.nowPlayingInfo = info
+                    self.log("Now playing info updated with thumbnail")
                 }
+            } catch {
+                log("Failed to generate thumbnail: \(error.localizedDescription)", level: .warning)
+                MPNowPlayingInfoCenter.default().nowPlayingInfo = info
+                self.nowPlayingInfo = info
             }
-        }
-        
-        MPNowPlayingInfoCenter.default().nowPlayingInfo = info
-        self.nowPlayingInfo = info
-        log("Now playing info updated")
-    }
-    
-    private func generateThumbnail() async throws -> PlatformImage? {
-        guard let asset = currentAsset,
-              asset.type == .video else { return nil }
-        
-        log("Starting thumbnail generation")
-        let generator = AVAssetImageGenerator(asset: AVAsset(url: asset.url))
-        generator.appliesPreferredTrackTransform = true
-        
-        do {
-            let time = CMTime(seconds: 0, preferredTimescale: 600)
-            let cgImage = try generator.copyCGImage(at: time, actualTime: nil)
-            log("Thumbnail generated successfully")
-            
-            #if os(macOS)
-            return NSImage(cgImage: cgImage, size: .zero)
-            #else
-            return UIImage(cgImage: cgImage)
-            #endif
-        } catch {
-            log("Failed to generate thumbnail: \(error.localizedDescription)", level: .error)
-            return nil
         }
     }
 }
