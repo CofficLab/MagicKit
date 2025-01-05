@@ -47,36 +47,53 @@ struct LogView: View {
                 }
             }
             
-            ScrollView {
-                LazyVStack(alignment: .leading, spacing: 4) {
-                    ForEach(logs.reversed()) { log in
-                        LogEntryView(
-                            log: log,
-                            isCopied: copiedLogId == log.id,
-                            onCopy: {
-                                copyToClipboard(log)
-                                withAnimation {
-                                    copiedLogId = log.id
-                                }
-                                // 2秒后清除复制状态
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                                    withAnimation {
-                                        if copiedLogId == log.id {
-                                            copiedLogId = nil
-                                        }
-                                    }
-                                }
-                            }
-                        )
+            Table(logs.reversed()) {
+                TableColumn("Level") { log in
+                    Circle()
+                        .fill(logColor(for: log.level))
+                        .frame(width: 8, height: 8)
+                }
+                .width(20)
+                
+                TableColumn("Time") { log in
+                    Text(log.timestamp.logTime)
+                        .font(.caption.monospaced())
+                        .foregroundStyle(.secondary)
+                }
+                .width(70)
+                
+                TableColumn("Message") { log in
+                    Text(log.message)
+                        .font(.caption)
+                        .foregroundStyle(log.level == .error ? .red : .primary)
+                }
+                
+                TableColumn("") { log in
+                    HStack {
+                        if copiedLogId == log.id {
+                            Image.checkmark
+                                .foregroundStyle(.green)
+                                .font(.caption)
+                                .transition(.scale.combined(with: .opacity))
+                        }
+                        
+                        Button(action: { copyLog(log) }) {
+                            Image.doc
+                                .foregroundStyle(.secondary)
+                                .font(.caption)
+                        }
+                        .buttonStyle(.plain)
                     }
                 }
+                .width(50)
             }
         }
     }
     
     private func copyAllLogs() {
-        let text = logs.map { formatLogEntry($0) }.joined(separator: "\n")
-        copyToClipboard(text)
+        logs.map { formatLogEntry($0) }
+            .joined(separator: "\n")
+            .copy()
         
         withAnimation {
             showCopyAllToast = true
@@ -90,73 +107,25 @@ struct LogView: View {
         }
     }
     
+    private func copyLog(_ log: PlaybackLog) {
+        formatLogEntry(log).copy()
+        
+        withAnimation {
+            copiedLogId = log.id
+        }
+        
+        // 2秒后清除复制状态
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            withAnimation {
+                if copiedLogId == log.id {
+                    copiedLogId = nil
+                }
+            }
+        }
+    }
+    
     private func formatLogEntry(_ log: PlaybackLog) -> String {
-        "\(formatTime(log.timestamp)) [\(log.level)] \(log.message)"
-    }
-    
-    private func copyToClipboard(_ log: PlaybackLog) {
-        copyToClipboard(formatLogEntry(log))
-    }
-    
-    private func copyToClipboard(_ text: String) {
-        #if os(macOS)
-        NSPasteboard.general.clearContents()
-        NSPasteboard.general.setString(text, forType: .string)
-        #else
-        UIPasteboard.general.string = text
-        #endif
-    }
-    
-    private func formatTime(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "HH:mm:ss"
-        return formatter.string(from: date)
-    }
-}
-
-private struct LogEntryView: View {
-    let log: PlaybackLog
-    let isCopied: Bool
-    let onCopy: () -> Void
-    @State private var isHovering = false
-    
-    var body: some View {
-        HStack(spacing: 8) {
-            Circle()
-                .fill(logColor(for: log.level))
-                .frame(width: 8, height: 8)
-            
-            Text(formatTime(log.timestamp))
-                .font(.caption.monospaced())
-                .foregroundStyle(.secondary)
-            
-            Text(log.message)
-                .font(.caption)
-                .foregroundStyle(log.level == .error ? .red : .primary)
-            
-            if isHovering || isCopied {
-                Spacer()
-                
-                Image(systemName: isCopied ? "checkmark.circle.fill" : "doc.on.doc")
-                    .foregroundStyle(isCopied ? .green : .secondary)
-                    .font(.caption)
-                    .transition(.scale.combined(with: .opacity))
-            }
-        }
-        .padding(.vertical, 2)
-        .padding(.horizontal, 4)
-        .background(
-            RoundedRectangle(cornerRadius: 4)
-                .fill(Color.primary.opacity(isHovering ? 0.05 : 0))
-        )
-        .onHover { hovering in
-            withAnimation(.easeInOut(duration: 0.2)) {
-                isHovering = hovering
-            }
-        }
-        .onTapGesture(count: 2) {
-            onCopy()
-        }
+        "\(log.timestamp.logTime) [\(log.level)] \(log.message)"
     }
     
     private func logColor(for level: PlaybackLog.Level) -> Color {
@@ -168,12 +137,6 @@ private struct LogEntryView: View {
         case .error:
             return .red
         }
-    }
-    
-    private func formatTime(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "HH:mm:ss"
-        return formatter.string(from: date)
     }
 }
 

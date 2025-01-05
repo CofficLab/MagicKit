@@ -1,9 +1,13 @@
 import Foundation
 import SwiftUI
 import OSLog
+import MagicKit
 
-public class PlayLogger: ObservableObject {
+public class PlayLogger: ObservableObject, SuperLog {
+    public static var emoji = "🎵"
+    
     @Published public private(set) var logs: [PlaybackLog] = []
+    
     private let maxLogs: Int
     
     public init(maxLogs: Int = 100) {
@@ -13,7 +17,7 @@ public class PlayLogger: ObservableObject {
     /// 添加日志
     public func log(_ message: String, level: PlaybackLog.Level = .info) {
         let log = PlaybackLog(message: message, level: level)
-        os_log("%{public}@", log: .default, type: level.osLogType, message)
+        os_log("\(self.t) \(message)")
         
         DispatchQueue.main.async {
             self.logs.append(log)
