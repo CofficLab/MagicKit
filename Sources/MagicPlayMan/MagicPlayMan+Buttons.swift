@@ -192,12 +192,12 @@ public extension MagicPlayMan {
     /// 创建日志按钮
     /// - Returns: 用于显示日志的按钮
     /// - Note: 点击按钮会显示一个包含日志内容的弹出窗口
-    func makeLogButton() -> some View {
+    func makeLogButton(shape: MagicButton.Shape = .circle) -> some View {
         MagicButton(
             icon: .iconTerminal,
             style: .secondary,
             size: .regular,
-            shape: .circle,
+            shape: .capsule,
             popoverContent: AnyView(
                 self.makeLogView()
                     .frame(width: 400, height: 400)

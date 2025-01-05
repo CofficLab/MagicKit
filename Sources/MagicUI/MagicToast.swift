@@ -4,6 +4,8 @@ public struct MagicToast: View {
     let message: String
     let icon: String
     let style: Style
+    @State private var isHovering = false
+    @State private var isPresented = false
     
     public enum Style {
         case info
@@ -20,6 +22,28 @@ public struct MagicToast: View {
                 return .red
             }
         }
+        
+        var animation: Animation {
+            switch self {
+            case .info:
+                return .spring(response: 0.3, dampingFraction: 0.6)
+            case .warning:
+                return .spring(response: 0.35, dampingFraction: 0.5)
+            case .error:
+                return .spring(response: 0.4, dampingFraction: 0.4)
+            }
+        }
+        
+        var iconAnimation: Animation {
+            switch self {
+            case .info:
+                return .smooth
+            case .warning:
+                return .bouncy
+            case .error:
+                return .snappy
+            }
+        }
     }
     
     public init(message: String, icon: String, style: Style = .info) {
@@ -31,23 +55,44 @@ public struct MagicToast: View {
     public var body: some View {
         HStack(spacing: 8) {
             Image(systemName: icon)
+                .font(.system(size: isHovering ? 16 : 14))
                 .foregroundStyle(style.color)
+                .symbolEffect(.bounce, options: .repeat(2), value: isPresented)
             
             Text(message)
                 .font(.callout)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
-        .background(.ultraThinMaterial)
-        .clipShape(Capsule())
-        .shadow(color: .black.opacity(0.1), radius: 5, y: 2)
-        .transition(.move(edge: .top).combined(with: .opacity))
+        .background {
+            Capsule()
+                .fill(.ultraThinMaterial)
+                .shadow(
+                    color: style.color.opacity(0.2),
+                    radius: isHovering ? 8 : 5,
+                    y: isHovering ? 3 : 2
+                )
+        }
+        .scaleEffect(isHovering ? 1.02 : 1.0)
+        .animation(style.animation, value: isHovering)
+        .onHover { hovering in
+            isHovering = hovering
+        }
+        .onAppear {
+            withAnimation(style.iconAnimation.delay(0.2)) {
+                isPresented = true
+            }
+        }
+        .transition(
+            .asymmetric(
+                insertion: .move(edge: .top).combined(with: .opacity),
+                removal: .move(edge: .bottom).combined(with: .opacity)
+            )
+        )
     }
 }
 
-#Preview {
-    MagicToast(message: "Cheers", icon: "checkmark.circle")
-        .padding(.horizontal, 20)
-        .frame(width: 500, height: 500)
-        .background(Color.white)
+// MARK: - Preview
+#Preview("MagicToast") {
+    MagicToastPreview()
 }

@@ -83,23 +83,16 @@ private struct OpenButtonView: View {
     }
     
     var body: some View {
-        Button {
-            url.open()
-        } label: {
-            HStack(spacing: 8) {
-                Image(systemName: iconName)
-                    .font(.system(size: size * 0.5))
-                    .frame(width: size, height: size)
-                    .background(.ultraThinMaterial)
-                    .clipShape(Circle())
-                
-                if showLabel {
-                    Text(buttonLabel)
-                        .font(.caption)
-                }
+        MagicButton(
+            icon: iconName,
+            title: showLabel ? buttonLabel : nil,
+            style: .secondary,
+            size: size <= 32 ? .small : (size <= 40 ? .regular : .large),
+            shape: .circle,
+            action: {
+                url.open()
             }
-        }
-        .buttonStyle(.plain)
+        )
         .help(buttonLabel)
     }
 }
