@@ -40,61 +40,40 @@ public struct SupportedFormat {
             extensions: ["mp3"],
             mimeTypes: ["audio/mpeg"],
             samples: [
+                // 中国音乐
                 Sample(
-                    name: "Snow Fight",
+                    name: "古筝",
                     asset: MagicAsset(
-                        url: URL(string: "https://storage.googleapis.com/media-session/sintel/snow-fight.mp3")!,
+                        url: .sample_web_mp3_guzheng,
                         type: .audio,
                         metadata: MagicAsset.Metadata(
-                            title: "Snow Fight",
-                            artist: "Jan Morgenstern",
-                            album: "Album Name"
+                            title: "古筝",
+                            artist: "Monplaisir",
+                            album: "中国传统音乐"
                         )
                     )
                 ),
                 Sample(
-                    name: "Sintel Trailer Score",
+                    name: "竹笛",
                     asset: MagicAsset(
-                        url: URL(string: "https://storage.googleapis.com/media-session/sintel/sintel-trailer-music.mp3")!,
+                        url: .sample_web_mp3_bamboo,
                         type: .audio,
                         metadata: MagicAsset.Metadata(
-                            title: "Sintel Trailer Score",
-                            artist: "Jan Morgenstern",
-                            album: "Album Name"
-                        )
-                    )
-                )
-            ]
-        ),
-        
-        // AAC
-        SupportedFormat(
-            name: "AAC",
-            type: .audio,
-            extensions: ["aac", "m4a"],
-            mimeTypes: ["audio/aac", "audio/mp4"],
-            samples: [
-                Sample(
-                    name: "Apple Music Preview",
-                    asset: MagicAsset(
-                        url: URL(string: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/8e/d3/a6/8ed3a6a6-0b06-b4b0-8937-fc0ce6d6f6e2/mzaf_5766840152287573829.plus.aac.p.m4a")!,
-                        type: .audio,
-                        metadata: MagicAsset.Metadata(
-                            title: "Apple Music Sample",
-                            artist: "Apple",
-                            album: "Album Name"
+                            title: "竹笛",
+                            artist: "Chad Crouch",
+                            album: "中国传统音乐"
                         )
                     )
                 ),
                 Sample(
-                    name: "AAC Test Stream",
+                    name: "二胡",
                     asset: MagicAsset(
-                        url: URL(string: "https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_4x3/gear1/prog_index.m4a")!,
+                        url: .sample_web_mp3_erhu,
                         type: .audio,
                         metadata: MagicAsset.Metadata(
-                            title: "AAC Stream",
-                            artist: "Apple",
-                            album: "Album Name"
+                            title: "二胡",
+                            artist: "Kai Engel",
+                            album: "中国传统音乐"
                         )
                     )
                 )
@@ -108,27 +87,40 @@ public struct SupportedFormat {
             extensions: ["wav"],
             mimeTypes: ["audio/wav", "audio/x-wav"],
             samples: [
+                // 自然音效
                 Sample(
-                    name: "W3C Audio Test",
+                    name: "鸟叫",
                     asset: MagicAsset(
-                        url: URL(string: "https://www.w3schools.com/html/horse.wav")!,
+                        url: .sample_web_wav_bird,
                         type: .audio,
                         metadata: MagicAsset.Metadata(
-                            title: "Horse",
-                            artist: "W3Schools",
-                            album: "Album Name"
+                            title: "鸟叫",
+                            artist: "大自然",
+                            album: "自然音效"
                         )
                     )
                 ),
                 Sample(
-                    name: "Sound Bible Sample",
+                    name: "雨声",
                     asset: MagicAsset(
-                        url: URL(string: "https://soundbible.com/grab.php?id=1542&type=wav")!,
+                        url: .sample_web_wav_rain,
                         type: .audio,
                         metadata: MagicAsset.Metadata(
-                            title: "Beep Sound",
-                            artist: "Sound Bible",
-                            album: "Album Name"
+                            title: "雨声",
+                            artist: "大自然",
+                            album: "自然音效"
+                        )
+                    )
+                ),
+                Sample(
+                    name: "溪流",
+                    asset: MagicAsset(
+                        url: .sample_web_wav_stream,
+                        type: .audio,
+                        metadata: MagicAsset.Metadata(
+                            title: "溪流",
+                            artist: "大自然",
+                            album: "自然音效"
                         )
                     )
                 )
@@ -142,27 +134,40 @@ public struct SupportedFormat {
             extensions: ["mp4", "m4v"],
             mimeTypes: ["video/mp4"],
             samples: [
-                Sample(
-                    name: "Sintel Trailer",
-                    asset: MagicAsset(
-                        url: URL(string: "https://media.w3.org/2010/05/sintel/trailer.mp4")!,
-                        type: .video,
-                        metadata: MagicAsset.Metadata(
-                            title: "Sintel",
-                            artist: "Blender Foundation",
-                            album: "Album Name"
-                        )
-                    )
-                ),
+                // 开源视频
                 Sample(
                     name: "Big Buck Bunny",
                     asset: MagicAsset(
-                        url: URL(string: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4")!,
+                        url: .sample_web_mp4_bunny,
                         type: .video,
                         metadata: MagicAsset.Metadata(
                             title: "Big Buck Bunny",
                             artist: "Blender Foundation",
-                            album: "Album Name"
+                            album: "开源动画"
+                        )
+                    )
+                ),
+                Sample(
+                    name: "Sintel",
+                    asset: MagicAsset(
+                        url: .sample_web_mp4_sintel,
+                        type: .video,
+                        metadata: MagicAsset.Metadata(
+                            title: "Sintel",
+                            artist: "Blender Foundation",
+                            album: "开源动画"
+                        )
+                    )
+                ),
+                Sample(
+                    name: "Elephants Dream",
+                    asset: MagicAsset(
+                        url: .sample_web_mp4_elephants,
+                        type: .video,
+                        metadata: MagicAsset.Metadata(
+                            title: "Elephants Dream",
+                            artist: "Blender Foundation",
+                            album: "开源动画"
                         )
                     )
                 )
@@ -177,26 +182,38 @@ public struct SupportedFormat {
             mimeTypes: ["application/x-mpegURL"],
             samples: [
                 Sample(
-                    name: "Apple Basic Stream",
+                    name: "测试流 1",
                     asset: MagicAsset(
-                        url: URL(string: "https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_4x3/bipbop_4x3_variant.m3u8")!,
+                        url: .sample_web_stream_test1,
                         type: .video,
                         metadata: MagicAsset.Metadata(
-                            title: "Apple Test Stream",
-                            artist: "Apple",
-                            album: "Album Name"
+                            title: "测试流 1",
+                            artist: "Mux",
+                            album: "测试直播"
                         )
                     )
                 ),
                 Sample(
-                    name: "Apple Advanced Stream",
+                    name: "测试流 2",
                     asset: MagicAsset(
-                        url: URL(string: "https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_ts/master.m3u8")!,
+                        url: .sample_web_stream_test2,
                         type: .video,
                         metadata: MagicAsset.Metadata(
-                            title: "Advanced Streaming",
-                            artist: "Apple",
-                            album: "Album Name"
+                            title: "测试流 2",
+                            artist: "Akamai",
+                            album: "测试直播"
+                        )
+                    )
+                ),
+                Sample(
+                    name: "测试流 3",
+                    asset: MagicAsset(
+                        url: .sample_web_stream_test3,
+                        type: .video,
+                        metadata: MagicAsset.Metadata(
+                            title: "测试流 3",
+                            artist: "Unified Streaming",
+                            album: "测试直播"
                         )
                     )
                 )

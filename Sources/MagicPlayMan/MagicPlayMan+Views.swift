@@ -56,9 +56,4 @@ public extension MagicPlayMan {
 // MARK: - Preview
 #Preview("MagicPlayMan") {
     MagicPlayMan.PreviewView()
-        .frame(width: 650, height: 800)
-        .background(.background)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .shadow(radius: 5)
-        .padding()
 }

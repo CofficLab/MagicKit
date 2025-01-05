@@ -85,8 +85,9 @@ public extension MagicPlayMan {
                   let data = data,
                   (200 ... 299).contains(response.statusCode) else {
                 DispatchQueue.main.async {
-                    self.state = .failed(.networkError("Invalid server response"))
-                    self.log("Download failed: Invalid server response", level: .error)
+                    let statusCode = (response as? HTTPURLResponse)?.statusCode ?? -1
+                    self.state = .failed(.networkError("Invalid server response (HTTP \(statusCode))"))
+                    self.log("Download failed: Invalid server response (HTTP \(statusCode))", level: .error)
                 }
                 return
             }
@@ -164,9 +165,4 @@ public extension MagicPlayMan {
 
 #Preview("MagicPlayMan") {
     MagicPlayMan.PreviewView()
-        .frame(width: 650, height: 800)
-        .background(.background)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .shadow(radius: 5)
-        .padding()
 }

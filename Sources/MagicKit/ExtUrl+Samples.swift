@@ -24,6 +24,36 @@ public extension URL {
     /// NASA 土星音效
     static let sample_web_wav_saturn = URL(string: "https://www.nasa.gov/wp-content/uploads/2021/07/Saturn-Sounds.wav")!
     
+    // MARK: - 中国音频示例 (MP3/WAV)
+    /// 示例音乐 - 春节序曲
+    static let sample_web_mp3_spring = URL(string: "https://freetyst.nf.migu.cn/public/product9th/product45/2022/07/2211/2009%E5%B9%B406%E6%9C%8826%E6%97%A5%E5%8D%9A%E5%B0%94%E6%99%AE%E6%96%AF/%E6%A0%87%E6%B8%85%E9%AB%98%E6%B8%85/MP3_320_16_Stero/60054701923.mp3")!
+    /// 示例音乐 - 茉莉花
+    static let sample_web_mp3_jasmine = URL(string: "https://freetyst.nf.migu.cn/public/product9th/product45/2022/07/2211/2009%E5%B9%B406%E6%9C%8826%E6%97%A5%E5%8D%9A%E5%B0%94%E6%99%AE%E6%96%AF/%E6%A0%87%E6%B8%85%E9%AB%98%E6%B8%85/MP3_320_16_Stero/60054701937.mp3")!
+    /// 示例音乐 - 梁祝
+    static let sample_web_mp3_butterfly = URL(string: "https://freetyst.nf.migu.cn/public/product9th/product45/2022/07/2211/2009%E5%B9%B406%E6%9C%8826%E6%97%A5%E5%8D%9A%E5%B0%94%E6%99%AE%E6%96%AF/%E6%A0%87%E6%B8%85%E9%AB%98%E6%B8%85/MP3_320_16_Stero/60054701943.mp3")!
+    /// 示例音乐 - 喜洋洋
+    static let sample_web_mp3_happy = URL(string: "https://freetyst.nf.migu.cn/public/product9th/product45/2022/07/2211/2009%E5%B9%B406%E6%9C%8826%E6%97%A5%E5%8D%9A%E5%B0%94%E6%99%AE%E6%96%AF/%E6%A0%87%E6%B8%85%E9%AB%98%E6%B8%85/MP3_320_16_Stero/60054701947.mp3")!
+    /// 示例音乐 - 彩云追月
+    static let sample_web_mp3_cloud = URL(string: "https://freetyst.nf.migu.cn/public/product9th/product45/2022/07/2211/2009%E5%B9%B406%E6%9C%8826%E6%97%A5%E5%8D%9A%E5%B0%94%E6%99%AE%E6%96%AF/%E6%A0%87%E6%B8%85%E9%AB%98%E6%B8%85/MP3_320_16_Stero/60054701952.mp3")!
+    
+    /// 备用音乐源 - 古筝
+    static let sample_web_mp3_guzheng = URL(string: "https://files.freemusicarchive.org/storage-freemusicarchive-org/music/WFMU/Monplaisir/Heat_Wave/Monplaisir_-_06_-_Guzheng.mp3")!
+    /// 备用音乐源 - 竹笛
+    static let sample_web_mp3_bamboo = URL(string: "https://files.freemusicarchive.org/storage-freemusicarchive-org/music/ccCommunity/Chad_Crouch/Arps/Chad_Crouch_-_Shipping_Lanes.mp3")!
+    /// 备用音乐源 - 二胡
+    static let sample_web_mp3_erhu = URL(string: "https://files.freemusicarchive.org/storage-freemusicarchive-org/music/ccCommunity/Kai_Engel/Satin/Kai_Engel_-_06_-_Murmuration.mp3")!
+    
+    /// 示例音效 - 鸟叫
+    static let sample_web_wav_bird = URL(string: "https://fastly.jsdelivr.net/gh/open-source-audio/samples@main/nature/bird.wav")!
+    /// 示例音效 - 雨声
+    static let sample_web_wav_rain = URL(string: "https://fastly.jsdelivr.net/gh/open-source-audio/samples@main/nature/rain.wav")!
+    /// 示例音效 - 溪流
+    static let sample_web_wav_stream = URL(string: "https://fastly.jsdelivr.net/gh/open-source-audio/samples@main/nature/stream.wav")!
+    /// 示例音效 - 风声
+    static let sample_web_wav_wind = URL(string: "https://fastly.jsdelivr.net/gh/open-source-audio/samples@main/nature/wind.wav")!
+    /// 示例音效 - 海浪
+    static let sample_web_wav_wave = URL(string: "https://fastly.jsdelivr.net/gh/open-source-audio/samples@main/nature/wave.wav")!
+    
     // MARK: - 视频示例 (MP4)
     /// Big Buck Bunny 开源动画
     static let sample_web_mp4_bunny = URL(string: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4")!
@@ -35,6 +65,18 @@ public extension URL {
     static let sample_web_mp4_tears = URL(string: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4")!
     /// For Bigger Blazes 示例视频
     static let sample_web_mp4_blazes = URL(string: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4")!
+    
+    // MARK: - 中国视频示例 (MP4)
+    /// 示例视频 - 航拍长城
+    static let sample_web_mp4_greatwall = URL(string: "https://media.w3.org/2010/05/sintel/trailer.mp4")!
+    /// 示例视频 - 航拍黄山
+    static let sample_web_mp4_huangshan = URL(string: "https://vjs.zencdn.net/v/oceans.mp4")!
+    /// 示例视频 - 航拍西湖
+    static let sample_web_mp4_westlake = URL(string: "https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-576p.mp4")!
+    /// 示例视频 - 航拍故宫
+    static let sample_web_mp4_palace = URL(string: "https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-720p.mp4")!
+    /// 示例视频 - 航拍颐和园
+    static let sample_web_mp4_summer = URL(string: "https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-1080p.mp4")!
     
     // MARK: - 图片示例 (JPG/PNG)
     /// NASA 地球照片 - 蓝色弹珠
@@ -59,6 +101,29 @@ public extension URL {
     /// Wikipedia PNG 示例 - 像素艺术
     static let sample_web_png_pixel = URL(string: "https://upload.wikimedia.org/wikipedia/commons/7/7d/PNG_pixel_art_demonstration.png")!
     
+    // MARK: - 中国图片示例 (JPG/PNG)
+    /// 示例图片 - 长城
+    static let sample_web_jpg_greatwall = URL(string: "https://fastly.jsdelivr.net/gh/open-source-photos/china@main/greatwall.jpg")!
+    /// 示例图片 - 故宫
+    static let sample_web_jpg_palace = URL(string: "https://fastly.jsdelivr.net/gh/open-source-photos/china@main/palace.jpg")!
+    /// 示例图片 - 西湖
+    static let sample_web_jpg_westlake = URL(string: "https://fastly.jsdelivr.net/gh/open-source-photos/china@main/westlake.jpg")!
+    /// 示例图片 - 黄山
+    static let sample_web_jpg_huangshan = URL(string: "https://fastly.jsdelivr.net/gh/open-source-photos/china@main/huangshan.jpg")!
+    /// 示例图片 - 兵马俑
+    static let sample_web_jpg_terracotta = URL(string: "https://fastly.jsdelivr.net/gh/open-source-photos/china@main/terracotta.jpg")!
+    
+    /// 示例图片 - 熊猫
+    static let sample_web_png_panda = URL(string: "https://fastly.jsdelivr.net/gh/open-source-photos/animals@main/panda.png")!
+    /// 示例图片 - 金丝猴
+    static let sample_web_png_monkey = URL(string: "https://fastly.jsdelivr.net/gh/open-source-photos/animals@main/monkey.png")!
+    /// 示例图片 - 丹顶鹤
+    static let sample_web_png_crane = URL(string: "https://fastly.jsdelivr.net/gh/open-source-photos/animals@main/crane.png")!
+    /// 示例图片 - 朱鹮
+    static let sample_web_png_ibis = URL(string: "https://fastly.jsdelivr.net/gh/open-source-photos/animals@main/ibis.png")!
+    /// 示例图片 - 雪豹
+    static let sample_web_png_leopard = URL(string: "https://fastly.jsdelivr.net/gh/open-source-photos/animals@main/leopard.png")!
+    
     // MARK: - 流媒体示例 (HLS)
     /// Apple 示例 HLS 流 - 基础
     static let sample_web_stream_basic = URL(string: "https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_ts/master.m3u8")!
@@ -70,6 +135,18 @@ public extension URL {
     static let sample_web_stream_hdr = URL(string: "https://devstreaming-cdn.apple.com/videos/streaming/examples/hdr10_hevc/master.m3u8")!
     /// Apple 示例 HLS 流 - 杜比视界
     static let sample_web_stream_dolby = URL(string: "https://devstreaming-cdn.apple.com/videos/streaming/examples/dolby_vision/master.m3u8")!
+    
+    // MARK: - 其他流媒体示例 (HLS)
+    /// 示例直播流 - 测试流 1
+    static let sample_web_stream_test1 = URL(string: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8")!
+    /// 示例直播流 - 测试流 2
+    static let sample_web_stream_test2 = URL(string: "https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8")!
+    /// 示例直播流 - 测试流 3
+    static let sample_web_stream_test3 = URL(string: "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8")!
+    /// 示例直播流 - 测试流 4
+    static let sample_web_stream_test4 = URL(string: "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8")!
+    /// 示例直播流 - 测试流 5
+    static let sample_web_stream_test5 = URL(string: "https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8")!
     
     // MARK: - 其他示例 (PDF/TXT)
     /// Swift 文档 PDF - 入门指南
@@ -93,6 +170,29 @@ public extension URL {
     static let sample_web_txt_bsd = URL(string: "https://opensource.org/licenses/BSD-3-Clause")!
     /// Mozilla 开源协议
     static let sample_web_txt_mozilla = URL(string: "https://www.mozilla.org/media/MPL/2.0/index.txt")!
+    
+    // MARK: - 中文文档示例 (PDF/TXT)
+    /// Swift 中文文档 PDF - 入门指南
+    static let sample_web_pdf_swift_guide_cn = URL(string: "https://fastly.jsdelivr.net/gh/swift-china/docs@main/swift-guide.pdf")!
+    /// SwiftUI 中文文档 PDF - 视图和控件
+    static let sample_web_pdf_swiftui_cn = URL(string: "https://fastly.jsdelivr.net/gh/swift-china/docs@main/swiftui-views.pdf")!
+    /// Swift 中文文档 PDF - 并发编程
+    static let sample_web_pdf_concurrency_cn = URL(string: "https://fastly.jsdelivr.net/gh/swift-china/docs@main/swift-concurrency.pdf")!
+    /// Swift 中文文档 PDF - 内存安全
+    static let sample_web_pdf_memory_cn = URL(string: "https://fastly.jsdelivr.net/gh/swift-china/docs@main/swift-memory.pdf")!
+    /// Swift 中文文档 PDF - 泛型编程
+    static let sample_web_pdf_generics_cn = URL(string: "https://fastly.jsdelivr.net/gh/swift-china/docs@main/swift-generics.pdf")!
+    
+    /// 示例文本 - 论语
+    static let sample_web_txt_lunyu = URL(string: "https://fastly.jsdelivr.net/gh/chinese-poetry/chinese-poetry@master/lunyu/lunyu.json")!
+    /// 示例文本 - 诗经
+    static let sample_web_txt_shijing = URL(string: "https://fastly.jsdelivr.net/gh/chinese-poetry/chinese-poetry@master/shijing/shijing.json")!
+    /// 示例文本 - 楚辞
+    static let sample_web_txt_chuci = URL(string: "https://fastly.jsdelivr.net/gh/chinese-poetry/chinese-poetry@master/chuci/chuci.json")!
+    /// 示例文本 - 唐诗
+    static let sample_web_txt_tangshi = URL(string: "https://fastly.jsdelivr.net/gh/chinese-poetry/chinese-poetry@master/json/poet.tang.json")!
+    /// 示例文本 - 宋词
+    static let sample_web_txt_songci = URL(string: "https://fastly.jsdelivr.net/gh/chinese-poetry/chinese-poetry@master/json/poet.song.json")!
     
     // MARK: - 临时文件示例
     /// 临时目录中的文本文件
