@@ -14,11 +14,6 @@ import AVKit
 #endif
 
 extension URL {
-    /// 检查是否是网络 URL
-    public var isNetworkURL: Bool {
-        scheme == "http" || scheme == "https"
-    }
-    
     /// 获取文件的缩略图
     /// - Parameters:
     ///   - size: 缩略图的目标大小

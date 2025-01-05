@@ -69,21 +69,7 @@ struct LogView: View {
                 }
                 
                 TableColumn("") { log in
-                    HStack {
-                        if copiedLogId == log.id {
-                            Image.checkmark
-                                .foregroundStyle(.green)
-                                .font(.caption)
-                                .transition(.scale.combined(with: .opacity))
-                        }
-                        
-                        Button(action: { copyLog(log) }) {
-                            Image.doc
-                                .foregroundStyle(.secondary)
-                                .font(.caption)
-                        }
-                        .buttonStyle(.plain)
-                    }
+                    CopyColumn(log: log, copiedLogId: copiedLogId, onCopy: copyLog)
                 }
                 .width(50)
             }
@@ -136,6 +122,31 @@ struct LogView: View {
             return .orange
         case .error:
             return .red
+        }
+    }
+    
+    private struct CopyColumn: View {
+        let log: PlaybackLog
+        let copiedLogId: UUID?
+        let onCopy: (PlaybackLog) -> Void
+        
+        var body: some View {
+            HStack {
+                if copiedLogId == log.id {
+                    Image(systemName: "checkmark")
+                        .foregroundStyle(.green)
+                        .font(.caption)
+                        .transition(.scale.combined(with: .opacity))
+                }
+                
+                Button(action: { onCopy(log) }) {
+                    Image(systemName: "doc.on.doc")
+                        .foregroundStyle(.secondary)
+                        .font(.caption)
+                }
+                .buttonStyle(.plain)
+            }
+            .animation(.default, value: copiedLogId)
         }
     }
 }

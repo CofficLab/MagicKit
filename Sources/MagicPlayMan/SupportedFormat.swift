@@ -40,6 +40,80 @@ public struct SupportedFormat {
             extensions: ["mp3"],
             mimeTypes: ["audio/mpeg"],
             samples: [
+                // NASA 音效
+                Sample(
+                    name: "肯尼迪演讲",
+                    asset: MagicAsset(
+                        url: .sample_web_mp3_kennedy,
+                        type: .audio,
+                        metadata: MagicAsset.Metadata(
+                            title: "Rice University Speech",
+                            artist: "JFK",
+                            album: "NASA Archives"
+                        )
+                    )
+                ),
+                Sample(
+                    name: "水星计划通讯",
+                    asset: MagicAsset(
+                        url: .sample_web_mp3_mercury,
+                        type: .audio,
+                        metadata: MagicAsset.Metadata(
+                            title: "Mercury Program",
+                            artist: "NASA",
+                            album: "NASA Archives"
+                        )
+                    )
+                ),
+                Sample(
+                    name: "阿波罗登月",
+                    asset: MagicAsset(
+                        url: .sample_web_mp3_apollo,
+                        type: .audio,
+                        metadata: MagicAsset.Metadata(
+                            title: "Apollo 11 Highlight",
+                            artist: "NASA",
+                            album: "NASA Archives"
+                        )
+                    )
+                ),
+                // 中国传统音乐
+                Sample(
+                    name: "春节序曲",
+                    asset: MagicAsset(
+                        url: .sample_web_mp3_spring,
+                        type: .audio,
+                        metadata: MagicAsset.Metadata(
+                            title: "春节序曲",
+                            artist: "李焕之",
+                            album: "中国传统音乐"
+                        )
+                    )
+                ),
+                Sample(
+                    name: "茉莉花",
+                    asset: MagicAsset(
+                        url: .sample_web_mp3_jasmine,
+                        type: .audio,
+                        metadata: MagicAsset.Metadata(
+                            title: "茉莉花",
+                            artist: "民乐合奏",
+                            album: "中国传统音乐"
+                        )
+                    )
+                ),
+                Sample(
+                    name: "梁祝",
+                    asset: MagicAsset(
+                        url: .sample_web_mp3_butterfly,
+                        type: .audio,
+                        metadata: MagicAsset.Metadata(
+                            title: "梁祝",
+                            artist: "何占豪",
+                            album: "中国传统音乐"
+                        )
+                    )
+                ),
                 // 中国音乐
                 Sample(
                     name: "古筝",
@@ -87,6 +161,43 @@ public struct SupportedFormat {
             extensions: ["wav"],
             mimeTypes: ["audio/wav", "audio/x-wav"],
             samples: [
+                // NASA 音效
+                Sample(
+                    name: "火箭发射",
+                    asset: MagicAsset(
+                        url: .sample_web_wav_launch,
+                        type: .audio,
+                        metadata: MagicAsset.Metadata(
+                            title: "Launch Aboard",
+                            artist: "NASA",
+                            album: "Space Sounds"
+                        )
+                    )
+                ),
+                Sample(
+                    name: "国际空间站",
+                    asset: MagicAsset(
+                        url: .sample_web_wav_iss,
+                        type: .audio,
+                        metadata: MagicAsset.Metadata(
+                            title: "ISS Sounds",
+                            artist: "NASA",
+                            album: "Space Sounds"
+                        )
+                    )
+                ),
+                Sample(
+                    name: "火星声音",
+                    asset: MagicAsset(
+                        url: .sample_web_wav_mars,
+                        type: .audio,
+                        metadata: MagicAsset.Metadata(
+                            title: "Mars Sounds",
+                            artist: "NASA",
+                            album: "Space Sounds"
+                        )
+                    )
+                ),
                 // 自然音效
                 Sample(
                     name: "鸟叫",
@@ -134,7 +245,7 @@ public struct SupportedFormat {
             extensions: ["mp4", "m4v"],
             mimeTypes: ["video/mp4"],
             samples: [
-                // 开源视频
+                // 开源动画
                 Sample(
                     name: "Big Buck Bunny",
                     asset: MagicAsset(
@@ -147,6 +258,44 @@ public struct SupportedFormat {
                         )
                     )
                 ),
+                Sample(
+                    name: "Tears of Steel",
+                    asset: MagicAsset(
+                        url: .sample_web_mp4_tears,
+                        type: .video,
+                        metadata: MagicAsset.Metadata(
+                            title: "Tears of Steel",
+                            artist: "Blender Foundation",
+                            album: "开源动画"
+                        )
+                    )
+                ),
+                // 中国风光
+                Sample(
+                    name: "航拍长城",
+                    asset: MagicAsset(
+                        url: .sample_web_mp4_greatwall,
+                        type: .video,
+                        metadata: MagicAsset.Metadata(
+                            title: "航拍长城",
+                            artist: "中国风光",
+                            album: "航拍系列"
+                        )
+                    )
+                ),
+                Sample(
+                    name: "航拍西湖",
+                    asset: MagicAsset(
+                        url: .sample_web_mp4_westlake,
+                        type: .video,
+                        metadata: MagicAsset.Metadata(
+                            title: "航拍西湖",
+                            artist: "中国风光",
+                            album: "航拍系列"
+                        )
+                    )
+                ),
+                // 开源视频
                 Sample(
                     name: "Sintel",
                     asset: MagicAsset(
@@ -181,6 +330,43 @@ public struct SupportedFormat {
             extensions: ["m3u8"],
             mimeTypes: ["application/x-mpegURL"],
             samples: [
+                // Apple 示例流
+                Sample(
+                    name: "基础流",
+                    asset: MagicAsset(
+                        url: .sample_web_stream_basic,
+                        type: .video,
+                        metadata: MagicAsset.Metadata(
+                            title: "Basic Stream",
+                            artist: "Apple",
+                            album: "HLS Samples"
+                        )
+                    )
+                ),
+                Sample(
+                    name: "高级流",
+                    asset: MagicAsset(
+                        url: .sample_web_stream_advanced,
+                        type: .video,
+                        metadata: MagicAsset.Metadata(
+                            title: "Advanced Stream",
+                            artist: "Apple",
+                            album: "HLS Samples"
+                        )
+                    )
+                ),
+                Sample(
+                    name: "4K 流",
+                    asset: MagicAsset(
+                        url: .sample_web_stream_4k,
+                        type: .video,
+                        metadata: MagicAsset.Metadata(
+                            title: "4K Stream",
+                            artist: "Apple",
+                            album: "HLS Samples"
+                        )
+                    )
+                ),
                 Sample(
                     name: "测试流 1",
                     asset: MagicAsset(

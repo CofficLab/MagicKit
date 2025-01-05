@@ -72,8 +72,8 @@ public extension URL {
         isFileURL && FileManager.default.fileExists(atPath: path)
     }
 
-    /// 是否是流媒体 URL
-    var isStreamingURL: Bool {
+    /// 是否是网络 URL
+    var isNetworkURL: Bool {
         scheme == "http" || scheme == "https"
     }
 
