@@ -187,13 +187,53 @@ extension MagicBackground {
 }
 
 #Preview("Childhood Themes") {
-    ThemePreviewContainer { _ in
-        Group {
-            BackgroundPreviewItem(background: AnyView(MagicBackground.candyLand), title: "Candy Land", textColor: .primary)
-            BackgroundPreviewItem(background: AnyView(MagicBackground.crayonBox), title: "Crayon Box", textColor: .primary)
-            BackgroundPreviewItem(background: AnyView(MagicBackground.toyBlocks), title: "Toy Blocks", textColor: .primary)
-            BackgroundPreviewItem(background: AnyView(MagicBackground.balloonParty), title: "Balloon Party", textColor: .primary)
-            BackgroundPreviewItem(background: AnyView(MagicBackground.paperPlanes), title: "Paper Planes", textColor: .primary)
+    TabView {
+        // 童年主题
+        MagicThemePreview {
+            ScrollView {
+                VStack(spacing: 20) {
+                    Text("童年主题")
+                        .font(.headline)
+                        .padding(.top)
+                    
+                    Group {
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.candyLand),
+                            title: "Candy Land",
+                            textColor: .primary
+                        )
+                        
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.crayonBox),
+                            title: "Crayon Box",
+                            textColor: .primary
+                        )
+                        
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.toyBlocks),
+                            title: "Toy Blocks",
+                            textColor: .primary
+                        )
+                        
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.balloonParty),
+                            title: "Balloon Party",
+                            textColor: .primary
+                        )
+                        
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.paperPlanes),
+                            title: "Paper Planes",
+                            textColor: .primary
+                        )
+                    }
+                }
+                .padding()
+            }
+        }
+        .tabItem {
+            Image(systemName: "face.smiling.fill")
+            Text("童年")
         }
     }
 } 

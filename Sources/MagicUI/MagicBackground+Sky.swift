@@ -142,11 +142,39 @@ extension MagicBackground {
 }
 
 #Preview("Sky Themes") {
-    ThemePreviewContainer { _ in
-        Group {
-            BackgroundPreviewItem(background: AnyView(MagicBackground.dawnSky), title: "Dawn Sky", textColor: .primary)
-            BackgroundPreviewItem(background: AnyView(MagicBackground.stormyHeaven), title: "Stormy Heaven")
-            BackgroundPreviewItem(background: AnyView(MagicBackground.sunsetGlow), title: "Sunset Glow")
+    TabView {
+        // 天空主题
+        MagicThemePreview {
+            ScrollView {
+                VStack(spacing: 20) {
+                    Text("天空主题")
+                        .font(.headline)
+                        .padding(.top)
+                    
+                    Group {
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.dawnSky),
+                            title: "Dawn Sky",
+                            textColor: .primary
+                        )
+                        
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.stormyHeaven),
+                            title: "Stormy Heaven"
+                        )
+                        
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.sunsetGlow),
+                            title: "Sunset Glow"
+                        )
+                    }
+                }
+                .padding()
+            }
+        }
+        .tabItem {
+            Image(systemName: "cloud.sun.fill")
+            Text("天空")
         }
     }
 } 

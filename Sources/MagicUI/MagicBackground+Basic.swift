@@ -303,29 +303,63 @@ extension MagicBackground {
     }
 }
 
+// MARK: - Preview
 #Preview("Basic Themes") {
-    ThemePreviewContainer { _ in
-        Group {
-            BackgroundPreviewItem(background: AnyView(MagicBackground.frost), title: "Frost", textColor: .primary)
-            BackgroundPreviewItem(background: AnyView(MagicBackground.gradient), title: "Gradient")
-            BackgroundPreviewItem(background: AnyView(MagicBackground.aurora), title: "Aurora")
-            BackgroundPreviewItem(background: AnyView(MagicBackground.ocean), title: "Ocean")
-            BackgroundPreviewItem(background: AnyView(MagicBackground.sunset), title: "Sunset", textColor: .primary)
-            BackgroundPreviewItem(background: AnyView(MagicBackground.forest), title: "Forest")
-            BackgroundPreviewItem(background: AnyView(MagicBackground.lavender), title: "Lavender", textColor: .primary)
-            BackgroundPreviewItem(background: AnyView(MagicBackground.desert), title: "Desert", textColor: .primary)
-            BackgroundPreviewItem(background: AnyView(MagicBackground.midnight), title: "Midnight")
-            BackgroundPreviewItem(background: AnyView(MagicBackground.cherry), title: "Cherry")
-            BackgroundPreviewItem(background: AnyView(MagicBackground.mint), title: "Mint", textColor: .primary)
-            BackgroundPreviewItem(background: AnyView(MagicBackground.twilight), title: "Twilight")
-            BackgroundPreviewItem(background: AnyView(MagicBackground.rose), title: "Rose", textColor: .primary)
-            BackgroundPreviewItem(background: AnyView(MagicBackground.emerald), title: "Emerald")
-            BackgroundPreviewItem(background: AnyView(MagicBackground.amethyst), title: "Amethyst")
-            BackgroundPreviewItem(background: AnyView(MagicBackground.coral), title: "Coral", textColor: .primary)
-            BackgroundPreviewItem(background: AnyView(MagicBackground.slate), title: "Slate")
-            BackgroundPreviewItem(background: AnyView(MagicBackground.sage), title: "Sage", textColor: .primary)
-            BackgroundPreviewItem(background: AnyView(MagicBackground.dusk), title: "Dusk")
-            BackgroundPreviewItem(background: AnyView(MagicBackground.serenity), title: "Serenity", textColor: .primary)
+    TabView {
+        // 基础主题
+        MagicThemePreview {
+            ScrollView {
+                VStack(spacing: 20) {
+                    Group {
+                        BackgroundPreviewItem(background: AnyView(MagicBackground.frost), title: "Frost", textColor: .primary)
+                        BackgroundPreviewItem(background: AnyView(MagicBackground.gradient), title: "Gradient")
+                        BackgroundPreviewItem(background: AnyView(MagicBackground.aurora), title: "Aurora")
+                        BackgroundPreviewItem(background: AnyView(MagicBackground.ocean), title: "Ocean")
+                        BackgroundPreviewItem(background: AnyView(MagicBackground.sunset), title: "Sunset", textColor: .primary)
+                    }
+                    
+                    Group {
+                        BackgroundPreviewItem(background: AnyView(MagicBackground.forest), title: "Forest")
+                        BackgroundPreviewItem(background: AnyView(MagicBackground.lavender), title: "Lavender", textColor: .primary)
+                        BackgroundPreviewItem(background: AnyView(MagicBackground.desert), title: "Desert", textColor: .primary)
+                        BackgroundPreviewItem(background: AnyView(MagicBackground.midnight), title: "Midnight")
+                        BackgroundPreviewItem(background: AnyView(MagicBackground.cherry), title: "Cherry")
+                    }
+                }
+                .padding()
+            }
+        }
+        .tabItem {
+            Image(systemName: "1.circle.fill")
+            Text("基础")
+        }
+        
+        // 自然主题
+        MagicThemePreview {
+            ScrollView {
+                VStack(spacing: 20) {
+                    Group {
+                        BackgroundPreviewItem(background: AnyView(MagicBackground.mint), title: "Mint", textColor: .primary)
+                        BackgroundPreviewItem(background: AnyView(MagicBackground.twilight), title: "Twilight")
+                        BackgroundPreviewItem(background: AnyView(MagicBackground.rose), title: "Rose", textColor: .primary)
+                        BackgroundPreviewItem(background: AnyView(MagicBackground.emerald), title: "Emerald")
+                        BackgroundPreviewItem(background: AnyView(MagicBackground.amethyst), title: "Amethyst")
+                    }
+                    
+                    Group {
+                        BackgroundPreviewItem(background: AnyView(MagicBackground.coral), title: "Coral", textColor: .primary)
+                        BackgroundPreviewItem(background: AnyView(MagicBackground.slate), title: "Slate")
+                        BackgroundPreviewItem(background: AnyView(MagicBackground.sage), title: "Sage", textColor: .primary)
+                        BackgroundPreviewItem(background: AnyView(MagicBackground.dusk), title: "Dusk")
+                        BackgroundPreviewItem(background: AnyView(MagicBackground.serenity), title: "Serenity", textColor: .primary)
+                    }
+                }
+                .padding()
+            }
+        }
+        .tabItem {
+            Image(systemName: "2.circle.fill")
+            Text("自然")
         }
     }
 } 

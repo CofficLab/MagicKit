@@ -156,11 +156,41 @@ private struct IceCrystal: View {
 }
 
 #Preview("Snow Themes") {
-    ThemePreviewContainer { _ in
-        Group {
-            BackgroundPreviewItem(background: AnyView(MagicBackground.snowPeak), title: "Snow Peak", textColor: .primary)
-            BackgroundPreviewItem(background: AnyView(MagicBackground.glacierIce), title: "Glacier Ice", textColor: .primary)
-            BackgroundPreviewItem(background: AnyView(MagicBackground.frostMountain), title: "Frost Mountain", textColor: .primary)
+    TabView {
+        // 雪景主题
+        MagicThemePreview {
+            ScrollView {
+                VStack(spacing: 20) {
+                    Text("雪景主题")
+                        .font(.headline)
+                        .padding(.top)
+                    
+                    Group {
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.snowPeak),
+                            title: "Snow Peak",
+                            textColor: .primary
+                        )
+                        
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.glacierIce),
+                            title: "Glacier Ice",
+                            textColor: .primary
+                        )
+                        
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.frostMountain),
+                            title: "Frost Mountain",
+                            textColor: .primary
+                        )
+                    }
+                }
+                .padding()
+            }
+        }
+        .tabItem {
+            Image(systemName: "snow")
+            Text("雪景")
         }
     }
 } 

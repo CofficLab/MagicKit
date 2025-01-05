@@ -133,18 +133,78 @@ extension MagicBackground {
 }
 
 #Preview("Color Themes") {
-    ThemePreviewContainer { _ in
-        Group {
-            BackgroundPreviewItem(background: AnyView(MagicBackground.colorRed), title: "Red")
-            BackgroundPreviewItem(background: AnyView(MagicBackground.colorBlue), title: "Blue")
-            BackgroundPreviewItem(background: AnyView(MagicBackground.colorGreen), title: "Green")
-            BackgroundPreviewItem(background: AnyView(MagicBackground.colorYellow), title: "Yellow", textColor: .primary)
-            BackgroundPreviewItem(background: AnyView(MagicBackground.colorPurple), title: "Purple")
-            BackgroundPreviewItem(background: AnyView(MagicBackground.colorOrange), title: "Orange", textColor: .primary)
-            BackgroundPreviewItem(background: AnyView(MagicBackground.colorPink), title: "Pink", textColor: .primary)
-            BackgroundPreviewItem(background: AnyView(MagicBackground.colorBrown), title: "Brown")
-            BackgroundPreviewItem(background: AnyView(MagicBackground.colorGray), title: "Gray")
-            BackgroundPreviewItem(background: AnyView(MagicBackground.colorTeal), title: "Teal")
+    TabView {
+        // 颜色主题
+        MagicThemePreview {
+            ScrollView {
+                VStack(spacing: 20) {
+                    Text("颜色主题")
+                        .font(.headline)
+                        .padding(.top)
+                    
+                    Group {
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.colorRed),
+                            title: "Red"
+                        )
+                        
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.colorBlue),
+                            title: "Blue"
+                        )
+                        
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.colorGreen),
+                            title: "Green"
+                        )
+                        
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.colorYellow),
+                            title: "Yellow",
+                            textColor: .primary
+                        )
+                        
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.colorPurple),
+                            title: "Purple"
+                        )
+                    }
+                    
+                    Group {
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.colorOrange),
+                            title: "Orange",
+                            textColor: .primary
+                        )
+                        
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.colorPink),
+                            title: "Pink",
+                            textColor: .primary
+                        )
+                        
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.colorBrown),
+                            title: "Brown"
+                        )
+                        
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.colorGray),
+                            title: "Gray"
+                        )
+                        
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.colorTeal),
+                            title: "Teal"
+                        )
+                    }
+                }
+                .padding()
+            }
+        }
+        .tabItem {
+            Image(systemName: "paintpalette.fill")
+            Text("颜色")
         }
     }
 } 

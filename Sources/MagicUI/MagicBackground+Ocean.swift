@@ -140,11 +140,38 @@ extension MagicBackground {
 }
 
 #Preview("Ocean Themes") {
-    ThemePreviewContainer { _ in
-        Group {
-            BackgroundPreviewItem(background: AnyView(MagicBackground.deepOceanCurrent), title: "Deep Ocean Current")
-            BackgroundPreviewItem(background: AnyView(MagicBackground.tropicalWaters), title: "Tropical Waters")
-            BackgroundPreviewItem(background: AnyView(MagicBackground.coralReef), title: "Coral Reef")
+    TabView {
+        // 海洋主题
+        MagicThemePreview {
+            ScrollView {
+                VStack(spacing: 20) {
+                    Text("海洋主题")
+                        .font(.headline)
+                        .padding(.top)
+                    
+                    Group {
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.deepOceanCurrent),
+                            title: "Deep Ocean Current"
+                        )
+                        
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.tropicalWaters),
+                            title: "Tropical Waters"
+                        )
+                        
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.coralReef),
+                            title: "Coral Reef"
+                        )
+                    }
+                }
+                .padding()
+            }
+        }
+        .tabItem {
+            Image(systemName: "water.waves")
+            Text("海洋")
         }
     }
 } 

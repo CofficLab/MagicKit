@@ -132,13 +132,50 @@ extension MagicBackground {
 }
 
 #Preview("Music Themes") {
-    ThemePreviewContainer { _ in
-        Group {
-            BackgroundPreviewItem(background: AnyView(MagicBackground.jazzNight), title: "Jazz Night")
-            BackgroundPreviewItem(background: AnyView(MagicBackground.classicalHarmony), title: "Classical", textColor: .primary)
-            BackgroundPreviewItem(background: AnyView(MagicBackground.rockStage), title: "Rock Stage")
-            BackgroundPreviewItem(background: AnyView(MagicBackground.electronicBeats), title: "Electronic", textColor: .primary)
-            BackgroundPreviewItem(background: AnyView(MagicBackground.acousticMorning), title: "Acoustic", textColor: .primary)
+    TabView {
+        // 音乐主题
+        MagicThemePreview {
+            ScrollView {
+                VStack(spacing: 20) {
+                    Text("音乐主题")
+                        .font(.headline)
+                        .padding(.top)
+                    
+                    Group {
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.jazzNight),
+                            title: "Jazz Night"
+                        )
+                        
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.classicalHarmony),
+                            title: "Classical Harmony",
+                            textColor: .primary
+                        )
+                        
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.rockStage),
+                            title: "Rock Stage"
+                        )
+                        
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.electronicBeats),
+                            title: "Electronic Beats"
+                        )
+                        
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.acousticMorning),
+                            title: "Acoustic Morning",
+                            textColor: .primary
+                        )
+                    }
+                }
+                .padding()
+            }
+        }
+        .tabItem {
+            Image(systemName: "music.note")
+            Text("音乐")
         }
     }
 } 

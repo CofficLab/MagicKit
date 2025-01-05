@@ -141,49 +141,136 @@ private struct TimeLabel: View {
 }
 
 #Preview("MagicProgressBar") {
-    struct PreviewWrapper: View {
-        @State private var currentTime: TimeInterval = 72
-        let duration: TimeInterval = 240
-        
-        var body: some View {
-            HStack {
-                VStack(spacing: 20) {
-                    Text("Light Mode")
-                        .font(.headline)
-                    
-                    MagicProgressBar(
-                        currentTime: $currentTime,
-                        duration: duration,
-                        onSeek: { newTime in
-                            print("Seeked to: \(newTime)")
-                        }
-                    )
-                    .frame(width: 300)
-                }
-                .padding()
-                .background(.background)
-                .environment(\.colorScheme, .light)
+    TabView {
+        // 基础用法
+        MagicThemePreview {
+            VStack(spacing: 20) {
+                Text("基础进度条")
+                    .font(.headline)
                 
-                VStack(spacing: 20) {
-                    Text("Dark Mode")
-                        .font(.headline)
-                    
+                MagicProgressBar(
+                    currentTime: .constant(72),
+                    duration: 240
+                )
+                .frame(width: 300)
+            }
+            .padding()
+        }
+        .tabItem {
+            Image(systemName: "1.circle.fill")
+            Text("基础")
+        }
+        
+        // 交互示例
+        MagicThemePreview {
+            VStack(spacing: 20) {
+                Text("交互进度条")
+                    .font(.headline)
+                
+                MagicProgressBar(
+                    currentTime: .constant(120),
+                    duration: 240,
+                    onSeek: { newTime in
+                        print("Seeked to: \(newTime)")
+                    }
+                )
+                .frame(width: 300)
+            }
+            .padding()
+        }
+        .tabItem {
+            Image(systemName: "2.circle.fill")
+            Text("交互")
+        }
+        
+        // 不同长度
+        MagicThemePreview {
+            VStack(spacing: 20) {
+                Text("不同长度")
+                    .font(.headline)
+                
+                Group {
+                    Text("短进度条").font(.subheadline)
                     MagicProgressBar(
-                        currentTime: $currentTime,
-                        duration: duration,
-                        onSeek: { newTime in
-                            print("Seeked to: \(newTime)")
-                        }
+                        currentTime: .constant(30),
+                        duration: 60
+                    )
+                    .frame(width: 200)
+                }
+                
+                Group {
+                    Text("中等进度条").font(.subheadline)
+                    MagicProgressBar(
+                        currentTime: .constant(150),
+                        duration: 300
                     )
                     .frame(width: 300)
                 }
-                .padding()
-                .background(.background)
-                .environment(\.colorScheme, .dark)
+                
+                Group {
+                    Text("长进度条").font(.subheadline)
+                    MagicProgressBar(
+                        currentTime: .constant(300),
+                        duration: 600
+                    )
+                    .frame(width: 400)
+                }
             }
-            .previewLayout(.sizeThatFits)
+            .padding()
+        }
+        .tabItem {
+            Image(systemName: "3.circle.fill")
+            Text("长度")
+        }
+        
+        // 动态更新
+        MagicThemePreview {
+            DynamicProgressBarPreview()
+        }
+        .tabItem {
+            Image(systemName: "4.circle.fill")
+            Text("动态")
         }
     }
+}
+
+// MARK: - Dynamic Preview
+private struct DynamicProgressBarPreview: View {
+    @State private var currentTime: TimeInterval = 0
+    let duration: TimeInterval = 300
+    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
-    return PreviewWrapper()
+    var body: some View {
+        VStack(spacing: 20) {
+            Text("动态更新")
+                .font(.headline)
+            
+            MagicProgressBar(
+                currentTime: $currentTime,
+                duration: duration,
+                onSeek: { newTime in
+                    currentTime = newTime
+                }
+            )
+            .frame(width: 300)
+            
+            HStack {
+                Button(action: { currentTime = 0 }) {
+                    Image(systemName: "backward.end.fill")
+                }
+                
+                Button(action: { currentTime = duration }) {
+                    Image(systemName: "forward.end.fill")
+                }
+            }
+            .buttonStyle(.plain)
+            .font(.title2)
+        }
+        .padding()
+        .onReceive(timer) { _ in
+            if currentTime < duration {
+                currentTime += 1
+            }
+        }
+    }
 } 

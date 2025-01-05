@@ -115,11 +115,38 @@ extension MagicBackground {
 }
 
 #Preview("Forest Themes") {
-    ThemePreviewContainer { _ in
-        Group {
-            BackgroundPreviewItem(background: AnyView(MagicBackground.mysticalForest), title: "Mystical Forest")
-            BackgroundPreviewItem(background: AnyView(MagicBackground.enchantedGrove), title: "Enchanted Grove")
-            BackgroundPreviewItem(background: AnyView(MagicBackground.deepForest), title: "Deep Forest")
+    TabView {
+        // 森林主题
+        MagicThemePreview {
+            ScrollView {
+                VStack(spacing: 20) {
+                    Text("森林主题")
+                        .font(.headline)
+                        .padding(.top)
+                    
+                    Group {
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.mysticalForest),
+                            title: "Mystical Forest"
+                        )
+                        
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.enchantedGrove),
+                            title: "Enchanted Grove"
+                        )
+                        
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.deepForest),
+                            title: "Deep Forest"
+                        )
+                    }
+                }
+                .padding()
+            }
+        }
+        .tabItem {
+            Image(systemName: "leaf.fill")
+            Text("森林")
         }
     }
 } 

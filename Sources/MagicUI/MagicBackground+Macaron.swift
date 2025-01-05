@@ -133,13 +133,53 @@ extension MagicBackground {
 }
 
 #Preview("Macaron Themes") {
-    ThemePreviewContainer { _ in
-        Group {
-            BackgroundPreviewItem(background: AnyView(MagicBackground.vanillaMacaron), title: "Vanilla", textColor: .primary)
-            BackgroundPreviewItem(background: AnyView(MagicBackground.roseMacaron), title: "Rose", textColor: .primary)
-            BackgroundPreviewItem(background: AnyView(MagicBackground.lavenderMacaron), title: "Lavender", textColor: .primary)
-            BackgroundPreviewItem(background: AnyView(MagicBackground.mintMacaron), title: "Mint", textColor: .primary)
-            BackgroundPreviewItem(background: AnyView(MagicBackground.lemonMacaron), title: "Lemon", textColor: .primary)
+    TabView {
+        // 马卡龙主题
+        MagicThemePreview {
+            ScrollView {
+                VStack(spacing: 20) {
+                    Text("马卡龙主题")
+                        .font(.headline)
+                        .padding(.top)
+                    
+                    Group {
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.vanillaMacaron),
+                            title: "Vanilla",
+                            textColor: .primary
+                        )
+                        
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.roseMacaron),
+                            title: "Rose",
+                            textColor: .primary
+                        )
+                        
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.lavenderMacaron),
+                            title: "Lavender",
+                            textColor: .primary
+                        )
+                        
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.mintMacaron),
+                            title: "Mint",
+                            textColor: .primary
+                        )
+                        
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.lemonMacaron),
+                            title: "Lemon",
+                            textColor: .primary
+                        )
+                    }
+                }
+                .padding()
+            }
+        }
+        .tabItem {
+            Image(systemName: "circle.grid.2x2.fill")
+            Text("马卡龙")
         }
     }
 } 

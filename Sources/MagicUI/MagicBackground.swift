@@ -85,32 +85,3 @@ struct BackgroundPreviewItem: View {
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 }
-
-// 添加主题预览容器
-struct ThemePreviewContainer<Content: View>: View {
-    let content: (ColorScheme) -> Content
-    
-    init(@ViewBuilder content: @escaping (ColorScheme) -> Content) {
-        self.content = content
-    }
-    
-    var body: some View {
-            HStack(spacing: 0) {
-                // 左侧明亮模式
-                VStack(spacing: 20) {
-                    content(.light)
-                }
-                .padding()
-                .background(.background)
-                .environment(\.colorScheme, .light)
-                
-                // 右侧暗色模式
-                VStack(spacing: 20) {
-                    content(.dark)
-                }
-                .padding()
-                .background(.background)
-                .environment(\.colorScheme, .dark)
-            }
-    }
-}

@@ -147,11 +147,40 @@ extension MagicBackground {
 }
 
 #Preview("River Themes") {
-    ThemePreviewContainer { _ in
-        Group {
-            BackgroundPreviewItem(background: AnyView(MagicBackground.mountainStream), title: "Mountain Stream")
-            BackgroundPreviewItem(background: AnyView(MagicBackground.calmRiver), title: "Calm River", textColor: .primary)
-            BackgroundPreviewItem(background: AnyView(MagicBackground.cascadingRiver), title: "Cascading River")
+    TabView {
+        // 河流主题
+        MagicThemePreview {
+            ScrollView {
+                VStack(spacing: 20) {
+                    Text("河流主题")
+                        .font(.headline)
+                        .padding(.top)
+                    
+                    Group {
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.mountainStream),
+                            title: "Mountain Stream",
+                            textColor: .primary
+                        )
+                        
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.calmRiver),
+                            title: "Calm River"
+                        )
+                        
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.cascadingRiver),
+                            title: "Cascading River",
+                            textColor: .primary
+                        )
+                    }
+                }
+                .padding()
+            }
+        }
+        .tabItem {
+            Image(systemName: "drop.fill")
+            Text("河流")
         }
     }
 } 

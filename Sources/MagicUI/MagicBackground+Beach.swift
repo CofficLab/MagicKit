@@ -156,12 +156,40 @@ private struct PalmTree: View {
     }
 }
 
+// MARK: - Preview
 #Preview("Beach Themes") {
-    ThemePreviewContainer { _ in
-        Group {
-            BackgroundPreviewItem(background: AnyView(MagicBackground.sunnyBeach), title: "Sunny Beach", textColor: .primary)
-            BackgroundPreviewItem(background: AnyView(MagicBackground.tropicalSunset), title: "Tropical Sunset")
-            BackgroundPreviewItem(background: AnyView(MagicBackground.palmBeach), title: "Palm Beach", textColor: .primary)
+    TabView {
+        // 海滩主题
+        MagicThemePreview {
+            ScrollView {
+                VStack(spacing: 20) {
+                    Text("海滩主题")
+                        .font(.headline)
+                        .padding(.top)
+                    
+                    BackgroundPreviewItem(
+                        background: AnyView(MagicBackground.sunnyBeach),
+                        title: "Sunny Beach",
+                        textColor: .primary
+                    )
+                    
+                    BackgroundPreviewItem(
+                        background: AnyView(MagicBackground.tropicalSunset),
+                        title: "Tropical Sunset"
+                    )
+                    
+                    BackgroundPreviewItem(
+                        background: AnyView(MagicBackground.palmBeach),
+                        title: "Palm Beach",
+                        textColor: .primary
+                    )
+                }
+                .padding()
+            }
+        }
+        .tabItem {
+            Image(systemName: "sun.horizon.fill")
+            Text("海滩")
         }
     }
 } 

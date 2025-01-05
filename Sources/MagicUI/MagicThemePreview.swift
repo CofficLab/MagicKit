@@ -22,22 +22,21 @@ public struct MagicThemePreview<Content: View>: View {
     }
     
     public var body: some View {
-        HStack(spacing: spacing) {
-            // 亮色主题
+        GeometryReader { geometry in
             ScrollView(.vertical, showsIndicators: showsIndicators) {
-                content
-                    .frame(maxWidth: .infinity)
-                    .background(Color(nsColor: .windowBackgroundColor))
-                    .environment(\.colorScheme, .light)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            
-            // 暗色主题
-            ScrollView(.vertical, showsIndicators: showsIndicators) {
-                content
-                    .frame(maxWidth: .infinity)
-                    .background(Color(nsColor: .darkGray))
-                    .environment(\.colorScheme, .dark)
+                HStack(spacing: spacing) {
+                    // 亮色主题
+                    content
+                        .frame(maxWidth: .infinity, minHeight: geometry.size.height)
+                        .background(Color(nsColor: .windowBackgroundColor))
+                        .environment(\.colorScheme, .light)
+                    
+                    // 暗色主题
+                    content
+                        .frame(maxWidth: .infinity, minHeight: geometry.size.height)
+                        .background(Color(nsColor: .darkGray))
+                        .environment(\.colorScheme, .dark)
+                }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
@@ -46,13 +45,16 @@ public struct MagicThemePreview<Content: View>: View {
 
 // MARK: - Preview
 #Preview("MagicThemePreview") {
-    VStack(spacing: 20) {
+    TabView {
         // 示例 1：基本用法
         MagicThemePreview {
             Text("Hello, World!")
                 .padding()
         }
-        .frame(height: 100)
+        .tabItem {
+            Image(systemName: "1.circle.fill")
+            Text("基本")
+        }
         
         // 示例 2：带间距
         MagicThemePreview(spacing: 1) {
@@ -63,7 +65,10 @@ public struct MagicThemePreview<Content: View>: View {
             }
             .padding()
         }
-        .frame(height: 100)
+        .tabItem {
+            Image(systemName: "2.circle.fill")
+            Text("间距")
+        }
         
         // 示例 3：复杂内容
         MagicThemePreview {
@@ -86,12 +91,15 @@ public struct MagicThemePreview<Content: View>: View {
             }
             .padding()
         }
-        .frame(height: 200)
+        .tabItem {
+            Image(systemName: "3.circle.fill")
+            Text("复杂")
+        }
         
         // 示例 4：长内容滚动
         MagicThemePreview {
             VStack(spacing: 16) {
-                ForEach(1...10, id: \.self) { index in
+                ForEach(1...20, id: \.self) { index in
                     HStack {
                         Circle()
                             .fill(.blue.opacity(0.2))
@@ -116,7 +124,9 @@ public struct MagicThemePreview<Content: View>: View {
             }
             .padding()
         }
-        .frame(height: 300)
+        .tabItem {
+            Image(systemName: "4.circle.fill")
+            Text("滚动")
+        }
     }
-    .padding()
 } 

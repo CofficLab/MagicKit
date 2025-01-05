@@ -141,13 +141,52 @@ extension MagicBackground {
 }
 
 #Preview("Fruit Themes") {
-    ThemePreviewContainer { _ in
-        Group {
-            BackgroundPreviewItem(background: AnyView(MagicBackground.watermelon), title: "Watermelon", textColor: .primary)
-            BackgroundPreviewItem(background: AnyView(MagicBackground.orange), title: "Orange", textColor: .primary)
-            BackgroundPreviewItem(background: AnyView(MagicBackground.blueberry), title: "Blueberry")
-            BackgroundPreviewItem(background: AnyView(MagicBackground.strawberry), title: "Strawberry", textColor: .primary)
-            BackgroundPreviewItem(background: AnyView(MagicBackground.kiwi), title: "Kiwi", textColor: .primary)
+    TabView {
+        // 水果主题
+        MagicThemePreview {
+            ScrollView {
+                VStack(spacing: 20) {
+                    Text("水果主题")
+                        .font(.headline)
+                        .padding(.top)
+                    
+                    Group {
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.watermelon),
+                            title: "Watermelon",
+                            textColor: .primary
+                        )
+                        
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.orange),
+                            title: "Orange",
+                            textColor: .primary
+                        )
+                        
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.blueberry),
+                            title: "Blueberry"
+                        )
+                        
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.strawberry),
+                            title: "Strawberry",
+                            textColor: .primary
+                        )
+                        
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.kiwi),
+                            title: "Kiwi",
+                            textColor: .primary
+                        )
+                    }
+                }
+                .padding()
+            }
+        }
+        .tabItem {
+            Image(systemName: "leaf.fill")
+            Text("水果")
         }
     }
 } 

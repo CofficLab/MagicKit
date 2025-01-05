@@ -244,13 +244,48 @@ extension MagicBackground {
 
 // 添加预览
 #Preview("Cosmic Themes") {
-    ThemePreviewContainer { _ in
-        Group {
-            BackgroundPreviewItem(background: AnyView(MagicBackground.cosmicDust), title: "Cosmic Dust")
-            BackgroundPreviewItem(background: AnyView(MagicBackground.galaxySpiral), title: "Galaxy Spiral")
-            BackgroundPreviewItem(background: AnyView(MagicBackground.nebulaMist), title: "Nebula Mist")
-            BackgroundPreviewItem(background: AnyView(MagicBackground.darkMatter), title: "Dark Matter")
-            BackgroundPreviewItem(background: AnyView(MagicBackground.cosmicPortal), title: "Cosmic Portal")
+    TabView {
+        // 宇宙主题
+        MagicThemePreview {
+            ScrollView {
+                VStack(spacing: 20) {
+                    Text("宇宙主题")
+                        .font(.headline)
+                        .padding(.top)
+                    
+                    Group {
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.cosmicDust),
+                            title: "Cosmic Dust"
+                        )
+                        
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.galaxySpiral),
+                            title: "Galaxy Spiral"
+                        )
+                        
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.nebulaMist),
+                            title: "Nebula Mist"
+                        )
+                        
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.darkMatter),
+                            title: "Dark Matter"
+                        )
+                        
+                        BackgroundPreviewItem(
+                            background: AnyView(MagicBackground.cosmicPortal),
+                            title: "Cosmic Portal"
+                        )
+                    }
+                }
+                .padding()
+            }
+        }
+        .tabItem {
+            Image(systemName: "sparkles")
+            Text("宇宙")
         }
     }
 } 
