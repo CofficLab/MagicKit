@@ -244,4 +244,39 @@ public extension MagicButton {
             action: self.action
         )
     }
+    
+    /// 显示虚线边框，用于调试布局
+    /// - Parameters:
+    ///   - color: 边框颜色
+    ///   - lineWidth: 线条宽度
+    ///   - dash: 虚线模式，默认为 [4]
+    /// - Returns: 修改后的按钮
+    ///
+    /// 示例：
+    /// ```swift
+    /// button.magicDebugBorder()
+    /// button.magicDebugBorder(.red, lineWidth: 2)
+    /// button.magicDebugBorder(.blue, dash: [8, 4])
+    /// ```
+    func magicDebugBorder(
+        _ color: Color = .gray,
+        lineWidth: CGFloat = 1,
+        dash: [CGFloat] = [4]
+    ) -> some View {
+        self.overlay(
+            Rectangle()
+                .strokeBorder(
+                    style: StrokeStyle(
+                        lineWidth: lineWidth,
+                        dash: dash
+                    )
+                )
+                .foregroundStyle(color.opacity(0.5))
+        )
+    }
+}
+
+#Preview("MagicButton") {
+    MagicButtonPreview()
+        .frame(height: 800)
 }

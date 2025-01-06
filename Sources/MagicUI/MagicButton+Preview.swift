@@ -11,6 +11,7 @@ private struct BasicButtonsPreview: View {
             VStack(spacing: 16) {
                 MagicButton(icon: "star", action: {})
                     .magicTitle("默认按钮")
+                    .magicDebugBorder()
             }
             .padding()
             .background(Color.blue.opacity(0.1))
@@ -52,19 +53,23 @@ private struct SizeButtonsPreview: View {
                         .magicTitle("Regular")
                         .magicSize(.regular)
                         .magicShape(.roundedRectangle)
+                        .magicDebugBorder()
                     
                     MagicButton(icon: "star", action: {})
                         .magicSize(.regular)
                         .magicShape(.circle)
+                        .magicDebugBorder()
                     
                     MagicButton(icon: "star", action: {})
                         .magicTitle("Regular")
                         .magicSize(.regular)
                         .magicShape(.capsule)
+                        .magicDebugBorder()
                     
                     MagicButton(icon: "star", action: {})
                         .magicSize(.regular)
                         .magicShape(.roundedSquare)
+                        .magicDebugBorder()
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -79,19 +84,23 @@ private struct SizeButtonsPreview: View {
                         .magicTitle("Large")
                         .magicSize(.large)
                         .magicShape(.roundedRectangle)
+                        .magicDebugBorder()
                     
                     MagicButton(icon: "star", action: {})
                         .magicSize(.large)
                         .magicShape(.circle)
+                        .magicDebugBorder()
                     
                     MagicButton(icon: "star", action: {})
                         .magicTitle("Large")
                         .magicSize(.large)
                         .magicShape(.capsule)
+                        .magicDebugBorder()
                     
                     MagicButton(icon: "star", action: {})
                         .magicSize(.large)
                         .magicShape(.roundedSquare)
+                        .magicDebugBorder()
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -292,6 +301,7 @@ private struct CustomShapeButtonsPreview: View {
                             bottomLeft: 0,
                             bottomRight: 0
                         ))
+                        .magicDebugBorder()
                     
                     MagicButton(icon: "star", action: {})
                         .magicTitle("仅右圆角")
@@ -301,6 +311,7 @@ private struct CustomShapeButtonsPreview: View {
                             bottomLeft: 0,
                             bottomRight: 16
                         ))
+                        .magicDebugBorder()
                     
                     MagicButton(icon: "star", action: {})
                         .magicTitle("不同圆角")
@@ -310,6 +321,7 @@ private struct CustomShapeButtonsPreview: View {
                             bottomLeft: 16,
                             bottomRight: 8
                         ))
+                        .magicDebugBorder()
                 }
             }
             .padding()
@@ -332,6 +344,7 @@ private struct CustomShapeButtonsPreview: View {
                             leftRadius: 8,
                             rightRadius: 24
                         ))
+                        .magicDebugBorder()
                 }
             }
             .padding()
@@ -357,6 +370,7 @@ private struct InteractiveButtonsPreview: View {
                     action: {}
                 )
                 .magicTitle("Disabled Button")
+                .magicDebugBorder()
             }
             .padding()
             .background(Color.blue.opacity(0.1))
@@ -373,6 +387,7 @@ private struct InteractiveButtonsPreview: View {
                     action: {}
                 )
                 .magicTitle("With Popover")
+                .magicDebugBorder()
             }
             .padding()
             .background(Color.blue.opacity(0.1))
@@ -395,11 +410,13 @@ private struct ShapeVisibilityButtonsPreview: View {
                     MagicButton(icon: "star", action: {})
                         .magicTitle("Always")
                         .magicShapeVisibility(.always)
+                        .magicDebugBorder()
                     
                     MagicButton(icon: "star", action: {})
                         .magicStyle(.primary)
                         .magicTitle("Always")
                         .magicShapeVisibility(.always)
+                        .magicDebugBorder()
                 }
             }
             .padding()
@@ -412,11 +429,13 @@ private struct ShapeVisibilityButtonsPreview: View {
                     MagicButton(icon: "star", action: {})
                         .magicTitle("On Hover")
                         .magicShapeVisibility(.onHover)
+                        .magicDebugBorder()
                     
                     MagicButton(icon: "star", action: {})
                         .magicStyle(.primary)
                         .magicTitle("On Hover")
                         .magicShapeVisibility(.onHover)
+                        .magicDebugBorder()
                 }
             }
             .padding()
@@ -440,14 +459,17 @@ private struct BackgroundColorButtonsPreview: View {
                     MagicButton(icon: "star", action: {})
                         .magicTitle("Blue")
                         .magicBackgroundColor(.blue)
+                        .magicDebugBorder()
                     
                     MagicButton(icon: "heart", action: {})
                         .magicTitle("Red")
                         .magicBackgroundColor(.red)
+                        .magicDebugBorder()
                     
                     MagicButton(icon: "leaf", action: {})
                         .magicTitle("Green")
                         .magicBackgroundColor(.green)
+                        .magicDebugBorder()
                 }
             }
             .padding()
@@ -460,15 +482,18 @@ private struct BackgroundColorButtonsPreview: View {
                     MagicButton(icon: "star", action: {})
                         .magicShape(.circle)
                         .magicBackgroundColor(.purple)
+                        .magicDebugBorder()
                     
                     MagicButton(icon: "star", action: {})
                         .magicShape(.roundedSquare)
                         .magicBackgroundColor(.orange)
+                        .magicDebugBorder()
                     
                     MagicButton(icon: "star", action: {})
                         .magicTitle("Capsule")
                         .magicShape(.capsule)
                         .magicBackgroundColor(.mint)
+                        .magicDebugBorder()
                 }
             }
             .padding()
@@ -504,14 +529,17 @@ private struct BackgroundColorButtonsPreview: View {
                     MagicButton(icon: "sun.max", action: {})
                         .magicTitle("Dawn")
                         .magicBackground(MagicBackground.dawnSky)
+                        .magicDebugBorder()
                     
                     MagicButton(icon: "cloud.bolt", action: {})
                         .magicTitle("Storm")
                         .magicBackground(MagicBackground.stormyHeaven)
+                        .magicDebugBorder()
                     
                     MagicButton(icon: "sunset", action: {})
                         .magicTitle("Sunset")
                         .magicBackground(MagicBackground.sunsetGlow)
+                        .magicDebugBorder()
                 }
             }
             .padding()
@@ -530,6 +558,7 @@ private struct BackgroundColorButtonsPreview: View {
                                 endPoint: .trailing
                             )
                         )
+                        .magicDebugBorder()
                     
                     MagicButton(icon: "star", action: {})
                         .magicTitle("Angular")
@@ -539,6 +568,7 @@ private struct BackgroundColorButtonsPreview: View {
                                 center: .center
                             )
                         )
+                        .magicDebugBorder()
                     
                     MagicButton(icon: "star", action: {})
                         .magicTitle("Radial")
@@ -550,6 +580,66 @@ private struct BackgroundColorButtonsPreview: View {
                                 endRadius: 50
                             )
                         )
+                        .magicDebugBorder()
+                }
+            }
+            .padding()
+            .background(Color.blue.opacity(0.1))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+        }
+        .padding()
+    }
+}
+
+// 在 BackgroundColorButtonsPreview 后添加
+private struct DebugBorderButtonsPreview: View {
+    var body: some View {
+        VStack(spacing: 20) {
+            Text("调试边框")
+                .font(.headline)
+            
+            VStack(spacing: 16) {
+                Text("默认边框").font(.subheadline)
+                HStack(spacing: 16) {
+                    MagicButton(icon: "star", action: {})
+                        .magicTitle("Default")
+                        .magicDebugBorder()
+                    
+                    MagicButton(icon: "star", action: {})
+                        .magicShape(.circle)
+                        .magicDebugBorder()
+                }
+            }
+            .padding()
+            .background(Color.blue.opacity(0.1))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            
+            VStack(spacing: 16) {
+                Text("自定义边框").font(.subheadline)
+                HStack(spacing: 16) {
+                    MagicButton(icon: "star", action: {})
+                        .magicTitle("Red Border")
+                        .magicDebugBorder(.red, lineWidth: 2)
+                    
+                    MagicButton(icon: "star", action: {})
+                        .magicTitle("Custom Dash")
+                        .magicDebugBorder(.blue, dash: [8, 4])
+                }
+            }
+            .padding()
+            .background(Color.blue.opacity(0.1))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            
+            VStack(spacing: 16) {
+                Text("不同大小").font(.subheadline)
+                HStack(spacing: 16) {
+                    MagicButton(icon: "star", action: {})
+                        .magicSize(.small)
+                        .magicDebugBorder(.green)
+                    
+                    MagicButton(icon: "star", action: {})
+                        .magicSize(.large)
+                        .magicDebugBorder(.orange)
                 }
             }
             .padding()
@@ -619,6 +709,14 @@ struct MagicButtonPreview: View {
             .tabItem {
                 Image(systemName: "7.circle.fill")
                 Text("背景")
+            }
+            
+            MagicThemePreview {
+                DebugBorderButtonsPreview()
+            }
+            .tabItem {
+                Image(systemName: "8.circle.fill")
+                Text("调试")
             }
         }
     }

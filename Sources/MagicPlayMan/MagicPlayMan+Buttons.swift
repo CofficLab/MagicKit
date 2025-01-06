@@ -8,12 +8,13 @@ public extension MagicPlayMan {
         MagicButton(
             icon: state == .playing ? .iconPauseFill : .iconPlayFill,
             style: state == .playing ? .primary : .secondary,
-            size: .large,
+//            size: .,
             shape: .circle,
             disabledReason: !hasAsset ? "No media loaded" :
                 state.isLoading ? "Loading..." : nil,
             action: toggle
         )
+        .magicDebugBorder(.red)
     }
 
     /// 创建上一曲按钮
@@ -43,7 +44,7 @@ public extension MagicPlayMan {
             shape: .circle,
             disabledReason: disabledReason,
             action: previous
-        )
+        ).magicDebugBorder()
     }
 
     /// 创建下一曲按钮
@@ -74,7 +75,7 @@ public extension MagicPlayMan {
             shape: .circle,
             disabledReason: disabledReason,
             action: next
-        )
+        ).magicDebugBorder()
     }
 
     /// 创建快退按钮
@@ -89,7 +90,7 @@ public extension MagicPlayMan {
             action: {
                 self.skipBackward()
             }
-        )
+        ).magicDebugBorder()
     }
 
     /// 创建快进按钮
@@ -104,7 +105,7 @@ public extension MagicPlayMan {
             action: {
                 self.skipForward()
             }
-        )
+        ).magicDebugBorder()
     }
 
     /// 创建播放模式按钮
@@ -116,6 +117,7 @@ public extension MagicPlayMan {
             shape: .circle,
             action: togglePlayMode
         )
+        .magicDebugBorder(.red)
     }
 
     /// 创建喜欢按钮
@@ -134,7 +136,8 @@ public extension MagicPlayMan {
         )
         .magicShape(.roundedSquare)
         .magicStyle(.secondary)
-        .magicShapeVisibility(.onHover)
+        .magicShapeVisibility(.always)
+        .magicDebugBorder()
         .symbolEffect(.bounce, value: isCurrentAssetLiked)
     }
 
@@ -143,7 +146,7 @@ public extension MagicPlayMan {
         MagicButton(
             icon: .iconList,
             style: .secondary,
-            size: .regular,
+//            size: .regular,
             shape: .circle,
             disabledReason: !self.isPlaylistEnabled ? "Playlist is disabled\nEnable playlist to view and manage tracks" : nil,
             popoverContent: self.isPlaylistEnabled ? AnyView(
@@ -154,7 +157,7 @@ public extension MagicPlayMan {
                 }
             ) : nil,
             action: {}
-        )
+        ).magicDebugBorder()
     }
 
     /// 创建播放列表启用/禁用按钮
@@ -174,6 +177,7 @@ public extension MagicPlayMan {
                 self.setPlaylistEnabled(!self.isPlaylistEnabled)
             }
         )
+        .magicDebugBorder()
         .symbolEffect(.bounce, value: self.isPlaylistEnabled)
     }
 
@@ -191,6 +195,7 @@ public extension MagicPlayMan {
             ),
             action: {}
         )
+        .magicDebugBorder()
     }
 
     /// 创建支持的格式按钮
@@ -207,6 +212,7 @@ public extension MagicPlayMan {
             ),
             action: {}
         )
+        .magicDebugBorder()
     }
     
     /// 创建日志按钮
@@ -225,6 +231,7 @@ public extension MagicPlayMan {
         .magicShape(.roundedSquare)
         .magicStyle(.secondary)
         .magicShapeVisibility(.onHover)
+        .magicDebugBorder()
     }
 }
 

@@ -265,8 +265,9 @@ public struct MagicButton: View {
             }
             .buttonStyle(MagicButtonStyle())
             .frame(
-                idealWidth: buttonSize + (size.horizontalPadding * 2),
-                idealHeight: buttonSize + (size.verticalPadding * 2)
+                width: geometry.size.width,
+                height: geometry.size.height,
+                alignment: .center
             )
             .onHover { hovering in
                 isHovering = hovering && disabledReason == nil

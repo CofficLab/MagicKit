@@ -82,6 +82,7 @@ public struct MagicThemePreview<Content: View>: View {
                 )
                 .magicBackground(background.view)
                 .magicShape(.circle)
+                .magicDebugBorder()
             }
             
             Spacer()

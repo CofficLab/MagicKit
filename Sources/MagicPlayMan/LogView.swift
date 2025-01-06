@@ -15,7 +15,7 @@ struct LogView: View {
                     .font(.headline)
                     .foregroundStyle(.secondary)
 
-                Spacer()
+                Spacer().frame(maxWidth: .infinity)
 
                 MagicButton(
                     icon: "doc.on.doc",
@@ -25,6 +25,7 @@ struct LogView: View {
                     shape: .capsule,
                     action: copyAllLogs
                 )
+                .magicDebugBorder()
 
                 MagicButton(
                     icon: "trash",
@@ -34,6 +35,7 @@ struct LogView: View {
                     shape: .capsule,
                     action: onClear
                 )
+                .magicDebugBorder()
             }
             .overlay {
                 if showToast {
