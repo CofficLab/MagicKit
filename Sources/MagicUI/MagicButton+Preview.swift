@@ -211,6 +211,62 @@ private struct InteractiveButtonsPreview: View {
     }
 }
 
+// MARK: - Shape Visibility Preview
+private struct ShapeVisibilityButtonsPreview: View {
+    var body: some View {
+        VStack(spacing: 20) {
+            Text("形状显示")
+                .font(.headline)
+            
+            Group {
+                Text("始终显示").font(.subheadline)
+                MagicButton(icon: "star", action: {})
+                    .magicTitle("Always Visible")
+                    .magicStyle(.primary)
+                    .magicShapeVisibility(.always)
+            }
+            
+            Group {
+                Text("悬停显示").font(.subheadline)
+                MagicButton(icon: "star", action: {})
+                    .magicTitle("Show on Hover")
+                    .magicStyle(.primary)
+                    .magicShapeVisibility(.onHover)
+            }
+            
+            Group {
+                Text("组合效果").font(.subheadline)
+                HStack(spacing: 16) {
+                    MagicButton(icon: "star", action: {})
+                        .magicShape(.circle)
+                        .magicShapeVisibility(.onHover)
+                    
+                    MagicButton(icon: "star", action: {})
+                        .magicTitle("Hover Me")
+                        .magicShape(.capsule)
+                        .magicShapeVisibility(.onHover)
+                }
+            }
+            
+            Group {
+                Text("不同样式").font(.subheadline)
+                HStack(spacing: 16) {
+                    MagicButton(icon: "star", action: {})
+                        .magicTitle("Primary")
+                        .magicStyle(.primary)
+                        .magicShapeVisibility(.onHover)
+                    
+                    MagicButton(icon: "star", action: {})
+                        .magicTitle("Secondary")
+                        .magicStyle(.secondary)
+                        .magicShapeVisibility(.onHover)
+                }
+            }
+        }
+        .padding()
+    }
+}
+
 // MARK: - Main Preview
 struct MagicButtonPreview: View {
     var body: some View {
@@ -254,6 +310,14 @@ struct MagicButtonPreview: View {
             .tabItem {
                 Image(systemName: "5.circle.fill")
                 Text("交互")
+            }
+            
+            MagicThemePreview {
+                ShapeVisibilityButtonsPreview()
+            }
+            .tabItem {
+                Image(systemName: "6.circle.fill")
+                Text("显示")
             }
         }
     }

@@ -77,6 +77,14 @@ public struct MagicButton: View {
         }
     }
     
+    /// 按钮形状的显示时机
+    public enum ShapeVisibility {
+        /// 始终显示形状
+        case always
+        /// 仅在悬停时显示形状
+        case onHover
+    }
+    
     // MARK: - Properties
     
     /// SF Symbols 图标名称
@@ -89,6 +97,8 @@ public struct MagicButton: View {
     let size: Size
     /// 按钮形状
     let shape: Shape
+    /// 形状显示时机
+    let shapeVisibility: ShapeVisibility
     /// 禁用状态的提示文本
     let disabledReason: String?
     /// 弹出内容
@@ -109,6 +119,7 @@ public struct MagicButton: View {
     ///   - style: 按钮样式（默认为 .primary）
     ///   - size: 按钮大小（默认为 .regular）
     ///   - shape: 按钮形状（默认为 .circle）
+    ///   - shapeVisibility: 形状显示时机（默认为 .always）
     ///   - disabledReason: 禁用状态的提示文本（如果为 nil 则按钮可用）
     ///   - popoverContent: 弹出内容（可选）
     ///   - action: 点击动作
@@ -118,6 +129,7 @@ public struct MagicButton: View {
         style: Style = .primary,
         size: Size = .regular,
         shape: Shape = .roundedRectangle,
+        shapeVisibility: ShapeVisibility = .always,
         disabledReason: String? = nil,
         popoverContent: AnyView? = nil,
         action: @escaping () -> Void
@@ -127,6 +139,7 @@ public struct MagicButton: View {
         self.style = style
         self.size = size
         self.shape = shape
+        self.shapeVisibility = shapeVisibility
         self.disabledReason = disabledReason
         self.popoverContent = popoverContent
         self.action = action
@@ -155,7 +168,7 @@ public struct MagicButton: View {
                    height: isCircularShape ? buttonSize : nil)
             .padding(.horizontal, isCircularShape ? 0 : horizontalPadding)
             .padding(.vertical, isCircularShape ? 0 : verticalPadding)
-            .background(buttonShape)
+            .background(shouldShowShape ? buttonShape : nil)
             .scaleEffect(isHovering ? 1.05 : 1.0)
             .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isHovering)
             .opacity(disabledReason != nil ? 0.5 : 1.0)
@@ -309,6 +322,15 @@ public struct MagicButton: View {
             return isHovering ? .accentColor.opacity(0.3) : .clear
         case .secondary:
             return isHovering ? Color.primary.opacity(0.2) : .clear
+        }
+    }
+    
+    private var shouldShowShape: Bool {
+        switch shapeVisibility {
+        case .always:
+            return true
+        case .onHover:
+            return isHovering
         }
     }
 }

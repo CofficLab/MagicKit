@@ -1,5 +1,13 @@
 import SwiftUI
 
+/// 按钮形状的显示时机
+public enum MagicButtonShapeVisibility {
+    /// 始终显示形状
+    case always
+    /// 仅在悬停时显示形状
+    case onHover
+}
+
 /// MagicButton 的修改器
 public extension MagicButton {
     /// 设置按钮图标
@@ -139,8 +147,35 @@ public extension MagicButton {
             style: self.style,
             size: self.size,
             shape: self.shape,
+            shapeVisibility: self.shapeVisibility,
             disabledReason: self.disabledReason,
             popoverContent: AnyView(content()),
+            action: self.action
+        )
+    }
+    
+    /// 设置按钮形状的显示时机
+    /// - Parameter visibility: 形状显示时机（.always 或 .onHover）
+    /// - Returns: 更新后的按钮
+    ///
+    /// 示例：
+    /// ```swift
+    /// // 始终显示形状（默认行为）
+    /// button.magicShapeVisibility(.always)
+    ///
+    /// // 仅在悬停时显示形状
+    /// button.magicShapeVisibility(.onHover)
+    /// ```
+    func magicShapeVisibility(_ visibility: ShapeVisibility) -> MagicButton {
+        MagicButton(
+            icon: self.icon,
+            title: self.title,
+            style: self.style,
+            size: self.size,
+            shape: self.shape,
+            shapeVisibility: visibility,
+            disabledReason: self.disabledReason,
+            popoverContent: self.popoverContent,
             action: self.action
         )
     }
@@ -148,4 +183,57 @@ public extension MagicButton {
 
 #Preview("MagicButton") {
     MagicButtonPreview()
+}
+
+// MARK: - Shape Visibility Modifier
+
+/// 控制按钮形状显示时机的修饰器
+private struct MagicButtonShapeVisibilityModifier: ViewModifier {
+    let visibility: MagicButtonShapeVisibility
+    
+    @State private var isHovering = false
+    
+    func body(content: Content) -> some View {
+        content
+            .opacity(shouldShow ? 1 : 0)
+            .animation(.easeInOut(duration: 0.2), value: isHovering)
+            .onHover { hovering in
+                isHovering = hovering
+            }
+    }
+    
+    private var shouldShow: Bool {
+        switch visibility {
+        case .always:
+            return true
+        case .onHover:
+            return isHovering
+        }
+    }
+}
+
+// MARK: - View Extension
+
+public extension View {
+    /// 设置按钮形状的显示时机
+    /// - Parameter visibility: 形状显示时机（.always 或 .onHover）
+    /// - Returns: 修改后的视图
+    ///
+    /// 示例：
+    /// ```swift
+    /// // 始终显示形状（默认行为）
+    /// button.background(
+    ///     buttonShape
+    ///         .magicButtonShapeVisibility(.always)
+    /// )
+    ///
+    /// // 仅在悬停时显示形状
+    /// button.background(
+    ///     buttonShape
+    ///         .magicButtonShapeVisibility(.onHover)
+    /// )
+    /// ```
+    func magicButtonShapeVisibility(_ visibility: MagicButtonShapeVisibility) -> some View {
+        self.modifier(MagicButtonShapeVisibilityModifier(visibility: visibility))
+    }
 }
