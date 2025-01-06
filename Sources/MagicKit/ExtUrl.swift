@@ -15,6 +15,10 @@ extension URL: SuperLog {
 }
 
 extension URL {
+    public func getHash(verbose: Bool = true) -> String {
+        FileHelper.getMD5(self)
+    }
+    
     public func getBlob() throws -> String {
         let url = self
 
