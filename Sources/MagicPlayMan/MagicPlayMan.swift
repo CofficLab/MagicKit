@@ -66,6 +66,12 @@ public class MagicPlayMan: ObservableObject {
         /// 当播放列表被禁用时，通知调用者用户请求播放下一首
         public let onNextRequested = PassthroughSubject<MagicAsset, Never>()
         
+        /// 喜欢状态变化事件
+        /// - Parameters:
+        ///   - asset: 发生变化的资源
+        ///   - isLiked: 新的喜欢状态
+        public let onLikeStatusChanged = PassthroughSubject<(asset: MagicAsset, isLiked: Bool), Never>()
+        
         /// 添加订阅者
         func addSubscriber(
             name: String,
@@ -116,7 +122,8 @@ public class MagicPlayMan: ObservableObject {
         onBufferingStateChanged: ((Bool) -> Void)? = nil,
         onStateChanged: ((PlaybackState) -> Void)? = nil,
         onPreviousRequested: ((MagicAsset) -> Void)? = nil,
-        onNextRequested: ((MagicAsset) -> Void)? = nil
+        onNextRequested: ((MagicAsset) -> Void)? = nil,
+        onLikeStatusChanged: ((MagicAsset, Bool) -> Void)? = nil
     ) -> UUID {
         let hasNavigationHandler = onPreviousRequested != nil || onNextRequested != nil
         let subscriberId = events.addSubscriber(
@@ -174,6 +181,15 @@ public class MagicPlayMan: ObservableObject {
                 .sink { [weak self] asset in
                     self?.log("事件：请求下一首 - 将由 \(name) 处理")
                     handler(asset)
+                }
+                .store(in: &cancellables)
+        }
+        
+        if let handler = onLikeStatusChanged {
+            events.onLikeStatusChanged
+                .sink { [weak self] event in
+                    self?.log("事件：喜欢状态变化 - 将由 \(name) 处理")
+                    handler(event.asset, event.isLiked)
                 }
                 .store(in: &cancellables)
         }
@@ -303,15 +319,20 @@ public class MagicPlayMan: ObservableObject {
     /// 切换当前资源的喜欢状态
     public func toggleLike() {
         guard let asset = currentAsset else { return }
-        if likedAssets.contains(asset.url) {
-            likedAssets.remove(asset.url)
-            log("Removed from liked: \(asset.title)")
-            showToast("Removed from liked", icon: .iconHeart, style: .info)
-        } else {
+        let newLikeStatus = !likedAssets.contains(asset.url)
+        
+        if newLikeStatus {
             likedAssets.insert(asset.url)
             log("Added to liked: \(asset.title)")
             showToast("Added to liked", icon: .iconHeartFill, style: .info)
+        } else {
+            likedAssets.remove(asset.url)
+            log("Removed from liked: \(asset.title)")
+            showToast("Removed from liked", icon: .iconHeart, style: .info)
         }
+        
+        // 通知订阅者喜欢状态变化
+        events.onLikeStatusChanged.send((asset: asset, isLiked: newLikeStatus))
         updateNowPlayingInfo()
     }
 
