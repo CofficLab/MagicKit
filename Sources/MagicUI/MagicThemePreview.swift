@@ -1,11 +1,35 @@
 import SwiftUI
 
+// MARK: - MagicThemePreview
 /// 主题预览容器，提供亮暗主题切换功能
 public struct MagicThemePreview<Content: View>: View {
+    // MARK: - Properties
     private let content: Content
     private let showsIndicators: Bool
     @State private var isDarkMode = false
+    @State private var selectedBackground: BackgroundOption
     
+    // MARK: - Background Options
+    private struct BackgroundOption: Identifiable, Equatable {
+        let id = UUID()
+        let title: String
+        let view: AnyView
+        
+        static func == (lhs: BackgroundOption, rhs: BackgroundOption) -> Bool {
+            lhs.id == rhs.id
+        }
+    }
+    
+    private let backgrounds: [BackgroundOption] = [
+        .init(title: "Default", view: AnyView(Color(nsColor: .windowBackgroundColor))),
+        .init(title: "Frost", view: AnyView(MagicBackground.frost)),
+        .init(title: "Aurora", view: AnyView(MagicBackground.aurora)),
+        .init(title: "Ocean", view: AnyView(MagicBackground.ocean)),
+        .init(title: "Sunset", view: AnyView(MagicBackground.sunset)),
+        .init(title: "Forest", view: AnyView(MagicBackground.forest))
+    ]
+    
+    // MARK: - Initialization
     /// 创建主题预览容器
     /// - Parameters:
     ///   - showsIndicators: 是否显示滚动条，默认为 true
@@ -16,44 +40,71 @@ public struct MagicThemePreview<Content: View>: View {
     ) {
         self.content = content()
         self.showsIndicators = showsIndicators
+        self._selectedBackground = State(initialValue: BackgroundOption(
+            title: "Default",
+            view: AnyView(Color(nsColor: .windowBackgroundColor))
+        ))
     }
     
+    // MARK: - Body
     public var body: some View {
-        VStack(spacing: 0) {
-            // 顶部工具栏
-            HStack {
-                Spacer()
+        ZStack {
+            // MARK: Background Layer
+            selectedBackground.view
+                .ignoresSafeArea()
+            
+            // MARK: Content Layer
+            VStack(spacing: 0) {
+                // MARK: Toolbar
+                toolbar
                 
-                MagicButton(
-                    icon: isDarkMode ? "sun.max.fill" : "moon.fill",
-                    style: .secondary,
-                    action: { isDarkMode.toggle() }
-                )
-                .magicShape(.roundedSquare)
-                .padding()
-            }
-            .frame(height: 50)
-            .background(.ultraThinMaterial)
-            
-            // 分隔线
-            Divider()
-            
-            // 内容区域
-            ScrollView(.vertical, showsIndicators: showsIndicators) {
-                content
-                    .frame(maxWidth: .infinity)
+                // MARK: Divider
+                Divider()
+                
+                // MARK: Content Area
+                ScrollView(.vertical, showsIndicators: showsIndicators) {
+                    content
+                        .frame(maxWidth: .infinity)
+                }
             }
         }
         .environment(\.colorScheme, isDarkMode ? .dark : .light)
-        .frame(maxHeight: .infinity)
-        .background(isDarkMode ? Color(nsColor: .darkGray) : Color(nsColor: .windowBackgroundColor))
+    }
+    
+    // MARK: - Toolbar View
+    private var toolbar: some View {
+        HStack(spacing: 8) {
+            // MARK: Background Selection Buttons
+            ForEach(backgrounds) { background in
+                MagicButton(
+                    icon: "circle.fill",
+                    title: background.title,
+                    style: selectedBackground.id == background.id ? .primary : .secondary,
+                    action: { selectedBackground = background }
+                )
+                .magicShape(.roundedSquare)
+            }
+            
+            Spacer()
+            
+            // MARK: Theme Toggle Button
+            MagicButton(
+                icon: isDarkMode ? "sun.max.fill" : "moon.fill",
+                style: .secondary,
+                action: { isDarkMode.toggle() }
+            )
+            .magicShape(.roundedSquare)
+        }
+        .padding(.horizontal)
+        .frame(height: 50)
+        .background(.ultraThinMaterial)
     }
 }
 
 // MARK: - Preview
 #Preview("MagicThemePreview") {
     TabView {
-        // 示例 1：基本用法
+        // MARK: Basic Example
         MagicThemePreview {
             Text("Hello, World!")
                 .padding()
@@ -63,7 +114,7 @@ public struct MagicThemePreview<Content: View>: View {
             Text("基本")
         }
         
-        // 示例 2：简单内容
+        // MARK: Simple Content Example
         MagicThemePreview {
             VStack {
                 Image(systemName: "star.fill")
@@ -77,7 +128,7 @@ public struct MagicThemePreview<Content: View>: View {
             Text("简单")
         }
         
-        // 示例 3：复杂内容
+        // MARK: Complex Content Example
         MagicThemePreview {
             VStack(spacing: 12) {
                 Circle()
@@ -103,7 +154,7 @@ public struct MagicThemePreview<Content: View>: View {
             Text("复杂")
         }
         
-        // 示例 4：长内容滚动
+        // MARK: Scrolling Content Example
         MagicThemePreview {
             VStack(spacing: 16) {
                 ForEach(1...20, id: \.self) { index in

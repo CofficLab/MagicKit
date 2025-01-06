@@ -23,6 +23,8 @@ public struct MagicButton: View {
         case primary
         /// 次要样式，用于普通操作
         case secondary
+        /// 自定义颜色样式
+        case custom(Color)
     }
     
     /// 按钮大小
@@ -182,6 +184,8 @@ public struct MagicButton: View {
     let popoverContent: AnyView?
     /// 点击动作
     let action: () -> Void
+    /// 自定义背景色
+    let customBackgroundColor: Color?
     
     @State private var isHovering = false
     @State private var containerSize: CGFloat = 0
@@ -201,6 +205,7 @@ public struct MagicButton: View {
     ///   - disabledReason: 禁用状态的提示文本（如果为 nil 则按钮可用）
     ///   - popoverContent: 弹出内容（可选）
     ///   - action: 点击动作
+    ///   - customBackgroundColor: 自定义背景色
     public init(
         icon: String,
         title: String? = nil,
@@ -210,7 +215,8 @@ public struct MagicButton: View {
         shapeVisibility: ShapeVisibility = .always,
         disabledReason: String? = nil,
         popoverContent: AnyView? = nil,
-        action: @escaping () -> Void
+        action: @escaping () -> Void,
+        customBackgroundColor: Color? = nil
     ) {
         self.icon = icon
         self.title = title
@@ -221,6 +227,7 @@ public struct MagicButton: View {
         self.disabledReason = disabledReason
         self.popoverContent = popoverContent
         self.action = action
+        self.customBackgroundColor = customBackgroundColor
     }
     
     public var body: some View {
@@ -349,6 +356,8 @@ public struct MagicButton: View {
             return isHovering ? .white : .accentColor
         case .secondary:
             return .primary
+        case .custom(let color):
+            return isHovering ? .white : color
         }
     }
     
@@ -356,6 +365,7 @@ public struct MagicButton: View {
         if disabledReason != nil {
             return Color.gray.opacity(0.1)
         }
+        
         switch style {
         case .primary:
             return isHovering ? .accentColor : .accentColor.opacity(0.1)
@@ -363,6 +373,8 @@ public struct MagicButton: View {
             return isHovering ? 
                 Color.primary.opacity(colorScheme == .dark ? 0.2 : 0.15) :
                 Color.primary.opacity(0.1)
+        case .custom(let color):
+            return isHovering ? color : color.opacity(0.1)
         }
     }
     
@@ -372,6 +384,8 @@ public struct MagicButton: View {
             return isHovering ? .accentColor.opacity(0.3) : .clear
         case .secondary:
             return isHovering ? Color.primary.opacity(0.2) : .clear
+        case .custom(let color):
+            return isHovering ? color.opacity(0.3) : .clear
         }
     }
     

@@ -1,14 +1,6 @@
 import SwiftUI
 
-/// 按钮形状的显示时机
-public enum MagicButtonShapeVisibility {
-    /// 始终显示形状
-    case always
-    /// 仅在悬停时显示形状
-    case onHover
-}
-
-/// MagicButton 的修改器
+// MARK: - MagicButton Modifiers
 public extension MagicButton {
     /// 设置按钮图标
     /// - Parameter name: SF Symbols 图标名称
@@ -194,8 +186,30 @@ public extension MagicButton {
             action: self.action
         )
     }
-} 
-
-#Preview("MagicButton") {
-    MagicButtonPreview()
+    
+    /// 设置按钮的背景色
+    /// - Parameter color: 自定义背景色
+    /// - Returns: 修改后的按钮
+    ///
+    /// 示例：
+    /// ```swift
+    /// // 使用预定义颜色
+    /// button.magicBackgroundColor(.blue)
+    ///
+    /// // 使用自定义颜色
+    /// button.magicBackgroundColor(Color(hex: "#FF5733"))
+    /// ```
+    func magicBackgroundColor(_ color: Color) -> MagicButton {
+        MagicButton(
+            icon: self.icon,
+            title: self.title,
+            style: .custom(color),
+            size: self.size,
+            shape: self.shape,
+            shapeVisibility: self.shapeVisibility,
+            disabledReason: self.disabledReason,
+            popoverContent: self.popoverContent,
+            action: self.action
+        )
+    }
 }

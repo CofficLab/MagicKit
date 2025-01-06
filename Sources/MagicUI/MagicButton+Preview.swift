@@ -427,6 +427,81 @@ private struct ShapeVisibilityButtonsPreview: View {
     }
 }
 
+// MARK: - Background Color Preview
+private struct BackgroundColorButtonsPreview: View {
+    var body: some View {
+        VStack(spacing: 20) {
+            Text("背景色变体")
+                .font(.headline)
+            
+            VStack(spacing: 16) {
+                Text("基础颜色").font(.subheadline)
+                HStack(spacing: 16) {
+                    MagicButton(icon: "star", action: {})
+                        .magicTitle("Blue")
+                        .magicBackgroundColor(.blue)
+                    
+                    MagicButton(icon: "heart", action: {})
+                        .magicTitle("Red")
+                        .magicBackgroundColor(.red)
+                    
+                    MagicButton(icon: "leaf", action: {})
+                        .magicTitle("Green")
+                        .magicBackgroundColor(.green)
+                }
+            }
+            .padding()
+            .background(Color.blue.opacity(0.1))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            
+            VStack(spacing: 16) {
+                Text("不同形状").font(.subheadline)
+                HStack(spacing: 16) {
+                    MagicButton(icon: "star", action: {})
+                        .magicShape(.circle)
+                        .magicBackgroundColor(.purple)
+                    
+                    MagicButton(icon: "star", action: {})
+                        .magicShape(.roundedSquare)
+                        .magicBackgroundColor(.orange)
+                    
+                    MagicButton(icon: "star", action: {})
+                        .magicTitle("Capsule")
+                        .magicShape(.capsule)
+                        .magicBackgroundColor(.mint)
+                }
+            }
+            .padding()
+            .background(Color.blue.opacity(0.1))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            
+            VStack(spacing: 16) {
+                Text("组合效果").font(.subheadline)
+                HStack(spacing: 16) {
+                    MagicButton(icon: "star", action: {})
+                        .magicTitle("Primary")
+                        .magicStyle(.primary)
+                        .magicBackgroundColor(.blue)
+                    
+                    MagicButton(icon: "star", action: {})
+                        .magicTitle("Secondary")
+                        .magicStyle(.secondary)
+                        .magicBackgroundColor(.green)
+                    
+                    MagicButton(icon: "star", action: {})
+                        .magicTitle("Disabled")
+                        .magicDisabled("Disabled with background")
+                        .magicBackgroundColor(.red)
+                }
+            }
+            .padding()
+            .background(Color.blue.opacity(0.1))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+        }
+        .padding()
+    }
+}
+
 // MARK: - Main Preview
 struct MagicButtonPreview: View {
     var body: some View {
@@ -478,6 +553,14 @@ struct MagicButtonPreview: View {
             .tabItem {
                 Image(systemName: "6.circle.fill")
                 Text("显示")
+            }
+            
+            MagicThemePreview {
+                BackgroundColorButtonsPreview()
+            }
+            .tabItem {
+                Image(systemName: "7.circle.fill")
+                Text("背景")
             }
         }
     }
