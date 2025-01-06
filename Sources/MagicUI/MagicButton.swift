@@ -254,7 +254,7 @@ public struct MagicButton: View {
                 .foregroundStyle(foregroundColor)
                 .frame(
                     width: isCircularShape ? buttonSize : nil,
-                    height: isCircularShape ? buttonSize : buttonSize
+                    height: buttonSize
                 )
                 .padding(.horizontal, isCircularShape ? 0 : size.horizontalPadding)
                 .padding(.vertical, isCircularShape ? 0 : size.verticalPadding)
@@ -264,7 +264,10 @@ public struct MagicButton: View {
                 .opacity(disabledReason != nil ? 0.5 : 1.0)
             }
             .buttonStyle(MagicButtonStyle())
-            .frame(minHeight: buttonSize + (size.verticalPadding * 2))
+            .frame(
+                idealWidth: buttonSize + (size.horizontalPadding * 2),
+                idealHeight: buttonSize + (size.verticalPadding * 2)
+            )
             .onHover { hovering in
                 isHovering = hovering && disabledReason == nil
             }
@@ -284,7 +287,10 @@ public struct MagicButton: View {
                 containerSize = min(newSize.width, newSize.height)
             }
         }
-        .frame(minHeight: buttonSize + (size.verticalPadding * 2))
+        .frame(
+            idealWidth: buttonSize + (size.horizontalPadding * 2),
+            idealHeight: buttonSize + (size.verticalPadding * 2)
+        )
     }
     
     private var isCircularShape: Bool {
