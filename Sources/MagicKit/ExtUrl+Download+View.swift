@@ -13,9 +13,7 @@ struct DownloadButtonView: View {
     @State private var error: Error?
     
     private var buttonIcon: String {
-        if isDownloading {
-            return .iconStop
-        } else if url.isDownloaded {
+        if url.isDownloaded {
             return .iconCheckmark
         } else if url.isiCloud {
             return .iconICloudDownloadAlt
@@ -25,7 +23,7 @@ struct DownloadButtonView: View {
     }
     
     private var buttonStyle: MagicButton.Style {
-        if isDownloading || url.isDownloaded {
+        if url.isDownloaded {
             return .primary
         } else {
             return .secondary
@@ -33,9 +31,7 @@ struct DownloadButtonView: View {
     }
     
     private var buttonLabel: String {
-        if isDownloading {
-            return "下载中..."
-        } else if url.isDownloaded {
+        if url.isDownloaded {
             return "已下载"
         } else if url.isiCloud {
             return "从 iCloud 下载"
@@ -50,21 +46,21 @@ struct DownloadButtonView: View {
     
     var body: some View {
         VStack {
-            MagicButton(
-                icon: buttonIcon,
-                title: showLabel ? buttonLabel : nil,
-                style: buttonStyle,
-                size: size <= 32 ? .small : (size <= 40 ? .regular : .large),
-                shape: shape,
-                disabledReason: buttonDisabled ? buttonLabel : nil,
-                action: handleButtonTap
-            )
-            .symbolEffect(.bounce, value: url.isDownloaded)
-            
             if isDownloading {
                 ProgressView(value: progress, total: 100)
                     .progressViewStyle(.circular)
                     .frame(width: size, height: size)
+            } else {
+                MagicButton(
+                    icon: buttonIcon,
+                    title: showLabel ? buttonLabel : nil,
+                    style: buttonStyle,
+                    size: size <= 32 ? .small : (size <= 40 ? .regular : .large),
+                    shape: shape,
+                    disabledReason: buttonDisabled ? buttonLabel : nil,
+                    action: handleButtonTap
+                )
+                .symbolEffect(.bounce, value: url.isDownloaded)
             }
             
             if let error = error {
@@ -80,11 +76,6 @@ struct DownloadButtonView: View {
     }
     
     private func handleButtonTap() {
-        if isDownloading {
-            // TODO: 实现取消下载
-            return
-        }
-        
         Task {
             isDownloading = true
             error = nil
