@@ -8,16 +8,31 @@ private struct BasicButtonsPreview: View {
             Text("基础按钮")
                 .font(.headline)
             
-            MagicButton(icon: "star", action: {})
-                .magicTitle("默认按钮")
+            VStack(spacing: 16) {
+                MagicButton(icon: "star", action: {})
+                    .magicTitle("默认按钮")
+            }
+            .padding()
+            .background(Color.blue.opacity(0.1))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
             
-            MagicButton(icon: "heart", action: {})
-                .magicTitle("主要按钮")
-                .magicStyle(.primary)
+            VStack(spacing: 16) {
+                MagicButton(icon: "heart", action: {})
+                    .magicTitle("主要按钮")
+                    .magicStyle(.primary)
+            }
+            .padding()
+            .background(Color.blue.opacity(0.1))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
             
-            MagicButton(icon: "trash", action: {})
-                .magicTitle("次要按钮")
-                .magicStyle(.secondary)
+            VStack(spacing: 16) {
+                MagicButton(icon: "trash", action: {})
+                    .magicTitle("次要按钮")
+                    .magicStyle(.secondary)
+            }
+            .padding()
+            .background(Color.blue.opacity(0.1))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
         }
         .padding()
     }
@@ -30,32 +45,31 @@ private struct SizeButtonsPreview: View {
             Text("尺寸变体")
                 .font(.headline)
             
-            Group {
-                Text("小尺寸").font(.subheadline)
-                MagicButton(icon: "star", action: {})
-                    .magicTitle("Small")
-                    .magicSize(.small)
-            }
-            
-            Group {
+            VStack(spacing: 16) {
                 Text("常规尺寸").font(.subheadline)
                 MagicButton(icon: "star", action: {})
                     .magicTitle("Regular")
                     .magicSize(.regular)
             }
+            .padding()
+            .background(Color.blue.opacity(0.1))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
             
-            Group {
+            VStack(spacing: 16) {
                 Text("大尺寸").font(.subheadline)
                 MagicButton(icon: "star", action: {})
                     .magicTitle("Large")
                     .magicSize(.large)
             }
+            .padding()
+            .background(Color.blue.opacity(0.1))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
             
-            Group {
+            VStack(spacing: 16) {
                 Text("自动尺寸").font(.subheadline)
                 HStack(spacing: 20) {
                     // 小容器
-                    VStack {
+                    VStack(spacing: 8) {
                         Text("40x40")
                             .font(.caption2)
                             .foregroundStyle(.secondary)
@@ -64,7 +78,7 @@ private struct SizeButtonsPreview: View {
                         }
                     }
                     // 中等容器
-                    VStack {
+                    VStack(spacing: 8) {
                         Text("60x60")
                             .font(.caption2)
                             .foregroundStyle(.secondary)
@@ -73,7 +87,7 @@ private struct SizeButtonsPreview: View {
                         }
                     }
                     // 大容器
-                    VStack {
+                    VStack(spacing: 8) {
                         Text("80x80")
                             .font(.caption2)
                             .foregroundStyle(.secondary)
@@ -83,6 +97,9 @@ private struct SizeButtonsPreview: View {
                     }
                 }
             }
+            .padding()
+            .background(Color.blue.opacity(0.1))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
         }
         .padding()
     }
@@ -107,8 +124,9 @@ private struct Frame<Content: View>: View {
     var body: some View {
         content
             .frame(width: width, height: height)
+            .clipShape(Rectangle())
             .background(
-                RoundedRectangle(cornerRadius: 8)
+                Rectangle()
                     .strokeBorder(style: StrokeStyle(lineWidth: 1, dash: [4]))
                     .foregroundStyle(.secondary.opacity(0.5))
             )
@@ -122,7 +140,7 @@ private struct ShapeButtonsPreview: View {
             Text("形状变体")
                 .font(.headline)
             
-            Group {
+            VStack(spacing: 16) {
                 Text("圆形").font(.subheadline)
                 HStack {
                     MagicButton(icon: "star", action: {})
@@ -133,8 +151,11 @@ private struct ShapeButtonsPreview: View {
                         .magicShape(.circle)
                 }
             }
+            .padding()
+            .background(Color.blue.opacity(0.1))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
             
-            Group {
+            VStack(spacing: 16) {
                 Text("胶囊形").font(.subheadline)
                 HStack {
                     MagicButton(icon: "star", action: {})
@@ -145,8 +166,11 @@ private struct ShapeButtonsPreview: View {
                         .magicShape(.capsule)
                 }
             }
+            .padding()
+            .background(Color.blue.opacity(0.1))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
             
-            Group {
+            VStack(spacing: 16) {
                 Text("矩形").font(.subheadline)
                 HStack {
                     MagicButton(icon: "star", action: {})
@@ -157,8 +181,11 @@ private struct ShapeButtonsPreview: View {
                         .magicShape(.rectangle)
                 }
             }
+            .padding()
+            .background(Color.blue.opacity(0.1))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
             
-            Group {
+            VStack(spacing: 16) {
                 Text("圆角矩形").font(.subheadline)
                 HStack {
                     MagicButton(icon: "star", action: {})
@@ -169,8 +196,11 @@ private struct ShapeButtonsPreview: View {
                         .magicShape(.roundedRectangle)
                 }
             }
+            .padding()
+            .background(Color.blue.opacity(0.1))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
             
-            Group {
+            VStack(spacing: 16) {
                 Text("圆角正方形").font(.subheadline)
                 HStack {
                     MagicButton(icon: "star", action: {})
@@ -181,6 +211,9 @@ private struct ShapeButtonsPreview: View {
                         .magicShape(.roundedSquare)
                 }
             }
+            .padding()
+            .background(Color.blue.opacity(0.1))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
         }
         .padding()
     }
@@ -193,7 +226,7 @@ private struct CustomShapeButtonsPreview: View {
             Text("自定义形状")
                 .font(.headline)
             
-            Group {
+            VStack(spacing: 16) {
                 Text("自定义圆角矩形").font(.subheadline)
                 VStack(spacing: 12) {
                     MagicButton(icon: "star", action: {})
@@ -224,8 +257,11 @@ private struct CustomShapeButtonsPreview: View {
                         ))
                 }
             }
+            .padding()
+            .background(Color.blue.opacity(0.1))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
             
-            Group {
+            VStack(spacing: 16) {
                 Text("自定义胶囊形").font(.subheadline)
                 VStack(spacing: 12) {
                     MagicButton(icon: "star", action: {})
@@ -243,6 +279,9 @@ private struct CustomShapeButtonsPreview: View {
                         ))
                 }
             }
+            .padding()
+            .background(Color.blue.opacity(0.1))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
         }
         .padding()
     }
@@ -252,32 +291,37 @@ private struct CustomShapeButtonsPreview: View {
 private struct InteractiveButtonsPreview: View {
     var body: some View {
         VStack(spacing: 20) {
-            Text("交互特性")
+            Text("交互变体")
                 .font(.headline)
             
-            Group {
+            VStack(spacing: 16) {
                 Text("禁用状态").font(.subheadline)
-                MagicButton(icon: "exclamationmark.triangle", action: {})
-                    .magicTitle("Disabled Button")
-                    .magicDisabled("此按钮已禁用")
+                MagicButton(
+                    icon: "star",
+                    disabledReason: "This button is disabled",
+                    action: {}
+                )
+                .magicTitle("Disabled Button")
             }
+            .padding()
+            .background(Color.blue.opacity(0.1))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
             
-            Group {
+            VStack(spacing: 16) {
                 Text("弹出内容").font(.subheadline)
-                MagicButton(icon: "info.circle", action: {})
-                    .magicTitle("With Popover")
-                    .magicPopover {
-                        VStack(spacing: 8) {
-                            Text("弹出内容示例")
-                                .font(.headline)
-                            Image(systemName: "star.fill")
-                                .foregroundStyle(.yellow)
-                            Text("这是一段说明文字")
-                                .font(.caption)
-                        }
-                        .padding()
-                    }
+                MagicButton(
+                    icon: "star",
+                    popoverContent: AnyView(
+                        Text("Popover Content")
+                            .padding()
+                    ),
+                    action: {}
+                )
+                .magicTitle("With Popover")
             }
+            .padding()
+            .background(Color.blue.opacity(0.1))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
         }
         .padding()
     }
@@ -287,53 +331,42 @@ private struct InteractiveButtonsPreview: View {
 private struct ShapeVisibilityButtonsPreview: View {
     var body: some View {
         VStack(spacing: 20) {
-            Text("形状显示")
+            Text("显示变体")
                 .font(.headline)
             
-            Group {
-                Text("始终显示").font(.subheadline)
-                MagicButton(icon: "star", action: {})
-                    .magicTitle("Always Visible")
-                    .magicStyle(.primary)
-                    .magicShapeVisibility(.always)
-            }
-            
-            Group {
-                Text("悬停显示").font(.subheadline)
-                MagicButton(icon: "star", action: {})
-                    .magicTitle("Show on Hover")
-                    .magicStyle(.primary)
-                    .magicShapeVisibility(.onHover)
-            }
-            
-            Group {
-                Text("组合效果").font(.subheadline)
-                HStack(spacing: 16) {
+            VStack(spacing: 16) {
+                Text("始终显示形状").font(.subheadline)
+                HStack {
                     MagicButton(icon: "star", action: {})
-                        .magicShape(.circle)
-                        .magicShapeVisibility(.onHover)
+                        .magicTitle("Always")
+                        .magicShapeVisibility(.always)
                     
                     MagicButton(icon: "star", action: {})
-                        .magicTitle("Hover Me")
-                        .magicShape(.capsule)
-                        .magicShapeVisibility(.onHover)
-                }
-            }
-            
-            Group {
-                Text("不同样式").font(.subheadline)
-                HStack(spacing: 16) {
-                    MagicButton(icon: "star", action: {})
-                        .magicTitle("Primary")
                         .magicStyle(.primary)
+                        .magicTitle("Always")
+                        .magicShapeVisibility(.always)
+                }
+            }
+            .padding()
+            .background(Color.blue.opacity(0.1))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            
+            VStack(spacing: 16) {
+                Text("悬停时显示形状").font(.subheadline)
+                HStack {
+                    MagicButton(icon: "star", action: {})
+                        .magicTitle("On Hover")
                         .magicShapeVisibility(.onHover)
                     
                     MagicButton(icon: "star", action: {})
-                        .magicTitle("Secondary")
-                        .magicStyle(.secondary)
+                        .magicStyle(.primary)
+                        .magicTitle("On Hover")
                         .magicShapeVisibility(.onHover)
                 }
             }
+            .padding()
+            .background(Color.blue.opacity(0.1))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
         }
         .padding()
     }
@@ -397,5 +430,6 @@ struct MagicButtonPreview: View {
 
 #Preview("MagicButton") {
     MagicButtonPreview()
+        .frame(height: 800)
 }
 #endif 

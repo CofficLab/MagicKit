@@ -27,7 +27,7 @@ public struct MagicButton: View {
     
     /// 按钮大小
     public enum Size {
-        /// 自动尺寸，根据容器大小自动调整
+        /// 自动尺寸，根据容器大小自动调整（最小 32，最大 50）
         case auto
         /// 小尺寸，适用于紧凑布局
         case small
@@ -54,7 +54,8 @@ public struct MagicButton: View {
         func iconSize(containerSize: CGFloat) -> CGFloat {
             switch self {
             case .auto:
-                return containerSize * 0.4
+                let size = min(max(containerSize, 32), 50)
+                return size * 0.4
             case .small:
                 return 12
             case .regular:
@@ -244,7 +245,7 @@ public struct MagicButton: View {
                 .foregroundStyle(foregroundColor)
                 .frame(
                     width: isCircularShape ? buttonSize : nil,
-                    height: isCircularShape ? buttonSize : nil
+                    height: isCircularShape ? buttonSize : buttonSize
                 )
                 .padding(.horizontal, isCircularShape ? 0 : size.horizontalPadding)
                 .padding(.vertical, isCircularShape ? 0 : size.verticalPadding)
@@ -254,6 +255,7 @@ public struct MagicButton: View {
                 .opacity(disabledReason != nil ? 0.5 : 1.0)
             }
             .buttonStyle(MagicButtonStyle())
+            .frame(minHeight: buttonSize + (size.verticalPadding * 2))
             .onHover { hovering in
                 isHovering = hovering && disabledReason == nil
             }
@@ -273,6 +275,7 @@ public struct MagicButton: View {
                 containerSize = min(newSize.width, newSize.height)
             }
         }
+        .frame(minHeight: buttonSize + (size.verticalPadding * 2))
     }
     
     private var isCircularShape: Bool {
@@ -330,7 +333,9 @@ public struct MagicButton: View {
     
     private var buttonSize: CGFloat {
         if case .auto = size {
-            return containerSize
+            // 限制自动尺寸的范围在 32-50 之间，并考虑内边距
+            let availableSize = containerSize - (size.horizontalPadding * 2)
+            return min(max(availableSize, 32), 50)
         }
         return size.fixedSize
     }
