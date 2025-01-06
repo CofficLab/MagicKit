@@ -197,7 +197,7 @@ public extension MagicPlayMan {
             icon: .iconTerminal,
             style: .secondary,
             size: .regular,
-            shape: .capsule,
+            shape: shape,
             popoverContent: AnyView(
                 self.makeLogView()
                     .frame(width: 400, height: 400)
