@@ -497,6 +497,64 @@ private struct BackgroundColorButtonsPreview: View {
             .padding()
             .background(Color.blue.opacity(0.1))
             .clipShape(RoundedRectangle(cornerRadius: 8))
+            
+            VStack(spacing: 16) {
+                Text("自定义背景").font(.subheadline)
+                HStack(spacing: 16) {
+                    MagicButton(icon: "sun.max", action: {})
+                        .magicTitle("Dawn")
+                        .magicBackground(MagicBackground.dawnSky)
+                    
+                    MagicButton(icon: "cloud.bolt", action: {})
+                        .magicTitle("Storm")
+                        .magicBackground(MagicBackground.stormyHeaven)
+                    
+                    MagicButton(icon: "sunset", action: {})
+                        .magicTitle("Sunset")
+                        .magicBackground(MagicBackground.sunsetGlow)
+                }
+            }
+            .padding()
+            .background(Color.blue.opacity(0.1))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            
+            VStack(spacing: 16) {
+                Text("渐变背景").font(.subheadline)
+                HStack(spacing: 16) {
+                    MagicButton(icon: "star", action: {})
+                        .magicTitle("Linear")
+                        .magicBackground(
+                            LinearGradient(
+                                colors: [.blue, .purple],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                    
+                    MagicButton(icon: "star", action: {})
+                        .magicTitle("Angular")
+                        .magicBackground(
+                            AngularGradient(
+                                colors: [.red, .orange, .yellow, .green, .blue, .purple, .red],
+                                center: .center
+                            )
+                        )
+                    
+                    MagicButton(icon: "star", action: {})
+                        .magicTitle("Radial")
+                        .magicBackground(
+                            RadialGradient(
+                                colors: [.mint, .cyan],
+                                center: .center,
+                                startRadius: 0,
+                                endRadius: 50
+                            )
+                        )
+                }
+            }
+            .padding()
+            .background(Color.blue.opacity(0.1))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
         }
         .padding()
     }

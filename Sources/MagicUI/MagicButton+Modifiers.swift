@@ -212,4 +212,36 @@ public extension MagicButton {
             action: self.action
         )
     }
+    
+    /// 设置按钮的背景视图
+    /// - Parameter background: 自定义背景视图
+    /// - Returns: 修改后的按钮
+    ///
+    /// 示例：
+    /// ```swift
+    /// // 使用渐变色背景
+    /// button.magicBackground(
+    ///     LinearGradient(
+    ///         colors: [.blue, .purple],
+    ///         startPoint: .leading,
+    ///         endPoint: .trailing
+    ///     )
+    /// )
+    ///
+    /// // 使用天空主题背景
+    /// button.magicBackground(MagicBackground.dawnSky)
+    /// ```
+    func magicBackground<V: View>(_ background: V) -> MagicButton {
+        MagicButton(
+            icon: self.icon,
+            title: self.title,
+            style: .customView(AnyView(background)),
+            size: self.size,
+            shape: self.shape,
+            shapeVisibility: self.shapeVisibility,
+            disabledReason: self.disabledReason,
+            popoverContent: self.popoverContent,
+            action: self.action
+        )
+    }
 }

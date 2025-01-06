@@ -22,7 +22,6 @@ public struct MagicThemePreview<Content: View>: View {
     
     private let backgrounds: [BackgroundOption] = [
         .init(title: "Default", view: AnyView(Color(nsColor: .windowBackgroundColor))),
-        .init(title: "Frost", view: AnyView(MagicBackground.frost)),
         .init(title: "Aurora", view: AnyView(MagicBackground.aurora)),
         .init(title: "Ocean", view: AnyView(MagicBackground.ocean)),
         .init(title: "Sunset", view: AnyView(MagicBackground.sunset)),
@@ -77,12 +76,12 @@ public struct MagicThemePreview<Content: View>: View {
             // MARK: Background Selection Buttons
             ForEach(backgrounds) { background in
                 MagicButton(
-                    icon: "circle.fill",
-                    title: background.title,
+                    icon: "circle",
                     style: selectedBackground.id == background.id ? .primary : .secondary,
                     action: { selectedBackground = background }
                 )
-                .magicShape(.roundedSquare)
+                .magicBackground(background.view)
+                .magicShape(.circle)
             }
             
             Spacer()
@@ -93,7 +92,7 @@ public struct MagicThemePreview<Content: View>: View {
                 style: .secondary,
                 action: { isDarkMode.toggle() }
             )
-            .magicShape(.roundedSquare)
+            .magicShape(.circle)
         }
         .padding(.horizontal)
         .frame(height: 50)

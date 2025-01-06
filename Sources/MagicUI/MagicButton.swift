@@ -25,6 +25,8 @@ public struct MagicButton: View {
         case secondary
         /// 自定义颜色样式
         case custom(Color)
+        /// 自定义背景视图
+        case customView(AnyView)
     }
     
     /// 按钮大小
@@ -296,45 +298,125 @@ public struct MagicButton: View {
     private var buttonShape: some View {
         switch shape {
         case .circle:
-            Circle()
-                .fill(backgroundColor)
-                .shadow(color: shadowColor, radius: 8)
+            if case .customView(let view) = style {
+                Circle()
+                    .fill(backgroundColor)
+                    .overlay(
+                        view
+                            .clipShape(Circle())
+                            .allowsHitTesting(false)
+                    )
+                    .shadow(color: shadowColor, radius: 8)
+            } else {
+                Circle()
+                    .fill(backgroundColor)
+                    .shadow(color: shadowColor, radius: 8)
+            }
             
         case .capsule:
-            Capsule()
-                .fill(backgroundColor)
-                .shadow(color: shadowColor, radius: 8)
+            if case .customView(let view) = style {
+                Capsule()
+                    .fill(backgroundColor)
+                    .overlay(
+                        view
+                            .clipShape(Capsule())
+                            .allowsHitTesting(false)
+                    )
+                    .shadow(color: shadowColor, radius: 8)
+            } else {
+                Capsule()
+                    .fill(backgroundColor)
+                    .shadow(color: shadowColor, radius: 8)
+            }
             
         case .rectangle:
-            Rectangle()
-                .fill(backgroundColor)
-                .shadow(color: shadowColor, radius: 8)
+            if case .customView(let view) = style {
+                Rectangle()
+                    .fill(backgroundColor)
+                    .overlay(
+                        view
+                            .clipShape(Rectangle())
+                            .allowsHitTesting(false)
+                    )
+                    .shadow(color: shadowColor, radius: 8)
+            } else {
+                Rectangle()
+                    .fill(backgroundColor)
+                    .shadow(color: shadowColor, radius: 8)
+            }
             
         case .roundedRectangle:
-            RoundedRectangle(cornerRadius: shape.cornerRadius)
-                .fill(backgroundColor)
-                .shadow(color: shadowColor, radius: 8)
+            if case .customView(let view) = style {
+                RoundedRectangle(cornerRadius: shape.cornerRadius)
+                    .fill(backgroundColor)
+                    .overlay(
+                        view
+                            .clipShape(RoundedRectangle(cornerRadius: shape.cornerRadius))
+                            .allowsHitTesting(false)
+                    )
+                    .shadow(color: shadowColor, radius: 8)
+            } else {
+                RoundedRectangle(cornerRadius: shape.cornerRadius)
+                    .fill(backgroundColor)
+                    .shadow(color: shadowColor, radius: 8)
+            }
             
         case .roundedSquare:
-            RoundedRectangle(cornerRadius: shape.cornerRadius)
-                .fill(backgroundColor)
-                .frame(width: buttonSize, height: buttonSize)
-                .shadow(color: shadowColor, radius: 8)
+            if case .customView(let view) = style {
+                RoundedRectangle(cornerRadius: shape.cornerRadius)
+                    .fill(backgroundColor)
+                    .frame(width: buttonSize, height: buttonSize)
+                    .overlay(
+                        view
+                            .clipShape(RoundedRectangle(cornerRadius: shape.cornerRadius))
+                            .allowsHitTesting(false)
+                    )
+                    .shadow(color: shadowColor, radius: 8)
+            } else {
+                RoundedRectangle(cornerRadius: shape.cornerRadius)
+                    .fill(backgroundColor)
+                    .frame(width: buttonSize, height: buttonSize)
+                    .shadow(color: shadowColor, radius: 8)
+            }
             
         case .customRoundedRectangle(let topLeft, let topRight, let bottomLeft, let bottomRight):
-            CustomRoundedRectangle(
+            let shape = CustomRoundedRectangle(
                 topLeft: topLeft,
                 topRight: topRight,
                 bottomLeft: bottomLeft,
                 bottomRight: bottomRight
             )
-            .fill(backgroundColor)
-            .shadow(color: shadowColor, radius: 8)
+            if case .customView(let view) = style {
+                shape
+                    .fill(backgroundColor)
+                    .overlay(
+                        view
+                            .clipShape(shape)
+                            .allowsHitTesting(false)
+                    )
+                    .shadow(color: shadowColor, radius: 8)
+            } else {
+                shape
+                    .fill(backgroundColor)
+                    .shadow(color: shadowColor, radius: 8)
+            }
             
         case .customCapsule(let leftRadius, let rightRadius):
-            CustomCapsule(leftRadius: leftRadius, rightRadius: rightRadius)
-                .fill(backgroundColor)
-                .shadow(color: shadowColor, radius: 8)
+            let shape = CustomCapsule(leftRadius: leftRadius, rightRadius: rightRadius)
+            if case .customView(let view) = style {
+                shape
+                    .fill(backgroundColor)
+                    .overlay(
+                        view
+                            .clipShape(shape)
+                            .allowsHitTesting(false)
+                    )
+                    .shadow(color: shadowColor, radius: 8)
+            } else {
+                shape
+                    .fill(backgroundColor)
+                    .shadow(color: shadowColor, radius: 8)
+            }
         }
     }
     
@@ -358,6 +440,8 @@ public struct MagicButton: View {
             return .primary
         case .custom(let color):
             return isHovering ? .white : color
+        case .customView:
+            return .primary
         }
     }
     
@@ -375,6 +459,8 @@ public struct MagicButton: View {
                 Color.primary.opacity(0.1)
         case .custom(let color):
             return isHovering ? color : color.opacity(0.1)
+        case .customView:
+            return .clear
         }
     }
     
@@ -386,6 +472,8 @@ public struct MagicButton: View {
             return isHovering ? Color.primary.opacity(0.2) : .clear
         case .custom(let color):
             return isHovering ? color.opacity(0.3) : .clear
+        case .customView:
+            return .clear
         }
     }
     
