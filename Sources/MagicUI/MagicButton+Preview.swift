@@ -50,8 +50,68 @@ private struct SizeButtonsPreview: View {
                     .magicTitle("Large")
                     .magicSize(.large)
             }
+            
+            Group {
+                Text("自动尺寸").font(.subheadline)
+                HStack(spacing: 20) {
+                    // 小容器
+                    VStack {
+                        Text("40x40")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                        Frame(width: 40, height: 40) {
+                            MagicButton(icon: "star", size: .auto, action: {})
+                        }
+                    }
+                    // 中等容器
+                    VStack {
+                        Text("60x60")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                        Frame(width: 60, height: 60) {
+                            MagicButton(icon: "star", size: .auto, action: {})
+                        }
+                    }
+                    // 大容器
+                    VStack {
+                        Text("80x80")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                        Frame(width: 80, height: 80) {
+                            MagicButton(icon: "star", size: .auto, action: {})
+                        }
+                    }
+                }
+            }
         }
         .padding()
+    }
+}
+
+/// 用于创建固定尺寸容器的辅助视图
+private struct Frame<Content: View>: View {
+    let width: CGFloat?
+    let height: CGFloat?
+    let content: Content
+    
+    init(
+        width: CGFloat? = nil,
+        height: CGFloat? = nil,
+        @ViewBuilder content: () -> Content
+    ) {
+        self.width = width
+        self.height = height
+        self.content = content()
+    }
+    
+    var body: some View {
+        content
+            .frame(width: width, height: height)
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .strokeBorder(style: StrokeStyle(lineWidth: 1, dash: [4]))
+                    .foregroundStyle(.secondary.opacity(0.5))
+            )
     }
 }
 

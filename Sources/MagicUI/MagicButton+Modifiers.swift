@@ -20,6 +20,7 @@ public extension MagicButton {
             style: self.style,
             size: self.size,
             shape: self.shape,
+            shapeVisibility: self.shapeVisibility,
             disabledReason: self.disabledReason,
             popoverContent: self.popoverContent,
             action: self.action
@@ -36,6 +37,7 @@ public extension MagicButton {
             style: self.style,
             size: self.size,
             shape: self.shape,
+            shapeVisibility: self.shapeVisibility,
             disabledReason: self.disabledReason,
             popoverContent: self.popoverContent,
             action: self.action
@@ -52,6 +54,7 @@ public extension MagicButton {
             style: style,
             size: self.size,
             shape: self.shape,
+            shapeVisibility: self.shapeVisibility,
             disabledReason: self.disabledReason,
             popoverContent: self.popoverContent,
             action: self.action
@@ -59,8 +62,17 @@ public extension MagicButton {
     }
     
     /// 设置按钮大小
-    /// - Parameter size: 按钮大小（.small、.regular 或 .large）
+    /// - Parameter size: 按钮大小（.auto、.small、.regular 或 .large）
     /// - Returns: 更新后的按钮
+    ///
+    /// 示例：
+    /// ```swift
+    /// // 使用固定尺寸
+    /// button.magicSize(.regular)
+    ///
+    /// // 使用自动尺寸（根据容器大小自动调整）
+    /// button.magicSize(.auto)
+    /// ```
     func magicSize(_ size: Size) -> MagicButton {
         MagicButton(
             icon: self.icon,
@@ -68,6 +80,7 @@ public extension MagicButton {
             style: self.style,
             size: size,
             shape: self.shape,
+            shapeVisibility: self.shapeVisibility,
             disabledReason: self.disabledReason,
             popoverContent: self.popoverContent,
             action: self.action
@@ -104,6 +117,7 @@ public extension MagicButton {
             style: self.style,
             size: self.size,
             shape: shape,
+            shapeVisibility: self.shapeVisibility,
             disabledReason: self.disabledReason,
             popoverContent: self.popoverContent,
             action: self.action
@@ -120,6 +134,7 @@ public extension MagicButton {
             style: self.style,
             size: self.size,
             shape: self.shape,
+            shapeVisibility: self.shapeVisibility,
             disabledReason: reason,
             popoverContent: self.popoverContent,
             action: self.action

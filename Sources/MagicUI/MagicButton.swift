@@ -5,7 +5,7 @@ import SwiftUI
 /// MagicButton 提供了丰富的自定义选项：
 /// - 支持图标和文本组合
 /// - 提供主要和次要两种样式
-/// - 支持三种尺寸：小、中、大
+/// - 支持四种尺寸：自动、小、中、大
 /// - 提供多种形状选项
 /// - 支持禁用状态和提示
 /// - 支持弹出内容
@@ -27,12 +27,84 @@ public struct MagicButton: View {
     
     /// 按钮大小
     public enum Size {
+        /// 自动尺寸，根据容器大小自动调整
+        case auto
         /// 小尺寸，适用于紧凑布局
         case small
         /// 常规尺寸，默认选项
         case regular
         /// 大尺寸，适用于强调显示
         case large
+        
+        /// 获取固定尺寸的按钮大小
+        var fixedSize: CGFloat {
+            switch self {
+            case .auto:
+                return 0 // 自动尺寸不使用固定值
+            case .small:
+                return 32
+            case .regular:
+                return 40
+            case .large:
+                return 50
+            }
+        }
+        
+        /// 获取图标大小
+        func iconSize(containerSize: CGFloat) -> CGFloat {
+            switch self {
+            case .auto:
+                return containerSize * 0.4
+            case .small:
+                return 12
+            case .regular:
+                return 15
+            case .large:
+                return 20
+            }
+        }
+        
+        /// 获取字体大小
+        var font: Font {
+            switch self {
+            case .auto:
+                return .body
+            case .small:
+                return .caption
+            case .regular:
+                return .body
+            case .large:
+                return .title3
+            }
+        }
+        
+        /// 获取水平内边距
+        var horizontalPadding: CGFloat {
+            switch self {
+            case .auto:
+                return 12
+            case .small:
+                return 8
+            case .regular:
+                return 12
+            case .large:
+                return 16
+            }
+        }
+        
+        /// 获取垂直内边距
+        var verticalPadding: CGFloat {
+            switch self {
+            case .auto:
+                return 8
+            case .small:
+                return 4
+            case .regular:
+                return 8
+            case .large:
+                return 12
+            }
+        }
     }
     
     /// 按钮形状
@@ -111,6 +183,7 @@ public struct MagicButton: View {
     let action: () -> Void
     
     @State private var isHovering = false
+    @State private var containerSize: CGFloat = 0
     @Environment(\.colorScheme) private var colorScheme
     @State private var showingDisabledPopover = false
     
@@ -150,44 +223,54 @@ public struct MagicButton: View {
     }
     
     public var body: some View {
-        Button(action: {
-            if disabledReason != nil {
-                showingDisabledPopover = true
-            } else if popoverContent != nil {
-                showingDisabledPopover.toggle()
-            } else {
-                action()
+        GeometryReader { geometry in
+            Button(action: {
+                if disabledReason != nil {
+                    showingDisabledPopover = true
+                } else if popoverContent != nil {
+                    showingDisabledPopover.toggle()
+                } else {
+                    action()
+                }
+            }) {
+                HStack(spacing: 4) {
+                    Image(systemName: icon)
+                        .font(.system(size: size.iconSize(containerSize: containerSize)))
+                    if let title = title {
+                        Text(title)
+                            .font(size.font)
+                    }
+                }
+                .foregroundStyle(foregroundColor)
+                .frame(
+                    width: isCircularShape ? buttonSize : nil,
+                    height: isCircularShape ? buttonSize : nil
+                )
+                .padding(.horizontal, isCircularShape ? 0 : size.horizontalPadding)
+                .padding(.vertical, isCircularShape ? 0 : size.verticalPadding)
+                .background(shouldShowShape ? buttonShape : nil)
+                .scaleEffect(isHovering ? 1.05 : 1.0)
+                .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isHovering)
+                .opacity(disabledReason != nil ? 0.5 : 1.0)
             }
-        }) {
-            HStack(spacing: 4) {
-                Image(systemName: icon)
-                    .font(.system(size: iconSize))
-                if let title = title {
-                    Text(title)
-                        .font(font)
+            .buttonStyle(MagicButtonStyle())
+            .onHover { hovering in
+                isHovering = hovering && disabledReason == nil
+            }
+            .popover(isPresented: $showingDisabledPopover, arrowEdge: .top) {
+                if let reason = disabledReason {
+                    Text(reason)
+                        .font(.callout)
+                        .padding()
+                } else if let content = popoverContent {
+                    content
                 }
             }
-            .foregroundStyle(foregroundColor)
-            .frame(width: isCircularShape ? buttonSize : nil, 
-                   height: isCircularShape ? buttonSize : nil)
-            .padding(.horizontal, isCircularShape ? 0 : horizontalPadding)
-            .padding(.vertical, isCircularShape ? 0 : verticalPadding)
-            .background(shouldShowShape ? buttonShape : nil)
-            .scaleEffect(isHovering ? 1.05 : 1.0)
-            .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isHovering)
-            .opacity(disabledReason != nil ? 0.5 : 1.0)
-        }
-        .buttonStyle(MagicButtonStyle())
-        .onHover { hovering in
-            isHovering = hovering && disabledReason == nil
-        }
-        .popover(isPresented: $showingDisabledPopover, arrowEdge: .top) {
-            if let reason = disabledReason {
-                Text(reason)
-                    .font(.callout)
-                    .padding()
-            } else if let content = popoverContent {
-                content
+            .onAppear {
+                containerSize = min(geometry.size.width, geometry.size.height)
+            }
+            .onChange(of: geometry.size) { newSize in
+                containerSize = min(newSize.width, newSize.height)
             }
         }
     }
@@ -246,58 +329,10 @@ public struct MagicButton: View {
     }
     
     private var buttonSize: CGFloat {
-        switch size {
-        case .small:
-            return 32
-        case .regular:
-            return 40
-        case .large:
-            return 50
+        if case .auto = size {
+            return containerSize
         }
-    }
-    
-    private var iconSize: CGFloat {
-        switch size {
-        case .small:
-            return 12
-        case .regular:
-            return 15
-        case .large:
-            return 20
-        }
-    }
-    
-    private var font: Font {
-        switch size {
-        case .small:
-            return .caption
-        case .regular:
-            return .body
-        case .large:
-            return .title3
-        }
-    }
-    
-    private var horizontalPadding: CGFloat {
-        switch size {
-        case .small:
-            return 8
-        case .regular:
-            return 12
-        case .large:
-            return 16
-        }
-    }
-    
-    private var verticalPadding: CGFloat {
-        switch size {
-        case .small:
-            return 4
-        case .regular:
-            return 8
-        case .large:
-            return 12
-        }
+        return size.fixedSize
     }
     
     private var foregroundColor: Color {
