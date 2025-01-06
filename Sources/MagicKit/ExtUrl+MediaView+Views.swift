@@ -246,6 +246,7 @@ struct ActionButtonsView: View {
     var body: some View {
         HStack(spacing: 12) {
             url.makeOpenButton()
+            url.makeDownloadButton()
         }
         .padding(.trailing, 8)
     }

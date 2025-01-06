@@ -1,6 +1,7 @@
 import Foundation
 import OSLog
 import SwiftUI
+import MagicUI
 
 public extension URL {
     /// 复制文件到目标位置，支持 iCloud 文件的自动下载
@@ -73,103 +74,26 @@ public extension URL {
     var isLocal: Bool {
         isNotiCloud
     }
-}
-
-// MARK: - Preview
-#Preview("Download Tests") {
-    DownloadTestView()
-}
-
-private struct DownloadTestView: View {
-    @State private var downloadProgress: Double = 0
-    @State private var isDownloading = false
-    @State private var error: Error?
     
-    let testFiles = [
-        // iCloud 文件
-        (
-            name: "iCloud Document",
-            url: URL(string: "file:///iCloud/test.pdf")!
-        ),
-        // 本地文件
-        (
-            name: "Local File",
-            url: URL.documentsDirectory.appendingPathComponent("test.txt")
+    /// 创建下载按钮
+    /// - Parameters:
+    ///   - size: 按钮大小，默认为 28x28
+    ///   - showLabel: 是否显示文字标签，默认为 false
+    ///   - shape: 按钮形状，默认为圆形
+    ///   - destination: 下载目标位置，如果为 nil 则只下载到 iCloud 本地
+    /// - Returns: 下载按钮视图
+    func makeDownloadButton(
+        size: CGFloat = 28,
+        showLabel: Bool = false,
+        shape: MagicButton.Shape = .circle,
+        destination: URL? = nil
+    ) -> some View {
+        DownloadButtonView(
+            url: self,
+            size: size,
+            showLabel: showLabel,
+            shape: shape,
+            destination: destination
         )
-    ]
-    
-    var body: some View {
-        List {
-            Section("文件状态") {
-                ForEach(testFiles, id: \.name) { file in
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text(file.name)
-                            .font(.headline)
-                        
-                        Group {
-                            Text("iCloud: \(file.url.isiCloud ? "是" : "否")")
-                            Text("已下载: \(file.url.isDownloaded ? "是" : "否")")
-                            Text("下载中: \(file.url.isDownloading ? "是" : "否")")
-                            Text("本地文件: \(file.url.isLocal ? "是" : "否")")
-                        }
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    }
-                    .padding(.vertical, 4)
-                }
-            }
-            
-            Section("下载测试") {
-                VStack(spacing: 12) {
-                    if isDownloading {
-                        ProgressView(value: downloadProgress, total: 100) {
-                            Text("下载进度: \(Int(downloadProgress))%")
-                        }
-                    }
-                    
-                    if let error = error {
-                        Text(error.localizedDescription)
-                            .font(.caption)
-                            .foregroundStyle(.red)
-                    }
-                    
-                    Button(isDownloading ? "下载中..." : "开始下载") {
-                        Task {
-                            isDownloading = true
-                            error = nil
-                            
-                            do {
-                                try await testFiles[0].url.download { progress in
-                                    downloadProgress = progress * 100
-                                }
-                            } catch {
-                                self.error = error
-                            }
-                            
-                            isDownloading = false
-                        }
-                    }
-                    .disabled(isDownloading)
-                }
-                .padding(.vertical)
-            }
-            
-            Section("复制测试") {
-                Button("复制到本地") {
-                    Task {
-                        let source = testFiles[0].url
-                        let destination = URL.documentsDirectory.appendingPathComponent("copy.pdf")
-                        
-                        do {
-                            try await source.copyTo(destination) { progress in
-                                downloadProgress = progress * 100
-                            }
-                        } catch {
-                            self.error = error
-                        }
-                    }
-                }
-            }
-        }
     }
 } 
