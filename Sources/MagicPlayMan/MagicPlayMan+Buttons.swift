@@ -118,6 +118,23 @@ public extension MagicPlayMan {
         )
     }
 
+    /// 创建喜欢按钮
+    /// - Returns: 用于切换当前资源喜欢状态的按钮
+    /// - Note: 按钮的外观会根据喜欢状态改变：
+    ///   - 喜欢时：使用填充图标和主要样式
+    ///   - 未喜欢时：使用轮廓图标和次要样式
+    func makeLikeButton() -> some View {
+        MagicButton(
+            icon: isCurrentAssetLiked ? "heart.fill" : "heart",
+            style: isCurrentAssetLiked ? .primary : .secondary,
+            size: .regular,
+            shape: .roundedSquare,
+            disabledReason: !hasAsset ? "No media loaded" : nil,
+            action: toggleLike
+        )
+        .symbolEffect(.bounce, value: isCurrentAssetLiked)
+    }
+
     /// 创建播放列表按钮
     func makePlaylistButton() -> some View {
         MagicButton(

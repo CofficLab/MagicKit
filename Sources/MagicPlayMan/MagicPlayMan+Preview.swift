@@ -119,6 +119,7 @@ public extension MagicPlayMan {
                 playMan.makeSubscribersButton()
                 playMan.makeSupportedFormatsButton()
                 playMan.makeLogButton()
+                playMan.makeLikeButton()
             }
         }
         

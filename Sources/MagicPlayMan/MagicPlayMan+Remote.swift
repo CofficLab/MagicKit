@@ -102,6 +102,24 @@ extension MagicPlayMan {
             return .success
         }
         
+        // 喜欢/取消喜欢
+        if #available(iOS 13.0, macOS 10.15, *) {
+            commandCenter.likeCommand.isActive = true  // 启用喜欢按钮
+            commandCenter.likeCommand.localizedTitle = "Like"  // 设置按钮标题
+            commandCenter.likeCommand.localizedShortTitle = "Like"  // 设置短标题
+            
+            commandCenter.likeCommand.addTarget { [weak self] event in
+                guard let self = self else {
+                    self?.log("Like command failed: Player instance is nil", level: .error)
+                    return .commandFailed
+                }
+                
+                self.log("Remote command: Toggle like")
+                self.toggleLike()
+                return .success
+            }
+        }
+        
         log("Remote control setup completed")
     }
     

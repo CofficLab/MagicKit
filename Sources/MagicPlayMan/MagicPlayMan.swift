@@ -202,12 +202,19 @@ public class MagicPlayMan: ObservableObject {
     @Published public var logs: [PlaybackLog] = []
     @Published public var currentThumbnail: Image?
     @Published public var isPlaylistEnabled: Bool = true
+    @Published public var likedAssets: Set<URL> = []
 
     public var player: AVPlayer { _player }
     public var asset: MagicAsset? { self.currentAsset }
     public var playing: Bool { self.state == .playing }
     public var hasAsset: Bool { self.asset != nil }
     public var playlist: Playlist { _playlist }
+    
+    /// 当前资源是否被喜欢
+    public var isCurrentAssetLiked: Bool {
+        guard let asset = currentAsset else { return false }
+        return likedAssets.contains(asset.url)
+    }
 
     /// 格式化后的当前播放时间，格式为 "mm:ss" 或 "hh:mm:ss"
     public var currentTimeForDisplay: String {
@@ -291,6 +298,26 @@ public class MagicPlayMan: ObservableObject {
     /// 剩余播放时间
     public var remainingTime: TimeInterval {
         max(0, duration - currentTime)
+    }
+
+    /// 切换当前资源的喜欢状态
+    public func toggleLike() {
+        guard let asset = currentAsset else { return }
+        if likedAssets.contains(asset.url) {
+            likedAssets.remove(asset.url)
+            log("Removed from liked: \(asset.title)")
+            showToast("Removed from liked", icon: .iconHeart, style: .info)
+        } else {
+            likedAssets.insert(asset.url)
+            log("Added to liked: \(asset.title)")
+            showToast("Added to liked", icon: .iconHeartFill, style: .info)
+        }
+        updateNowPlayingInfo()
+    }
+
+    /// 检查指定资源是否被喜欢
+    public func isAssetLiked(_ asset: MagicAsset) -> Bool {
+        likedAssets.contains(asset.url)
     }
 }
 
