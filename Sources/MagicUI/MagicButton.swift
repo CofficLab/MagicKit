@@ -31,7 +31,7 @@ public struct MagicButton: View {
     
     /// 按钮大小
     public enum Size {
-        /// 自动尺寸，根据容器大小自动调整（最小 32，最大 50）
+        /// 自动尺寸，根据容器大小自动调整（最小 = small 尺寸 32，最大 = huge 尺寸 80）
         case auto
         /// 小尺寸，适用于紧凑布局
         case small
@@ -39,6 +39,12 @@ public struct MagicButton: View {
         case regular
         /// 大尺寸，适用于强调显示
         case large
+        /// 超大尺寸，适用于特殊场景
+        case extraLarge
+        /// 巨大尺寸，适用于焦点元素
+        case huge
+        /// 自定义尺寸
+        case custom(CGFloat)
         
         /// 获取固定尺寸的按钮大小
         var fixedSize: CGFloat {
@@ -51,6 +57,12 @@ public struct MagicButton: View {
                 return 40
             case .large:
                 return 50
+            case .extraLarge:
+                return 64
+            case .huge:
+                return 80
+            case .custom(let size):
+                return size
             }
         }
         
@@ -58,7 +70,7 @@ public struct MagicButton: View {
         func iconSize(containerSize: CGFloat) -> CGFloat {
             switch self {
             case .auto:
-                let size = min(max(containerSize, 32), 50)
+                let size = min(max(containerSize, Size.small.fixedSize), Size.huge.fixedSize)
                 return size * 0.4
             case .small:
                 return 12
@@ -66,6 +78,12 @@ public struct MagicButton: View {
                 return 15
             case .large:
                 return 20
+            case .extraLarge:
+                return 24
+            case .huge:
+                return 32
+            case .custom(let size):
+                return size * 0.4
             }
         }
         
@@ -80,6 +98,12 @@ public struct MagicButton: View {
                 return .body
             case .large:
                 return .title3
+            case .extraLarge:
+                return .title2
+            case .huge:
+                return .title
+            case .custom:
+                return .body
             }
         }
         
@@ -87,12 +111,18 @@ public struct MagicButton: View {
         var horizontalPadding: CGFloat {
             switch self {
             case .auto:
-                return 12
+                return 16
             case .small:
                 return 8
             case .regular:
                 return 12
             case .large:
+                return 16
+            case .extraLarge:
+                return 20
+            case .huge:
+                return 24
+            case .custom:
                 return 16
             }
         }
@@ -101,12 +131,18 @@ public struct MagicButton: View {
         var verticalPadding: CGFloat {
             switch self {
             case .auto:
-                return 8
+                return 12
             case .small:
                 return 4
             case .regular:
                 return 8
             case .large:
+                return 12
+            case .extraLarge:
+                return 16
+            case .huge:
+                return 20
+            case .custom:
                 return 12
             }
         }
@@ -429,9 +465,8 @@ public struct MagicButton: View {
     
     private var buttonSize: CGFloat {
         if case .auto = size {
-            // 限制自动尺寸的范围在 32-50 之间，并考虑内边距
             let availableSize = containerSize - (size.horizontalPadding * 2)
-            return min(max(availableSize, 32), 50)
+            return min(max(availableSize, Size.small.fixedSize), Size.huge.fixedSize)
         }
         return size.fixedSize
     }
