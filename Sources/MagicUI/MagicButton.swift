@@ -30,8 +30,8 @@ public struct MagicButton: View {
     }
     
     /// 按钮大小
-    public enum Size {
-        /// 自动尺寸，根据容器大小自动调整（最小 = small 尺寸 32，最大 = huge 尺寸 80）
+    public enum Size: Equatable {
+        /// 自动模式，占据尽可能多的空间
         case auto
         /// 小尺寸，适用于紧凑布局
         case small
@@ -50,7 +50,7 @@ public struct MagicButton: View {
         var fixedSize: CGFloat {
             switch self {
             case .auto:
-                return 0 // 自动尺寸不使用固定值
+                return 0 // 自动模式不使用固定值
             case .small:
                 return 32
             case .regular:
@@ -70,8 +70,7 @@ public struct MagicButton: View {
         func iconSize(containerSize: CGFloat) -> CGFloat {
             switch self {
             case .auto:
-                let size = min(max(containerSize, Size.small.fixedSize), Size.huge.fixedSize)
-                return size * 0.4
+                return 20  // 自动模式下使用默认大小
             case .small:
                 return 12
             case .regular:
@@ -269,65 +268,50 @@ public struct MagicButton: View {
     }
     
     public var body: some View {
-        GeometryReader { geometry in
-            Button(action: {
-                if disabledReason != nil {
-                    showingDisabledPopover = true
-                } else if popoverContent != nil {
-                    showingDisabledPopover.toggle()
-                } else {
-                    action()
+        Button(action: action) {
+            HStack(spacing: 4) {
+                Image(systemName: icon)
+                    .font(.system(size: size.iconSize(containerSize: size.fixedSize)))
+                if let title = title {
+                    Text(title)
+                        .font(size.font)
                 }
-            }) {
-                HStack(spacing: 4) {
-                    Image(systemName: icon)
-                        .font(.system(size: size.iconSize(containerSize: containerSize)))
-                    if let title = title {
-                        Text(title)
-                            .font(size.font)
-                    }
-                }
-                .foregroundStyle(foregroundColor)
-                .frame(
-                    width: isCircularShape ? buttonSize : nil,
-                    height: buttonSize
-                )
-                .padding(.horizontal, isCircularShape ? 0 : size.horizontalPadding)
-                .padding(.vertical, isCircularShape ? 0 : size.verticalPadding)
-                .background(shouldShowShape ? buttonShape : nil)
-                .scaleEffect(isHovering ? 1.05 : 1.0)
-                .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isHovering)
-                .opacity(disabledReason != nil ? 0.5 : 1.0)
             }
-            .buttonStyle(MagicButtonStyle())
+            .foregroundStyle(foregroundColor)
             .frame(
-                width: geometry.size.width,
-                height: geometry.size.height,
-                alignment: .center
+                width: size == .auto ? nil : (isCircularShape ? buttonSize : size.fixedSize),
+                height: size == .auto ? nil : size.fixedSize
             )
-            .onHover { hovering in
-                isHovering = hovering && disabledReason == nil
-            }
-            .popover(isPresented: $showingDisabledPopover, arrowEdge: .top) {
-                if let reason = disabledReason {
-                    Text(reason)
-                        .font(.callout)
-                        .padding()
-                } else if let content = popoverContent {
-                    content
-                }
-            }
-            .onAppear {
-                containerSize = min(geometry.size.width, geometry.size.height)
-            }
-            .onChange(of: geometry.size) { newSize in
-                containerSize = min(newSize.width, newSize.height)
+            .frame(
+                maxWidth: size == .auto ? .infinity : nil,
+                maxHeight: size == .auto ? .infinity : nil
+            )
+            .padding(.horizontal, isCircularShape ? 0 : size.horizontalPadding)
+            .padding(.vertical, isCircularShape ? 0 : size.verticalPadding)
+            .background(shouldShowShape ? buttonShape : nil)
+            .scaleEffect(isHovering ? 1.05 : 1.0)
+            .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isHovering)
+            .opacity(disabledReason != nil ? 0.5 : 1.0)
+        }
+        .buttonStyle(MagicButtonStyle())
+        .onHover { hovering in
+            isHovering = hovering && disabledReason == nil
+        }
+        .popover(isPresented: $showingDisabledPopover, arrowEdge: .top) {
+            if let reason = disabledReason {
+                Text(reason)
+                    .font(.callout)
+                    .padding()
+            } else if let content = popoverContent {
+                content
             }
         }
-        .frame(
-            idealWidth: buttonSize + (size.horizontalPadding * 2),
-            idealHeight: buttonSize + (size.verticalPadding * 2)
-        )
+        .onAppear {
+            containerSize = size.fixedSize
+        }
+        .onChange(of: size.fixedSize) { newSize in
+            containerSize = newSize
+        }
     }
     
     private var isCircularShape: Bool {
