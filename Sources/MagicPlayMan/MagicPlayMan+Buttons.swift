@@ -132,6 +132,9 @@ public extension MagicPlayMan {
             disabledReason: !hasAsset ? "No media loaded" : nil,
             action: toggleLike
         )
+        .magicShape(.roundedSquare)
+        .magicStyle(.secondary)
+        .magicShapeVisibility(.onHover)
         .symbolEffect(.bounce, value: isCurrentAssetLiked)
     }
 
