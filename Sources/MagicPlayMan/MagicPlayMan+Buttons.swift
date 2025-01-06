@@ -195,9 +195,6 @@ public extension MagicPlayMan {
     func makeLogButton(shape: MagicButton.Shape = .circle) -> some View {
         MagicButton(
             icon: .iconTerminal,
-            style: .secondary,
-            size: .regular,
-            shape: shape,
             popoverContent: AnyView(
                 self.makeLogView()
                     .frame(width: 400, height: 400)
@@ -205,6 +202,9 @@ public extension MagicPlayMan {
             ),
             action: {}
         )
+        .magicShape(.roundedSquare)
+        .magicStyle(.secondary)
+        .magicShapeVisibility(.onHover)
     }
 }
 

@@ -109,6 +109,18 @@ private struct ShapeButtonsPreview: View {
                         .magicShape(.roundedRectangle)
                 }
             }
+            
+            Group {
+                Text("圆角正方形").font(.subheadline)
+                HStack {
+                    MagicButton(icon: "star", action: {})
+                        .magicShape(.roundedSquare)
+                    
+                    MagicButton(icon: "star", action: {})
+                        .magicStyle(.primary)
+                        .magicShape(.roundedSquare)
+                }
+            }
         }
         .padding()
     }

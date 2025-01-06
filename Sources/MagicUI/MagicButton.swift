@@ -45,6 +45,8 @@ public struct MagicButton: View {
         case rectangle
         /// 圆角矩形（固定圆角），通用选项
         case roundedRectangle
+        /// 圆角正方形，适用于图标按钮
+        case roundedSquare
         /// 自定义圆角矩形，可以为每个角设置不同的圆角半径
         /// - Parameters:
         ///   - topLeft: 左上角圆角半径
@@ -69,6 +71,8 @@ public struct MagicButton: View {
                 return 0
             case .roundedRectangle:
                 return 8
+            case .roundedSquare:
+                return 12
             case .customRoundedRectangle(_, _, _, _):
                 return 0 // 由自定义值决定
             case .customCapsule(_, _):
@@ -216,6 +220,12 @@ public struct MagicButton: View {
         case .roundedRectangle:
             RoundedRectangle(cornerRadius: shape.cornerRadius)
                 .fill(backgroundColor)
+                .shadow(color: shadowColor, radius: 8)
+            
+        case .roundedSquare:
+            RoundedRectangle(cornerRadius: shape.cornerRadius)
+                .fill(backgroundColor)
+                .frame(width: buttonSize, height: buttonSize)
                 .shadow(color: shadowColor, radius: 8)
             
         case .customRoundedRectangle(let topLeft, let topRight, let bottomLeft, let bottomRight):
