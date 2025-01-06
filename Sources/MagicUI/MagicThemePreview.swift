@@ -1,45 +1,52 @@
 import SwiftUI
 
-/// 主题预览容器，将内容视图分别以亮色和暗色主题并排显示
+/// 主题预览容器，提供亮暗主题切换功能
 public struct MagicThemePreview<Content: View>: View {
     private let content: Content
-    private let spacing: CGFloat
     private let showsIndicators: Bool
+    @State private var isDarkMode = false
     
     /// 创建主题预览容器
     /// - Parameters:
-    ///   - spacing: 亮暗主题之间的间距，默认为 0
     ///   - showsIndicators: 是否显示滚动条，默认为 true
     ///   - content: 要预览的内容视图
     public init(
-        spacing: CGFloat = 0,
         showsIndicators: Bool = true,
         @ViewBuilder content: () -> Content
     ) {
         self.content = content()
-        self.spacing = spacing
         self.showsIndicators = showsIndicators
     }
     
     public var body: some View {
-        GeometryReader { geometry in
-            ScrollView(.vertical, showsIndicators: showsIndicators) {
-                HStack(spacing: spacing) {
-                    // 亮色主题
-                    content
-                        .frame(maxWidth: .infinity, minHeight: geometry.size.height)
-                        .background(Color(nsColor: .windowBackgroundColor))
-                        .environment(\.colorScheme, .light)
-                    
-                    // 暗色主题
-                    content
-                        .frame(maxWidth: .infinity, minHeight: geometry.size.height)
-                        .background(Color(nsColor: .darkGray))
-                        .environment(\.colorScheme, .dark)
-                }
+        VStack(spacing: 0) {
+            // 顶部工具栏
+            HStack {
+                Spacer()
+                
+                MagicButton(
+                    icon: isDarkMode ? "sun.max.fill" : "moon.fill",
+                    style: .secondary,
+                    action: { isDarkMode.toggle() }
+                )
+                .magicShape(.roundedSquare)
+                .padding()
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .frame(height: 50)
+            .background(.ultraThinMaterial)
+            
+            // 分隔线
+            Divider()
+            
+            // 内容区域
+            ScrollView(.vertical, showsIndicators: showsIndicators) {
+                content
+                    .frame(maxWidth: .infinity)
+            }
         }
+        .environment(\.colorScheme, isDarkMode ? .dark : .light)
+        .frame(maxHeight: .infinity)
+        .background(isDarkMode ? Color(nsColor: .darkGray) : Color(nsColor: .windowBackgroundColor))
     }
 }
 
@@ -56,8 +63,8 @@ public struct MagicThemePreview<Content: View>: View {
             Text("基本")
         }
         
-        // 示例 2：带间距
-        MagicThemePreview(spacing: 1) {
+        // 示例 2：简单内容
+        MagicThemePreview {
             VStack {
                 Image(systemName: "star.fill")
                     .font(.title)
@@ -67,7 +74,7 @@ public struct MagicThemePreview<Content: View>: View {
         }
         .tabItem {
             Image(systemName: "2.circle.fill")
-            Text("间距")
+            Text("简单")
         }
         
         // 示例 3：复杂内容

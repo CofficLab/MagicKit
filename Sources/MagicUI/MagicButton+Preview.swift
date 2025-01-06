@@ -47,9 +47,26 @@ private struct SizeButtonsPreview: View {
             
             VStack(spacing: 16) {
                 Text("常规尺寸").font(.subheadline)
-                MagicButton(icon: "star", action: {})
-                    .magicTitle("Regular")
-                    .magicSize(.regular)
+                HStack(spacing: 16) {
+                    MagicButton(icon: "star", action: {})
+                        .magicTitle("Regular")
+                        .magicSize(.regular)
+                        .magicShape(.roundedRectangle)
+                    
+                    MagicButton(icon: "star", action: {})
+                        .magicSize(.regular)
+                        .magicShape(.circle)
+                    
+                    MagicButton(icon: "star", action: {})
+                        .magicTitle("Regular")
+                        .magicSize(.regular)
+                        .magicShape(.capsule)
+                    
+                    MagicButton(icon: "star", action: {})
+                        .magicSize(.regular)
+                        .magicShape(.roundedSquare)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
             .padding()
             .background(Color.blue.opacity(0.1))
@@ -57,9 +74,26 @@ private struct SizeButtonsPreview: View {
             
             VStack(spacing: 16) {
                 Text("大尺寸").font(.subheadline)
-                MagicButton(icon: "star", action: {})
-                    .magicTitle("Large")
-                    .magicSize(.large)
+                HStack(spacing: 16) {
+                    MagicButton(icon: "star", action: {})
+                        .magicTitle("Large")
+                        .magicSize(.large)
+                        .magicShape(.roundedRectangle)
+                    
+                    MagicButton(icon: "star", action: {})
+                        .magicSize(.large)
+                        .magicShape(.circle)
+                    
+                    MagicButton(icon: "star", action: {})
+                        .magicTitle("Large")
+                        .magicSize(.large)
+                        .magicShape(.capsule)
+                    
+                    MagicButton(icon: "star", action: {})
+                        .magicSize(.large)
+                        .magicShape(.roundedSquare)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
             .padding()
             .background(Color.blue.opacity(0.1))
@@ -73,8 +107,15 @@ private struct SizeButtonsPreview: View {
                         Text("40x40")
                             .font(.caption2)
                             .foregroundStyle(.secondary)
-                        Frame(width: 40, height: 40) {
-                            MagicButton(icon: "star", size: .auto, action: {})
+                        HStack(spacing: 16) {
+                            Frame(width: 40, height: 40) {
+                                MagicButton(icon: "star", size: .auto, action: {})
+                                    .magicShape(.circle)
+                            }
+                            Frame(width: 40, height: 40) {
+                                MagicButton(icon: "star", size: .auto, action: {})
+                                    .magicShape(.roundedSquare)
+                            }
                         }
                     }
                     // 中等容器
@@ -82,8 +123,15 @@ private struct SizeButtonsPreview: View {
                         Text("60x60")
                             .font(.caption2)
                             .foregroundStyle(.secondary)
-                        Frame(width: 60, height: 60) {
-                            MagicButton(icon: "star", size: .auto, action: {})
+                        HStack(spacing: 16) {
+                            Frame(width: 60, height: 60) {
+                                MagicButton(icon: "star", size: .auto, action: {})
+                                    .magicShape(.circle)
+                            }
+                            Frame(width: 60, height: 60) {
+                                MagicButton(icon: "star", size: .auto, action: {})
+                                    .magicShape(.roundedSquare)
+                            }
                         }
                     }
                     // 大容器
@@ -91,8 +139,15 @@ private struct SizeButtonsPreview: View {
                         Text("80x80")
                             .font(.caption2)
                             .foregroundStyle(.secondary)
-                        Frame(width: 80, height: 80) {
-                            MagicButton(icon: "star", size: .auto, action: {})
+                        HStack(spacing: 16) {
+                            Frame(width: 80, height: 80) {
+                                MagicButton(icon: "star", size: .auto, action: {})
+                                    .magicShape(.circle)
+                            }
+                            Frame(width: 80, height: 80) {
+                                MagicButton(icon: "star", size: .auto, action: {})
+                                    .magicShape(.roundedSquare)
+                            }
                         }
                     }
                 }

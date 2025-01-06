@@ -472,4 +472,5 @@ private struct MagicButtonStyle: ButtonStyle {
 
 #Preview("MagicButton") {
     MagicButtonPreview()
+        .frame(height: 800)
 }
