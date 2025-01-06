@@ -136,7 +136,7 @@ public extension MagicPlayMan {
         )
         .magicShape(.roundedSquare)
         .magicStyle(.secondary)
-        .magicShapeVisibility(.always)
+        .magicShapeVisibility(.onHover)
         .magicDebugBorder()
         .symbolEffect(.bounce, value: isCurrentAssetLiked)
     }

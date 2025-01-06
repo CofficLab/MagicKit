@@ -19,24 +19,23 @@ struct LogView: View {
 
                 MagicButton(
                     icon: "doc.on.doc",
-                    title: "Copy All",
                     style: .secondary,
                     size: .small,
-                    shape: .capsule,
+                    shape: .circle,
                     action: copyAllLogs
                 )
                 .magicDebugBorder()
 
                 MagicButton(
                     icon: "trash",
-                    title: "Clear",
                     style: .secondary,
                     size: .small,
-                    shape: .capsule,
+                    shape: .circle,
                     action: onClear
                 )
                 .magicDebugBorder()
             }
+            .frame(height: 40)
             .overlay {
                 if showToast {
                     Text(toastMessage)
