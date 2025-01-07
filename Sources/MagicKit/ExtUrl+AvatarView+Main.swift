@@ -35,6 +35,12 @@ public struct AvatarView: View, SuperLog {
 
     public static let emoji = "🚉"
 
+    /// 状态管理器
+    @StateObject private var state = ViewState()
+
+    /// 下载监控器
+    private let downloadMonitor = DownloadMonitor()
+
     /// 文件的URL
     let url: URL
 
@@ -55,28 +61,11 @@ public struct AvatarView: View, SuperLog {
     /// 视图背景色
     var backgroundColor: Color = .blue.opacity(0.1)
 
-    // MARK: - State Properties
-
-    /// 缩略图
-    @State private var thumbnail: Image?
-
-    /// 错误状态
-    @State private var error: Error?
-
-    /// 加载状态
-    @State private var isLoading = false
-
-    /// 自动下载进度
-    @State private var autoDownloadProgress: Double = 0
-
-    /// 取消订阅存储
-    @State private var cancellable: AnyCancellable?
-
     // MARK: - Computed Properties
 
     /// 当前的下载进度
     private var downloadProgress: Double {
-        progressBinding?.wrappedValue ?? autoDownloadProgress
+        progressBinding?.wrappedValue ?? state.autoDownloadProgress
     }
 
     /// 是否正在下载
@@ -112,13 +101,15 @@ public struct AvatarView: View, SuperLog {
             // 检查本地文件是否存在
             if url.isNotFileExist {
                 os_log("\(Self.t)文件不存在: \(url.path)")
-                _error = State(initialValue: URLError(.fileDoesNotExist))
+                _state = StateObject(wrappedValue: ViewState())
+                state.setError(ViewError.fileNotFound)
             }
         } else {
             // 检查 URL 格式
             guard url.isNetworkURL else {
                 os_log("\(Self.t)无效的 URL: \(url)")
-                _error = State(initialValue: URLError(.badURL))
+                _state = StateObject(wrappedValue: ViewState())
+                state.setError(ViewError.invalidURL)
                 return
             }
         }
@@ -130,11 +121,11 @@ public struct AvatarView: View, SuperLog {
         Group {
             if isDownloading {
                 DownloadProgressView(progress: downloadProgress)
-            } else if let thumbnail = thumbnail {
+            } else if let thumbnail = state.thumbnail {
                 ThumbnailImageView(image: thumbnail)
-            } else if let error = error {
+            } else if let error = state.error {
                 ErrorIndicatorView(error: error)
-            } else if isLoading {
+            } else if state.isLoading {
                 ProgressView()
                     .controlSize(.small)
             } else {
@@ -146,24 +137,20 @@ public struct AvatarView: View, SuperLog {
         .background(backgroundColor)
         .clipShape(shape)
         .overlay {
-            if error != nil {
+            if state.error != nil {
                 shape.strokeBorder(color: Color.red.opacity(0.5))
             }
         }
         .onChange(of: progressBinding?.wrappedValue) {
-            // 当用户传入的进度值达到1.0时，重新生成缩略图
             if let progress = progressBinding?.wrappedValue, progress >= 1.0 {
                 Task {
-                    // 清除当前缩略图，以便重新生成
-                    thumbnail = nil
-                    // 重新加载缩略图
+                    state.reset()
                     await loadThumbnail()
                 }
             }
         }
         .task {
-            // 如果仍然没有错误，尝试加载缩略图
-            if error == nil {
+            if state.error == nil {
                 await loadThumbnail()
             }
             if monitorDownload {
@@ -171,53 +158,55 @@ public struct AvatarView: View, SuperLog {
             }
         }
         .onDisappear {
-            // 显式取消监听
-            cancellable?.cancel()
+            downloadMonitor.stopMonitoring()
         }
-    }
-
-    // MARK: - State Management
-
-    @MainActor private func setThumbnail(_ image: Image?) {
-        thumbnail = image
-    }
-
-    @MainActor private func setError(_ newError: Error?) {
-        error = newError
-    }
-
-    @MainActor private func setIsLoading(_ loading: Bool) {
-        isLoading = loading
-    }
-
-    @MainActor private func setAutoDownloadProgress(_ progress: Double) {
-        autoDownloadProgress = progress
     }
 
     // MARK: - Private Methods
 
     @Sendable private func loadThumbnail() async {
-        guard thumbnail == nil && !isLoading && !url.isDownloading else {
+        guard state.thumbnail == nil && !state.isLoading && !url.isDownloading else {
             return
         }
 
         Task.detached(priority: .background) {
             if verbose { os_log("\(self.t)开始加载缩略图: \(url.lastThreeComponents())") }
-            await setIsLoading(true)
+            await state.setLoading(true)
+
             do {
                 if let image = try await url.thumbnail(size: size, verbose: verbose) {
-                    await setThumbnail(image)
-                    await setError(nil)
+                    await state.setThumbnail(image)
+                    await state.setError(nil)
                     if verbose { os_log("\(self.t)缩略图加载成功: \(url.lastThreeComponents())") }
                 } else {
-                    await setThumbnail(Image(systemName: url.systemIcon))
+                    await state.setThumbnail(Image(systemName: url.systemIcon))
+                    await state.setError(ViewError.thumbnailGenerationFailed)
                     if verbose { os_log("\(self.t)使用默认图标: \(url.systemIcon)") }
                 }
+            } catch URLError.cancelled {
+                // 忽略取消操作的错误
+                if verbose { os_log("\(self.t)缩略图加载已取消") }
             } catch {
-                await setError(error)
-                if verbose { os_log(.error, "\(self.t)加载缩略图失败: \(error.localizedDescription)") }
+                // 转换为具体的错误类型
+                let viewError: ViewError
+                if let urlError = error as? URLError {
+                    switch urlError.code {
+                    case .notConnectedToInternet, .networkConnectionLost, .timedOut:
+                        viewError = .downloadFailed
+                    case .fileDoesNotExist:
+                        viewError = .fileNotFound
+                    default:
+                        viewError = .thumbnailGenerationFailed
+                    }
+                } else {
+                    viewError = .thumbnailGenerationFailed
+                }
+
+                await state.setError(viewError)
+                if verbose { os_log(.error, "\(self.t)加载缩略图失败: \(viewError.localizedDescription)") }
             }
-            await setIsLoading(false)
+
+            await state.setLoading(false)
         }
     }
 
@@ -228,28 +217,25 @@ public struct AvatarView: View, SuperLog {
         }
 
         if verbose { os_log("\(self.t)设置下载监控: \(url.path)") }
-        let downloadingCancellable = url.onDownloading(
-            caller: self.className,
-            { progress in
-                setAutoDownloadProgress(progress)
+
+        downloadMonitor.startMonitoring(
+            url: url,
+            onProgress: { progress in
+                Task { @MainActor in
+                    state.setProgress(progress)
+                    // 如果下载失败（进度为负数），设置相应的错误
+                    if progress < 0 {
+                        state.setError(ViewError.downloadFailed)
+                    }
+                }
+            },
+            onFinished: {
+                Task {
+                    state.reset()
+                    await loadThumbnail()
+                }
             }
         )
-
-        let finishedCancellable = url.onDownloadFinished(caller: self.className) {
-            Task {
-                // 重置进度
-                setAutoDownloadProgress(0)
-                // 清除当前缩略图，以便重新生成
-                setThumbnail(nil)
-                // 重新加载缩略图
-                await loadThumbnail()
-            }
-        }
-
-        cancellable = AnyCancellable {
-            downloadingCancellable.cancel()
-            finishedCancellable.cancel()
-        }
     }
 }
 
