@@ -302,7 +302,7 @@ public struct AvatarView: View, SuperLog {
             if verbose { os_log("\(self.t)开始加载缩略图: \(url.lastThreeComponents())") }
             await setIsLoading(true)
             do {
-                if let image = try await url.thumbnail(size: size) {
+                if let image = try await url.thumbnail(size: size, verbose: verbose) {
                     await setThumbnail(image)
                     await setError(nil)
                     if verbose { os_log("\(self.t)缩略图加载成功: \(url.lastThreeComponents())") }

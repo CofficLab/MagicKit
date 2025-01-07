@@ -20,7 +20,7 @@ extension URL {
     /// - Returns: 生成的缩略图，如果无法生成则返回 nil
     public func thumbnail(
         size: CGSize = CGSize(width: 120, height: 120),
-        verbose: Bool = true
+        verbose: Bool
     ) async throws -> Image? {
         // 检查缓存
         if let cachedImage = ThumbnailCache.shared.fetch(for: self, size: size) {

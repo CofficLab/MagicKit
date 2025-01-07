@@ -8,6 +8,7 @@ public extension URL {
     /// 创建一个文件复制进度视图
     /// - Parameters:
     ///   - destination: 目标位置（可以是文件夹或具体文件路径）
+    ///   - verbose: 是否显示详细日志
     ///   - onCompletion: 复制完成后的回调，参数为可选的错误信息
     /// - Returns: 文件复制进度视图
     ///
@@ -36,11 +37,13 @@ public extension URL {
     /// ```
     func copyView(
         destination: URL,
+        verbose: Bool,
         onCompletion: @escaping (Error?) async -> Void = { _ in }
     ) -> some View {
         FileCopyProgressView(
             source: self,
             destination: destination,
+            verbose: verbose,
             onCompletion: onCompletion
         )
     }
@@ -111,6 +114,7 @@ private struct FileCopyProgressView: View, SuperLog {
     
     let source: URL
     let destination: URL
+    let verbose: Bool
     let onCompletion: (Error?) async -> Void
     
     @State private var downloadProgress: Double = 0
@@ -223,33 +227,45 @@ private struct FileCopyProgressView: View, SuperLog {
     
     private func performCopyOperation() {
         Task.detached(priority: .background) {
-            os_log("\(self.t)开始复制操作: 源文件 \(source.path) -> 目标 \(finalDestination.path)")
+            if verbose {
+                os_log("\(self.t)开始复制操作: 源文件 \(source.path) -> 目标 \(finalDestination.path)")
+            }
             
             // 加载缩略图
-            if let thumb = try? await source.thumbnail(size: CGSize(width: 80, height: 80)) {
+            if let thumb = try? await source.thumbnail(size: CGSize(width: 80, height: 80), verbose: verbose) {
                 await setThumbnail(thumb)
             }
             
             do {
                 if source.isiCloud && source.isNotDownloaded {
-                    os_log("\(self.t)开始从 iCloud 下载文件")
+                    if verbose {
+                        os_log("\(self.t)开始从 iCloud 下载文件")
+                    }
                     try await source.download { progress in
                         Task { @MainActor in
                             await updateDownloadProgress(progress * 100)
-                            os_log("\(self.t)iCloud 下载进度: \(progress * 100)%")
+                            if verbose {
+                                os_log("\(self.t)iCloud 下载进度: \(progress * 100)%")
+                            }
                         }
                     }
                 }
                 
                 await setCopying(true)
-                os_log("\(self.t)开始文件复制")
+                if verbose {
+                    os_log("\(self.t)开始文件复制")
+                }
                 try await copyWithProgress()
                 await setCompleted(true)
-                os_log("\(self.t)文件复制完成")
+                if verbose {
+                    os_log("\(self.t)文件复制完成")
+                }
                 await onCompletion(nil)
                 
             } catch {
-                os_log("\(self.t)复制操作失败: \(error.localizedDescription)")
+                if verbose {
+                    os_log("\(self.t)复制操作失败: \(error.localizedDescription)")
+                }
                 await setError(error)
                 await onCompletion(error)
             }
@@ -258,26 +274,36 @@ private struct FileCopyProgressView: View, SuperLog {
     
     private func copyWithProgress() async throws {
         let sourceSize = source.getSize()
-        os_log("\(self.t)源文件大小: \(sourceSize) bytes")
+        if verbose {
+            os_log("\(self.t)源文件大小: \(sourceSize) bytes")
+        }
         let fileManager = FileManager.default
         
         // 如果目标是文件夹，确保文件夹存在
         if destination.hasDirectoryPath {
             try? fileManager.createDirectory(at: destination, withIntermediateDirectories: true)
-            os_log("\(self.t)创建目标文件夹: \(destination.path)")
+            if verbose {
+                os_log("\(self.t)创建目标文件夹: \(destination.path)")
+            }
         }
         
         // 如果目标文件已存在，先删除
         if finalDestination.isFileExist {
-            os_log("\(self.t)删除已存在的目标文件")
+            if verbose {
+                os_log("\(self.t)删除已存在的目标文件")
+            }
             try finalDestination.delete()
         }
         
         // 执行复制
-        os_log("\(self.t)执行文件复制")
+        if verbose {
+            os_log("\(self.t)执行文件复制")
+        }
         try fileManager.copyItem(at: source, to: finalDestination)
         copyProgress = 100
-        os_log("\(self.t)文件复制成功")
+        if verbose {
+            os_log("\(self.t)文件复制成功")
+        }
     }
 }
 

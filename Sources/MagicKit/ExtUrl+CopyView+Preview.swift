@@ -57,7 +57,7 @@ private struct BasicStylesPreview: View {
                     .font(.headline)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 URL.sample_temp_txt
-                    .copyView(destination: .documentsDirectory.appendingPathComponent("copy"))
+                    .copyView(destination: .documentsDirectory.appendingPathComponent("copy"), verbose: false)
                     .withBackground()
             }
 
@@ -67,7 +67,7 @@ private struct BasicStylesPreview: View {
                     .font(.headline)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 URL.sample_web_jpg_moon
-                    .copyView(destination: .documentsDirectory.appendingPathComponent("random.jpg"))
+                    .copyView(destination: .documentsDirectory.appendingPathComponent("random.jpg"), verbose: false)
                     .withBackground(.blue.opacity(0.1))
             }
 
@@ -77,7 +77,7 @@ private struct BasicStylesPreview: View {
                     .font(.headline)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 URL.sample_web_txt_bsd
-                    .copyView(destination: .documentsDirectory.appendingPathComponent("download.bin"))
+                    .copyView(destination: .documentsDirectory.appendingPathComponent("download.bin"), verbose: false)
                     .withBackground(.green.opacity(0.1))
                     .withShadow(radius: 8)
             }
@@ -88,7 +88,7 @@ private struct BasicStylesPreview: View {
                     .font(.headline)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 URL.sample_web_txt_bsd
-                    .copyView(destination: .documentsDirectory.appendingPathComponent("manual.txt"))
+                    .copyView(destination: .documentsDirectory.appendingPathComponent("manual.txt"), verbose: false)
                     .withBackground(.pink.opacity(0.1))
                     .withAutoStart(false)
             }
@@ -114,7 +114,7 @@ private struct ShapesPreview: View {
                     .font(.headline)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 URL.sample_web_jpg_earth
-                    .copyView(destination: .documentsDirectory)
+                    .copyView(destination: .documentsDirectory, verbose: false)
                     .withBackground(.mint.opacity(0.1))
             }
 
@@ -124,7 +124,7 @@ private struct ShapesPreview: View {
                     .font(.headline)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 URL.sample_web_jpg_earth
-                    .copyView(destination: .documentsDirectory)
+                    .copyView(destination: .documentsDirectory, verbose: false)
                     .withShape(.rectangle)
                     .withBackground(.orange.opacity(0.1))
             }
@@ -135,7 +135,7 @@ private struct ShapesPreview: View {
                     .font(.headline)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 URL.sample_web_jpg_earth
-                    .copyView(destination: .documentsDirectory)
+                    .copyView(destination: .documentsDirectory, verbose: false)
                     .withShape(.capsule)
                     .withBackground(.purple.opacity(0.1))
             }
@@ -162,7 +162,7 @@ private struct DownloadPreview: View {
                     .font(.headline)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 URL.sample_web_mp3_kennedy
-                    .copyView(destination: .documentsDirectory)
+                    .copyView(destination: .documentsDirectory, verbose: false)
                     .withBackground(.blue.opacity(0.1))
             }
 
@@ -172,7 +172,7 @@ private struct DownloadPreview: View {
                     .font(.headline)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 URL.sample_web_mp4_bunny
-                    .copyView(destination: .documentsDirectory)
+                    .copyView(destination: .documentsDirectory, verbose: false)
                     .withBackground(.green.opacity(0.1))
             }
 
@@ -182,7 +182,7 @@ private struct DownloadPreview: View {
                     .font(.headline)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 URL.sample_web_jpg_earth
-                    .copyView(destination: .documentsDirectory)
+                    .copyView(destination: .documentsDirectory, verbose: false)
                     .withBackground(.purple.opacity(0.1))
             }
 
@@ -192,7 +192,7 @@ private struct DownloadPreview: View {
                     .font(.headline)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 URL.sample_web_pdf_swift_guide
-                    .copyView(destination: .documentsDirectory)
+                    .copyView(destination: .documentsDirectory, verbose: false)
                     .withBackground(.orange.opacity(0.1))
             }
         }
@@ -217,7 +217,7 @@ private struct ErrorHandlingPreview: View {
                     .font(.headline)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 URL(fileURLWithPath: "/nonexistent/path.txt")
-                    .copyView(destination: .documentsDirectory)
+                    .copyView(destination: .documentsDirectory, verbose: false)
                     .withBackground(.red.opacity(0.1))
             }
 
@@ -227,7 +227,7 @@ private struct ErrorHandlingPreview: View {
                     .font(.headline)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 URL(fileURLWithPath: "/System/file.txt")
-                    .copyView(destination: .documentsDirectory)
+                    .copyView(destination: .documentsDirectory, verbose: false)
                     .withBackground(.orange.opacity(0.1))
             }
 
@@ -237,7 +237,7 @@ private struct ErrorHandlingPreview: View {
                     .font(.headline)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 URL.sample_web_txt_mit
-                    .copyView(destination: URL.sample_web_txt_mit)
+                    .copyView(destination: URL.sample_web_txt_mit, verbose: false)
                     .withBackground(.yellow.opacity(0.1))
             }
         }
