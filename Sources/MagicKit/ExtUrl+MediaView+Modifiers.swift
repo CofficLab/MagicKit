@@ -338,6 +338,29 @@ public extension MediaFileView {
         view.avatarProgressBinding = progress
         return view
     }
+    
+    /// 控制是否显示下载按钮
+    /// 
+    /// 这个修改器允许你控制是否在操作按钮区域显示下载按钮。
+    /// 
+    /// 示例：
+    /// ```swift
+    /// // 隐藏下载按钮
+    /// url.makeMediaView()
+    ///     .magicHideDownloadButton()
+    /// 
+    /// // 显示下载按钮（默认）
+    /// url.makeMediaView()
+    ///     .magicShowDownloadButton(true)
+    /// ```
+    /// 
+    /// - Parameter show: 是否显示下载按钮
+    /// - Returns: 修改后的视图
+    func magicShowDownloadButton(_ show: Bool = true) -> MediaFileView {
+        var view = self
+        view.showDownloadButton = show
+        return view
+    }
 }
 
 #Preview("Media View") {

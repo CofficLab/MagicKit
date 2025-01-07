@@ -106,6 +106,7 @@ public struct MediaFileView: View {
     var folderContentVisible: Bool = false
     var avatarProgressBinding: Binding<Double>? = nil
     var showBorder: Bool = false
+    var showDownloadButton: Bool = true
     @State private var isHovering = false
 
     /// 创建媒体文件视图
@@ -187,7 +188,7 @@ public struct MediaFileView: View {
                 
                 // 操作按钮
                 if showActions {
-                    ActionButtonsView(url: url)
+                    ActionButtonsView(url: url, showDownloadButton: showDownloadButton)
                         .opacity(isHovering ? 1 : 0)
                         .overlay(
                             RoundedRectangle(cornerRadius: 0)
@@ -241,12 +242,15 @@ struct ErrorMessageView: View {
 
 struct ActionButtonsView: View {
     let url: URL
+    let showDownloadButton: Bool
     @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         HStack(spacing: 12) {
             url.makeOpenButton()
-            url.makeDownloadButton()
+            if showDownloadButton {
+                url.makeDownloadButton()
+            }
         }
         .padding(.trailing, 8)
     }

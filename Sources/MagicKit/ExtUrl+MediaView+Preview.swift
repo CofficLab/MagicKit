@@ -215,7 +215,7 @@ private struct RemoteFilesContent: View {
         ScrollView {
             VStack(spacing: 20) {
                 Group {
-                    Text("远程图片")
+                    Text("远程图片（默认显示下载按钮）")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     URL.sample_web_jpg_earth.makeMediaView()
@@ -224,11 +224,31 @@ private struct RemoteFilesContent: View {
                 }
                 
                 Group {
-                    Text("远程音频")
+                    Text("远程图片（隐藏下载按钮）")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    URL.sample_web_jpg_earth.makeMediaView()
+                        .magicBackground(MagicBackground.sunset)
+                        .magicShowDownloadButton(false)
+                        .magicShowBorder(showBorder)
+                }
+                
+                Group {
+                    Text("远程音频（默认显示下载按钮）")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     URL.sample_web_mp3_kennedy.makeMediaView()
                         .magicBackground(MagicBackground.aurora)
+                        .magicShowBorder(showBorder)
+                }
+                
+                Group {
+                    Text("远程音频（隐藏下载按钮）")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    URL.sample_web_mp3_kennedy.makeMediaView()
+                        .magicBackground(MagicBackground.ocean)
+                        .magicShowDownloadButton(false)
                         .magicShowBorder(showBorder)
                 }
             }
