@@ -166,6 +166,10 @@ public struct AvatarView: View {
                 }
             }
         }
+        .onDisappear {
+            // 显式取消监听
+            cancellable?.cancel()
+        }
     }
 
     // MARK: - Private Views
