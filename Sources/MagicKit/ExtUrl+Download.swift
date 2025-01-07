@@ -73,13 +73,13 @@ public extension URL {
     /// 下载状态相关属性
     var isDownloaded: Bool {
         if isLocal {
-            // 本地文件，已下载
             return true
         }
         
         if isiCloud {
-            // iCloud 文件，检查是否已下载
-            guard let resources = try? self.resourceValues(forKeys: [.ubiquitousItemDownloadingStatusKey]) else {
+            guard let resources = try? self.resourceValues(forKeys: [
+                .ubiquitousItemDownloadingStatusKey
+            ]) else {
                 return false
             }
             
@@ -87,22 +87,25 @@ public extension URL {
                 return false
             }
             
-            return status == .current || status == .downloaded
+            return status == .current
         }
         
-        // Web 链接，未下载
         return false
     }
     
     var isDownloading: Bool {
         guard isiCloud,
-              let resources = try? self.resourceValues(forKeys: [.ubiquitousItemDownloadingStatusKey]),
-              let status = resources.ubiquitousItemDownloadingStatus else {
+              let resources = try? self.resourceValues(forKeys: [
+                .ubiquitousItemDownloadingStatusKey
+              ]) else {
             return false
         }
         
-        // 检查是否不是这三种状态，如果都不是，则表示正在下载
-        return !(status == .current || status == .downloaded || status == .notDownloaded)
+        guard let status = resources.ubiquitousItemDownloadingStatus else {
+            return false
+        }
+        
+        return status == .notDownloaded || status == .downloaded
     }
     
     var isNotDownloaded: Bool {
