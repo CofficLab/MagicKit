@@ -34,7 +34,7 @@ public extension URL {
         }
         
         if verbose {
-            os_log("\(self.t)🚛🚛🚛 执行文件复制操作")
+            os_log("\(self.t)🚛🚛🚛 执行文件复制操作，当前文件下载状态：\(self.isDownloaded)")
         }
         try FileManager.default.copyItem(at: self, to: destination)
         if verbose {
