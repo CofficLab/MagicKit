@@ -10,30 +10,32 @@ import SwiftUI
 /// - 错误处理：展示各种错误情况的处理
 struct CopyViewPreviewContainer: View {
     var body: some View {
-        TabView {
-            // 基础样式预览
-            BasicStylesPreview()
-                .tabItem {
-                    Label("基础样式", systemImage: .iconPaintbrush)
-                }
+        MagicThemePreview {
+            TabView {
+                // 基础样式预览
+                BasicStylesPreview()
+                    .tabItem {
+                        Label("基础样式", systemImage: .iconPaintbrush)
+                    }
 
-            // 形状预览
-            ShapesPreview()
-                .tabItem {
-                    Label("形状", systemImage: .iconSquareOnCircle)
-                }
+                // 形状预览
+                ShapesPreview()
+                    .tabItem {
+                        Label("形状", systemImage: .iconSquareOnCircle)
+                    }
 
-            // 下载预览
-            DownloadPreview()
-                .tabItem {
-                    Label("下载", systemImage: .iconICloudDownloadAlt)
-                }
+                // 下载预览
+                DownloadPreview()
+                    .tabItem {
+                        Label("下载", systemImage: .iconICloudDownloadAlt)
+                    }
 
-            // 错误处理预览
-            ErrorHandlingPreview()
-                .tabItem {
-                    Label("错误处理", systemImage: .iconWarning)
-                }
+                // 错误处理预览
+                ErrorHandlingPreview()
+                    .tabItem {
+                        Label("错误处理", systemImage: .iconWarning)
+                    }
+            }
         }
     }
 }
@@ -233,7 +235,5 @@ private struct ErrorHandlingPreview: View {
 }
 
 #Preview("Copy View") {
-    MagicThemePreview {
-        CopyViewPreviewContainer()
-    }
+    CopyViewPreviewContainer()
 }

@@ -88,4 +88,8 @@ struct ShapeModifier: ViewModifier {
             content.clipShape(Capsule())
         }
     }
-} 
+}
+
+#Preview("Copy View") {
+    CopyViewPreviewContainer()
+}

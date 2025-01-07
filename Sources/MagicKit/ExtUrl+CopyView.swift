@@ -1,5 +1,6 @@
 import SwiftUI
 import Foundation
+import os
 
 // MARK: - URL Extension
 public extension URL {
@@ -104,7 +105,9 @@ private struct ProgressIndicatorView: View {
 
 // MARK: - Main View
 /// 文件复制进度视图
-private struct FileCopyProgressView: View {
+private struct FileCopyProgressView: View, SuperLog {
+    static var emoji: String = "🍆"
+    
     let source: URL
     let destination: URL
     let onCompletion: (Error?) async -> Void
@@ -168,24 +171,31 @@ private struct FileCopyProgressView: View {
     }
     
     private func performCopyOperation() async {
+        os_log("\(self.t)开始复制操作: 源文件 \(source.path) -> 目标 \(finalDestination.path)")
+        
         // 加载缩略图
         thumbnail = try? await source.thumbnail(size: CGSize(width: 80, height: 80))
         
         do {
             // 如果是 iCloud 文件，先下载
             if source.isiCloud && source.isNotDownloaded {
+                os_log("\(self.t)开始从 iCloud 下载文件")
                 try await source.download { progress in
                     downloadProgress = progress * 100
+                    os_log("\(self.t)iCloud 下载进度: \(progress * 100)%")
                 }
             }
             
             // 开始复制
             isCopying = true
+            os_log("\(self.t)开始文件复制")
             try await copyWithProgress()
             isCompleted = true
+            os_log("\(self.t)文件复制完成")
             await onCompletion(nil)
             
         } catch {
+            os_log("\(self.t)复制操作失败: \(error.localizedDescription)")
             self.error = error
             await onCompletion(error)
         }
@@ -193,21 +203,26 @@ private struct FileCopyProgressView: View {
     
     private func copyWithProgress() async throws {
         let sourceSize = source.getSize()
+        os_log("\(self.t)源文件大小: \(sourceSize) bytes")
         let fileManager = FileManager.default
         
         // 如果目标是文件夹，确保文件夹存在
         if destination.hasDirectoryPath {
             try? fileManager.createDirectory(at: destination, withIntermediateDirectories: true)
+            os_log("\(self.t)创建目标文件夹: \(destination.path)")
         }
         
         // 如果目标文件已存在，先删除
         if finalDestination.isFileExist {
+            os_log("\(self.t)删除已存在的目标文件")
             try finalDestination.delete()
         }
         
         // 执行复制
+        os_log("\(self.t)执行文件复制")
         try fileManager.copyItem(at: source, to: finalDestination)
         copyProgress = 100
+        os_log("\(self.t)文件复制成功")
     }
 }
 

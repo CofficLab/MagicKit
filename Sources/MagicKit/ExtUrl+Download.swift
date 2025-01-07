@@ -4,16 +4,23 @@ import SwiftUI
 import MagicUI
 
 public extension URL {
+    private var t: String { "URL+Download" }
+    
     /// 复制文件到目标位置，支持 iCloud 文件的自动下载
     /// - Parameters:
     ///   - destination: 目标位置
     ///   - downloadProgress: 下载进度回调
     func copyTo(_ destination: URL, downloadProgress: ((Double) -> Void)? = nil) async throws {
+        os_log("\(self.t)开始复制文件: \(self.path) -> \(destination.path)")
+        
         if self.isiCloud && self.isNotDownloaded {
+            os_log("\(self.t)检测到 iCloud 文件未下载，开始下载")
             try await download(onProgress: downloadProgress)
         }
         
+        os_log("\(self.t)执行文件复制操作")
         try FileManager.default.copyItem(at: self, to: destination)
+        os_log("\(self.t)文件复制完成")
     }
     
     /// 下载 iCloud 文件
@@ -22,10 +29,12 @@ public extension URL {
         let fm = FileManager.default
         
         if self.isDownloaded {
+            os_log("\(self.t)文件已下载，无需重新下载")
             onProgress?(100)
             return
         }
         
+        os_log("\(self.t)开始下载 iCloud 文件: \(self.path)")
         try fm.startDownloadingUbiquitousItem(at: self)
         
         let queue = OperationQueue()
@@ -39,9 +48,11 @@ public extension URL {
         for try await collection in result {
             if let item = collection.first {
                 let progress = item.downloadProgress
+                os_log("\(self.t)下载进度: \(progress)%")
                 onProgress?(progress)
                 
                 if item.isDownloaded {
+                    os_log("\(self.t)文件下载完成")
                     onProgress?(100)
                     itemQuery.stop()
                     break
