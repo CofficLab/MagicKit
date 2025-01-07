@@ -168,59 +168,53 @@ public struct AvatarView: View, SuperLog {
         guard state.thumbnail == nil && !state.isLoading && !url.isDownloading else {
             return
         }
-        
+
         // 使用后台任务队列
-        await Task.detached(priority: .utility) { 
+        await Task.detached(priority: .utility) {
             if verbose { os_log("\(self.t)开始加载缩略图: \(url.title)") }
             await state.setLoading(true)
-            
+
             do {
                 // 在后台线程中处理图片生成
                 let image = try await withThrowingTaskGroup(of: Image?.self) { group in
                     group.addTask(priority: .utility) {
                         try await url.thumbnail(size: size, verbose: verbose)
                     }
-                    
+
                     // 等待结果或超时
                     return try await group.next() ?? nil
                 }
-                
-                // 回到主线程更新 UI
-                await MainActor.run {
-                    if let image = image {
-                        state.setThumbnail(image)
-                        state.setError(nil)
-                        if verbose { os_log("\(self.t)缩略图加载成功: \(url.title)") }
-                    } else {
-                        state.setThumbnail(Image(systemName: url.systemIcon))
-                        state.setError(ViewError.thumbnailGenerationFailed)
-                        if verbose { os_log("\(self.t)使用默认图标: \(url.systemIcon)") }
-                    }
+
+                if let image = image {
+                    await state.setThumbnail(image)
+                    await state.setError(nil)
+                    if verbose { os_log("\(self.t)缩略图加载成功: \(url.title)") }
+                } else {
+                    await state.setThumbnail(Image(systemName: url.systemIcon))
+                    await state.setError(ViewError.thumbnailGenerationFailed)
+                    if verbose { os_log("\(self.t)使用默认图标: \(url.systemIcon)") }
                 }
             } catch URLError.cancelled {
                 if verbose { os_log("\(self.t)缩略图加载已取消") }
             } catch {
-                // 转换为具体的错误类型并在主线程更新
-                await MainActor.run {
-                    let viewError: ViewError
-                    if let urlError = error as? URLError {
-                        switch urlError.code {
-                        case .notConnectedToInternet, .networkConnectionLost, .timedOut:
-                            viewError = .downloadFailed
-                        case .fileDoesNotExist:
-                            viewError = .fileNotFound
-                        default:
-                            viewError = .thumbnailGenerationFailed
-                        }
-                    } else {
+                let viewError: ViewError
+                if let urlError = error as? URLError {
+                    switch urlError.code {
+                    case .notConnectedToInternet, .networkConnectionLost, .timedOut:
+                        viewError = .downloadFailed
+                    case .fileDoesNotExist:
+                        viewError = .fileNotFound
+                    default:
                         viewError = .thumbnailGenerationFailed
                     }
-                    
-                    state.setError(viewError)
-                    if verbose { os_log(.error, "\(self.t)加载缩略图失败: \(viewError.localizedDescription)") }
+                } else {
+                    viewError = .thumbnailGenerationFailed
                 }
+
+                await state.setError(viewError)
+                if verbose { os_log(.error, "\(self.t)加载缩略图失败: \(viewError.localizedDescription)") }
             }
-            
+
             await state.setLoading(false)
         }.value
     }
@@ -235,12 +229,10 @@ public struct AvatarView: View, SuperLog {
         downloadMonitor.startMonitoring(
             url: url,
             onProgress: { progress in
-                Task { @MainActor in
-                    state.setProgress(progress)
-                    // 如果下载失败（进度为负数），设置相应的错误
-                    if progress < 0 {
-                        state.setError(ViewError.downloadFailed)
-                    }
+                state.setProgress(progress)
+                // 如果下载失败（进度为负数），设置相应的错误
+                if progress < 0 {
+                    state.setError(ViewError.downloadFailed)
                 }
             },
             onFinished: {
