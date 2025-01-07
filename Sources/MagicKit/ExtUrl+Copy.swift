@@ -12,7 +12,7 @@ public extension URL {
     ///   - reason: 复制原因，用于日志记录
     func copyTo(
         _ destination: URL,
-        verbose: Bool = false,
+        verbose: Bool = true,
         reason: String,
         downloadProgress: ((Double) -> Void)? = nil
     ) async throws {
@@ -22,9 +22,9 @@ public extension URL {
         
         if self.isiCloud && self.isNotDownloaded {
             if verbose {
-                os_log("\(self.t)检测到 iCloud 文件未下载，开始下载")
+                os_log("\(self.t)检测到 iCloud 文件未下载，开始下载 (\(reason))")
             }
-            try await download(onProgress: downloadProgress)
+            try await download(verbose: verbose, reason: reason + "-> URL.copyTo", onProgress: downloadProgress)
         }
         
         if verbose {

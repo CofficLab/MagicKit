@@ -5,17 +5,20 @@ import MagicUI
 
 public extension URL {
     /// 下载 iCloud 文件
-    /// - Parameter onProgress: 下载进度回调
-    func download(onProgress: ((Double) -> Void)? = nil) async throws {
+    /// - Parameters:
+    ///   - verbose: 是否输出详细日志，默认为 false
+    ///   - reason: 下载原因，用于日志记录，默认为空字符串
+    ///   - onProgress: 下载进度回调
+    func download(verbose: Bool = false, reason: String = "", onProgress: ((Double) -> Void)? = nil) async throws {
         let fm = FileManager.default
         
         if self.isDownloaded {
-            os_log("\(self.t)文件已下载，无需重新下载")
+            if verbose { os_log("\(self.t)文件已下载，无需重新下载 (\(reason))") }
             onProgress?(100)
             return
         }
         
-        os_log("\(self.t)开始下载 iCloud 文件: \(self.path)")
+        if verbose { os_log("\(self.t)开始下载 iCloud 文件: \(self.path) (\(reason))") }
         try fm.startDownloadingUbiquitousItem(at: self)
         
         let queue = OperationQueue()
@@ -29,11 +32,11 @@ public extension URL {
         for try await collection in result {
             if let item = collection.first {
                 let progress = item.downloadProgress
-                os_log("\(self.t)⏬⏬⏬ 下载进度: \(progress * 100)% -> \(self.title)")
+                if verbose { os_log("\(self.t)⏬⏬⏬ 下载进度: \(progress * 100)% -> \(self.title) (\(reason))") }
                 onProgress?(progress)
                 
                 if item.isDownloaded {
-                    os_log("\(self.t)🎉🎉🎉 文件下载完成 -> \(self.title)")
+                    if verbose { os_log("\(self.t)🎉🎉🎉 文件下载完成 -> \(self.title) (\(reason))") }
                     onProgress?(100)
                     itemQuery.stop()
                     break
