@@ -42,6 +42,41 @@ public class MagicApp {
             WKApplication.shared().exit()
         #endif
     }
+
+    /// 检查当前设备是否已启用 iCloud Drive 功能
+    ///
+    /// 此方法通过检查 FileManager 的 ubiquityIdentityToken 来判断 iCloud Drive 是否可用。
+    /// 在 watchOS 平台上将始终返回 false。
+    ///
+    /// ```swift
+    /// if MagicApp.isICloudAvailable() {
+    ///     // 执行需要 iCloud Drive 的操作
+    ///     saveToCloud()
+    /// } else {
+    ///     // 提示用户启用 iCloud Drive
+    ///     showEnableCloudAlert()
+    /// }
+    /// ```
+    ///
+    /// - Important: 首次检查可能会触发系统的 iCloud 登录提示。建议在后台线程中调用此方法。
+    ///
+    /// - Note: 使用此功能需要在项目的 Capabilities 中启用 iCloud，
+    ///         并在 entitlements 文件中添加相应的权限。
+    ///
+    /// - Returns: 如果 iCloud Drive 可用返回 true，否则返回 false。
+    ///            在以下情况下返回 false：
+    ///            - 用户未登录 iCloud 账号
+    ///            - 用户已登录但未启用 iCloud Drive
+    ///            - 当前设备不支持 iCloud Drive（如 watchOS）
+    ///            - 应用没有 iCloud 访问权限
+    public static func isICloudAvailable() -> Bool {
+        #if os(macOS) || os(iOS) || os(tvOS)
+        if FileManager.default.ubiquityIdentityToken != nil {
+            return true
+        }
+        #endif
+        return false
+    }
 }
 
 #Preview {
