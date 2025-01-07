@@ -74,6 +74,14 @@ struct MediaViewPreviewContainer: View {
             .tabItem {
                 Label("边距", systemImage: .iconRuler)
             }
+            
+            // 文件状态预览
+            PreviewContainer(title: "状态") { showBorder in
+                FileStatusContent(showBorder: showBorder)
+            }
+            .tabItem {
+                Label("状态", systemImage: .iconInfo)
+            }
         }
     }
 }
@@ -338,6 +346,56 @@ private struct PaddingContent: View {
                     URL.sample_web_jpg_earth.makeMediaView()
                         .magicBackground(MagicBackground.ocean)
                         .magicPadding(horizontal: 32, vertical: 24)
+                        .magicShowBorder(showBorder)
+                }
+            }
+            .padding()
+        }
+    }
+}
+
+// MARK: - File Status Preview
+private struct FileStatusContent: View {
+    let showBorder: Bool
+    
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 20) {
+                Group {
+                    Text("默认显示文件状态")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    URL.sample_web_jpg_earth.makeMediaView()
+                        .magicBackground(MagicBackground.mint.opacity(0.1))
+                        .magicShowBorder(showBorder)
+                }
+                
+                Group {
+                    Text("隐藏文件状态")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    URL.sample_web_jpg_earth.makeMediaView()
+                        .magicBackground(MagicBackground.aurora.opacity(0.1))
+                        .magicHideFileStatus()
+                        .magicShowBorder(showBorder)
+                }
+                
+                Group {
+                    Text("本地文件（默认显示状态）")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    URL.sample_temp_jpg.makeMediaView()
+                        .magicBackground(MagicBackground.sunset.opacity(0.1))
+                        .magicShowBorder(showBorder)
+                }
+                
+                Group {
+                    Text("本地文件（隐藏状态）")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    URL.sample_temp_jpg.makeMediaView()
+                        .magicBackground(MagicBackground.ocean.opacity(0.1))
+                        .magicHideFileStatus()
                         .magicShowBorder(showBorder)
                 }
             }

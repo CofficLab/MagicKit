@@ -107,6 +107,8 @@ public struct MediaFileView: View {
     var avatarProgressBinding: Binding<Double>? = nil
     var showBorder: Bool = false
     var showDownloadButton: Bool = true
+    var showFileInfo: Bool = true
+    var showFileStatus: Bool = true
     @State private var isHovering = false
 
     /// 创建媒体文件视图
@@ -169,14 +171,27 @@ public struct MediaFileView: View {
                                 .foregroundColor(showBorder ? .green : .clear)
                         )
                     
-                    Text(size)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 0)
-                                .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [4]))
-                                .foregroundColor(showBorder ? .green : .clear)
-                        )
+                    HStack {
+                        Text(size)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 0)
+                                    .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [4]))
+                                    .foregroundColor(showBorder ? .green : .clear)
+                            )
+                        
+                        if showFileStatus, let status = url.magicFileStatus {
+                            Text(status)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 0)
+                                        .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [4]))
+                                        .foregroundColor(showBorder ? .green : .clear)
+                                )
+                        }
+                    }
                 }
                 .overlay(
                     RoundedRectangle(cornerRadius: 0)
@@ -253,6 +268,34 @@ struct ActionButtonsView: View {
             }
         }
         .padding(.trailing, 8)
+    }
+}
+
+// MARK: - File Status
+extension URL {
+    /// 获取文件的状态信息
+    /// 
+    /// 这个属性返回文件的当前状态描述，例如：
+    /// - "远程文件"：表示文件是一个网络 URL
+    /// - "本地文件"：表示文件存储在本地
+    /// - "iCloud 文件"：表示文件存储在 iCloud 中
+    /// - "正在从 iCloud 下载"：表示文件正在从 iCloud 下载
+    var magicFileStatus: String? {
+        if isNetworkURL {
+            return "远程文件"
+        } else if isFileURL {
+            if isiCloud {
+                if isDownloading {
+                    return "正在从 iCloud 下载"
+                } else if isDownloaded {
+                    return "已从 iCloud 下载"
+                } else {
+                    return "未从 iCloud 下载"
+                }
+            }
+            return isLocal ? "本地文件" : nil
+        }
+        return nil
     }
 }
 

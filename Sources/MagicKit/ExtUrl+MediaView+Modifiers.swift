@@ -361,6 +361,38 @@ public extension MediaFileView {
         view.showDownloadButton = show
         return view
     }
+    
+    /// 控制是否显示文件状态信息
+    /// 
+    /// 这个修改器允许你控制是否显示文件的状态信息（如"远程文件"、"本地文件"等）。
+    /// 
+    /// 示例：
+    /// ```swift
+    /// // 隐藏文件状态
+    /// url.makeMediaView()
+    ///     .magicHideFileStatus()
+    /// 
+    /// // 显示文件状态（默认）
+    /// url.makeMediaView()
+    ///     .magicShowFileStatus(true)
+    /// ```
+    /// 
+    /// - Parameter show: 是否显示文件状态
+    /// - Returns: 修改后的视图
+    func magicShowFileStatus(_ show: Bool = true) -> MediaFileView {
+        var view = self
+        view.showFileStatus = show
+        return view
+    }
+    
+    /// 隐藏文件状态信息
+    /// 
+    /// 这是 `magicShowFileStatus(false)` 的便捷方法。
+    /// 
+    /// - Returns: 隐藏文件状态的视图
+    func magicHideFileStatus() -> MediaFileView {
+        magicShowFileStatus(false)
+    }
 }
 
 #Preview("Media View") {
