@@ -1,4 +1,5 @@
 import SwiftUI
+import MagicUI
 import Foundation
 import os
 
@@ -155,6 +156,18 @@ private struct FileCopyProgressView: View, SuperLog {
                     Label("复制完成", systemImage: "checkmark.circle.fill")
                         .foregroundStyle(.green)
                 }
+                
+                if !style.autoStart && !isCopying && !isCompleted {
+                    MagicButton(
+                        icon: "arrow.right.circle",
+                        title: "开始复制",
+                        style: .primary,
+                        size: .regular,
+                        shape: .rectangle
+                    ) {
+                        Task { performCopyOperation() }
+                    }
+                }
             }
             .padding()
             .background(style.background.opacity(style.backgroundOpacity))
@@ -166,38 +179,44 @@ private struct FileCopyProgressView: View, SuperLog {
             }
         }
         .task {
-            await performCopyOperation()
+            if style.autoStart {
+                performCopyOperation()
+            }
         }
     }
     
-    private func performCopyOperation() async {
-        os_log("\(self.t)开始复制操作: 源文件 \(source.path) -> 目标 \(finalDestination.path)")
-        
-        // 加载缩略图
-        thumbnail = try? await source.thumbnail(size: CGSize(width: 80, height: 80))
-        
-        do {
-            // 如果是 iCloud 文件，先下载
-            if source.isiCloud && source.isNotDownloaded {
-                os_log("\(self.t)开始从 iCloud 下载文件")
-                try await source.download { progress in
-                    downloadProgress = progress * 100
-                    os_log("\(self.t)iCloud 下载进度: \(progress * 100)%")
+    private func performCopyOperation() {
+        Task.detached(priority: .background) {
+            os_log("\(self.t)开始复制操作: 源文件 \(source.path) -> 目标 \(finalDestination.path)")
+            
+            // 加载缩略图
+            thumbnail = try? await source.thumbnail(size: CGSize(width: 80, height: 80))
+            
+            do {
+                // 如果是 iCloud 文件，先下载
+                if source.isiCloud && source.isNotDownloaded {
+                    os_log("\(self.t)开始从 iCloud 下载文件")
+                    try await source.download { progress in
+                        downloadProgress = progress * 100
+                        os_log("\(self.t)iCloud 下载进度: \(progress * 100)%")
+                    }
                 }
+                
+                // 开始复制
+                isCopying = true
+                os_log("\(self.t)开始文件复制")
+                try await copyWithProgress()
+                isCompleted = true
+                os_log("\(self.t)文件复制完成")
+                await onCompletion(nil)
+                
+            } catch {
+                os_log("\(self.t)复制操作失败: \(error.localizedDescription)")
+                await MainActor.run {
+                    self.error = error
+                }
+                await onCompletion(error)
             }
-            
-            // 开始复制
-            isCopying = true
-            os_log("\(self.t)开始文件复制")
-            try await copyWithProgress()
-            isCompleted = true
-            os_log("\(self.t)文件复制完成")
-            await onCompletion(nil)
-            
-        } catch {
-            os_log("\(self.t)复制操作失败: \(error.localizedDescription)")
-            self.error = error
-            await onCompletion(error)
         }
     }
     

@@ -23,6 +23,8 @@ struct CopyViewStyle {
     var cornerRadius: CGFloat = 12
     /// 阴影半径
     var shadowRadius: CGFloat = 2
+    /// 是否自动开始复制
+    var autoStart: Bool = true
 }
 
 // MARK: - Environment
@@ -69,6 +71,15 @@ extension View {
     public func withShadow(radius: CGFloat = 2) -> some View {
         transformEnvironment(\.copyViewStyle) { style in
             style.shadowRadius = radius
+        }
+    }
+    
+    /// 设置复制视图是否自动开始复制
+    /// - Parameter autoStart: 是否自动开始复制
+    /// - Returns: 修改后的视图
+    public func withAutoStart(_ autoStart: Bool) -> some View {
+        transformEnvironment(\.copyViewStyle) { style in
+            style.autoStart = autoStart
         }
     }
 }

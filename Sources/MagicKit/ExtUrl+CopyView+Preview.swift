@@ -81,6 +81,17 @@ private struct BasicStylesPreview: View {
                     .withBackground(.green.opacity(0.1))
                     .withShadow(radius: 8)
             }
+
+            Group {
+                // 手动复制
+                Text("手动复制")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                URL.sample_web_txt_bsd
+                    .copyView(destination: .documentsDirectory.appendingPathComponent("manual.txt"))
+                    .withBackground(.pink.opacity(0.1))
+                    .withAutoStart(false)
+            }
         }
         .padding()
     }

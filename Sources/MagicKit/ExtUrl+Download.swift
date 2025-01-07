@@ -16,9 +16,9 @@ public extension URL {
             try await download(onProgress: downloadProgress)
         }
         
-        os_log("\(self.t)执行文件复制操作")
+        os_log("\(self.t)🚛🚛🚛 执行文件复制操作")
         try FileManager.default.copyItem(at: self, to: destination)
-        os_log("\(self.t)文件复制完成")
+        os_log("\(self.t)✅✅✅ 文件复制完成")
     }
     
     /// 下载 iCloud 文件
@@ -46,11 +46,11 @@ public extension URL {
         for try await collection in result {
             if let item = collection.first {
                 let progress = item.downloadProgress
-                os_log("\(self.t)下载进度: \(progress)%")
+                os_log("\(self.t)⏬⏬⏬ 下载进度: \(progress * 100)% -> \(self.title)")
                 onProgress?(progress)
                 
                 if item.isDownloaded {
-                    os_log("\(self.t)文件下载完成")
+                    os_log("\(self.t)🎉🎉🎉 文件下载完成 -> \(self.title)")
                     onProgress?(100)
                     itemQuery.stop()
                     break
