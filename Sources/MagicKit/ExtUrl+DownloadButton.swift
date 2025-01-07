@@ -1,7 +1,9 @@
 import SwiftUI
 import MagicUI
 
-struct DownloadButtonView: View {
+struct DownloadButtonView: View, SuperLog {
+    static var emoji: String = "🐯"
+    
     let url: URL
     let size: CGFloat
     let showLabel: Bool
@@ -104,7 +106,7 @@ struct DownloadButtonView: View {
             
             do {
                 if let destination = destination {
-                    try await url.copyTo(destination) { newProgress in
+                    try await url.copyTo(destination, reason: self.className) { newProgress in
                         progress = newProgress
                     }
                 } else {
@@ -119,4 +121,8 @@ struct DownloadButtonView: View {
             isDownloading = false
         }
     }
-} 
+}
+
+#Preview {
+    DownloadButtonPreview()
+}
