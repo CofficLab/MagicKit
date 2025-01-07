@@ -122,8 +122,8 @@ public extension URL {
     ///     }
     /// }
     /// ```
-    func makeMediaView() -> MediaFileView {
-        MediaFileView(url: self, size: self.getSizeReadable())
+    func makeMediaView(verbose: Bool = true) -> MediaFileView {
+        MediaFileView(url: self, size: self.getSizeReadable(), verbose: verbose)
     }
 }
 

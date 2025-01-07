@@ -92,6 +92,7 @@ struct MediaViewBackground: ViewModifier {
 ///     .withBackground(MagicBackground.mint)
 /// ```
 public struct MediaFileView: View {
+    var verbose: Bool
     let url: URL
     let size: String
     var style: MediaViewStyle = .none
@@ -115,9 +116,10 @@ public struct MediaFileView: View {
     /// - Parameters:
     ///   - url: 文件的 URL
     ///   - size: 文件大小的字符串表示
-    public init(url: URL, size: String) {
+    public init(url: URL, size: String, verbose: Bool) {
         self.url = url
         self.size = size
+        self.verbose = verbose
     }
 
     public var body: some View {
@@ -140,7 +142,7 @@ public struct MediaFileView: View {
         VStack(spacing: 0) {
             HStack(alignment: .center, spacing: 12) {
                 // 左侧缩略图
-                let avatarView = url.makeAvatarView()
+                let avatarView = url.makeAvatarView(verbose: self.verbose)
                     .magicSize(avatarSize)
                     .magicAvatarShape(avatarShape)
                     .magicBackground(avatarBackgroundColor)

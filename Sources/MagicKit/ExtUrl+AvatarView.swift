@@ -54,8 +54,8 @@ public extension URL {
     /// - 下载失败
     /// 
     /// - Returns: 配置好的头像视图
-    func makeAvatarView() -> AvatarView {
-        AvatarView(url: self)
+    func makeAvatarView(verbose: Bool = false) -> AvatarView {
+        AvatarView(url: self, verbose: verbose)
     }
 }
 

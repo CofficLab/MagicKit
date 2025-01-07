@@ -30,11 +30,15 @@ import SwiftUI
 /// AvatarView(url: fileURL)
 ///     .magicDownloadProgress($progress)
 /// ```
-public struct AvatarView: View {
+public struct AvatarView: View, SuperLog {
     // MARK: - Properties
+    
+    public static let emoji = "🚉"
 
     /// 文件的URL
     let url: URL
+    
+    let verbose: Bool
 
     /// 视图的形状
     var shape: AvatarViewShape = .circle
@@ -98,21 +102,23 @@ public struct AvatarView: View {
     /// - Parameters:
     ///   - url: 要显示的文件URL
     ///   - size: 视图的尺寸，默认为 40x40
-    public init(url: URL, size: CGSize = CGSize(width: 40, height: 40)) {
+    public init(url: URL, size: CGSize = CGSize(width: 40, height: 40), verbose: Bool = false) {
+        os_log("\(Self.i)")
         self.url = url
         self.size = size
+        self.verbose = verbose
 
         // 在初始化时进行基本的 URL 检查
         if url.isFileURL {
             // 检查本地文件是否存在
-            if !FileManager.default.fileExists(atPath: url.path) {
+            if url.isNotFileExist {
+                os_log("\(Self.t)文件不存在: \(url.path)")
                 _error = State(initialValue: URLError(.fileDoesNotExist))
             }
         } else {
             // 检查 URL 格式
-            guard let scheme = url.scheme,
-                  ["http", "https"].contains(scheme),
-                  url.host != nil else {
+            guard url.isNetworkURL else {
+                os_log("\(Self.t)无效的 URL: \(url)")
                 _error = State(initialValue: URLError(.badURL))
                 return
             }
@@ -132,7 +138,8 @@ public struct AvatarView: View {
             } else if isLoading {
                 LoadingView()
             } else {
-                DefaultIconView(icon: url.systemIcon)
+                Image(systemName: url.systemIcon)
+                    .foregroundStyle(.secondary)
             }
         }
         .frame(width: size.width, height: size.height)
@@ -267,25 +274,18 @@ public struct AvatarView: View {
         }
     }
 
-    /// 默认图标视图
-    private struct DefaultIconView: View {
-        let icon: String
-
-        var body: some View {
-            Image(systemName: icon)
-                .foregroundStyle(.secondary)
-        }
-    }
-
     // MARK: - Private Methods
 
     /// 处理下载进度变化
     private func handleDownloadProgress() {
+        if verbose { os_log("\(self.t)处理下载进度变化") }
         Task {
             do {
                 thumbnail = try await url.thumbnail(size: size)
+                if verbose { os_log("\(self.t)下载进度处理成功") }
                 error = nil
             } catch {
+                if verbose { os_log("\(self.t)下载进度处理失败: \(error.localizedDescription)") }
                 self.error = error
             }
         }
@@ -293,28 +293,37 @@ public struct AvatarView: View {
 
     /// 加载缩略图
     @Sendable private func loadThumbnail() async {
-        guard thumbnail == nil && !isLoading && !url.isDownloading else { return }
+        guard thumbnail == nil && !isLoading && !url.isDownloading else {
+            if verbose { os_log("\(self.t)跳过缩略图加载: thumbnail=\(thumbnail != nil), isLoading=\(isLoading), isDownloading=\(url.isDownloading)") }
+            return
+        }
 
+        if verbose { os_log("\(self.t)开始加载缩略图: \(url.path)") }
         isLoading = true
         do {
             if let image = try await url.thumbnail(size: size) {
                 thumbnail = image
                 error = nil
+                if verbose { os_log("\(self.t)缩略图加载成功: \(url.path)") }
             } else {
-                // 如果缩略图为空但没有抛出错误，使用默认图标
                 thumbnail = Image(systemName: url.systemIcon)
+                if verbose { os_log("\(self.t)使用默认图标: \(url.systemIcon)") }
             }
         } catch {
             self.error = error
-            os_log(.error, "加载缩略图失败: \(error.localizedDescription)")
+            if verbose { os_log(.error, "\(self.t)加载缩略图失败: \(error.localizedDescription)") }
         }
         isLoading = false
     }
 
     /// 设置下载监控
     @Sendable private func setupDownloadMonitor() async {
-        guard monitorDownload && url.isiCloud && progressBinding == nil else { return }
+        guard monitorDownload && url.isiCloud && progressBinding == nil else {
+            if verbose { os_log("\(self.t)跳过下载监控设置: monitorDownload=\(monitorDownload), isiCloud=\(url.isiCloud), hasBinding=\(progressBinding != nil)") }
+            return
+        }
 
+        if verbose { os_log("\(self.t)设置下载监控: \(url.path)") }
         let downloadingCancellable = url.onDownloading(
             caller: "AvatarView",
             { progress in

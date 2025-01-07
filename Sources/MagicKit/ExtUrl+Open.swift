@@ -70,7 +70,7 @@ private struct OpenButtonView: View {
     let showLabel: Bool
     @Environment(\.colorScheme) private var colorScheme
     
-    private var isWebLink: Bool {
+    public var isWebLink: Bool {
         url.scheme == "http" || url.scheme == "https"
     }
     
