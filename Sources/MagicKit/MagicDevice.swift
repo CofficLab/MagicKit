@@ -50,11 +50,11 @@ public enum MagicDevice: String, Equatable {
         }
     }
 
-    var description: String {
+    public var description: String {
         self.rawValue
     }
 
-    var width: CGFloat {
+    public var width: CGFloat {
         switch self {
         case .iMac:
             4480
@@ -73,7 +73,7 @@ public enum MagicDevice: String, Equatable {
         }
     }
 
-    var height: CGFloat {
+    public var height: CGFloat {
         switch self {
         case .iMac:
             2520
