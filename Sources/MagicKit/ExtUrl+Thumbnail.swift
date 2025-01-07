@@ -19,9 +19,24 @@ extension URL {
     ///   - size: 缩略图的目标大小
     /// - Returns: 生成的缩略图，如果无法生成则返回 nil
     public func thumbnail(
-        size: CGSize = CGSize(width: 120, height: 120)
+        size: CGSize = CGSize(width: 120, height: 120),
+        verbose: Bool = true
     ) async throws -> Image? {
+        // 检查缓存
+        if let cachedImage = ThumbnailCache.shared.fetch(for: self, size: size) {
+            if verbose { os_log("\(self.t)从缓存中获取缩略图: \(self.lastThreeComponents())") }
+            #if os(macOS)
+            return Image(nsImage: cachedImage)
+            #else
+            return Image(uiImage: cachedImage)
+            #endif
+        }
+        
+        // 生成缩略图
         if let platformImage = try await platformThumbnail(size: size) {
+            // 存入缓存
+            if verbose { os_log("\(self.t)缓存缩略图: \(self.lastThreeComponents())") }
+            ThumbnailCache.shared.save(platformImage, for: self, size: size)
             #if os(macOS)
             return Image(nsImage: platformImage)
             #else
@@ -57,7 +72,7 @@ extension URL {
         }
         
         // 检查文件是否存在
-        guard FileManager.default.fileExists(atPath: path) else {
+        guard self.isFileExist else {
             throw URLError(.fileDoesNotExist)
         }
         
