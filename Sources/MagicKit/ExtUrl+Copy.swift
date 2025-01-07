@@ -14,21 +14,21 @@ public extension URL {
     func copyTo(
         _ destination: URL,
         verbose: Bool = true,
-        reason: String,
+        caller: String,
         downloadMethod: DownloadMethod = .polling,
         downloadProgress: ((Double) -> Void)? = nil
     ) async throws {
         if verbose {
             let sourcePath = (self.pathComponents.suffix(3)).joined(separator: "/")
             let destPath = (destination.pathComponents.suffix(3)).joined(separator: "/")
-            os_log("\(self.t)👷👷👷 开始复制文件 (\(reason)): .../\(sourcePath) -> .../\(destPath)")
+            os_log("\(self.t)👷👷👷 开始复制文件 (\(caller)): .../\(sourcePath) -> .../\(destPath)")
         }
         
         // 只有在需要显示下载进度时才手动处理下载
         if let downloadProgress, self.isiCloud && self.isNotDownloaded {
             try await download(
                 verbose: verbose, 
-                reason: reason + "-> URL.copyTo", 
+                reason: caller + "-> URL.copyTo", 
                 method: downloadMethod,
                 onProgress: downloadProgress
             )

@@ -106,7 +106,7 @@ struct DownloadButtonView: View, SuperLog {
             
             do {
                 if let destination = destination {
-                    try await url.copyTo(destination, reason: self.className) { newProgress in
+                    try await url.copyTo(destination, caller: self.className) { newProgress in
                         progress = newProgress
                     }
                 } else {
