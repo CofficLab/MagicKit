@@ -143,7 +143,7 @@ public extension MagicPlayMan {
     private func loadThumbnail(for asset: MagicAsset) {
         Task { @MainActor in
             do {
-                currentThumbnail = try await asset.url.thumbnail(size: CGSize(width: 600, height: 600))
+                currentThumbnail = try await asset.url.thumbnail(size: CGSize(width: 600, height: 600), verbose: self.verbose)
             } catch {
                 log("Failed to load thumbnail: \(error.localizedDescription)", level: .warning)
             }
@@ -151,7 +151,7 @@ public extension MagicPlayMan {
     }
 
     /// 手动刷新当前资源的缩略图
-    public func reloadThumbnail() {
+    func reloadThumbnail() {
         guard let asset = currentAsset else { return }
         loadThumbnail(for: asset)
     }

@@ -2,15 +2,18 @@ import SwiftUI
 import MagicKit
 import MagicUI
 
-struct AudioContentView: View {
+struct AudioContentView: View, SuperLog {
+    static var emoji = "🎧"
     let asset: MagicAsset
     let artwork: Image?  // 允许外部传入缩略图
     @State private var localArtwork: Image?  // 本地加载的缩略图
     @State private var errorMessage: String?
+    let verbose: Bool
     
-    init(asset: MagicAsset, artwork: Image? = nil) {
+    init(asset: MagicAsset, artwork: Image? = nil, verbose: Bool = true) {
         self.asset = asset
         self.artwork = artwork
+        self.verbose = verbose
     }
     
     var body: some View {
@@ -90,7 +93,7 @@ struct AudioContentView: View {
         
         Task {
             do {
-                if let image = try await asset.url.thumbnail(size: CGSize(width: 600, height: 600)) {
+                if let image = try await asset.url.thumbnail(size: CGSize(width: 600, height: 600), verbose: self.verbose) {
                     localArtwork = image
                 } else {
                     errorMessage = "No artwork available"
@@ -103,18 +106,34 @@ struct AudioContentView: View {
 }
 
 #Preview("Normal State") {
-    AudioContentView(
-        asset: .init(
-            url: .documentsDirectory,
-            type: .audio,
-            metadata: .init(
-                title: "Test Song",
-                artist: "Test Artist",
-                album: "Test Album"
-            )
+    VStack {
+        AudioContentView(
+            asset: .init(
+                url: .documentsDirectory,
+                type: .audio,
+                metadata: .init(
+                    title: "Test Song",
+                    artist: "Test Artist",
+                    album: "Test Album"
+                )
+            ),
+            verbose: true
         )
-    )
-    .frame(width: 400, height: 500)
+        
+        AudioContentView(
+            asset: .init(
+                url: .documentsDirectory,
+                type: .audio,
+                metadata: .init(
+                    title: "Test Song",
+                    artist: "Test Artist",
+                    album: "Test Album"
+                )
+            ),
+            verbose: false
+        )
+    }
+    .frame(width: 400)
     .background(.ultraThinMaterial)
 }
 

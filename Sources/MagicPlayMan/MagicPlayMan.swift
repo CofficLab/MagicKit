@@ -4,13 +4,17 @@ import Foundation
 import SwiftUI
 import MagicUI
 import MediaPlayer
+import MagicKit
 
-public class MagicPlayMan: ObservableObject {
+public class MagicPlayMan: ObservableObject, SuperLog {
+    public static var emoji = "🎧"
+    
     internal let _player = AVPlayer()
     internal var timeObserver: Any?
     internal var nowPlayingInfo: [String: Any] = [:]
     internal let _playlist = Playlist()
     internal var cache: AssetCache?
+    internal var verbose: Bool = true
     
     public var cancellables = Set<AnyCancellable>()
     public var downloadTask: URLSessionDataTask?
