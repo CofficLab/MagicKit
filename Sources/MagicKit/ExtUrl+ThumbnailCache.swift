@@ -112,6 +112,12 @@ public class ThumbnailCache {
         }
         return size
     }
+    
+    /// 获取缩略图缓存目录
+    /// - Returns: 缓存目录的 URL
+    public func getCacheDirectory() -> URL {
+        return diskCacheURL
+    }
 } 
 
 // MARK: - Preview

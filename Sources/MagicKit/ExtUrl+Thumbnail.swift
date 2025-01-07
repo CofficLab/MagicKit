@@ -24,7 +24,7 @@ extension URL {
     ) async throws -> Image? {
         // 检查缓存
         if let cachedImage = ThumbnailCache.shared.fetch(for: self, size: size) {
-            if verbose { os_log("\(self.t)从缓存中获取缩略图: \(self.lastThreeComponents())") }
+            if verbose { os_log("\(self.t)从缓存中获取缩略图: \(self.title)") }
             #if os(macOS)
             return Image(nsImage: cachedImage)
             #else
@@ -35,7 +35,7 @@ extension URL {
         // 生成缩略图
         if let platformImage = try await platformThumbnail(size: size) {
             // 存入缓存
-            if verbose { os_log("\(self.t)缓存缩略图: \(self.lastThreeComponents())") }
+            if verbose { os_log("\(self.t)缓存缩略图: \(self.title)") }
             ThumbnailCache.shared.save(platformImage, for: self, size: size)
             #if os(macOS)
             return Image(nsImage: platformImage)
@@ -98,6 +98,12 @@ extension URL {
         #else
         return UIImage(systemName: icon)
         #endif
+    }
+    
+    /// 获取缩略图缓存目录
+    /// - Returns: 缩略图缓存目录的 URL
+    public static func thumbnailCacheDirectory() -> URL {
+        return ThumbnailCache.shared.getCacheDirectory()
     }
     
     // MARK: - Private Platform Image Methods

@@ -7,8 +7,22 @@ public struct AvatarDemoView: View {
     @State private var icloudFiles: [URL] = []
     @State private var isCreatingFiles = false
     @State private var errorMessage: String?
+    @State private var cacheFiles: [URL] = []
     
-    public init() {}
+    public init() {
+        _cacheFiles = State(initialValue: Self.loadCacheFiles())
+    }
+    
+    private static func loadCacheFiles() -> [URL] {
+        let cacheDir = URL.thumbnailCacheDirectory()
+        guard let files = try? FileManager.default.contentsOfDirectory(
+            at: cacheDir,
+            includingPropertiesForKeys: nil
+        ) else {
+            return []
+        }
+        return files
+    }
     
     private func createICloudFiles() {
         isCreatingFiles = true
@@ -258,6 +272,61 @@ public struct AvatarDemoView: View {
             }
             .tabItem {
                 Label("错误状态", systemImage: .iconWarning)
+            }
+            
+            // 缓存管理
+            ScrollView {
+                HStack {
+                    VStack(spacing: 32) {
+                        demoSection("缓存文件夹") {
+                            VStack(spacing: 16) {
+                                // 显示缓存目录路径和打开按钮
+                                HStack {
+                                    Text(URL.thumbnailCacheDirectory().path)
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                    
+                                    URL.thumbnailCacheDirectory()
+                                        .makeOpenButton(size: 24)
+                                }
+                                
+                                if cacheFiles.isEmpty {
+                                    Text("缓存文件夹为空")
+                                        .foregroundStyle(.secondary)
+                                } else {
+                                    // 显示缓存文件列表
+                                    ScrollView(.horizontal, showsIndicators: false) {
+                                        HStack(spacing: 20) {
+                                            ForEach(cacheFiles, id: \.lastPathComponent) { url in
+                                                VStack {
+                                                    Text(url.lastPathComponent)
+                                                        .font(.caption)
+                                                        .lineLimit(1)
+                                                        .frame(width: 100)
+                                                }
+                                            }
+                                        }
+                                        .padding(.horizontal)
+                                    }
+                                    
+                                    // 清理缓存按钮
+                                    Button("清理缓存") {
+                                        ThumbnailCache.shared.clearCache()
+                                        cacheFiles = Self.loadCacheFiles()
+                                    }
+                                    .buttonStyle(.borderless)
+                                    .foregroundStyle(.secondary)
+                                }
+                            }
+                        }
+                    }
+                    .padding()
+                    .frame(maxWidth: 500)
+                }
+                .frame(maxWidth: .infinity)
+            }
+            .tabItem {
+                Label("缓存管理", systemImage: .iconFolder)
             }
         }
         .frame(width: 600, height: 800)
