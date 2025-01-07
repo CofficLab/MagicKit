@@ -268,50 +268,46 @@ public struct MagicButton: View {
     }
     
     public var body: some View {
-        Button(action: action) {
-            HStack(spacing: 4) {
-                Image(systemName: icon)
-                    .font(.system(size: size.iconSize(containerSize: size.fixedSize)))
-                if let title = title {
-                    Text(title)
-                        .font(size.font)
-                }
+        // 外层容器
+        let container = Group {
+            if size == .auto {
+                // 自动模式：容器尺寸由父视图决定
+                containerContent
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                // 固定模式：容器尺寸由 size 决定
+                containerContent
+                    .frame(
+                        width: isCircularShape ? size.fixedSize : size.fixedSize,
+                        height: size.fixedSize
+                    )
             }
-            .foregroundStyle(foregroundColor)
-            .frame(
-                width: size == .auto ? nil : (isCircularShape ? buttonSize : size.fixedSize),
-                height: size == .auto ? nil : size.fixedSize
-            )
-            .frame(
-                maxWidth: size == .auto ? .infinity : nil,
-                maxHeight: size == .auto ? .infinity : nil
-            )
-            .padding(.horizontal, isCircularShape ? 0 : size.horizontalPadding)
-            .padding(.vertical, isCircularShape ? 0 : size.verticalPadding)
+        }
+        
+        container
             .background(shouldShowShape ? buttonShape : nil)
-            .scaleEffect(isHovering ? 1.05 : 1.0)
-            .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isHovering)
-            .opacity(disabledReason != nil ? 0.5 : 1.0)
+    }
+    
+    // 内部按钮内容
+    private var containerContent: some View {
+        Button(action: action) {
+            GeometryReader { geometry in
+                let minSize = min(geometry.size.width, geometry.size.height)
+                HStack(spacing: 4) {
+                    Image(systemName: icon)
+                        .font(.system(size: minSize * 0.4))
+                    if let title = title {
+                        Text(title)
+                            .font(size.font)
+                    }
+                }
+                .foregroundStyle(foregroundColor)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .padding(.horizontal, isCircularShape ? 0 : size.horizontalPadding)
+                .padding(.vertical, isCircularShape ? 0 : size.verticalPadding)
+            }
         }
         .buttonStyle(MagicButtonStyle())
-        .onHover { hovering in
-            isHovering = hovering && disabledReason == nil
-        }
-        .popover(isPresented: $showingDisabledPopover, arrowEdge: .top) {
-            if let reason = disabledReason {
-                Text(reason)
-                    .font(.callout)
-                    .padding()
-            } else if let content = popoverContent {
-                content
-            }
-        }
-        .onAppear {
-            containerSize = size.fixedSize
-        }
-        .onChange(of: size.fixedSize) { newSize in
-            containerSize = newSize
-        }
     }
     
     private var isCircularShape: Bool {
