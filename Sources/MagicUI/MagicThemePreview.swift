@@ -76,7 +76,6 @@ public struct MagicThemePreview<Content: View>: View {
             // MARK: Background Selection Buttons
             ForEach(backgrounds) { background in
                 MagicButton(
-                    icon: "circle",
                     style: selectedBackground.id == background.id ? .primary : .secondary,
                     action: { selectedBackground = background }
                 )
@@ -97,7 +96,7 @@ public struct MagicThemePreview<Content: View>: View {
         }
         .padding(.horizontal)
         .frame(height: 50)
-        .background(.ultraThinMaterial)
+        .background(.indigo.opacity(0.1))
     }
 }
 

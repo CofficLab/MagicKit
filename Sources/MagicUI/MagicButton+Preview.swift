@@ -9,7 +9,7 @@ private struct BasicButtonsPreview: View {
                 .font(.headline)
             
             VStack(spacing: 16) {
-                MagicButton(icon: "star", action: {})
+                MagicButton(icon: "star")
                     .magicTitle("默认按钮")
                     .magicDebugBorder()
             }
@@ -18,7 +18,7 @@ private struct BasicButtonsPreview: View {
             .clipShape(RoundedRectangle(cornerRadius: 8))
             
             VStack(spacing: 16) {
-                MagicButton(icon: "heart", action: {})
+                MagicButton(icon: "heart")
                     .magicTitle("主要按钮")
                     .magicStyle(.primary)
             }
@@ -27,7 +27,7 @@ private struct BasicButtonsPreview: View {
             .clipShape(RoundedRectangle(cornerRadius: 8))
             
             VStack(spacing: 16) {
-                MagicButton(icon: "trash", action: {})
+                MagicButton(icon: "trash")
                     .magicTitle("次要按钮")
                     .magicStyle(.secondary)
             }
@@ -50,24 +50,24 @@ private struct SizeButtonsPreview: View {
             VStack(spacing: 16) {
                 Text("小尺寸").font(.subheadline)
                 HStack(spacing: 16) {
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicTitle("Small")
                         .magicSize(.small)
                         .magicShape(.roundedRectangle)
                         .magicDebugBorder()
                     
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicSize(.small)
                         .magicShape(.circle)
                         .magicDebugBorder()
                     
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicTitle("Small")
                         .magicSize(.small)
                         .magicShape(.capsule)
                         .magicDebugBorder()
                     
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicSize(.small)
                         .magicShape(.roundedSquare)
                         .magicDebugBorder()
@@ -82,24 +82,24 @@ private struct SizeButtonsPreview: View {
             VStack(spacing: 16) {
                 Text("常规尺寸").font(.subheadline)
                 HStack(spacing: 16) {
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicTitle("Regular")
                         .magicSize(.regular)
                         .magicShape(.roundedRectangle)
                         .magicDebugBorder()
                     
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicSize(.regular)
                         .magicShape(.circle)
                         .magicDebugBorder()
                     
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicTitle("Regular")
                         .magicSize(.regular)
                         .magicShape(.capsule)
                         .magicDebugBorder()
                     
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicSize(.regular)
                         .magicShape(.roundedSquare)
                         .magicDebugBorder()
@@ -114,24 +114,24 @@ private struct SizeButtonsPreview: View {
             VStack(spacing: 16) {
                 Text("大尺寸").font(.subheadline)
                 HStack(spacing: 16) {
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicTitle("Large")
                         .magicSize(.large)
                         .magicShape(.roundedRectangle)
                         .magicDebugBorder()
                     
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicSize(.large)
                         .magicShape(.circle)
                         .magicDebugBorder()
                     
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicTitle("Large")
                         .magicSize(.large)
                         .magicShape(.capsule)
                         .magicDebugBorder()
                     
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicSize(.large)
                         .magicShape(.roundedSquare)
                         .magicDebugBorder()
@@ -146,24 +146,24 @@ private struct SizeButtonsPreview: View {
             VStack(spacing: 16) {
                 Text("超大尺寸").font(.subheadline)
                 HStack(spacing: 16) {
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicTitle("Extra Large")
                         .magicSize(.extraLarge)
                         .magicShape(.roundedRectangle)
                         .magicDebugBorder()
                     
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicSize(.extraLarge)
                         .magicShape(.circle)
                         .magicDebugBorder()
                     
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicTitle("Extra Large")
                         .magicSize(.extraLarge)
                         .magicShape(.capsule)
                         .magicDebugBorder()
                     
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicSize(.extraLarge)
                         .magicShape(.roundedSquare)
                         .magicDebugBorder()
@@ -178,24 +178,24 @@ private struct SizeButtonsPreview: View {
             VStack(spacing: 16) {
                 Text("巨大尺寸").font(.subheadline)
                 HStack(spacing: 16) {
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicTitle("Huge")
                         .magicSize(.huge)
                         .magicShape(.roundedRectangle)
                         .magicDebugBorder()
                     
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicSize(.huge)
                         .magicShape(.circle)
                         .magicDebugBorder()
                     
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicTitle("Huge")
                         .magicSize(.huge)
                         .magicShape(.capsule)
                         .magicDebugBorder()
                     
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicSize(.huge)
                         .magicShape(.roundedSquare)
                         .magicDebugBorder()
@@ -211,63 +211,63 @@ private struct SizeButtonsPreview: View {
                 VStack(spacing: 16) {
                     // 40 尺寸
                     HStack(spacing: 16) {
-                        MagicButton(icon: "star", size: .custom(40), action: {})
+                        MagicButton(icon: "star", size: .custom(40))
                             .magicTitle("40")
                             .magicShape(.roundedRectangle)
                             .magicDebugBorder()
                         
-                        MagicButton(icon: "star", size: .custom(40), action: {})
+                        MagicButton(icon: "star", size: .custom(40))
                             .magicShape(.circle)
                             .magicDebugBorder()
                         
-                        MagicButton(icon: "star", size: .custom(40), action: {})
+                        MagicButton(icon: "star", size: .custom(40))
                             .magicTitle("40")
                             .magicShape(.capsule)
                             .magicDebugBorder()
                         
-                        MagicButton(icon: "star", size: .custom(40), action: {})
+                        MagicButton(icon: "star", size: .custom(40))
                             .magicShape(.roundedSquare)
                             .magicDebugBorder()
                     }
                     
                     // 60 尺寸
                     HStack(spacing: 16) {
-                        MagicButton(icon: "star", size: .custom(60), action: {})
+                        MagicButton(icon: "star", size: .custom(60))
                             .magicTitle("60")
                             .magicShape(.roundedRectangle)
                             .magicDebugBorder()
                         
-                        MagicButton(icon: "star", size: .custom(60), action: {})
+                        MagicButton(icon: "star", size: .custom(60))
                             .magicShape(.circle)
                             .magicDebugBorder()
                         
-                        MagicButton(icon: "star", size: .custom(60), action: {})
+                        MagicButton(icon: "star", size: .custom(60))
                             .magicTitle("60")
                             .magicShape(.capsule)
                             .magicDebugBorder()
                         
-                        MagicButton(icon: "star", size: .custom(60), action: {})
+                        MagicButton(icon: "star", size: .custom(60))
                             .magicShape(.roundedSquare)
                             .magicDebugBorder()
                     }
                     
                     // 80 尺寸
                     HStack(spacing: 16) {
-                        MagicButton(icon: "star", size: .custom(80), action: {})
+                        MagicButton(icon: "star", size: .custom(80))
                             .magicTitle("80")
                             .magicShape(.roundedRectangle)
                             .magicDebugBorder()
                         
-                        MagicButton(icon: "star", size: .custom(80), action: {})
+                        MagicButton(icon: "star", size: .custom(80))
                             .magicShape(.circle)
                             .magicDebugBorder()
                         
-                        MagicButton(icon: "star", size: .custom(80), action: {})
+                        MagicButton(icon: "star", size: .custom(80))
                             .magicTitle("80")
                             .magicShape(.capsule)
                             .magicDebugBorder()
                         
-                        MagicButton(icon: "star", size: .custom(80), action: {})
+                        MagicButton(icon: "star", size: .custom(80))
                             .magicShape(.roundedSquare)
                             .magicDebugBorder()
                     }
@@ -284,20 +284,20 @@ private struct SizeButtonsPreview: View {
                     // 小尺寸行
                     HStack(spacing: 16) {
                         Frame(width: 32, height: 32) {
-                            MagicButton(icon: "star", size: .auto, action: {})
+                            MagicButton(icon: "star", size: .auto)
                                 .magicShape(.circle)
                                 .magicDebugBorder()
                         }
                         
                         Frame(width: 60, height: 32) {
-                            MagicButton(icon: "star", size: .auto, action: {})
+                            MagicButton(icon: "star", size: .auto)
                                 .magicTitle("Mini")
                                 .magicShape(.capsule)
                                 .magicDebugBorder()
                         }
                         
                         Frame(width: 40, height: 40) {
-                            MagicButton(icon: "star", size: .auto, action: {})
+                            MagicButton(icon: "star", size: .auto)
                                 .magicShape(.roundedSquare)
                                 .magicDebugBorder()
                         }
@@ -307,20 +307,20 @@ private struct SizeButtonsPreview: View {
                     // 中等尺寸行
                     HStack(spacing: 16) {
                         Frame(width: 120, height: 40) {
-                            MagicButton(icon: "star", size: .auto, action: {})
+                            MagicButton(icon: "star", size: .auto)
                                 .magicTitle("Regular")
                                 .magicShape(.roundedRectangle)
                                 .magicDebugBorder()
                         }
                         
                         Frame(width: 60, height: 60) {
-                            MagicButton(icon: "star", size: .auto, action: {})
+                            MagicButton(icon: "star", size: .auto)
                                 .magicShape(.circle)
                                 .magicDebugBorder()
                         }
                         
                         Frame(width: 100, height: 50) {
-                            MagicButton(icon: "star", size: .auto, action: {})
+                            MagicButton(icon: "star", size: .auto)
                                 .magicTitle("Medium")
                                 .magicShape(.capsule)
                                 .magicDebugBorder()
@@ -331,20 +331,20 @@ private struct SizeButtonsPreview: View {
                     // 大尺寸行
                     HStack(spacing: 16) {
                         Frame(width: 160, height: 80) {
-                            MagicButton(icon: "star", size: .auto, action: {})
+                            MagicButton(icon: "star", size: .auto)
                                 .magicTitle("Large")
                                 .magicShape(.roundedRectangle)
                                 .magicDebugBorder()
                         }
                         
                         Frame(width: 100, height: 100) {
-                            MagicButton(icon: "star", size: .auto, action: {})
+                            MagicButton(icon: "star", size: .auto)
                                 .magicShape(.circle)
                                 .magicDebugBorder()
                         }
                         
                         Frame(width: 140, height: 70) {
-                            MagicButton(icon: "star", size: .auto, action: {})
+                            MagicButton(icon: "star", size: .auto)
                                 .magicTitle("Big")
                                 .magicShape(.capsule)
                                 .magicDebugBorder()
@@ -355,20 +355,20 @@ private struct SizeButtonsPreview: View {
                     // 超大尺寸行
                     HStack(spacing: 16) {
                         Frame(width: 200, height: 120) {
-                            MagicButton(icon: "star", size: .auto, action: {})
+                            MagicButton(icon: "star", size: .auto)
                                 .magicTitle("Extra Large")
                                 .magicShape(.roundedRectangle)
                                 .magicDebugBorder()
                         }
                         
                         Frame(width: 150, height: 150) {
-                            MagicButton(icon: "star", size: .auto, action: {})
+                            MagicButton(icon: "star", size: .auto)
                                 .magicShape(.circle)
                                 .magicDebugBorder()
                         }
                         
                         Frame(width: 180, height: 90) {
-                            MagicButton(icon: "star", size: .auto, action: {})
+                            MagicButton(icon: "star", size: .auto)
                                 .magicTitle("Huge")
                                 .magicShape(.capsule)
                                 .magicDebugBorder()
@@ -381,14 +381,14 @@ private struct SizeButtonsPreview: View {
                         // 第一行
                         HStack(spacing: 16) {
                             Frame(width: 300, height: 200) {
-                                MagicButton(icon: "star", size: .auto, action: {})
+                                MagicButton(icon: "star", size: .auto)
                                     .magicTitle("Giant")
                                     .magicShape(.roundedRectangle)
                                     .magicDebugBorder()
                             }
                             
                             Frame(width: 250, height: 250) {
-                                MagicButton(icon: "star", size: .auto, action: {})
+                                MagicButton(icon: "star", size: .auto)
                                     .magicShape(.circle)
                                     .magicDebugBorder()
                             }
@@ -398,7 +398,7 @@ private struct SizeButtonsPreview: View {
                         // 第二行
                         HStack(spacing: 16) {
                             Frame(width: 280, height: 140) {
-                                MagicButton(icon: "star", size: .auto, action: {})
+                                MagicButton(icon: "star", size: .auto)
                                     .magicTitle("Massive")
                                     .magicShape(.capsule)
                                     .magicDebugBorder()
@@ -461,10 +461,10 @@ private struct ShapeButtonsPreview: View {
             VStack(spacing: 16) {
                 Text("圆形").font(.subheadline)
                 HStack {
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicShape(.circle)
                     
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicTitle("Circle")
                         .magicShape(.circle)
                 }
@@ -476,10 +476,10 @@ private struct ShapeButtonsPreview: View {
             VStack(spacing: 16) {
                 Text("胶囊形").font(.subheadline)
                 HStack {
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicShape(.capsule)
                     
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicTitle("Capsule")
                         .magicShape(.capsule)
                 }
@@ -491,10 +491,10 @@ private struct ShapeButtonsPreview: View {
             VStack(spacing: 16) {
                 Text("矩形").font(.subheadline)
                 HStack {
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicShape(.rectangle)
                     
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicTitle("Rectangle")
                         .magicShape(.rectangle)
                 }
@@ -506,10 +506,10 @@ private struct ShapeButtonsPreview: View {
             VStack(spacing: 16) {
                 Text("圆角矩形").font(.subheadline)
                 HStack {
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicShape(.roundedRectangle)
                     
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicTitle("Rounded Rectangle")
                         .magicShape(.roundedRectangle)
                 }
@@ -521,10 +521,10 @@ private struct ShapeButtonsPreview: View {
             VStack(spacing: 16) {
                 Text("圆角正方形").font(.subheadline)
                 HStack {
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicShape(.roundedSquare)
                     
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicStyle(.primary)
                         .magicShape(.roundedSquare)
                 }
@@ -547,7 +547,7 @@ private struct CustomShapeButtonsPreview: View {
             VStack(spacing: 16) {
                 Text("自定义圆角矩形").font(.subheadline)
                 VStack(spacing: 12) {
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicTitle("仅上圆角")
                         .magicShape(.customRoundedRectangle(
                             topLeft: 16,
@@ -557,7 +557,7 @@ private struct CustomShapeButtonsPreview: View {
                         ))
                         .magicDebugBorder()
                     
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicTitle("仅右圆角")
                         .magicShape(.customRoundedRectangle(
                             topLeft: 0,
@@ -567,7 +567,7 @@ private struct CustomShapeButtonsPreview: View {
                         ))
                         .magicDebugBorder()
                     
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicTitle("不同圆角")
                         .magicShape(.customRoundedRectangle(
                             topLeft: 8,
@@ -585,14 +585,14 @@ private struct CustomShapeButtonsPreview: View {
             VStack(spacing: 16) {
                 Text("自定义胶囊形").font(.subheadline)
                 VStack(spacing: 12) {
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicTitle("左大右小")
                         .magicShape(.customCapsule(
                             leftRadius: 24,
                             rightRadius: 8
                         ))
                     
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicTitle("左小右大")
                         .magicShape(.customCapsule(
                             leftRadius: 8,
@@ -620,8 +620,8 @@ private struct InteractiveButtonsPreview: View {
                 Text("禁用状态").font(.subheadline)
                 MagicButton(
                     icon: "star",
-                    disabledReason: "This button is disabled",
-                    action: {}
+                    disabledReason: "This button is disabled"
+            
                 )
                 .magicTitle("Disabled Button")
                 .magicDebugBorder()
@@ -637,8 +637,7 @@ private struct InteractiveButtonsPreview: View {
                     popoverContent: AnyView(
                         Text("Popover Content")
                             .padding()
-                    ),
-                    action: {}
+                    )
                 )
                 .magicTitle("With Popover")
                 .magicDebugBorder()
@@ -661,12 +660,12 @@ private struct ShapeVisibilityButtonsPreview: View {
             VStack(spacing: 16) {
                 Text("始终显示形状").font(.subheadline)
                 HStack {
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicTitle("Always")
                         .magicShapeVisibility(.always)
                         .magicDebugBorder()
                     
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicStyle(.primary)
                         .magicTitle("Always")
                         .magicShapeVisibility(.always)
@@ -680,12 +679,12 @@ private struct ShapeVisibilityButtonsPreview: View {
             VStack(spacing: 16) {
                 Text("悬停时显示形状").font(.subheadline)
                 HStack {
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicTitle("On Hover")
                         .magicShapeVisibility(.onHover)
                         .magicDebugBorder()
                     
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicStyle(.primary)
                         .magicTitle("On Hover")
                         .magicShapeVisibility(.onHover)
@@ -710,17 +709,17 @@ private struct BackgroundColorButtonsPreview: View {
             VStack(spacing: 16) {
                 Text("基础颜色").font(.subheadline)
                 HStack(spacing: 16) {
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicTitle("Blue")
                         .magicBackgroundColor(.blue)
                         .magicDebugBorder()
                     
-                    MagicButton(icon: "heart", action: {})
+                    MagicButton(icon: "heart")
                         .magicTitle("Red")
                         .magicBackgroundColor(.red)
                         .magicDebugBorder()
                     
-                    MagicButton(icon: "leaf", action: {})
+                    MagicButton(icon: "leaf")
                         .magicTitle("Green")
                         .magicBackgroundColor(.green)
                         .magicDebugBorder()
@@ -733,17 +732,17 @@ private struct BackgroundColorButtonsPreview: View {
             VStack(spacing: 16) {
                 Text("不同形状").font(.subheadline)
                 HStack(spacing: 16) {
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicShape(.circle)
                         .magicBackgroundColor(.purple)
                         .magicDebugBorder()
                     
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicShape(.roundedSquare)
                         .magicBackgroundColor(.orange)
                         .magicDebugBorder()
                     
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicTitle("Capsule")
                         .magicShape(.capsule)
                         .magicBackgroundColor(.mint)
@@ -757,17 +756,17 @@ private struct BackgroundColorButtonsPreview: View {
             VStack(spacing: 16) {
                 Text("组合效果").font(.subheadline)
                 HStack(spacing: 16) {
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicTitle("Primary")
                         .magicStyle(.primary)
                         .magicBackgroundColor(.blue)
                     
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicTitle("Secondary")
                         .magicStyle(.secondary)
                         .magicBackgroundColor(.green)
                     
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicTitle("Disabled")
                         .magicDisabled("Disabled with background")
                         .magicBackgroundColor(.red)
@@ -780,17 +779,17 @@ private struct BackgroundColorButtonsPreview: View {
             VStack(spacing: 16) {
                 Text("自定义背景").font(.subheadline)
                 HStack(spacing: 16) {
-                    MagicButton(icon: "sun.max", action: {})
+                    MagicButton(icon: "sun.max")
                         .magicTitle("Dawn")
                         .magicBackground(MagicBackground.dawnSky)
                         .magicDebugBorder()
                     
-                    MagicButton(icon: "cloud.bolt", action: {})
+                    MagicButton(icon: "cloud.bolt")
                         .magicTitle("Storm")
                         .magicBackground(MagicBackground.stormyHeaven)
                         .magicDebugBorder()
                     
-                    MagicButton(icon: "sunset", action: {})
+                    MagicButton(icon: "sunset")
                         .magicTitle("Sunset")
                         .magicBackground(MagicBackground.sunsetGlow)
                         .magicDebugBorder()
@@ -803,7 +802,7 @@ private struct BackgroundColorButtonsPreview: View {
             VStack(spacing: 16) {
                 Text("渐变背景").font(.subheadline)
                 HStack(spacing: 16) {
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicTitle("Linear")
                         .magicBackground(
                             LinearGradient(
@@ -814,7 +813,7 @@ private struct BackgroundColorButtonsPreview: View {
                         )
                         .magicDebugBorder()
                     
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicTitle("Angular")
                         .magicBackground(
                             AngularGradient(
@@ -824,7 +823,7 @@ private struct BackgroundColorButtonsPreview: View {
                         )
                         .magicDebugBorder()
                     
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicTitle("Radial")
                         .magicBackground(
                             RadialGradient(
@@ -855,11 +854,11 @@ private struct DebugBorderButtonsPreview: View {
             VStack(spacing: 16) {
                 Text("默认边框").font(.subheadline)
                 HStack(spacing: 16) {
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicTitle("Default")
                         .magicDebugBorder()
                     
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicShape(.circle)
                         .magicDebugBorder()
                 }
@@ -871,11 +870,11 @@ private struct DebugBorderButtonsPreview: View {
             VStack(spacing: 16) {
                 Text("自定义边框").font(.subheadline)
                 HStack(spacing: 16) {
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicTitle("Red Border")
                         .magicDebugBorder(.red, lineWidth: 2)
                     
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicTitle("Custom Dash")
                         .magicDebugBorder(.blue, dash: [8, 4])
                 }
@@ -887,11 +886,11 @@ private struct DebugBorderButtonsPreview: View {
             VStack(spacing: 16) {
                 Text("不同大小").font(.subheadline)
                 HStack(spacing: 16) {
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicSize(.small)
                         .magicDebugBorder(.green)
                     
-                    MagicButton(icon: "star", action: {})
+                    MagicButton(icon: "star")
                         .magicSize(.large)
                         .magicDebugBorder(.orange)
                 }

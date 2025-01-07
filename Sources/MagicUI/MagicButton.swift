@@ -204,7 +204,7 @@ public struct MagicButton: View {
     // MARK: - Properties
     
     /// SF Symbols 图标名称
-    let icon: String
+    let icon: String?
     /// 按钮标题（可选）
     let title: String?
     /// 按钮样式
@@ -220,7 +220,7 @@ public struct MagicButton: View {
     /// 弹出内容
     let popoverContent: AnyView?
     /// 点击动作
-    let action: () -> Void
+    let action: (() -> Void)?
     /// 自定义背景色
     let customBackgroundColor: Color?
     
@@ -228,6 +228,7 @@ public struct MagicButton: View {
     @State private var containerSize: CGFloat = 0
     @Environment(\.colorScheme) private var colorScheme
     @State private var showingDisabledPopover = false
+    @State private var showingPopover = false
     
     // MARK: - Initialization
     
@@ -244,7 +245,7 @@ public struct MagicButton: View {
     ///   - action: 点击动作
     ///   - customBackgroundColor: 自定义背景色
     public init(
-        icon: String,
+        icon: String? = nil,
         title: String? = nil,
         style: Style = .primary,
         size: Size = .regular,
@@ -252,7 +253,7 @@ public struct MagicButton: View {
         shapeVisibility: ShapeVisibility = .always,
         disabledReason: String? = nil,
         popoverContent: AnyView? = nil,
-        action: @escaping () -> Void,
+        action: (() -> Void)? = nil,
         customBackgroundColor: Color? = nil
     ) {
         self.icon = icon
@@ -284,28 +285,65 @@ public struct MagicButton: View {
             }
         }
         
-        container
+        return container
             .background(shouldShowShape ? buttonShape : nil)
+            .onHover { hovering in
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    isHovering = hovering
+                }
+            }
+            .scaleEffect(isHovering ? 1.05 : 1.0)
+            .shadow(
+                color: isHovering ? Color.accentColor.opacity(0.2) : 
+                    .clear,
+                radius: isHovering ? 8 : 0,
+                y: isHovering ? 2 : 0
+            )
+            .onTapGesture {
+                if let reason = disabledReason {
+                    showingDisabledPopover.toggle()
+                } else if popoverContent != nil {
+                    showingPopover.toggle()
+                    action?()
+                } else {
+                    action?()
+                }
+            }
+            .popover(isPresented: $showingPopover) {
+                if let content = popoverContent {
+                    content
+                }
+            }
+            .popover(isPresented: $showingDisabledPopover) {
+                if let reason = disabledReason {
+                    Text(reason)
+                        .padding()
+                }
+            }
     }
     
     // 内部按钮内容
     private var containerContent: some View {
-        Button(action: action) {
-            GeometryReader { geometry in
-                let minSize = min(geometry.size.width, geometry.size.height)
-                HStack(spacing: 4) {
+        GeometryReader { geometry in
+            let minSize = min(geometry.size.width, geometry.size.height)
+            let shouldShowTitle = geometry.size.width > geometry.size.height
+            
+            HStack(spacing: 4) {
+                if let icon = icon {
                     Image(systemName: icon)
                         .font(.system(size: minSize * 0.4))
-                    if let title = title {
-                        Text(title)
-                            .font(size.font)
-                    }
                 }
-                .foregroundStyle(foregroundColor)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .padding(.horizontal, isCircularShape ? 0 : size.horizontalPadding)
-                .padding(.vertical, isCircularShape ? 0 : size.verticalPadding)
+                if shouldShowTitle, let title = title {
+                    Text(title)
+                        .font(size.font)
+                }
             }
+            .foregroundStyle(foregroundColor)
+            .frame(width: geometry.size.width, height: geometry.size.height)
+            .position(
+                x: geometry.size.width / 2,
+                y: geometry.size.height / 2
+            )
         }
         .buttonStyle(MagicButtonStyle())
     }
