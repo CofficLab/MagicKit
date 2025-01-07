@@ -19,7 +19,9 @@ public extension URL {
         downloadProgress: ((Double) -> Void)? = nil
     ) async throws {
         if verbose {
-            os_log("\(self.t)开始复制文件 (\(reason)): \(self.path) -> \(destination.path)")
+            let sourcePath = (self.pathComponents.suffix(3)).joined(separator: "/")
+            let destPath = (destination.pathComponents.suffix(3)).joined(separator: "/")
+            os_log("\(self.t)开始复制文件 (\(reason)): .../\(sourcePath) -> .../\(destPath)")
         }
         
         if self.isiCloud && self.isNotDownloaded {

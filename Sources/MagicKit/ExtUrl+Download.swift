@@ -33,7 +33,7 @@ public extension URL {
         }
         
         if verbose {
-            os_log("\(self.t)开始下载文件\(reason.isEmpty ? "" : "，原因：\(reason)")")
+            os_log("\(self.t)🛫🛫🛫 开始下载文件\(reason.isEmpty ? "" : "，原因：\(reason)")")
         }
         
         // 如果不需要进度回调，直接使用简单的下载方式
@@ -56,7 +56,7 @@ public extension URL {
             }
             
             if verbose {
-                os_log("\(self.t)文件下载完成")
+                os_log("\(self.t)✅✅✅ 文件下载完成")
             }
             return
         }
