@@ -4,44 +4,69 @@ import SwiftUI
 import MagicUI
 
 public extension URL {
+    /// 下载方式
+    enum DownloadMethod {
+        /// 轮询方式
+        case polling
+        /// 使用 NSMetadataQuery
+        case query
+    }
+    
     /// 下载 iCloud 文件
     /// - Parameters:
     ///   - verbose: 是否输出详细日志，默认为 false
     ///   - reason: 下载原因，用于日志记录，默认为空字符串
+    ///   - method: 下载方式，默认为 .polling
     ///   - onProgress: 下载进度回调
-    func download(verbose: Bool = false, reason: String = "", onProgress: ((Double) -> Void)? = nil) async throws {
-        let fm = FileManager.default
-        
-        if self.isDownloaded {
-            if verbose { os_log("\(self.t)文件已下载，无需重新下载 (\(reason))") }
-            onProgress?(100)
+    func download(
+        verbose: Bool = false, 
+        reason: String = "", 
+        method: DownloadMethod = .polling,
+        onProgress: ((Double) -> Void)? = nil
+    ) async throws {
+        // 通用的检查和日志
+        guard isiCloud, isNotDownloaded else {
+            if verbose {
+                os_log("\(self.t)文件无需下载：不是 iCloud 文件或已下载完成")
+            }
             return
         }
         
-        if verbose { os_log("\(self.t)开始下载 iCloud 文件: \(self.path) (\(reason))") }
-        try fm.startDownloadingUbiquitousItem(at: self)
+        if verbose {
+            os_log("\(self.t)开始下载文件\(reason.isEmpty ? "" : "，原因：\(reason)")")
+        }
         
-        let queue = OperationQueue()
-        queue.maxConcurrentOperationCount = 1
-        let itemQuery = ItemQuery(queue: queue)
-        
-        let result = itemQuery.searchMetadataItems(predicates: [
-            NSPredicate(format: "%K == %@", NSMetadataItemURLKey, self as NSURL),
-        ])
-        
-        for try await collection in result {
-            if let item = collection.first {
-                let progress = item.downloadProgress
-                if verbose { os_log("\(self.t)⏬⏬⏬ 下载进度: \(progress * 100)% -> \(self.title) (\(reason))") }
-                onProgress?(progress)
-                
-                if item.isDownloaded {
-                    if verbose { os_log("\(self.t)🎉🎉🎉 文件下载完成 -> \(self.title) (\(reason))") }
-                    onProgress?(100)
-                    itemQuery.stop()
-                    break
+        // 如果不需要进度回调，直接使用简单的下载方式
+        guard let onProgress = onProgress else {
+            try FileManager.default.startDownloadingUbiquitousItem(at: self)
+            
+            // 等待下载完成
+            while isDownloading {
+                if verbose {
+                    os_log("\(self.t)文件下载中...")
                 }
+                
+                // 只检查错误
+                if let resources = try? self.resourceValues(forKeys: [.ubiquitousItemDownloadingStatusKey, .ubiquitousItemDownloadingErrorKey]),
+                   let error = resources.ubiquitousItemDownloadingError {
+                    throw error
+                }
+                
+                try await Task.sleep(nanoseconds: 1_000_000_000) // 1秒
             }
+            
+            if verbose {
+                os_log("\(self.t)文件下载完成")
+            }
+            return
+        }
+        
+        // 需要进度回调时，根据方法选择具体的下载实现
+        switch method {
+        case .polling:
+            try await downloadWithPolling(verbose: verbose, onProgress: onProgress)
+        case .query:
+            try await downloadWithQuery(verbose: verbose, onProgress: onProgress)
         }
     }
     
@@ -187,6 +212,127 @@ public extension URL {
         // 检查协调过程中是否发生错误
         if let error = coordinationError {
             throw error
+        }
+    }
+    
+    /// 使用轮询方式下载 iCloud 文件
+    private func downloadWithPolling(
+        verbose: Bool,
+        onProgress: @escaping (Double) -> Void
+    ) async throws {
+        // 创建下载任务
+        try FileManager.default.startDownloadingUbiquitousItem(at: self)
+        
+        // 等待下载完成
+        while isDownloading {
+            if verbose {
+                os_log("\(self.t)文件下载中...")
+            }
+            
+            // 获取下载进度（现在一定会使用）
+            if let resources = try? self.resourceValues(forKeys: [.ubiquitousItemDownloadingStatusKey, .ubiquitousItemDownloadingErrorKey, .fileSizeKey, .fileAllocatedSizeKey]),
+               let totalSize = resources.fileSize,
+               let downloadedSize = resources.fileAllocatedSize {
+                let progress = Double(downloadedSize) / Double(totalSize)
+                onProgress(progress)
+                
+                // 检查是否有下载错误
+                if let error = resources.ubiquitousItemDownloadingError {
+                    throw error
+                }
+            }
+            
+            try await Task.sleep(nanoseconds: 500_000_000) // 0.5秒
+        }
+        
+        if verbose {
+            os_log("\(self.t)文件下载完成")
+        }
+    }
+    
+    /// 使用 NSMetadataQuery 下载 iCloud 文件
+    /// - Parameters:
+    ///   - verbose: 是否输出详细日志，默认为 false
+    ///   - onProgress: 下载进度回调
+    private func downloadWithQuery(
+        verbose: Bool,
+        onProgress: @escaping (Double) -> Void
+    ) async throws {
+        return try await withCheckedThrowingContinuation { continuation in
+            let query = NSMetadataQuery()
+            query.searchScopes = [NSMetadataQueryUbiquitousDataScope]
+            query.predicate = NSPredicate(format: "%K == %@", NSMetadataItemURLKey, self.path)
+            
+            var observers: [NSObjectProtocol] = []
+            
+            let startObserver = NotificationCenter.default.addObserver(
+                forName: .NSMetadataQueryDidStartGathering,
+                object: query,
+                queue: .main
+            ) { _ in
+                if verbose {
+                    os_log("\(self.t)查询开始")
+                }
+                
+                do {
+                    try FileManager.default.startDownloadingUbiquitousItem(at: self)
+                } catch {
+                    observers.forEach { NotificationCenter.default.removeObserver($0) }
+                    continuation.resume(throwing: error)
+                }
+            }
+            observers.append(startObserver)
+            
+            let updateObserver = NotificationCenter.default.addObserver(
+                forName: .NSMetadataQueryDidUpdate,
+                object: query,
+                queue: .main
+            ) { _ in
+                guard let item = query.results.first as? NSMetadataItem else { return }
+                
+                let downloadStatus = item.value(forAttribute: NSMetadataUbiquitousItemDownloadingStatusKey) as? String
+                let isDownloading = downloadStatus == "NSMetadataUbiquitousItemDownloadingStatusDownloading"
+                
+                if isDownloading {
+                    // 现在一定会计算进度
+                    if let downloadedSize = item.value(forAttribute: "NSMetadataUbiquitousItemDownloadedSizeKey") as? NSNumber,
+                       let totalSize = item.value(forAttribute: "NSMetadataUbiquitousItemTotalSizeKey") as? NSNumber {
+                        let progress = Double(truncating: downloadedSize) / Double(truncating: totalSize)
+                        onProgress(progress)
+                        
+                        if verbose {
+                            os_log("\(self.t)下载进度：\(progress * 100)%")
+                        }
+                    }
+                    
+                    if let error = item.value(forAttribute: NSMetadataUbiquitousItemDownloadingErrorKey) as? Error {
+                        observers.forEach { NotificationCenter.default.removeObserver($0) }
+                        query.stop()
+                        continuation.resume(throwing: error)
+                    }
+                } else if downloadStatus == "NSMetadataUbiquitousItemDownloadingStatusCurrent" {
+                    if verbose {
+                        os_log("\(self.t)文件下载完成")
+                    }
+                    observers.forEach { NotificationCenter.default.removeObserver($0) }
+                    query.stop()
+                    continuation.resume(returning: ())
+                }
+            }
+            observers.append(updateObserver)
+            
+            let finishObserver = NotificationCenter.default.addObserver(
+                forName: .NSMetadataQueryDidFinishGathering,
+                object: query,
+                queue: .main
+            ) { _ in
+                if verbose {
+                    os_log("\(self.t)查询完成")
+                }
+            }
+            observers.append(finishObserver)
+            
+            query.start()
         }
     }
 }

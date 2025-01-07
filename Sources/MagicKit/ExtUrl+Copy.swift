@@ -7,13 +7,15 @@ public extension URL {
     /// 复制文件到目标位置，支持 iCloud 文件的自动下载
     /// - Parameters:
     ///   - destination: 目标位置
-    ///   - downloadProgress: 下载进度回调
     ///   - verbose: 是否打印详细日志，默认为 false
     ///   - reason: 复制原因，用于日志记录
+    ///   - downloadMethod: 下载方式，默认为 .polling
+    ///   - downloadProgress: 下载进度回调
     func copyTo(
         _ destination: URL,
         verbose: Bool = true,
         reason: String,
+        downloadMethod: DownloadMethod = .polling,
         downloadProgress: ((Double) -> Void)? = nil
     ) async throws {
         if verbose {
@@ -21,10 +23,12 @@ public extension URL {
         }
         
         if self.isiCloud && self.isNotDownloaded {
-            if verbose {
-                os_log("\(self.t)检测到 iCloud 文件未下载，开始下载 (\(reason))")
-            }
-            try await download(verbose: verbose, reason: reason + "-> URL.copyTo", onProgress: downloadProgress)
+            try await download(
+                verbose: verbose, 
+                reason: reason + "-> URL.copyTo", 
+                method: downloadMethod,
+                onProgress: downloadProgress
+            )
         }
         
         if verbose {
