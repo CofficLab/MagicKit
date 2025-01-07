@@ -185,36 +185,72 @@ private struct FileCopyProgressView: View, SuperLog {
         }
     }
     
+    // MARK: - State Mutations
+    @MainActor
+    private func updateDownloadProgress(_ value: Double) {
+        downloadProgress = value
+    }
+    
+    @MainActor
+    private func updateCopyProgress(_ value: Double) {
+        copyProgress = value
+    }
+    
+    @MainActor
+    private func setError(_ err: Error) {
+        error = err
+    }
+    
+    @MainActor
+    private func setCompleted(_ value: Bool) {
+        isCompleted = value
+    }
+    
+    @MainActor
+    private func setCopying(_ value: Bool) {
+        isCopying = value
+    }
+    
+    @MainActor
+    private func setThumbnail(_ image: Image?) {
+        thumbnail = image
+    }
+    
+    @MainActor
+    private func setShowCopiedTip(_ value: Bool) {
+        showCopiedTip = value
+    }
+    
     private func performCopyOperation() {
         Task.detached(priority: .background) {
             os_log("\(self.t)开始复制操作: 源文件 \(source.path) -> 目标 \(finalDestination.path)")
             
             // 加载缩略图
-            thumbnail = try? await source.thumbnail(size: CGSize(width: 80, height: 80))
+            if let thumb = try? await source.thumbnail(size: CGSize(width: 80, height: 80)) {
+                await setThumbnail(thumb)
+            }
             
             do {
-                // 如果是 iCloud 文件，先下载
                 if source.isiCloud && source.isNotDownloaded {
                     os_log("\(self.t)开始从 iCloud 下载文件")
                     try await source.download { progress in
-                        downloadProgress = progress * 100
-                        os_log("\(self.t)iCloud 下载进度: \(progress * 100)%")
+                        Task { @MainActor in
+                            await updateDownloadProgress(progress * 100)
+                            os_log("\(self.t)iCloud 下载进度: \(progress * 100)%")
+                        }
                     }
                 }
                 
-                // 开始复制
-                isCopying = true
+                await setCopying(true)
                 os_log("\(self.t)开始文件复制")
                 try await copyWithProgress()
-                isCompleted = true
+                await setCompleted(true)
                 os_log("\(self.t)文件复制完成")
                 await onCompletion(nil)
                 
             } catch {
                 os_log("\(self.t)复制操作失败: \(error.localizedDescription)")
-                await MainActor.run {
-                    self.error = error
-                }
+                await setError(error)
                 await onCompletion(error)
             }
         }
