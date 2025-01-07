@@ -40,7 +40,7 @@ public extension URL {
         guard let onProgress = onProgress else {
             try await FileManager.default.startDownloadingUbiquitousItem(at: self)
             if verbose {
-                os_log("\(self.t)✅✅✅ 已完成下载")
+                os_log("\(self.t)⏬⏬⏬ 已启动下载")
             }
             return
         }

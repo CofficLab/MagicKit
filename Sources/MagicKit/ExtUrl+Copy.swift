@@ -24,7 +24,8 @@ public extension URL {
             os_log("\(self.t)开始复制文件 (\(reason)): .../\(sourcePath) -> .../\(destPath)")
         }
         
-        if self.isiCloud && self.isNotDownloaded {
+        // 只有在需要显示下载进度时才手动处理下载
+        if let downloadProgress, self.isiCloud && self.isNotDownloaded {
             try await download(
                 verbose: verbose, 
                 reason: reason + "-> URL.copyTo", 
