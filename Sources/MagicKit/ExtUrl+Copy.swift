@@ -15,7 +15,7 @@ public extension URL {
         _ destination: URL,
         verbose: Bool = true,
         caller: String,
-        downloadMethod: DownloadMethod = .polling,
+        downloadMethod: DownloadMethod = .polling(),
         downloadProgress: ((Double) -> Void)? = nil
     ) async throws {
         if verbose {

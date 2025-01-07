@@ -188,11 +188,9 @@ public struct AvatarView: View, SuperLog {
                 if let image = image {
                     await state.setThumbnail(image)
                     await state.setError(nil)
-                    if verbose { os_log("\(self.t)缩略图加载成功: \(url.title)") }
                 } else {
-                    await state.setThumbnail(Image(systemName: url.systemIcon))
+                    await state.setThumbnail(url.defaultImage)
                     await state.setError(ViewError.thumbnailGenerationFailed)
-                    if verbose { os_log("\(self.t)使用默认图标: \(url.systemIcon)") }
                 }
             } catch URLError.cancelled {
                 if verbose { os_log("\(self.t)缩略图加载已取消") }

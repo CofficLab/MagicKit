@@ -7,7 +7,7 @@ public extension URL {
     /// 下载方式
     enum DownloadMethod {
         /// 轮询方式
-        case polling
+        case polling(updateInterval: TimeInterval = 0.5)  // 默认 0.5 秒
         /// 使用 NSMetadataQuery
         case query
     }
@@ -21,7 +21,7 @@ public extension URL {
     func download(
         verbose: Bool = false, 
         reason: String = "", 
-        method: DownloadMethod = .polling,
+        method: DownloadMethod = .polling(), 
         onProgress: ((Double) -> Void)? = nil
     ) async throws {
         // 通用的检查和日志
@@ -47,8 +47,8 @@ public extension URL {
         
         // 需要进度回调时，根据方法选择具体的下载实现
         switch method {
-        case .polling:
-            try await downloadWithPolling(verbose: verbose, onProgress: onProgress)
+        case .polling(let updateInterval):
+            try await downloadWithPolling(verbose: verbose, updateInterval: updateInterval, onProgress: onProgress)
         case .query:
             try await downloadWithQuery(verbose: verbose, onProgress: onProgress)
         }
@@ -205,6 +205,7 @@ public extension URL {
     /// 使用轮询方式下载 iCloud 文件
     private func downloadWithPolling(
         verbose: Bool,
+        updateInterval: TimeInterval,
         onProgress: @escaping (Double) -> Void
     ) async throws {
         // 创建下载任务
@@ -216,7 +217,7 @@ public extension URL {
                 os_log("\(self.t)文件下载中...")
             }
             
-            // 获取下载进度（现在一定会使用）
+            // 获取下载进度
             if let resources = try? self.resourceValues(forKeys: [.ubiquitousItemDownloadingStatusKey, .ubiquitousItemDownloadingErrorKey, .fileSizeKey, .fileAllocatedSizeKey]),
                let totalSize = resources.fileSize,
                let downloadedSize = resources.fileAllocatedSize {
@@ -229,7 +230,7 @@ public extension URL {
                 }
             }
             
-            try await Task.sleep(nanoseconds: 500_000_000) // 0.5秒
+            try await Task.sleep(nanoseconds: UInt64(updateInterval * 1_000_000_000)) // 转换为纳秒
         }
         
         if verbose {

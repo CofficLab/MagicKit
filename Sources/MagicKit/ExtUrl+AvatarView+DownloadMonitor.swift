@@ -15,13 +15,11 @@ extension AvatarView {
             cancellables.removeAll()
             
             // 设置新的监控
-            url.onDownloading(caller: "AvatarView.DownloadMonitor") { progress in
-                onProgress(progress)
-            }.store(in: &cancellables)
+            let progressCancellable = url.onDownloading(caller: "AvatarView.DownloadMonitor", updateInterval: 1, onProgress)
+            progressCancellable.store(in: &cancellables)
             
-            url.onDownloadFinished(caller: "AvatarView.DownloadMonitor") {
-                onFinished()
-            }.store(in: &cancellables)
+            let finishedCancellable = url.onDownloadFinished(caller: "AvatarView.DownloadMonitor", onFinished)
+            finishedCancellable.store(in: &cancellables)
         }
         
         func stopMonitoring() {

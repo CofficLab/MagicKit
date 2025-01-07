@@ -4,6 +4,11 @@ import MagicUI
 import UniformTypeIdentifiers
 
 public extension URL {
+    /// 返回 URL 对应的默认系统图标图片
+    var defaultImage: Image {
+        Image(systemName: systemIcon)
+    }
+    
     /// 是否是音频文件
     var isAudio: Bool {
         if let type = try? resourceValues(forKeys: [.contentTypeKey]).contentType {

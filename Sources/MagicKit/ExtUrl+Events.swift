@@ -8,11 +8,13 @@ public extension URL {
     /// - Parameters:
     ///   - verbose: 是否打印详细日志
     ///   - caller: 调用者名称
+    ///   - updateInterval: 更新进度的时间间隔（秒），默认 0.5 秒
     ///   - onProgress: 下载进度回调，progress 范围 0-1
     /// - Returns: 可用于取消监听的 AnyCancellable
     func onDownloading(
         verbose: Bool = true,
         caller: String,
+        updateInterval: TimeInterval = 0.5,
         _ onProgress: @escaping (Double) -> Void
     ) -> AnyCancellable {
         let queue = OperationQueue()
@@ -26,6 +28,8 @@ public extension URL {
             }
         }
         
+        var lastUpdateTime: TimeInterval = 0
+        
         let task = Task {
             let result = query.searchMetadataItems(predicates: [
                 NSPredicate(format: "%K == %@", NSMetadataItemURLKey, self as NSURL),
@@ -33,10 +37,14 @@ public extension URL {
             
             for try await collection in result {
                 if let item = collection.first {
-                    let progress = item.downloadProgress
-
-                    await MainActor.run {
-                        onProgress(progress)
+                    let currentTime = Date().timeIntervalSince1970
+                    if currentTime - lastUpdateTime >= updateInterval {
+                        let progress = item.downloadProgress
+                        lastUpdateTime = currentTime
+                        
+                        await MainActor.run {
+                            onProgress(progress)
+                        }
                     }
                     
                     if item.isDownloaded {
