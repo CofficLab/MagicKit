@@ -96,6 +96,8 @@ private struct PlaylistItemRow: View {
 
 // MARK: - Preview
 #Preview("MagicPlayMan") {
-    MagicPlayMan.PreviewView()
+    MagicThemePreview {
+        MagicPlayMan.PreviewView()
+    }
 }
 

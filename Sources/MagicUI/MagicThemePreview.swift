@@ -68,6 +68,8 @@ public struct MagicThemePreview<Content: View>: View {
             }
         }
         .environment(\.colorScheme, isDarkMode ? .dark : .light)
+        .frame(minHeight: 800)
+        .frame(idealHeight: 1200)
     }
     
     // MARK: - Toolbar View

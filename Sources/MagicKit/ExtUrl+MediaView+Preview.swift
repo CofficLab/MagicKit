@@ -75,8 +75,6 @@ struct MediaViewPreviewContainer: View {
                 Label("边距", systemImage: .iconRuler)
             }
         }
-        .frame(width: 500, height: 600)
-        .background(MagicBackground.deepOceanCurrent.opacity(0.1))
     }
 }
 
@@ -329,5 +327,7 @@ private struct PaddingContent: View {
 }
 
 #Preview("Media View") {
-    MediaViewPreviewContainer()
+    MagicThemePreview {
+        MediaViewPreviewContainer()
+    }
 }

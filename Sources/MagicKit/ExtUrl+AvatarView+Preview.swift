@@ -1,4 +1,5 @@
 import SwiftUI
+import MagicUI
 
 /// 头像视图的功能展示组件
 public struct AvatarDemoView: View {
@@ -273,5 +274,7 @@ public struct AvatarDemoView: View {
 
 // MARK: - Preview
 #Preview("头像视图") {
-    AvatarDemoView()
-} 
+    MagicThemePreview {
+        AvatarDemoView()
+    }
+}

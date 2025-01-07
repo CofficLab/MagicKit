@@ -156,5 +156,7 @@ internal extension MagicPlayMan {
 }
 
 #Preview("MagicPlayMan") {
-    MagicPlayMan.PreviewView()
-} 
+    MagicThemePreview {
+        MagicPlayMan.PreviewView()
+    }
+}

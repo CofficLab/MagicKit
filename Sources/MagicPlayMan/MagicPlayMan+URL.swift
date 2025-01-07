@@ -1,4 +1,5 @@
 import Foundation
+import MagicUI
 import SwiftUI
 
 public extension MagicPlayMan {
@@ -142,6 +143,8 @@ public extension MagicPlayMan {
 
 // MARK: - Preview
 #Preview("MagicPlayMan") {
-    MagicPlayMan.PreviewView()
+    MagicThemePreview {
+        MagicPlayMan.PreviewView()
+    }
 }
 

@@ -69,5 +69,7 @@ private struct AudioPlayerView: View {
 
 // MARK: - Preview
 #Preview("MagicPlayMan") {
-    MagicPlayMan.PreviewView()
+    MagicThemePreview {
+        MagicPlayMan.PreviewView()
+    }
 }

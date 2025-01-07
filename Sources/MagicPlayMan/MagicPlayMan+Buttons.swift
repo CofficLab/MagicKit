@@ -216,5 +216,7 @@ public extension MagicPlayMan {
 // MARK: - Preview
 
 #Preview("MagicPlayMan") {
-    MagicPlayMan.PreviewView()
+    MagicThemePreview {
+        MagicPlayMan.PreviewView()
+    }
 }

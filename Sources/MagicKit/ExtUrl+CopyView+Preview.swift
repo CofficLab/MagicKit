@@ -1,5 +1,5 @@
-import SwiftUI
 import MagicUI
+import SwiftUI
 
 /// 文件复制视图的预览示例
 ///
@@ -16,27 +16,25 @@ struct CopyViewPreviewContainer: View {
                 .tabItem {
                     Label("基础样式", systemImage: .iconPaintbrush)
                 }
-            
+
             // 形状预览
             ShapesPreview()
                 .tabItem {
                     Label("形状", systemImage: .iconSquareOnCircle)
                 }
-            
+
             // 下载预览
             DownloadPreview()
                 .tabItem {
                     Label("下载", systemImage: .iconICloudDownloadAlt)
                 }
-            
+
             // 错误处理预览
             ErrorHandlingPreview()
                 .tabItem {
                     Label("错误处理", systemImage: .iconWarning)
                 }
         }
-        .frame(width: 500, height: 600)
-        .background(MagicBackground.deepOceanCurrent.opacity(0.1))
     }
 }
 
@@ -48,43 +46,41 @@ struct CopyViewPreviewContainer: View {
 /// - 自定义阴影效果
 private struct BasicStylesPreview: View {
     @State private var error: Error?
-    
+
     var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                Group {
-                    // 默认样式
-                    Text("默认样式")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_temp_txt
-                        .copyView(destination: .documentsDirectory.appendingPathComponent("copy"))
-                        .withBackground()
-                }
-                
-                Group {
-                    // 自定义背景色
-                    Text("自定义背景色")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_web_jpg_moon
-                        .copyView(destination: .documentsDirectory.appendingPathComponent("random.jpg"))
-                        .withBackground(.blue.opacity(0.1))
-                }
-                
-                Group {
-                    // 自定义阴影
-                    Text("自定义阴影")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_web_txt_bsd
-                        .copyView(destination: .documentsDirectory.appendingPathComponent("download.bin"))
-                        .withBackground(.green.opacity(0.1))
-                        .withShadow(radius: 8)
-                }
+        VStack(spacing: 20) {
+            Group {
+                // 默认样式
+                Text("默认样式")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                URL.sample_temp_txt
+                    .copyView(destination: .documentsDirectory.appendingPathComponent("copy"))
+                    .withBackground()
             }
-            .padding()
+
+            Group {
+                // 自定义背景色
+                Text("自定义背景色")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                URL.sample_web_jpg_moon
+                    .copyView(destination: .documentsDirectory.appendingPathComponent("random.jpg"))
+                    .withBackground(.blue.opacity(0.1))
+            }
+
+            Group {
+                // 自定义阴影
+                Text("自定义阴影")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                URL.sample_web_txt_bsd
+                    .copyView(destination: .documentsDirectory.appendingPathComponent("download.bin"))
+                    .withBackground(.green.opacity(0.1))
+                    .withShadow(radius: 8)
+            }
         }
+        .padding()
     }
 }
 
@@ -96,44 +92,42 @@ private struct BasicStylesPreview: View {
 /// - 胶囊形状
 private struct ShapesPreview: View {
     @State private var error: Error?
-    
+
     var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                Group {
-                    // 圆角矩形（默认）
-                    Text("圆角矩形（默认）")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_web_jpg_earth
-                        .copyView(destination: .documentsDirectory)
-                        .withBackground(.mint.opacity(0.1))
-                }
-                
-                Group {
-                    // 矩形
-                    Text("矩形")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_web_jpg_earth
-                        .copyView(destination: .documentsDirectory)
-                        .withShape(.rectangle)
-                        .withBackground(.orange.opacity(0.1))
-                }
-                
-                Group {
-                    // 胶囊形状
-                    Text("胶囊形状")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_web_jpg_earth
-                        .copyView(destination: .documentsDirectory)
-                        .withShape(.capsule)
-                        .withBackground(.purple.opacity(0.1))
-                }
+        VStack(spacing: 20) {
+            Group {
+                // 圆角矩形（默认）
+                Text("圆角矩形（默认）")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                URL.sample_web_jpg_earth
+                    .copyView(destination: .documentsDirectory)
+                    .withBackground(.mint.opacity(0.1))
             }
-            .padding()
+
+            Group {
+                // 矩形
+                Text("矩形")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                URL.sample_web_jpg_earth
+                    .copyView(destination: .documentsDirectory)
+                    .withShape(.rectangle)
+                    .withBackground(.orange.opacity(0.1))
+            }
+
+            Group {
+                // 胶囊形状
+                Text("胶囊形状")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                URL.sample_web_jpg_earth
+                    .copyView(destination: .documentsDirectory)
+                    .withShape(.capsule)
+                    .withBackground(.purple.opacity(0.1))
+            }
         }
+        .padding()
     }
 }
 
@@ -146,52 +140,50 @@ private struct ShapesPreview: View {
 /// - PDF文件
 private struct DownloadPreview: View {
     @State private var error: Error?
-    
+
     var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                Group {
-                    // 音频文件
-                    Text("音频文件")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_web_mp3_kennedy
-                        .copyView(destination: .documentsDirectory)
-                        .withBackground(.blue.opacity(0.1))
-                }
-                
-                Group {
-                    // 视频文件
-                    Text("视频文件")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_web_mp4_bunny
-                        .copyView(destination: .documentsDirectory)
-                        .withBackground(.green.opacity(0.1))
-                }
-                
-                Group {
-                    // 图片文件
-                    Text("图片文件")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_web_jpg_earth
-                        .copyView(destination: .documentsDirectory)
-                        .withBackground(.purple.opacity(0.1))
-                }
-                
-                Group {
-                    // PDF文件
-                    Text("PDF文件")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_web_pdf_swift_guide
-                        .copyView(destination: .documentsDirectory)
-                        .withBackground(.orange.opacity(0.1))
-                }
+        VStack(spacing: 20) {
+            Group {
+                // 音频文件
+                Text("音频文件")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                URL.sample_web_mp3_kennedy
+                    .copyView(destination: .documentsDirectory)
+                    .withBackground(.blue.opacity(0.1))
             }
-            .padding()
+
+            Group {
+                // 视频文件
+                Text("视频文件")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                URL.sample_web_mp4_bunny
+                    .copyView(destination: .documentsDirectory)
+                    .withBackground(.green.opacity(0.1))
+            }
+
+            Group {
+                // 图片文件
+                Text("图片文件")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                URL.sample_web_jpg_earth
+                    .copyView(destination: .documentsDirectory)
+                    .withBackground(.purple.opacity(0.1))
+            }
+
+            Group {
+                // PDF文件
+                Text("PDF文件")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                URL.sample_web_pdf_swift_guide
+                    .copyView(destination: .documentsDirectory)
+                    .withBackground(.orange.opacity(0.1))
+            }
         }
+        .padding()
     }
 }
 
@@ -203,45 +195,45 @@ private struct DownloadPreview: View {
 /// - 目标位置已存在
 private struct ErrorHandlingPreview: View {
     @State private var error: Error?
-    
+
     var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                Group {
-                    // 文件不存在
-                    Text("文件不存在")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    URL(fileURLWithPath: "/nonexistent/path.txt")
-                        .copyView(destination: .documentsDirectory)
-                        .withBackground(.red.opacity(0.1))
-                }
-                
-                Group {
-                    // 权限错误
-                    Text("权限错误")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    URL(fileURLWithPath: "/System/file.txt")
-                        .copyView(destination: .documentsDirectory)
-                        .withBackground(.orange.opacity(0.1))
-                }
-                
-                Group {
-                    // 目标位置已存在
-                    Text("目标位置已存在")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    URL.sample_web_txt_mit
-                        .copyView(destination: URL.sample_web_txt_mit)
-                        .withBackground(.yellow.opacity(0.1))
-                }
+        VStack(spacing: 20) {
+            Group {
+                // 文件不存在
+                Text("文件不存在")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                URL(fileURLWithPath: "/nonexistent/path.txt")
+                    .copyView(destination: .documentsDirectory)
+                    .withBackground(.red.opacity(0.1))
             }
-            .padding()
+
+            Group {
+                // 权限错误
+                Text("权限错误")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                URL(fileURLWithPath: "/System/file.txt")
+                    .copyView(destination: .documentsDirectory)
+                    .withBackground(.orange.opacity(0.1))
+            }
+
+            Group {
+                // 目标位置已存在
+                Text("目标位置已存在")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                URL.sample_web_txt_mit
+                    .copyView(destination: URL.sample_web_txt_mit)
+                    .withBackground(.yellow.opacity(0.1))
+            }
         }
+        .padding()
     }
 }
 
 #Preview("Copy View") {
-    CopyViewPreviewContainer()
-} 
+    MagicThemePreview {
+        CopyViewPreviewContainer()
+    }
+}

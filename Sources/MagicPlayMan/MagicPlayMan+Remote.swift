@@ -65,6 +65,41 @@ extension MagicPlayMan {
             return .commandFailed
         }
         
+        // 上一首/下一首
+        commandCenter.previousTrackCommand.addTarget { [weak self] _ in
+            guard let self = self else {
+                self?.log("Previous track command failed: Player instance is nil", level: .error)
+                return .commandFailed
+            }
+            
+            self.log("Remote command: Previous track")
+            if self.isPlaylistEnabled {
+                self.previous()
+            } else {
+                if let asset = self.currentAsset {
+                    self.events.onPreviousRequested.send(asset)
+                }
+            }
+            return .success
+        }
+        
+        commandCenter.nextTrackCommand.addTarget { [weak self] _ in
+            guard let self = self else {
+                self?.log("Next track command failed: Player instance is nil", level: .error)
+                return .commandFailed
+            }
+            
+            self.log("Remote command: Next track")
+            if self.isPlaylistEnabled {
+                self.next()
+            } else {
+                if let asset = self.currentAsset {
+                    self.events.onNextRequested.send(asset)
+                }
+            }
+            return .success
+        }
+        
         // 快进/快退
         commandCenter.skipForwardCommand.addTarget { [weak self] _ in
             guard let self = self else {
@@ -181,5 +216,7 @@ extension MagicPlayMan {
 
 // MARK: - Preview
 #Preview("MagicPlayMan") {
-    MagicPlayMan.PreviewView()
+    MagicThemePreview {
+        MagicPlayMan.PreviewView()
+    }
 }
