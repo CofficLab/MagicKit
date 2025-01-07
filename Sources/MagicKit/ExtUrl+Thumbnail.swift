@@ -158,7 +158,8 @@ extension URL {
     private func platformAudioThumbnail(size: CGSize) async throws -> PlatformImage? {
         // 尝试从音频元数据中获取封面
         if let coverImage = try await getPlatformCoverFromMetadata() {
-            return coverImage
+            // 添加 resize 操作
+            return coverImage.resize(to: size)
         }
         
         // 如果没有找到封面，返回默认音频图标
