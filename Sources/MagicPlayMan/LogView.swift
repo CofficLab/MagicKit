@@ -24,7 +24,6 @@ struct LogView: View {
                     shape: .circle,
                     action: copyAllLogs
                 )
-                .magicDebugBorder()
 
                 MagicButton(
                     icon: "trash",
@@ -33,7 +32,6 @@ struct LogView: View {
                     shape: .circle,
                     action: onClear
                 )
-                .magicDebugBorder()
             }
             .frame(height: 40)
             .overlay {

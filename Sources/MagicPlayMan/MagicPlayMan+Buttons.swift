@@ -8,13 +8,11 @@ public extension MagicPlayMan {
         MagicButton(
             icon: state == .playing ? .iconPauseFill : .iconPlayFill,
             style: state == .playing ? .primary : .secondary,
-//            size: .,
             shape: .circle,
             disabledReason: !hasAsset ? "No media loaded" :
                 state.isLoading ? "Loading..." : nil,
             action: toggle
         )
-        .magicDebugBorder(.red)
     }
 
     /// 创建上一曲按钮
@@ -40,11 +38,10 @@ public extension MagicPlayMan {
         return MagicButton(
             icon: .iconBackwardEndFill,
             style: .secondary,
-            size: .regular,
             shape: .circle,
             disabledReason: disabledReason,
             action: previous
-        ).magicDebugBorder()
+        )
     }
 
     /// 创建下一曲按钮
@@ -71,11 +68,10 @@ public extension MagicPlayMan {
         return MagicButton(
             icon: .iconForwardEndFill,
             style: .secondary,
-            size: .regular,
             shape: .circle,
             disabledReason: disabledReason,
             action: next
-        ).magicDebugBorder()
+        )
     }
 
     /// 创建快退按钮
@@ -83,14 +79,13 @@ public extension MagicPlayMan {
         MagicButton(
             icon: .iconGobackward10,
             style: .secondary,
-            size: .regular,
             shape: .circle,
             disabledReason: !hasAsset ? "No media loaded" :
                 state.isLoading ? "Loading..." : nil,
             action: {
                 self.skipBackward()
             }
-        ).magicDebugBorder()
+        )
     }
 
     /// 创建快进按钮
@@ -98,14 +93,13 @@ public extension MagicPlayMan {
         MagicButton(
             icon: .iconGoforward10,
             style: .secondary,
-            size: .regular,
             shape: .circle,
             disabledReason: !hasAsset ? "No media loaded" :
                 state.isLoading ? "Loading..." : nil,
             action: {
                 self.skipForward()
             }
-        ).magicDebugBorder()
+        )
     }
 
     /// 创建播放模式按钮
@@ -113,11 +107,9 @@ public extension MagicPlayMan {
         MagicButton(
             icon: playMode.iconName,
             style: playMode != .sequence ? .primary : .secondary,
-            size: .regular,
             shape: .circle,
             action: togglePlayMode
         )
-        .magicDebugBorder(.red)
     }
 
     /// 创建喜欢按钮
@@ -129,7 +121,6 @@ public extension MagicPlayMan {
         MagicButton(
             icon: isCurrentAssetLiked ? "heart.fill" : "heart",
             style: isCurrentAssetLiked ? .primary : .secondary,
-            size: .regular,
             shape: .roundedSquare,
             disabledReason: !hasAsset ? "No media loaded" : nil,
             action: toggleLike
@@ -137,7 +128,6 @@ public extension MagicPlayMan {
         .magicShape(.roundedSquare)
         .magicStyle(.secondary)
         .magicShapeVisibility(.onHover)
-        .magicDebugBorder()
         .symbolEffect(.bounce, value: isCurrentAssetLiked)
     }
 
@@ -146,7 +136,6 @@ public extension MagicPlayMan {
         MagicButton(
             icon: .iconList,
             style: .secondary,
-//            size: .regular,
             shape: .circle,
             disabledReason: !self.isPlaylistEnabled ? "Playlist is disabled\nEnable playlist to view and manage tracks" : nil,
             popoverContent: self.isPlaylistEnabled ? AnyView(
@@ -155,9 +144,8 @@ public extension MagicPlayMan {
                         .frame(width: 300, height: 400)
                         .padding()
                 }
-            ) : nil,
-            action: {}
-        ).magicDebugBorder()
+            ) : nil
+        )
     }
 
     /// 创建播放列表启用/禁用按钮
@@ -171,13 +159,11 @@ public extension MagicPlayMan {
         MagicButton(
             icon: self.isPlaylistEnabled ? .iconListCircleFill : .iconListCircle,
             style: self.isPlaylistEnabled ? .primary : .secondary,
-            size: .regular,
             shape: .circle,
             action: { [self] in
                 self.setPlaylistEnabled(!self.isPlaylistEnabled)
             }
         )
-        .magicDebugBorder()
         .symbolEffect(.bounce, value: self.isPlaylistEnabled)
     }
 
@@ -186,16 +172,13 @@ public extension MagicPlayMan {
         MagicButton(
             icon: .iconPersonGroup,
             style: .secondary,
-            size: .regular,
             shape: .circle,
             popoverContent: AnyView(
                 SubscribersView(subscribers: events.subscribers)
                     .frame(width: 300, height: 400)
                     .padding()
-            ),
-            action: {}
+            )
         )
-        .magicDebugBorder()
     }
 
     /// 创建支持的格式按钮
@@ -203,16 +186,13 @@ public extension MagicPlayMan {
         MagicButton(
             icon: .iconMusicNote,
             style: .secondary,
-            size: .regular,
             shape: .circle,
             popoverContent: AnyView(
                 FormatInfoView(
                     formats: SupportedFormat.allFormats
                 )
-            ),
-            action: {}
+            )
         )
-        .magicDebugBorder()
     }
     
     /// 创建日志按钮
@@ -225,13 +205,11 @@ public extension MagicPlayMan {
                 self.makeLogView()
                     .frame(width: 400, height: 400)
                     .padding()
-            ),
-            action: {}
+            )
         )
         .magicShape(.roundedSquare)
         .magicStyle(.secondary)
         .magicShapeVisibility(.onHover)
-        .magicDebugBorder()
     }
 }
 

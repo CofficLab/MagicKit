@@ -195,12 +195,6 @@ public extension MagicPlayMan {
             }.frame(height: 40)
         }
 
-        private var placeholderButton: some View {
-            MagicButton(icon: "placeholder", action: {})
-                .magicDebugBorder()
-                .opacity(0)
-        }
-
         // MARK: - Bottom Section
 
         private var bottomSection: some View {

@@ -27,7 +27,6 @@ struct ErrorOverlay: View {
                 MagicButton(
                     icon: "arrow.clockwise",
                     title: "Try Again",
-                    style: .primary,
                     shape: .capsule,
                     action: onRetry
                 )
@@ -51,20 +50,22 @@ struct ErrorOverlay: View {
 }
 
 #Preview {
-    VStack(spacing: 20) {
-        ErrorOverlay(
-            error: .invalidAsset,
-            asset: .init(url: .documentsDirectory, type: .audio, metadata: .init(title: "Test")),
-            onRetry: {}
-        )
-        .frame(height: 200)
-        
-        ErrorOverlay(
-            error: .networkError("Connection timeout"),
-            asset: .init(url: .documentsDirectory, type: .audio, metadata: .init(title: "Test")),
-            onRetry: {}
-        )
-        .frame(height: 200)
+    MagicThemePreview {
+        VStack(spacing: 20) {
+            ErrorOverlay(
+                error: .invalidAsset,
+                asset: .init(url: .documentsDirectory, type: .audio, metadata: .init(title: "Test")),
+                onRetry: {}
+            )
+            .frame(height: 200)
+            
+            ErrorOverlay(
+                error: .networkError("Connection timeout"),
+                asset: .init(url: .documentsDirectory, type: .audio, metadata: .init(title: "Test")),
+                onRetry: {}
+            )
+            .frame(height: 200)
+        }
+        .padding()
     }
-    .padding()
-} 
+}

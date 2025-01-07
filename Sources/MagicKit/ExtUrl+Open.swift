@@ -98,28 +98,28 @@ private struct OpenButtonView: View {
 }
 
 #Preview("Open Buttons") {
-    VStack(spacing: 20) {
-        // 网络链接
-        Group {
-            Text("网络链接").font(.headline)
+    MagicThemePreview {
+        VStack(spacing: 20) {
+            // 网络链接
+            Group {
+                Text("网络链接").font(.headline)
+                
+                URL.sample_web_mp3_kennedy.makeOpenButton()
+                URL.sample_web_mp3_kennedy.makeOpenButton(showLabel: true)
+                URL.sample_web_mp3_kennedy.makeOpenButton(size: 40)
+            }
             
-            URL.sample_web_mp3_kennedy.makeOpenButton()
-            URL.sample_web_mp3_kennedy.makeOpenButton(showLabel: true)
-            URL.sample_web_mp3_kennedy.makeOpenButton(size: 40)
-        }
-        
-        Divider()
-        
-        // 本地文件
-        Group {
-            Text("本地文件").font(.headline)
+            Divider()
             
-            URL.sample_temp_txt.makeOpenButton()
-            URL.sample_temp_txt.makeOpenButton(showLabel: true)
-            URL.sample_temp_txt.makeOpenButton(size: 40)
+            // 本地文件
+            Group {
+                Text("本地文件").font(.headline)
+                
+                URL.sample_temp_txt.makeOpenButton()
+                URL.sample_temp_txt.makeOpenButton(showLabel: true)
+                URL.sample_temp_txt.makeOpenButton(size: 40)
+            }
         }
+        .padding()
     }
-    .padding()
-    .frame(width: 300)
-    .background(MagicBackground.mint)
-} 
+}
