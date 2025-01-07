@@ -135,7 +135,8 @@ public struct AvatarView: View, SuperLog {
             } else if let error = error {
                 ErrorIndicatorView(error: error)
             } else if isLoading {
-                LoadingView()
+                ProgressView()
+                    .controlSize(.small)
             } else {
                 Image(systemName: url.systemIcon)
                     .foregroundStyle(.secondary)
@@ -161,115 +162,17 @@ public struct AvatarView: View, SuperLog {
             }
         }
         .task {
-            // 只有在没有初始错误时才进行进一步的检查
+            // 如果仍然没有错误，尝试加载缩略图
             if error == nil {
-                // 如果仍然没有错误，尝试加载缩略图
-                if error == nil {
-                    await loadThumbnail()
-                    if monitorDownload {
-                        await setupDownloadMonitor()
-                    }
-                }
+                await loadThumbnail()
+            }
+            if monitorDownload {
+                await setupDownloadMonitor()
             }
         }
         .onDisappear {
             // 显式取消监听
             cancellable?.cancel()
-        }
-    }
-
-    // MARK: - Private Views
-
-    /// 下载进度视图
-    private struct DownloadProgressView: View {
-        let progress: Double
-
-        var body: some View {
-            ZStack {
-                Circle()
-                    .stroke(Color.secondary.opacity(0.2), lineWidth: 4)
-
-                Circle()
-                    .trim(from: 0, to: progress)
-                    .stroke(Color.accentColor, style: StrokeStyle(
-                        lineWidth: 4,
-                        lineCap: .round
-                    ))
-                    .rotationEffect(.degrees(-90))
-
-                Text("\(Int(progress * 100))%")
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-            }
-        }
-    }
-
-    /// 缩略图显示视图
-    private struct ThumbnailImageView: View {
-        let image: Image
-
-        var body: some View {
-            image
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-        }
-    }
-
-    /// 加载中视图
-    private struct LoadingView: View {
-        var body: some View {
-            ProgressView()
-                .controlSize(.small)
-        }
-    }
-
-    /// 错误指示视图
-    private struct ErrorIndicatorView: View {
-        let error: Error
-        @State private var showError = false
-        @State private var isCopied = false
-
-        var body: some View {
-            Image(systemName: "exclamationmark.triangle")
-                .foregroundStyle(.red)
-                .popover(isPresented: $showError) {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("错误详情")
-                            .font(.headline)
-
-                        Divider()
-
-                        Text(error.localizedDescription)
-                            .font(.body)
-                            .foregroundStyle(.secondary)
-                            .fixedSize(horizontal: false, vertical: true)
-                            .multilineTextAlignment(.leading)
-
-                        Divider()
-
-                        Button(action: {
-                            error.localizedDescription.copy()
-                            isCopied = true
-
-                            // 2秒后重置复制状态
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                                isCopied = false
-                            }
-                        }) {
-                            HStack {
-                                Image(systemName: isCopied ? "checkmark.circle.fill" : "doc.on.doc")
-                                Text(isCopied ? "已复制" : "复制错误信息")
-                            }
-                            .foregroundStyle(isCopied ? .green : .accentColor)
-                        }
-                        .buttonStyle(.borderless)
-                    }
-                    // .padding()
-                    .frame(minWidth: 200, maxWidth: 300)
-                }
-                .onTapGesture {
-                    showError = true
-                }
         }
     }
 
@@ -298,7 +201,7 @@ public struct AvatarView: View, SuperLog {
             return
         }
 
-        await Task.detached(priority: .background) {
+        Task.detached(priority: .background) {
             if verbose { os_log("\(self.t)开始加载缩略图: \(url.lastThreeComponents())") }
             await setIsLoading(true)
             do {
@@ -315,7 +218,7 @@ public struct AvatarView: View, SuperLog {
                 if verbose { os_log(.error, "\(self.t)加载缩略图失败: \(error.localizedDescription)") }
             }
             await setIsLoading(false)
-        }.value
+        }
     }
 
     @Sendable private func setupDownloadMonitor() async {
@@ -326,15 +229,13 @@ public struct AvatarView: View, SuperLog {
 
         if verbose { os_log("\(self.t)设置下载监控: \(url.path)") }
         let downloadingCancellable = url.onDownloading(
-            caller: "AvatarView",
+            caller: self.className,
             { progress in
-                Task { @MainActor in
-                    setAutoDownloadProgress(progress)
-                }
+                setAutoDownloadProgress(progress)
             }
         )
 
-        let finishedCancellable = url.onDownloadFinished(caller: "AvatarView") {
+        let finishedCancellable = url.onDownloadFinished(caller: self.className) {
             Task {
                 // 重置进度
                 setAutoDownloadProgress(0)
