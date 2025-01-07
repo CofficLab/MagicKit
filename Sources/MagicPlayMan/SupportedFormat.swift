@@ -1,4 +1,5 @@
 import Foundation
+import MagicUI
 import SwiftUI
 
 /// 支持的媒体格式
@@ -428,10 +429,7 @@ public struct SupportedFormat {
 } 
 
 #Preview("With Logs") {
-    MagicPlayMan.PreviewView(showLogs: true)
-        .frame(width: 650, height: 650)
-        .background(.background)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .shadow(radius: 5)
-        .padding()
+    MagicThemePreview {
+        MagicPlayMan.PreviewView()
+    }
 }

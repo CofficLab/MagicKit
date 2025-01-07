@@ -188,9 +188,7 @@ public extension MagicPlayMan {
             style: .secondary,
             shape: .circle,
             popoverContent: AnyView(
-                FormatInfoView(
-                    formats: SupportedFormat.allFormats
-                )
+                self.makeSupportedFormatsView()
             )
         )
     }

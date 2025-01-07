@@ -51,6 +51,12 @@ public extension MagicPlayMan {
             }
         )
     }
+
+    /// 创建支持的格式视图
+    /// - Returns: 展示所有支持的媒体格式的视图
+    func makeSupportedFormatsView() -> some View {
+        FormatInfoView(formats: SupportedFormat.allFormats)
+    }
 }
 
 // MARK: - Preview
