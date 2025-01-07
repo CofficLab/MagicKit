@@ -311,11 +311,14 @@ public struct AvatarView: View {
     @Sendable private func setupDownloadMonitor() async {
         guard monitorDownload && url.isiCloud && progressBinding == nil else { return }
 
-        let downloadingCancellable = url.onDownloading { progress in
-            autoDownloadProgress = progress
-        }
+        let downloadingCancellable = url.onDownloading(
+            caller: "AvatarView",
+            { progress in
+                autoDownloadProgress = progress
+            }
+        )
 
-        let finishedCancellable = url.onDownloadFinished {
+        let finishedCancellable = url.onDownloadFinished(caller: "AvatarView") {
             Task {
                 // 重置进度
                 autoDownloadProgress = 0
