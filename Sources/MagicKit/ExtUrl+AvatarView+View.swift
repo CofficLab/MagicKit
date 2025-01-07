@@ -32,12 +32,12 @@ import SwiftUI
 /// ```
 public struct AvatarView: View, SuperLog {
     // MARK: - Properties
-    
+
     public static let emoji = "🚉"
 
     /// 文件的URL
     let url: URL
-    
+
     let verbose: Bool
 
     /// 视图的形状
@@ -103,7 +103,6 @@ public struct AvatarView: View, SuperLog {
     ///   - url: 要显示的文件URL
     ///   - size: 视图的尺寸，默认为 40x40
     public init(url: URL, size: CGSize = CGSize(width: 40, height: 40), verbose: Bool = false) {
-        if verbose { os_log("\(Self.i)") }
         self.url = url
         self.size = size
         self.verbose = verbose
@@ -275,19 +274,19 @@ public struct AvatarView: View, SuperLog {
     }
 
     // MARK: - State Management
-    
+
     @MainActor private func setThumbnail(_ image: Image?) {
         thumbnail = image
     }
-    
+
     @MainActor private func setError(_ newError: Error?) {
         error = newError
     }
-    
+
     @MainActor private func setIsLoading(_ loading: Bool) {
         isLoading = loading
     }
-    
+
     @MainActor private func setAutoDownloadProgress(_ progress: Double) {
         autoDownloadProgress = progress
     }
@@ -300,9 +299,8 @@ public struct AvatarView: View, SuperLog {
             return
         }
 
-        if verbose { os_log("\(self.t)开始加载缩略图: \(url.lastThreeComponents())") }
-        
         await Task.detached(priority: .background) {
+            if verbose { os_log("\(self.t)开始加载缩略图: \(url.lastThreeComponents())") }
             await setIsLoading(true)
             do {
                 if let image = try await url.thumbnail(size: size) {
