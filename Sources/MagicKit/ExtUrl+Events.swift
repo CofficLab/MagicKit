@@ -25,11 +25,8 @@ public extension URL {
             
             for try await collection in result {
                 if let item = collection.first {
-                    let progress = item.downloadProgress / 100
-                    if verbose {
-                        os_log("\(self.t)下载进度: \(progress) -> \(self.title)")
-                    }
-                    
+                    let progress = item.downloadProgress
+
                     await MainActor.run {
                         onProgress(progress)
                     }
