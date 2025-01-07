@@ -103,7 +103,7 @@ public struct AvatarView: View, SuperLog {
     ///   - url: 要显示的文件URL
     ///   - size: 视图的尺寸，默认为 40x40
     public init(url: URL, size: CGSize = CGSize(width: 40, height: 40), verbose: Bool = false) {
-        os_log("\(Self.i)")
+        if verbose { os_log("\(Self.i)") }
         self.url = url
         self.size = size
         self.verbose = verbose
@@ -150,9 +150,9 @@ public struct AvatarView: View, SuperLog {
                 shape.strokeBorder(color: Color.red.opacity(0.5))
             }
         }
-        .onChange(of: progressBinding?.wrappedValue) { newProgress in
+        .onChange(of: progressBinding?.wrappedValue) {
             // 当用户传入的进度值达到1.0时，重新生成缩略图
-            if let progress = newProgress, progress >= 1.0 {
+            if let progress = progressBinding?.wrappedValue, progress >= 1.0 {
                 Task {
                     // 清除当前缩略图，以便重新生成
                     thumbnail = nil
@@ -274,49 +274,53 @@ public struct AvatarView: View, SuperLog {
         }
     }
 
-    // MARK: - Private Methods
-
-    /// 处理下载进度变化
-    private func handleDownloadProgress() {
-        if verbose { os_log("\(self.t)处理下载进度变化") }
-        Task {
-            do {
-                thumbnail = try await url.thumbnail(size: size)
-                if verbose { os_log("\(self.t)下载进度处理成功") }
-                error = nil
-            } catch {
-                if verbose { os_log("\(self.t)下载进度处理失败: \(error.localizedDescription)") }
-                self.error = error
-            }
-        }
+    // MARK: - State Management
+    
+    @MainActor private func setThumbnail(_ image: Image?) {
+        thumbnail = image
+    }
+    
+    @MainActor private func setError(_ newError: Error?) {
+        error = newError
+    }
+    
+    @MainActor private func setIsLoading(_ loading: Bool) {
+        isLoading = loading
+    }
+    
+    @MainActor private func setAutoDownloadProgress(_ progress: Double) {
+        autoDownloadProgress = progress
     }
 
-    /// 加载缩略图
+    // MARK: - Private Methods
+
     @Sendable private func loadThumbnail() async {
         guard thumbnail == nil && !isLoading && !url.isDownloading else {
             if verbose { os_log("\(self.t)跳过缩略图加载: thumbnail=\(thumbnail != nil), isLoading=\(isLoading), isDownloading=\(url.isDownloading)") }
             return
         }
 
-        if verbose { os_log("\(self.t)开始加载缩略图: \(url.path)") }
-        isLoading = true
-        do {
-            if let image = try await url.thumbnail(size: size) {
-                thumbnail = image
-                error = nil
-                if verbose { os_log("\(self.t)缩略图加载成功: \(url.path)") }
-            } else {
-                thumbnail = Image(systemName: url.systemIcon)
-                if verbose { os_log("\(self.t)使用默认图标: \(url.systemIcon)") }
+        if verbose { os_log("\(self.t)开始加载缩略图: \(url.lastThreeComponents())") }
+        
+        await Task.detached(priority: .background) {
+            await setIsLoading(true)
+            do {
+                if let image = try await url.thumbnail(size: size) {
+                    await setThumbnail(image)
+                    await setError(nil)
+                    if verbose { os_log("\(self.t)缩略图加载成功: \(url.lastThreeComponents())") }
+                } else {
+                    await setThumbnail(Image(systemName: url.systemIcon))
+                    if verbose { os_log("\(self.t)使用默认图标: \(url.systemIcon)") }
+                }
+            } catch {
+                await setError(error)
+                if verbose { os_log(.error, "\(self.t)加载缩略图失败: \(error.localizedDescription)") }
             }
-        } catch {
-            self.error = error
-            if verbose { os_log(.error, "\(self.t)加载缩略图失败: \(error.localizedDescription)") }
-        }
-        isLoading = false
+            await setIsLoading(false)
+        }.value
     }
 
-    /// 设置下载监控
     @Sendable private func setupDownloadMonitor() async {
         guard monitorDownload && url.isiCloud && progressBinding == nil else {
             if verbose { os_log("\(self.t)跳过下载监控设置: monitorDownload=\(monitorDownload), isiCloud=\(url.isiCloud), hasBinding=\(progressBinding != nil)") }
@@ -327,16 +331,18 @@ public struct AvatarView: View, SuperLog {
         let downloadingCancellable = url.onDownloading(
             caller: "AvatarView",
             { progress in
-                autoDownloadProgress = progress
+                Task { @MainActor in
+                    setAutoDownloadProgress(progress)
+                }
             }
         )
 
         let finishedCancellable = url.onDownloadFinished(caller: "AvatarView") {
             Task {
                 // 重置进度
-                autoDownloadProgress = 0
+                setAutoDownloadProgress(0)
                 // 清除当前缩略图，以便重新生成
-                thumbnail = nil
+                setThumbnail(nil)
                 // 重新加载缩略图
                 await loadThumbnail()
             }

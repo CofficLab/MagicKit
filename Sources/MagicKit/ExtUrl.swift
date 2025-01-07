@@ -120,6 +120,19 @@ extension URL {
         return Image(systemName: "music.note")
         #endif
     }
+
+    /// Returns the last three components of the URL path joined with "/"
+    /// For example, "path/to/folder/a/b/c.png" returns "a/b/c.png"
+    /// If there are fewer than 3 components, returns all available components
+    public func lastThreeComponents() -> String {
+        let components = self.pathComponents.filter { $0 != "/" }
+        let lastThree = components.suffix(3)
+        return lastThree.joined(separator: "/")
+    }
+    
+    public func shortPath() -> String {
+        self.lastThreeComponents()
+    }
 }
 
 #if os(macOS)
