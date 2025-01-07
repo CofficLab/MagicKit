@@ -38,25 +38,9 @@ public extension URL {
         
         // 如果不需要进度回调，直接使用简单的下载方式
         guard let onProgress = onProgress else {
-            try FileManager.default.startDownloadingUbiquitousItem(at: self)
-            
-            // 等待下载完成
-            while isDownloading {
-                if verbose {
-                    os_log("\(self.t)文件下载中...")
-                }
-                
-                // 只检查错误
-                if let resources = try? self.resourceValues(forKeys: [.ubiquitousItemDownloadingStatusKey, .ubiquitousItemDownloadingErrorKey]),
-                   let error = resources.ubiquitousItemDownloadingError {
-                    throw error
-                }
-                
-                try await Task.sleep(nanoseconds: 1_000_000_000) // 1秒
-            }
-            
+            try await FileManager.default.startDownloadingUbiquitousItem(at: self)
             if verbose {
-                os_log("\(self.t)✅✅✅ 文件下载完成")
+                os_log("\(self.t)✅✅✅ 已完成下载")
             }
             return
         }
