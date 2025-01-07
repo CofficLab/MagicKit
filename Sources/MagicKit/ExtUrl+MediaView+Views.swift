@@ -110,6 +110,7 @@ public struct MediaFileView: View {
     var showDownloadButton: Bool = true
     var showFileInfo: Bool = true
     var showFileStatus: Bool = true
+    var showFileSize: Bool = true
     @State private var isHovering = false
 
     /// 创建媒体文件视图
@@ -174,14 +175,16 @@ public struct MediaFileView: View {
                         )
                     
                     HStack {
-                        Text(size)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 0)
-                                    .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [4]))
-                                    .foregroundColor(showBorder ? .green : .clear)
-                            )
+                        if showFileSize {
+                            Text(size)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 0)
+                                        .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [4]))
+                                        .foregroundColor(showBorder ? .green : .clear)
+                                )
+                        }
                         
                         if showFileStatus, let status = url.magicFileStatus {
                             Text(status)

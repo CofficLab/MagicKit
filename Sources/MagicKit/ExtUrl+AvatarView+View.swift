@@ -295,7 +295,6 @@ public struct AvatarView: View, SuperLog {
 
     @Sendable private func loadThumbnail() async {
         guard thumbnail == nil && !isLoading && !url.isDownloading else {
-            if verbose { os_log("\(self.t)跳过缩略图加载: thumbnail=\(thumbnail != nil), isLoading=\(isLoading), isDownloading=\(url.isDownloading)") }
             return
         }
 

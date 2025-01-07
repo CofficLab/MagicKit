@@ -398,6 +398,27 @@ private struct FileStatusContent: View {
                         .magicHideFileStatus()
                         .magicShowBorder(showBorder)
                 }
+                
+                Group {
+                    Text("隐藏文件大小")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    URL.sample_temp_jpg.makeMediaView()
+                        .magicBackground(MagicBackground.ocean.opacity(0.1))
+                        .magicHideFileSize()
+                        .magicShowBorder(showBorder)
+                }
+
+                Group {
+                    Text("隐藏文件大小和文件状态")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    URL.sample_temp_jpg.makeMediaView()
+                        .magicBackground(MagicBackground.ocean.opacity(0.1))
+                        .magicHideFileSize()
+                        .magicHideFileStatus()
+                        .magicShowBorder(showBorder)
+                }
             }
             .padding()
         }

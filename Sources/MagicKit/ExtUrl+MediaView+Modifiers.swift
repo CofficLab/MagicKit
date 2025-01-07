@@ -393,6 +393,38 @@ public extension MediaFileView {
     func magicHideFileStatus() -> MediaFileView {
         magicShowFileStatus(false)
     }
+    
+    /// 控制是否显示文件大小
+    /// 
+    /// 这个修改器允许你控制是否显示文件的大小信息。
+    /// 
+    /// 示例：
+    /// ```swift
+    /// // 隐藏文件大小
+    /// url.makeMediaView()
+    ///     .magicHideFileSize()
+    /// 
+    /// // 显示文件大小（默认）
+    /// url.makeMediaView()
+    ///     .magicShowFileSize(true)
+    /// ```
+    /// 
+    /// - Parameter show: 是否显示文件大小
+    /// - Returns: 修改后的视图
+    func magicShowFileSize(_ show: Bool = true) -> MediaFileView {
+        var view = self
+        view.showFileSize = show
+        return view
+    }
+    
+    /// 隐藏文件大小
+    /// 
+    /// 这是 `magicShowFileSize(false)` 的便捷方法。
+    /// 
+    /// - Returns: 隐藏文件大小的视图
+    func magicHideFileSize() -> MediaFileView {
+        magicShowFileSize(false)
+    }
 }
 
 #Preview("Media View") {
