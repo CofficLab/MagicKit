@@ -42,6 +42,17 @@ public extension URL {
     ///     .hideActions()
     /// ```
     ///
+    /// # 下载按钮控制
+    /// ```swift
+    /// // 显示下载按钮（默认行为）
+    /// url.makeMediaView()
+    ///     .magicShowDownloadButton(true)
+    ///
+    /// // 隐藏下载按钮
+    /// url.makeMediaView()
+    ///     .magicShowDownloadButton(false)
+    /// ```
+    ///
     /// # 下载进度显示
     /// ```swift
     /// // 自动监听 iCloud 文件下载进度（默认行为）
@@ -107,6 +118,7 @@ public extension URL {
     ///             .downloadProgress($progress)
     ///             .withBackground(MagicBackground.aurora)
     ///             .thumbnailShape(.roundedRectangle(cornerRadius: 8))
+    ///             .magicShowDownloadButton(true)  // 显式控制下载按钮
     ///     }
     /// }
     /// ```
