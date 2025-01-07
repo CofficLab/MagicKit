@@ -32,7 +32,12 @@ public class ThumbnailCache {
     
     /// 缓存键生成
     private func cacheKey(for url: URL, size: CGSize) -> String {
-        "\(url.lastPathComponent)_\(Int(size.width))x\(Int(size.height))"
+        #if os(macOS)
+        let fileExtension = "tiff"
+        #else
+        let fileExtension = "png"
+        #endif
+        return "\(url.lastPathComponent)_\(Int(size.width))x\(Int(size.height)).\(fileExtension)"
     }
     
     /// 获取缓存
