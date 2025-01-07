@@ -17,10 +17,13 @@ public extension URL {
     ) -> AnyCancellable {
         let queue = OperationQueue()
         queue.maxConcurrentOperationCount = 1
+        queue.qualityOfService = .background
         let query = ItemQuery(queue: queue)
         
         if verbose {
-            os_log("\(self.t)[\(caller)] 开始监听下载进度 -> \(self.title)")
+            Task.detached {
+                os_log("\(self.t)👂👂👂 [\(caller)] 开始监听下载进度 -> \(self.title)")
+            }
         }
         
         let task = Task {
@@ -49,7 +52,7 @@ public extension URL {
         
         return AnyCancellable {
             if verbose {
-                os_log("\(self.t)[\(caller)] 停止监听下载进度 -> \(self.title)")
+                os_log("\(self.t)🔚🔚🔚 [\(caller)] 停止监听下载进度 -> \(self.title)")
             }
             task.cancel()
             query.stop()
@@ -69,10 +72,13 @@ public extension URL {
     ) -> AnyCancellable {
         let queue = OperationQueue()
         queue.maxConcurrentOperationCount = 1
+        queue.qualityOfService = .background
         let query = ItemQuery(queue: queue)
         
         if verbose {
-            os_log("\(self.t)[\(caller)] 开始监听下载完成 -> \(self.title)")
+            Task.detached {
+                os_log("\(self.t)👂👂👂 [\(caller)] 开始监听下载完成 -> \(self.title)")
+            }
         }
         
         let task = Task {
@@ -96,7 +102,7 @@ public extension URL {
         
         return AnyCancellable {
             if verbose {
-                os_log("\(self.t)[\(caller)] 停止监听下载完成 -> \(self.title)")
+                os_log("\(self.t)🔚🔚🔚 [\(caller)] 停止监听下载完成 -> \(self.title)")
             }
             task.cancel()
             query.stop()
@@ -111,10 +117,13 @@ public extension URL {
     func onStateChanged(verbose: Bool = true, _ onChange: @escaping (MetaWrapper) -> Void) -> AnyCancellable {
         let queue = OperationQueue()
         queue.maxConcurrentOperationCount = 1
+        queue.qualityOfService = .background
         let query = ItemQuery(queue: queue)
         
         if verbose {
-            os_log("\(self.t)开始监听状态变化")
+            Task.detached {
+                os_log("\(self.t)开始监听状态变化")
+            }
         }
         
         let task = Task {
