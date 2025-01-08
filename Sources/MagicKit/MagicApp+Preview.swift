@@ -23,6 +23,7 @@ struct MagicAppDemoView: View {
     @State private var cloudContainerPath: String = MagicApp.getCloudContainerDirectory()?.path ?? "iCloud 不可用"
     @State private var cloudDocumentsPath: String = MagicApp.getCloudDocumentsDirectory()?.path ?? "iCloud 不可用"
     @State private var cachePath: String = MagicApp.getCacheDirectory().path
+    @State private var databasePath: String = MagicApp.getDatabaseDirectory().path
     
     // 定时器引用
     @State private var uptimeTimer: Timer? = nil
@@ -179,6 +180,21 @@ struct MagicAppDemoView: View {
                                     .textSelection(.enabled)
                                 Spacer()
                                 URL(fileURLWithPath: appSpecificSupportPath)
+                                    .makeOpenButton()
+                            }
+                            
+                            Divider()
+                            
+                            // Database Directory
+                            Text("Database:")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            HStack {
+                                Text(databasePath)
+                                    .font(.caption2)
+                                    .textSelection(.enabled)
+                                Spacer()
+                                URL(fileURLWithPath: databasePath)
                                     .makeOpenButton()
                             }
                             

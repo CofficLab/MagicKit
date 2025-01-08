@@ -373,7 +373,7 @@ public class MagicApp {
             CommandMenu("调试") {
                 Group {
                     Button("打开 App Support 目录") {
-                        self.getAppSupportDirectory().open()
+                        self.getAppSpecificSupportDirectory().open()
                     }
                     
                     Button("打开容器目录") {
@@ -382,6 +382,10 @@ public class MagicApp {
                     
                     Button("打开文档目录") {
                         self.getDocumentsDirectory().open()
+                    }
+                    
+                    Button("打开数据库目录") {
+                        self.getDatabaseDirectory().open()
                     }
                     
                     Button("打开 iCloud Documents") {
@@ -393,6 +397,29 @@ public class MagicApp {
                     }
                 }
             }
+        }
+
+        /// 获取应用的数据库目录
+        /// - Returns: 数据库目录的 URL
+        public static func getDatabaseDirectory() -> URL {
+            let appSupport = getAppSpecificSupportDirectory()
+            let dbDirectory = appSupport.appendingPathComponent("Database", isDirectory: true)
+            
+            // 确保目录存在
+            try? FileManager.default.createDirectory(
+                at: dbDirectory,
+                withIntermediateDirectories: true,
+                attributes: nil
+            )
+            
+            return dbDirectory
+        }
+        
+        /// 获取特定数据库文件的路径
+        /// - Parameter filename: 数据库文件名（例如："app.db"）
+        /// - Returns: 数据库文件的完整 URL
+        public static func getDatabasePath(filename: String) -> URL {
+            return getDatabaseDirectory().appendingPathComponent(filename)
         }
 }
 
