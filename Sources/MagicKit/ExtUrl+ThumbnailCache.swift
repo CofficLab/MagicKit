@@ -14,20 +14,79 @@ public class ThumbnailCache {
     public static let shared = ThumbnailCache()
     
     /// 内存缓存
-    private let memoryCache = NSCache<NSURL, PlatformImage>()
+    private let memoryCache = NSCache<NSURL, Image.PlatformImage>()
     
     /// 磁盘缓存目录
     private let diskCacheURL: URL
     
+    /// 缓存配置
+    private struct Config {
+        static let maxMemoryCount = 100  // 最大内存缓存数量
+        static let maxMemorySize = 50 * 1024 * 1024  // 最大内存占用(50MB)
+        static let maxDiskSize = 200 * 1024 * 1024  // 最大磁盘占用(200MB)
+        static let cleanupThreshold = 0.8  // 清理阈值(80%)
+    }
+    
     private init() {
-        // 设置内存缓存限制
-        memoryCache.countLimit = 100 // 最多缓存100张图片
-        memoryCache.totalCostLimit = 1024 * 1024 * 50 // 50MB
+        memoryCache.countLimit = Config.maxMemoryCount
+        memoryCache.totalCostLimit = Config.maxMemorySize
         
         // 创建磁盘缓存目录
         let cacheDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
         diskCacheURL = cacheDirectory.appendingPathComponent("ThumbnailCache", isDirectory: true)
         try? FileManager.default.createDirectory(at: diskCacheURL, withIntermediateDirectories: true)
+        
+        // 定期检查并清理过期缓存
+        startCacheCleanupTimer()
+    }
+    
+    /// 启动定期清理计时器
+    private func startCacheCleanupTimer() {
+        Timer.scheduledTimer(withTimeInterval: 300, repeats: true) { [weak self] _ in
+            Task {
+                await self?.cleanupCacheIfNeeded()
+            }
+        }
+    }
+    
+    /// 根据需要清理缓存
+    private func cleanupCacheIfNeeded() async {
+        do {
+            let currentSize = try getCacheSize()
+            if currentSize > Int64(Double(Config.maxDiskSize) * Config.cleanupThreshold) {
+                try await cleanupOldCache()
+            }
+        } catch {
+            os_log(.error, "检查缓存大小失败: \(error.localizedDescription)")
+        }
+    }
+    
+    /// 清理旧缓存
+    private func cleanupOldCache() async throws {
+        let fileManager = FileManager.default
+        let resourceKeys: Set<URLResourceKey> = [.contentModificationDateKey, .totalFileAllocatedSizeKey]
+        
+        // 获取所有缓存文件信息
+        let fileURLs = try fileManager.contentsOfDirectory(at: diskCacheURL, includingPropertiesForKeys: Array(resourceKeys))
+        
+        // 按修改时间排序
+        let sortedFiles = try fileURLs.map { url -> (URL, Date) in
+            let resourceValues = try url.resourceValues(forKeys: resourceKeys)
+            return (url, resourceValues.contentModificationDate ?? Date.distantPast)
+        }.sorted { $0.1 < $1.1 }
+        
+        // 删除最旧的文件直到低于阈值
+        var currentSize = try getCacheSize()
+        let targetSize = Int64(Double(Config.maxDiskSize) * 0.5) // 清理到50%
+        
+        for (fileURL, _) in sortedFiles {
+            if currentSize <= targetSize { break }
+            
+            if let size = try? fileURL.resourceValues(forKeys: [.totalFileAllocatedSizeKey]).totalFileAllocatedSize {
+                try? fileManager.removeItem(at: fileURL)
+                currentSize -= Int64(size)
+            }
+        }
     }
     
     /// 缓存键生成
@@ -41,7 +100,7 @@ public class ThumbnailCache {
     }
     
     /// 获取缓存
-    public func fetch(for url: URL, size: CGSize) -> PlatformImage? {
+    public func fetch(for url: URL, size: CGSize) -> Image.PlatformImage? {
         let key = cacheKey(for: url, size: size)
         
         // 1. 检查内存缓存
@@ -51,15 +110,10 @@ public class ThumbnailCache {
         
         // 2. 检查磁盘缓存
         let diskURL = diskCacheURL.appendingPathComponent(key)
-        guard let data = try? Data(contentsOf: diskURL) else {
+        guard let data = try? Data(contentsOf: diskURL),
+              let image = Image.PlatformImage.fromCacheData(data) else {
             return nil
         }
-        
-        #if os(macOS)
-        guard let image = NSImage(data: data) else { return nil }
-        #else
-        guard let image = UIImage(data: data) else { return nil }
-        #endif
         
         // 找到磁盘缓存后，也放入内存缓存
         memoryCache.setObject(image, forKey: url as NSURL)
@@ -67,7 +121,7 @@ public class ThumbnailCache {
     }
     
     /// 保存缓存
-    public func save(_ image: PlatformImage, for url: URL, size: CGSize) {
+    public func save(_ image: Image.PlatformImage, for url: URL, size: CGSize) {
         let key = cacheKey(for: url, size: size)
         
         // 1. 保存到内存缓存
@@ -76,11 +130,7 @@ public class ThumbnailCache {
         // 2. 保存到磁盘缓存
         let diskURL = diskCacheURL.appendingPathComponent(key)
         
-        #if os(macOS)
-        guard let data = image.tiffRepresentation else { return }
-        #else
-        guard let data = image.pngData() else { return }
-        #endif
+        guard let data = image.cacheData else { return }
         
         do {
             try data.write(to: diskURL)

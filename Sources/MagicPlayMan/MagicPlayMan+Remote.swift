@@ -188,7 +188,7 @@ extension MagicPlayMan {
         Task {
             do {
                 if let platformImage = try await asset.url.platformThumbnail(
-                    size: CGSize(width: 600, height: 600)
+                    size: CGSize(width: 600, height: 600), verbose: true
                 ) {
                     info[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(
                         boundsSize: platformImage.size,
