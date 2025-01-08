@@ -80,7 +80,11 @@ public extension Image.PlatformImage {
         return newImage
         #else
         let format = UIGraphicsImageRendererFormat()
+        #if os(visionOS)
+        format.scale = quality == .none ? 1 : 2 // Use a default scale for visionOS
+        #else
         format.scale = quality == .none ? 1 : UIScreen.main.scale
+        #endif
         let renderer = UIGraphicsImageRenderer(size: size, format: format)
         
         return renderer.image { _ in
