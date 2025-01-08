@@ -135,7 +135,7 @@ public class ThumbnailCache: SuperLog {
     /// 保存缓存
     public func save(_ image: Image.PlatformImage, for url: URL, size: CGSize) {
         let key = cacheKey(for: url, size: size)
-        if verbose { os_log("\(self.t) Saving cache for: \(url.absoluteString)") }
+        if verbose { os_log("\(self.t) Saving cache for: \(url.shortPath())") }
         
         memoryCache.setObject(image, forKey: url as NSURL)
         let diskURL = diskCacheURL.appendingPathComponent(key)

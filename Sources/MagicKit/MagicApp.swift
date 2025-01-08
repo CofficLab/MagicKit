@@ -304,6 +304,60 @@ public class MagicApp {
             
             return components.joined(separator: " ")
         }
+
+        /// 获取应用的 Application Support 目录
+        /// - Returns: Application Support 目录的 URL
+        public static func getAppSupportDirectory() -> URL {
+            let paths = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
+            return paths[0]
+        }
+        
+        /// 获取应用专属的 Application Support 目录
+        /// - Returns: 应用专属的 Application Support 目录 URL
+        public static func getAppSpecificSupportDirectory() -> URL {
+            let appSupport = getAppSupportDirectory()
+            let bundleId = getBundleIdentifier()
+            return appSupport.appendingPathComponent(bundleId)
+        }
+
+        /// 获取应用的 Documents 目录
+        /// - Returns: Documents 目录的 URL
+        public static func getDocumentsDirectory() -> URL {
+            let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+            return paths[0]
+        }
+
+        /// 获取应用的沙盒容器目录
+        /// - Returns: 容器目录的 URL
+        public static func getContainerDirectory() -> URL {
+            // 通过 Documents 目录的父目录来获取容器目录
+            return getDocumentsDirectory().deletingLastPathComponent()
+        }
+
+        /// 获取应用的 iCloud 容器目录
+        /// - Returns: iCloud 容器目录的 URL，如果 iCloud 不可用则返回 nil
+        public static func getCloudContainerDirectory() -> URL? {
+            guard isICloudAvailable() else { return nil }
+            
+            // 获取 iCloud 容器 URL
+            guard let containerURL = FileManager.default.url(
+                forUbiquityContainerIdentifier: nil
+            ) else {
+                return nil
+            }
+            
+            return containerURL
+        }
+        
+        /// 获取应用在 iCloud 中的 Documents 目录
+        /// - Returns: iCloud Documents 目录的 URL，如果 iCloud 不可用则返回 nil
+        public static func getCloudDocumentsDirectory() -> URL? {
+            guard let containerURL = getCloudContainerDirectory() else {
+                return nil
+            }
+            
+            return containerURL.appendingPathComponent("Documents")
+        }
 }
 
 #Preview {

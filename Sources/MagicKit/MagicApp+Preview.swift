@@ -16,6 +16,12 @@ struct MagicAppDemoView: View {
     @State private var bootTime: String = MagicApp.getFormattedBootTime()
     @State private var detailedUptime: String = MagicApp.getDetailedUptimeString()
     @State private var uptimeComponents = MagicApp.getDetailedUptime()
+    @State private var appSupportPath: String = MagicApp.getAppSupportDirectory().path
+    @State private var appSpecificSupportPath: String = MagicApp.getAppSpecificSupportDirectory().path
+    @State private var documentsPath: String = MagicApp.getDocumentsDirectory().path
+    @State private var containerPath: String = MagicApp.getContainerDirectory().path
+    @State private var cloudContainerPath: String = MagicApp.getCloudContainerDirectory()?.path ?? "iCloud 不可用"
+    @State private var cloudDocumentsPath: String = MagicApp.getCloudDocumentsDirectory()?.path ?? "iCloud 不可用"
     
     // 定时器引用
     @State private var uptimeTimer: Timer? = nil
@@ -66,6 +72,114 @@ struct MagicAppDemoView: View {
                             
                             LabeledContent("总容量", value: iCloudTotalStorage)
                             LabeledContent("可用容量", value: iCloudAvailableStorage)
+                        }
+                        .padding(.top, 4)
+                    }
+
+                    // iCloud 目录信息
+                    GroupBox(label: Text("iCloud 目录")) {
+                        VStack(alignment: .leading, spacing: 8) {
+                            // Cloud Container
+                            Text("iCloud Container:")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            if let containerURL = MagicApp.getCloudContainerDirectory() {
+                                HStack {
+                                    Text(cloudContainerPath)
+                                        .font(.caption2)
+                                        .textSelection(.enabled)
+                                    Spacer()
+                                    containerURL.makeOpenButton()
+                                }
+                            } else {
+                                Text(cloudContainerPath)
+                                    .font(.caption2)
+                                    .foregroundColor(.secondary)
+                            }
+                            
+                            Divider()
+                            
+                            // Cloud Documents
+                            Text("iCloud Documents:")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            if let documentsURL = MagicApp.getCloudDocumentsDirectory() {
+                                HStack {
+                                    Text(cloudDocumentsPath)
+                                        .font(.caption2)
+                                        .textSelection(.enabled)
+                                    Spacer()
+                                    documentsURL.makeOpenButton()
+                                }
+                            } else {
+                                Text(cloudDocumentsPath)
+                                    .font(.caption2)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        .padding(.top, 4)
+                    }
+
+                    // 应用目录信息
+                    GroupBox(label: Text("应用目录")) {
+                        VStack(alignment: .leading, spacing: 8) {
+                            // Container
+                            Text("Container:")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            HStack {
+                                Text(containerPath)
+                                    .font(.caption2)
+                                    .textSelection(.enabled)
+                                Spacer()
+                                URL(fileURLWithPath: containerPath)
+                                    .makeOpenButton()
+                            }
+                            
+                            Divider()
+                            
+                            // Documents
+                            Text("Documents:")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            HStack {
+                                Text(documentsPath)
+                                    .font(.caption2)
+                                    .textSelection(.enabled)
+                                Spacer()
+                                URL(fileURLWithPath: documentsPath)
+                                    .makeOpenButton()
+                            }
+                            
+                            Divider()
+                            
+                            // Application Support
+                            Text("Application Support:")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            HStack {
+                                Text(appSupportPath)
+                                    .font(.caption2)
+                                    .textSelection(.enabled)
+                                Spacer()
+                                URL(fileURLWithPath: appSupportPath)
+                                    .makeOpenButton()
+                            }
+                            
+                            Divider()
+                            
+                            // App Specific Support
+                            Text("App Specific Support:")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            HStack {
+                                Text(appSpecificSupportPath)
+                                    .font(.caption2)
+                                    .textSelection(.enabled)
+                                Spacer()
+                                URL(fileURLWithPath: appSpecificSupportPath)
+                                    .makeOpenButton()
+                            }
                         }
                         .padding(.top, 4)
                     }
