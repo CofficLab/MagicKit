@@ -21,7 +21,7 @@ public struct MagicThemePreview<Content: View>: View {
     }
     
     private let backgrounds: [BackgroundOption] = [
-        .init(title: "Default", view: AnyView(Color(nsColor: .windowBackgroundColor))),
+        .init(title: "Default", view: AnyView(Color(.systemBackground))),
         .init(title: "Aurora", view: AnyView(MagicBackground.aurora)),
         .init(title: "Ocean", view: AnyView(MagicBackground.ocean)),
         .init(title: "Sunset", view: AnyView(MagicBackground.sunset)),
@@ -41,7 +41,7 @@ public struct MagicThemePreview<Content: View>: View {
         self.showsIndicators = showsIndicators
         self._selectedBackground = State(initialValue: BackgroundOption(
             title: "Default",
-            view: AnyView(Color(nsColor: .windowBackgroundColor))
+            view: AnyView(Color(.systemBackground))
         ))
     }
     
@@ -97,7 +97,7 @@ public struct MagicThemePreview<Content: View>: View {
         }
         .padding(.horizontal)
         .frame(height: 50)
-        .background(.indigo.opacity(0.1))
+        .background(Color.primary.opacity(0.05))
     }
 }
 

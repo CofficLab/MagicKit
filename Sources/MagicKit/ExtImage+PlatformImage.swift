@@ -46,7 +46,7 @@ public extension Image.PlatformImage {
         #if os(macOS)
         return NSImage(contentsOf: url)
         #else
-        return UIImage(contentsOf: url)
+        return UIImage(contentsOfFile: url.path)
         #endif
     }
     
