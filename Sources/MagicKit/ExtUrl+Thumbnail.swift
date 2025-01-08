@@ -24,7 +24,11 @@ extension URL {
         if let platformImage = try await platformThumbnail(size: size, verbose: verbose) {
             // 存入缓存
             if verbose { os_log("\(self.t)🍽️🍽️🍽️ 缓存缩略图: \(self.title)") }
-            ThumbnailCache.shared.save(platformImage, for: self, size: size)
+
+            var cache = ThumbnailCache.shared
+            cache.verbose = verbose
+            cache.save(platformImage, for: self, size: size)
+            
             return platformImage.toSwiftUIImage()
         }
         return nil
@@ -120,7 +124,7 @@ extension URL {
     /// 从音频文件的元数据中获取封面图片（原生图片格式）
     private func getPlatformCoverFromMetadata(verbose: Bool) async throws -> Image.PlatformImage? {
         if verbose {
-            os_log(.debug, "🍽️🍽️🍽️ 从音频文件的元数据中获取封面图片: \(self.title)")
+            os_log("\(self.t)🍽️🍽️🍽️ 从音频文件的元数据中获取封面图片: \(self.title)")
         }
 
         let asset = AVURLAsset(url: self)

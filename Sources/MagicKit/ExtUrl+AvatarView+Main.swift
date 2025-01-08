@@ -171,7 +171,7 @@ public struct AvatarView: View, SuperLog {
 
         // 使用后台任务队列
         await Task.detached(priority: .utility) {
-            if verbose { os_log("\(self.t)开始加载缩略图: \(url.title)") }
+            if verbose { os_log("\(self.t)🪞🪞🪞 开始加载缩略图: \(url.title)") }
             await state.setLoading(true)
 
             do {
