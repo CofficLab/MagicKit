@@ -190,6 +190,26 @@ public extension URL {
             try? removeParentFolder()
         }
     }
+    
+    /// Creates the directory or file at the URL if it doesn't exist and returns the URL.
+    ///
+    /// - For directories: Creates the directory and any necessary intermediate directories.
+    /// - For files: Creates an empty file if the URL doesn't have a directory path.
+    ///
+    /// - Returns: The current URL (self)
+    /// - Throws: An error if the creation fails
+    func createIfNotExist() throws -> URL {
+        if hasDirectoryPath {
+            if isNotDirExist {
+                try FileManager.default.createDirectory(at: self, withIntermediateDirectories: true)
+            }
+        } else {
+            if isNotFileExist {
+                try Data().write(to: self)
+            }
+        }
+        return self
+    }
 }
 
 // MARK: - Preview
