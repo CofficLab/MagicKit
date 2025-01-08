@@ -159,6 +159,84 @@ public extension URL {
             query.stop()
         }
     }
+    
+    /// 监听文件夹内容变化
+    /// - Parameters:
+    ///   - verbose: 是否打印详细日志
+    ///   - caller: 调用者名称
+    ///   - onChange: 文件夹变化回调，返回变化的文件列表
+    /// - Returns: 可用于取消监听的 AnyCancellable
+    ///
+    /// 示例用法:
+    /// ```swift
+    /// // 1. 基础用法
+    /// let url = URL(filePath: "path/to/icloud/folder")
+    /// let cancellable = url.onDirectoryChanged(caller: "MyApp") { files in
+    ///     print("文件夹内容已更新，当前文件数：\(files.count)")
+    ///     
+    ///     // 遍历所有文件
+    ///     for file in files {
+    ///         print("文件名：\(file.url.lastPathComponent)")
+    ///         print("下载状态：\(file.isDownloaded ? "已下载" : "未下载")")
+    ///         print("下载进度：\(file.downloadProgress)")
+    ///     }
+    /// }
+    ///
+    /// // 2. 在 SwiftUI 视图中使用
+    /// class FolderViewModel: ObservableObject {
+    ///     @Published var files: [MetaWrapper] = []
+    ///     private var cancellable: AnyCancellable?
+    ///     
+    ///     func startMonitoring(url: URL) {
+    ///         cancellable = url.onDirectoryChanged(caller: "FolderView") { [weak self] files in
+    ///             self?.files = files
+    ///         }
+    ///     }
+    ///     
+    ///     func stopMonitoring() {
+    ///         cancellable?.cancel()
+    ///     }
+    /// }
+    /// ```
+    func onDirectoryChanged(
+        verbose: Bool = true,
+        caller: String,
+        _ onChange: @escaping ([MetaWrapper]) -> Void
+    ) -> AnyCancellable {
+        let queue = OperationQueue()
+        queue.maxConcurrentOperationCount = 1
+        queue.qualityOfService = .background
+        let query = ItemQuery(queue: queue)
+        
+        if verbose {
+            Task.detached {
+                os_log("\(self.t)👂👂👂 [\(caller)] 开始监听文件夹变化 -> \(self.title)")
+            }
+        }
+        
+        let task = Task {
+            let result = query.searchMetadataItems(predicates: [
+                NSPredicate(format: "%K BEGINSWITH %@", NSMetadataItemPathKey, self.path),
+            ])
+            
+            for try await collection in result {
+                if verbose {
+                    os_log("\(self.t)[\(caller)] 文件夹内容已更新 -> \(self.title)")
+                }
+                await MainActor.run {
+                    onChange(collection.items)
+                }
+            }
+        }
+        
+        return AnyCancellable {
+            if verbose {
+                os_log("\(self.t)🔚🔚🔚 [\(caller)] 停止监听文件夹变化 -> \(self.title)")
+            }
+            task.cancel()
+            query.stop()
+        }
+    }
 } 
 
 #Preview {
