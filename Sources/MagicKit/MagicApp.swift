@@ -13,10 +13,51 @@ import WatchKit    // 用于 watchOS
 import AppKit
 #endif
 
+public enum iCloudStorageError: Error {
+    case notLoggedIn
+    case unavailable
+    case capacityNotFound
+    case platformNotSupported
+    case unknownError(Error)
+    
+    public var localizedDescription: String {
+        switch self {
+        case .notLoggedIn:
+            return "iCloud 未登录"
+        case .unavailable:
+            return "iCloud 不可用"
+        case .capacityNotFound:
+            return "无法获取 iCloud 存储容量"
+        case .platformNotSupported:
+            return "当前平台不支持 iCloud"
+        case .unknownError(let underlyingError):
+            return "获取 iCloud 存储容量失败: \(underlyingError.localizedDescription)"
+        }
+    }
+}
+
 public class MagicApp {
+    // 缓存设备信息
+    private static var cachedDeviceModel: String?
+    
+    // 将平台判断逻辑改为静态计算属性
+    public static var currentPlatform: String {
+        #if os(macOS)
+        return "macOS"
+        #elseif os(iOS)
+        return "iOS"
+        #elseif os(visionOS)
+        return "visionOS"
+        #else
+        return "unknown"
+        #endif
+    }
+
     public static func getVersion() -> String {
         guard let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String else {
-            return ""
+            // 增加错误日志
+            print("Warning: Failed to get app version from Info.plist")
+            return "Unknown"
         }
         return version
     }
@@ -87,23 +128,22 @@ public class MagicApp {
         }
 
         public static func getDeviceModel() -> String {
+            if let cached = cachedDeviceModel {
+                return cached
+            }
+            
             var size: Int = 0
             sysctlbyname("hw.model", nil, &size, nil, 0)
             var model = [CChar](repeating: 0, count: size)
             sysctlbyname("hw.model", &model, &size, nil, 0)
-            return String(cString: model)
+            
+            let result = String(cString: model)
+            cachedDeviceModel = result
+            return result
         }
 
         public static func getSystemName() -> String {
-            #if os(macOS)
-                return "macOS"
-            #elseif os(iOS)
-                return "iOS"
-            #elseif os(visionOS)
-                return "visionOS"
-            #else
-                return "unknown"
-            #endif
+            return currentPlatform
         }
 
         public static func getSystemVersion() -> String {
@@ -111,6 +151,97 @@ public class MagicApp {
                 return String(version)
             }
             return "Unknown"
+        }
+
+        public static func getBuildNumber() -> String {
+            guard let build = Bundle.main.object(forInfoDictionaryKey: kCFBundleVersionKey as String) as? String else {
+                print("Warning: Failed to get build number from Info.plist")
+                return "Unknown"
+            }
+            return build
+        }
+        
+        public static func getBundleIdentifier() -> String {
+            return Bundle.main.bundleIdentifier ?? "Unknown"
+        }
+        
+        public static func getAvailableStorage() -> Int64? {
+            do {
+                let systemAttributes = try FileManager.default.attributesOfFileSystem(forPath: NSHomeDirectory())
+                return (systemAttributes[.systemFreeSize] as? NSNumber)?.int64Value
+            } catch {
+                print("Error getting storage info: \(error)")
+                return nil
+            }
+        }
+        
+        public static func getTotalStorage() -> Int64? {
+            do {
+                let systemAttributes = try FileManager.default.attributesOfFileSystem(forPath: NSHomeDirectory())
+                return (systemAttributes[.systemSize] as? NSNumber)?.int64Value
+            } catch {
+                print("Error getting storage info: \(error)")
+                return nil
+            }
+        }
+        
+        public static func formatBytes(bytes: Int64) -> String {
+            let formatter = ByteCountFormatter()
+            formatter.allowedUnits = [.useBytes, .useKB, .useMB, .useGB]
+            formatter.countStyle = .file
+            return formatter.string(fromByteCount: bytes)
+        }
+
+        /// 获取 iCloud 总容量（以字节为单位）
+        ///
+        /// - Throws: `iCloudStorageError` 描述具体的错误原因
+        /// - Returns: iCloud 总容量（字节）
+        public static func getICloudTotalStorage() throws -> Int64 {
+            #if os(macOS) || os(iOS) || os(tvOS)
+            let url = FileManager.default.url(forUbiquityContainerIdentifier: nil)
+            
+            guard let url = url else {
+                throw iCloudStorageError.notLoggedIn
+            }
+            
+            do {
+                let values = try url.resourceValues(forKeys: [.volumeTotalCapacityKey])
+                guard let capacity = values.volumeTotalCapacity else {
+                    throw iCloudStorageError.capacityNotFound
+                }
+                return Int64(capacity)
+            } catch {
+                throw iCloudStorageError.unknownError(error)
+            }
+            #else
+            throw iCloudStorageError.platformNotSupported
+            #endif
+        }
+        
+        /// 获取 iCloud 可用容量（以字节为单位）
+        ///
+        /// - Throws: `iCloudStorageError` 描述具体的错误原因
+        /// - Returns: iCloud 可用容量（字节）
+        public static func getICloudAvailableStorage() throws -> Int64 {
+            #if os(macOS) || os(iOS) || os(tvOS)
+            let url = FileManager.default.url(forUbiquityContainerIdentifier: nil)
+            
+            guard let url = url else {
+                throw iCloudStorageError.notLoggedIn
+            }
+            
+            do {
+                let values = try url.resourceValues(forKeys: [.volumeAvailableCapacityKey])
+                guard let capacity = values.volumeAvailableCapacity else {
+                    throw iCloudStorageError.capacityNotFound
+                }
+                return Int64(capacity)
+            } catch {
+                throw iCloudStorageError.unknownError(error)
+            }
+            #else
+            throw iCloudStorageError.platformNotSupported
+            #endif
         }
 }
 
