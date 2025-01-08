@@ -243,6 +243,67 @@ public class MagicApp {
             throw iCloudStorageError.platformNotSupported
             #endif
         }
+
+        /// 获取系统运行时间（秒）
+        ///
+        /// - Returns: 系统已运行的秒数
+        public static func getUptime() -> TimeInterval {
+            var boottime = timeval()
+            var size = MemoryLayout<timeval>.size
+            var mib: [Int32] = [CTL_KERN, KERN_BOOTTIME]
+            
+            if sysctl(&mib, 2, &boottime, &size, nil, 0) != -1 {
+                let now = Date().timeIntervalSince1970
+                let uptime = now - Double(boottime.tv_sec)
+                return uptime
+            }
+            
+            return 0
+        }
+
+        /// 获取系统启动时间
+        ///
+        /// - Returns: 系统启动的日期
+        public static func getBootTime() -> Date {
+            let uptime = getUptime()
+            return Date(timeIntervalSinceNow: -uptime)
+        }
+
+        /// 获取格式化的系统启动时间
+        ///
+        /// - Returns: 格式化的启动时间字符串，例如："2024-03-15 08:30:00"
+        public static func getFormattedBootTime() -> String {
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+            return dateFormatter.string(from: getBootTime())
+        }
+
+        /// 获取详细的运行时间信息
+        ///
+        /// - Returns: 包含天、小时、分钟、秒的元组
+        public static func getDetailedUptime() -> (days: Int, hours: Int, minutes: Int, seconds: Int) {
+            let totalSeconds = Int(getUptime())
+            let days = totalSeconds / (24 * 3600)
+            let hours = (totalSeconds % (24 * 3600)) / 3600
+            let minutes = (totalSeconds % 3600) / 60
+            let seconds = totalSeconds % 60
+            return (days, hours, minutes, seconds)
+        }
+
+        /// 格式化运行时间为详细字符串
+        ///
+        /// - Returns: 格式化的运行时间字符串，例如："2天 3小时 45分钟 30秒"
+        public static func getDetailedUptimeString() -> String {
+            let uptime = getDetailedUptime()
+            var components: [String] = []
+            
+            if uptime.days > 0 { components.append("\(uptime.days)天") }
+            if uptime.hours > 0 { components.append("\(uptime.hours)小时") }
+            if uptime.minutes > 0 { components.append("\(uptime.minutes)分钟") }
+            if uptime.seconds > 0 || components.isEmpty { components.append("\(uptime.seconds)秒") }
+            
+            return components.joined(separator: " ")
+        }
 }
 
 #Preview {
