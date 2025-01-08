@@ -358,6 +358,42 @@ public class MagicApp {
             
             return containerURL.appendingPathComponent("Documents")
         }
+
+        /// 获取应用的缓存目录
+        /// - Returns: 缓存目录的 URL
+        public static func getCacheDirectory() -> URL {
+            let paths = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)
+            return paths[0]
+        }
+
+        /// 返回调试命令菜单
+        /// - Returns: 用于系统调试的 CommandMenu
+        @available(iOS 14.0, macOS 11.0, *)
+        public static func debugCommand() -> CommandMenu<some View> {
+            CommandMenu("调试") {
+                Group {
+                    Button("打开 App Support 目录") {
+                        self.getAppSupportDirectory().open()
+                    }
+                    
+                    Button("打开容器目录") {
+                        self.getContainerDirectory().open()
+                    }
+                    
+                    Button("打开文档目录") {
+                        self.getDocumentsDirectory().open()
+                    }
+                    
+                    Button("打开 iCloud Documents") {
+                        self.getCloudDocumentsDirectory()?.open()
+                    }
+                    
+                    Button("打开缓存目录") {
+                        self.getCacheDirectory().open()
+                    }
+                }
+            }
+        }
 }
 
 #Preview {

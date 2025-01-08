@@ -22,6 +22,7 @@ struct MagicAppDemoView: View {
     @State private var containerPath: String = MagicApp.getContainerDirectory().path
     @State private var cloudContainerPath: String = MagicApp.getCloudContainerDirectory()?.path ?? "iCloud 不可用"
     @State private var cloudDocumentsPath: String = MagicApp.getCloudDocumentsDirectory()?.path ?? "iCloud 不可用"
+    @State private var cachePath: String = MagicApp.getCacheDirectory().path
     
     // 定时器引用
     @State private var uptimeTimer: Timer? = nil
@@ -178,6 +179,21 @@ struct MagicAppDemoView: View {
                                     .textSelection(.enabled)
                                 Spacer()
                                 URL(fileURLWithPath: appSpecificSupportPath)
+                                    .makeOpenButton()
+                            }
+                            
+                            Divider()
+                            
+                            // Cache Directory
+                            Text("Cache:")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            HStack {
+                                Text(cachePath)
+                                    .font(.caption2)
+                                    .textSelection(.enabled)
+                                Spacer()
+                                URL(fileURLWithPath: cachePath)
                                     .makeOpenButton()
                             }
                         }
