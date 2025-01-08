@@ -164,15 +164,21 @@ public extension URL {
     /// - Parameters:
     ///   - verbose: 是否打印详细日志
     ///   - caller: 调用者名称
-    ///   - onChange: 文件夹变化回调，返回变化的文件列表
+    ///   - onChange: 文件夹变化回调
+    ///     - files: 文件列表
+    ///     - isInitialFetch: 是否是初始的全量数据
     /// - Returns: 可用于取消监听的 AnyCancellable
     ///
     /// 示例用法:
     /// ```swift
     /// // 1. 基础用法
     /// let url = URL(filePath: "path/to/icloud/folder")
-    /// let cancellable = url.onDirectoryChanged(caller: "MyApp") { files in
-    ///     print("文件夹内容已更新，当前文件数：\(files.count)")
+    /// let cancellable = url.onDirectoryChanged(caller: "MyApp") { files, isInitialFetch in
+    ///     if isInitialFetch {
+    ///         print("收到文件夹的初始数据，文件数：\(files.count)")
+    ///     } else {
+    ///         print("文件夹内容发生变化，当前文件数：\(files.count)")
+    ///     }
     ///     
     ///     // 遍历所有文件
     ///     for file in files {
@@ -188,8 +194,14 @@ public extension URL {
     ///     private var cancellable: AnyCancellable?
     ///     
     ///     func startMonitoring(url: URL) {
-    ///         cancellable = url.onDirectoryChanged(caller: "FolderView") { [weak self] files in
-    ///             self?.files = files
+    ///         cancellable = url.onDirectoryChanged(caller: "FolderView") { [weak self] files, isInitialFetch in
+    ///             if isInitialFetch {
+    ///                 // 首次加载，可以显示加载指示器
+    ///                 self?.files = files
+    ///             } else {
+    ///                 // 后续更新，可以显示更新提示
+    ///                 self?.files = files
+    ///             }
     ///         }
     ///     }
     ///     
@@ -201,7 +213,7 @@ public extension URL {
     func onDirectoryChanged(
         verbose: Bool = true,
         caller: String,
-        _ onChange: @escaping ([MetaWrapper]) -> Void
+        _ onChange: @escaping (_ files: [MetaWrapper], _ isInitialFetch: Bool) -> Void
     ) -> AnyCancellable {
         let queue = OperationQueue()
         queue.maxConcurrentOperationCount = 1
@@ -214,6 +226,7 @@ public extension URL {
             }
         }
         
+        var isFirstFetch = true
         let task = Task {
             let result = query.searchMetadataItems(predicates: [
                 NSPredicate(format: "%K BEGINSWITH %@", NSMetadataItemPathKey, self.path),
@@ -221,10 +234,11 @@ public extension URL {
             
             for try await collection in result {
                 if verbose {
-                    os_log("\(self.t)[\(caller)] 文件夹内容已更新 -> \(self.title)")
+                    os_log("\(self.t)🍋🍋🍋 [\(caller)] 文件夹内容已更新 -> \(self.title)")
                 }
                 await MainActor.run {
-                    onChange(collection.items)
+                    onChange(collection.items, isFirstFetch)
+                    isFirstFetch = false
                 }
             }
         }
