@@ -7,26 +7,6 @@ public struct MagicThemePreview<Content: View>: View {
     private let content: Content
     private let showsIndicators: Bool
     @State private var isDarkMode = false
-    @State private var selectedBackground: BackgroundOption
-    
-    // MARK: - Background Options
-    private struct BackgroundOption: Identifiable, Equatable {
-        let id = UUID()
-        let title: String
-        let view: AnyView
-        
-        static func == (lhs: BackgroundOption, rhs: BackgroundOption) -> Bool {
-            lhs.id == rhs.id
-        }
-    }
-    
-    private let backgrounds: [BackgroundOption] = [
-        .init(title: "Default", view: AnyView(Color(.systemBackground))),
-        .init(title: "Aurora", view: AnyView(MagicBackground.aurora)),
-        .init(title: "Ocean", view: AnyView(MagicBackground.ocean)),
-        .init(title: "Sunset", view: AnyView(MagicBackground.sunset)),
-        .init(title: "Forest", view: AnyView(MagicBackground.forest))
-    ]
     
     // MARK: - Initialization
     /// 创建主题预览容器
@@ -39,19 +19,11 @@ public struct MagicThemePreview<Content: View>: View {
     ) {
         self.content = content()
         self.showsIndicators = showsIndicators
-        self._selectedBackground = State(initialValue: BackgroundOption(
-            title: "Default",
-            view: AnyView(Color(.systemBackground))
-        ))
     }
     
     // MARK: - Body
     public var body: some View {
         ZStack {
-            // MARK: Background Layer
-            selectedBackground.view
-                .ignoresSafeArea()
-            
             // MARK: Content Layer
             VStack(spacing: 0) {
                 // MARK: Toolbar
@@ -67,6 +39,7 @@ public struct MagicThemePreview<Content: View>: View {
                 }
             }
         }
+        .background(.background)
         .environment(\.colorScheme, isDarkMode ? .dark : .light)
         .frame(minHeight: 800)
         .frame(idealHeight: 1200)
@@ -75,16 +48,6 @@ public struct MagicThemePreview<Content: View>: View {
     // MARK: - Toolbar View
     private var toolbar: some View {
         HStack(spacing: 8) {
-            // MARK: Background Selection Buttons
-            ForEach(backgrounds) { background in
-                MagicButton(
-                    style: selectedBackground.id == background.id ? .primary : .secondary,
-                    action: { selectedBackground = background }
-                )
-                .magicBackground(background.view)
-                .magicShape(.circle)
-            }
-            
             Spacer()
             
             // MARK: Theme Toggle Button
