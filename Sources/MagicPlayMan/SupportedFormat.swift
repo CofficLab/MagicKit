@@ -1,19 +1,12 @@
 import Foundation
 import MagicUI
 import SwiftUI
+import MagicKit
 
 /// 支持的媒体格式
 public struct SupportedFormat {
-    /// 媒体类型
-    public enum MediaType {
-        case audio
-        case video
-    }
-    
     /// 格式名称
     public let name: String
-    /// 媒体类型
-    public let type: MediaType
     /// 文件扩展名
     public let extensions: [String]
     /// MIME 类型
@@ -36,8 +29,7 @@ public struct SupportedFormat {
     public static let allFormats: [SupportedFormat] = [
         // MP3
         SupportedFormat(
-            name: "MP3",
-            type: .audio,
+            name: "MP",
             extensions: ["mp3"],
             mimeTypes: ["audio/mpeg"],
             samples: [
@@ -46,7 +38,6 @@ public struct SupportedFormat {
                     name: "肯尼迪演讲",
                     asset: MagicAsset(
                         url: .sample_web_mp3_kennedy,
-                        type: .audio,
                         metadata: MagicAsset.Metadata(
                             title: "Rice University Speech",
                             artist: "JFK",
@@ -58,7 +49,6 @@ public struct SupportedFormat {
                     name: "水星计划通讯",
                     asset: MagicAsset(
                         url: .sample_web_mp3_mercury,
-                        type: .audio,
                         metadata: MagicAsset.Metadata(
                             title: "Mercury Program",
                             artist: "NASA",
@@ -70,7 +60,6 @@ public struct SupportedFormat {
                     name: "阿波罗登月",
                     asset: MagicAsset(
                         url: .sample_web_mp3_apollo,
-                        type: .audio,
                         metadata: MagicAsset.Metadata(
                             title: "Apollo 11 Highlight",
                             artist: "NASA",
@@ -83,7 +72,6 @@ public struct SupportedFormat {
                     name: "春节序曲",
                     asset: MagicAsset(
                         url: .sample_web_mp3_spring,
-                        type: .audio,
                         metadata: MagicAsset.Metadata(
                             title: "春节序曲",
                             artist: "李焕之",
@@ -95,7 +83,6 @@ public struct SupportedFormat {
                     name: "茉莉花",
                     asset: MagicAsset(
                         url: .sample_web_mp3_jasmine,
-                        type: .audio,
                         metadata: MagicAsset.Metadata(
                             title: "茉莉花",
                             artist: "民乐合奏",
@@ -107,7 +94,6 @@ public struct SupportedFormat {
                     name: "梁祝",
                     asset: MagicAsset(
                         url: .sample_web_mp3_butterfly,
-                        type: .audio,
                         metadata: MagicAsset.Metadata(
                             title: "梁祝",
                             artist: "何占豪",
@@ -120,7 +106,6 @@ public struct SupportedFormat {
                     name: "古筝",
                     asset: MagicAsset(
                         url: .sample_web_mp3_guzheng,
-                        type: .audio,
                         metadata: MagicAsset.Metadata(
                             title: "古筝",
                             artist: "Monplaisir",
@@ -132,7 +117,6 @@ public struct SupportedFormat {
                     name: "竹笛",
                     asset: MagicAsset(
                         url: .sample_web_mp3_bamboo,
-                        type: .audio,
                         metadata: MagicAsset.Metadata(
                             title: "竹笛",
                             artist: "Chad Crouch",
@@ -144,7 +128,6 @@ public struct SupportedFormat {
                     name: "二胡",
                     asset: MagicAsset(
                         url: .sample_web_mp3_erhu,
-                        type: .audio,
                         metadata: MagicAsset.Metadata(
                             title: "二胡",
                             artist: "Kai Engel",
@@ -157,8 +140,7 @@ public struct SupportedFormat {
         
         // WAV
         SupportedFormat(
-            name: "WAV",
-            type: .audio,
+            name: "WA",
             extensions: ["wav"],
             mimeTypes: ["audio/wav", "audio/x-wav"],
             samples: [
@@ -167,7 +149,6 @@ public struct SupportedFormat {
                     name: "火箭发射",
                     asset: MagicAsset(
                         url: .sample_web_wav_launch,
-                        type: .audio,
                         metadata: MagicAsset.Metadata(
                             title: "Launch Aboard",
                             artist: "NASA",
@@ -179,7 +160,6 @@ public struct SupportedFormat {
                     name: "国际空间站",
                     asset: MagicAsset(
                         url: .sample_web_wav_iss,
-                        type: .audio,
                         metadata: MagicAsset.Metadata(
                             title: "ISS Sounds",
                             artist: "NASA",
@@ -191,7 +171,6 @@ public struct SupportedFormat {
                     name: "火星声音",
                     asset: MagicAsset(
                         url: .sample_web_wav_mars,
-                        type: .audio,
                         metadata: MagicAsset.Metadata(
                             title: "Mars Sounds",
                             artist: "NASA",
@@ -204,7 +183,6 @@ public struct SupportedFormat {
                     name: "鸟叫",
                     asset: MagicAsset(
                         url: .sample_web_wav_bird,
-                        type: .audio,
                         metadata: MagicAsset.Metadata(
                             title: "鸟叫",
                             artist: "大自然",
@@ -216,7 +194,6 @@ public struct SupportedFormat {
                     name: "雨声",
                     asset: MagicAsset(
                         url: .sample_web_wav_rain,
-                        type: .audio,
                         metadata: MagicAsset.Metadata(
                             title: "雨声",
                             artist: "大自然",
@@ -228,7 +205,6 @@ public struct SupportedFormat {
                     name: "溪流",
                     asset: MagicAsset(
                         url: .sample_web_wav_stream,
-                        type: .audio,
                         metadata: MagicAsset.Metadata(
                             title: "溪流",
                             artist: "大自然",
@@ -242,7 +218,6 @@ public struct SupportedFormat {
         // MP4
         SupportedFormat(
             name: "MP4",
-            type: .video,
             extensions: ["mp4", "m4v"],
             mimeTypes: ["video/mp4"],
             samples: [
@@ -251,7 +226,6 @@ public struct SupportedFormat {
                     name: "Big Buck Bunny",
                     asset: MagicAsset(
                         url: .sample_web_mp4_bunny,
-                        type: .video,
                         metadata: MagicAsset.Metadata(
                             title: "Big Buck Bunny",
                             artist: "Blender Foundation",
@@ -263,7 +237,6 @@ public struct SupportedFormat {
                     name: "Tears of Steel",
                     asset: MagicAsset(
                         url: .sample_web_mp4_tears,
-                        type: .video,
                         metadata: MagicAsset.Metadata(
                             title: "Tears of Steel",
                             artist: "Blender Foundation",
@@ -276,7 +249,6 @@ public struct SupportedFormat {
                     name: "航拍长城",
                     asset: MagicAsset(
                         url: .sample_web_mp4_greatwall,
-                        type: .video,
                         metadata: MagicAsset.Metadata(
                             title: "航拍长城",
                             artist: "中国风光",
@@ -288,7 +260,6 @@ public struct SupportedFormat {
                     name: "航拍西湖",
                     asset: MagicAsset(
                         url: .sample_web_mp4_westlake,
-                        type: .video,
                         metadata: MagicAsset.Metadata(
                             title: "航拍西湖",
                             artist: "中国风光",
@@ -301,7 +272,6 @@ public struct SupportedFormat {
                     name: "Sintel",
                     asset: MagicAsset(
                         url: .sample_web_mp4_sintel,
-                        type: .video,
                         metadata: MagicAsset.Metadata(
                             title: "Sintel",
                             artist: "Blender Foundation",
@@ -313,7 +283,6 @@ public struct SupportedFormat {
                     name: "Elephants Dream",
                     asset: MagicAsset(
                         url: .sample_web_mp4_elephants,
-                        type: .video,
                         metadata: MagicAsset.Metadata(
                             title: "Elephants Dream",
                             artist: "Blender Foundation",
@@ -327,7 +296,6 @@ public struct SupportedFormat {
         // HLS
         SupportedFormat(
             name: "HLS",
-            type: .video,
             extensions: ["m3u8"],
             mimeTypes: ["application/x-mpegURL"],
             samples: [
@@ -336,7 +304,6 @@ public struct SupportedFormat {
                     name: "基础流",
                     asset: MagicAsset(
                         url: .sample_web_stream_basic,
-                        type: .video,
                         metadata: MagicAsset.Metadata(
                             title: "Basic Stream",
                             artist: "Apple",
@@ -348,7 +315,6 @@ public struct SupportedFormat {
                     name: "高级流",
                     asset: MagicAsset(
                         url: .sample_web_stream_advanced,
-                        type: .video,
                         metadata: MagicAsset.Metadata(
                             title: "Advanced Stream",
                             artist: "Apple",
@@ -360,7 +326,6 @@ public struct SupportedFormat {
                     name: "4K 流",
                     asset: MagicAsset(
                         url: .sample_web_stream_4k,
-                        type: .video,
                         metadata: MagicAsset.Metadata(
                             title: "4K Stream",
                             artist: "Apple",
@@ -372,7 +337,6 @@ public struct SupportedFormat {
                     name: "测试流 1",
                     asset: MagicAsset(
                         url: .sample_web_stream_test1,
-                        type: .video,
                         metadata: MagicAsset.Metadata(
                             title: "测试流 1",
                             artist: "Mux",
@@ -384,7 +348,6 @@ public struct SupportedFormat {
                     name: "测试流 2",
                     asset: MagicAsset(
                         url: .sample_web_stream_test2,
-                        type: .video,
                         metadata: MagicAsset.Metadata(
                             title: "测试流 2",
                             artist: "Akamai",
@@ -396,7 +359,6 @@ public struct SupportedFormat {
                     name: "测试流 3",
                     asset: MagicAsset(
                         url: .sample_web_stream_test3,
-                        type: .video,
                         metadata: MagicAsset.Metadata(
                             title: "测试流 3",
                             artist: "Unified Streaming",
@@ -411,14 +373,14 @@ public struct SupportedFormat {
     /// 获取所有音频示例
     public static var audioSamples: [Sample] {
         allFormats
-            .filter { $0.type == .audio }
+//            .filter { true }
             .flatMap(\.samples)
     }
     
     /// 获取所有视频示例
     public static var videoSamples: [Sample] {
         allFormats
-            .filter { $0.type == .video }
+//            .filter { true }
             .flatMap(\.samples)
     }
     

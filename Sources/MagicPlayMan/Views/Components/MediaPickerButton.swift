@@ -45,7 +45,6 @@ struct MediaPickerButton: View {
         formats: [
             .init(
                 name: "Audio",
-                type: .audio,
                 extensions: ["mp3", "m4a", "wav"],
                 mimeTypes: ["audio/mpeg", "audio/mp4", "audio/wav"],
                 samples: [
@@ -53,7 +52,6 @@ struct MediaPickerButton: View {
                         name: "Test Song",
                         asset: .init(
                             url: .documentsDirectory,
-                            type: .audio,
                             metadata: .init(
                                 title: "Test Song",
                                 artist: "Test Artist",

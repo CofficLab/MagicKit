@@ -14,10 +14,10 @@ struct FormatInfoView: View {
                 Spacer()
             }
 
-            HStack(spacing: 16) {
-                FormatSection(title: "Audio", formats: formats.filter { $0.type == .audio })
-                FormatSection(title: "Video", formats: formats.filter { $0.type == .video })
-            }
+//            HStack(spacing: 16) {
+//                FormatSection(title: "Audio", formats: formats.filter { $0.type == .audio })
+//                FormatSection(title: "Video", formats: formats.filter { $0.type == .video })
+//            }
         }
         .padding()
         .background(.ultraThinMaterial)
@@ -35,9 +35,9 @@ struct FormatInfoView: View {
 
                 ForEach(formats, id: \.name) { format in
                     HStack(spacing: 6) {
-                        Image(systemName: format.type == .audio ? "music.note" : "film")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+//                        Image(systemName: format.type == .audio ? "music.note" : "film")
+//                            .font(.caption)
+//                            .foregroundStyle(.secondary)
 
                         Text(format.name.uppercased())
                             .font(.caption.monospaced())

@@ -64,7 +64,7 @@ private struct PlaylistItemRow: View {
     var body: some View {
         HStack(spacing: 12) {
             // 媒体类型图标
-            Image(systemName: asset.type == .audio ? "music.note" : "film")
+            Image(systemName: asset.url.isAudio ? "music.note" : "film")
                 .font(.system(size: 24))
                 .foregroundStyle(isPlaying ? Color.accentColor : .secondary)
                 .frame(width: 32)

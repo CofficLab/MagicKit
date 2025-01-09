@@ -60,7 +60,7 @@ private struct PlaylistRow: View {
     var body: some View {
         HStack {
             // 媒体类型图标
-            Image(systemName: asset.type == .audio ? "music.note" : "film")
+            Image(systemName: asset.url.isAudio ? "music.note" : "film")
                 .symbolEffect(.bounce, value: isPlaying)
                 .foregroundColor(isPlaying ? .accentColor : .secondary)
             
@@ -110,7 +110,6 @@ private struct PlaylistRow: View {
         @State private var playlist: [MagicAsset] = [
             MagicAsset(
                 url: URL(string: "https://example.com/1.mp3")!,
-                type: .audio,
                 metadata: MagicAsset.Metadata(
                     title: "Song 1",
                     artist: "Artist 1",
@@ -119,7 +118,6 @@ private struct PlaylistRow: View {
             ),
             MagicAsset(
                 url: URL(string: "https://example.com/2.mp4")!,
-                type: .video,
                 metadata: MagicAsset.Metadata(
                     title: "Video 1",
                     artist: "Director 1",

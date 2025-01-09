@@ -1,5 +1,6 @@
 import MagicUI
 import SwiftUI
+import MagicKit
 
 public extension MagicPlayMan {
     /// 创建播放状态视图
@@ -27,7 +28,7 @@ public extension MagicPlayMan {
         return Group {
             if currentAsset == nil {
                 makeEmptyView()
-            } else if currentAsset?.type == .video {
+            } else if currentAsset?.url.isVideo ?? false {
                 makeVideoView()
             } else {
                 makeAudioView()

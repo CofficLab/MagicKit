@@ -22,12 +22,7 @@ public extension MagicPlayMan {
         }
         
         // 判断媒体类型
-        let type: MagicAsset.MediaType
-        if url.isVideo {
-            type = .video
-        } else if url.isAudio {
-            type = .audio
-        } else {
+        if url.isVideo == false && url.isAudio == false {
             log("Unsupported media type: \(url.pathExtension)", level: .error)
             return false
         }
@@ -43,7 +38,6 @@ public extension MagicPlayMan {
         // 创建资源对象
         let asset = MagicAsset(
             url: url,
-            type: type,
             metadata: metadata
         )
         
@@ -114,12 +108,7 @@ public extension MagicPlayMan {
         }
         
         // 判断媒体类型
-        let type: MagicAsset.MediaType
-        if url.isVideo {
-            type = .video
-        } else if url.isAudio {
-            type = .audio
-        } else {
+        if url.isVideo == false && url.isAudio == false {
             log("Unsupported media type: \(url.pathExtension)", level: .error)
             return false
         }
@@ -127,7 +116,6 @@ public extension MagicPlayMan {
         // 创建资源对象
         let asset = MagicAsset(
             url: url,
-            type: type,
             metadata: metadata
         )
         

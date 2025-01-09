@@ -4,20 +4,11 @@ import SwiftUI
 public struct MagicAsset: Identifiable, Equatable {
     public let id = UUID()
     public let url: URL
-    public let type: MediaType
     public let metadata: Metadata
     
-    public init(url: URL, type: MediaType, metadata: Metadata) {
+    public init(url: URL, metadata: Metadata) {
         self.url = url
-        self.type = type
         self.metadata = metadata
-    }
-    
-    // MARK: - Types
-    
-    public enum MediaType: String {
-        case audio
-        case video
     }
     
     public struct Metadata: Equatable {
@@ -73,7 +64,6 @@ extension MagicAsset {
     static var preview: MagicAsset {
         MagicAsset(
             url: .documentsDirectory,
-            type: .audio,
             metadata: .init(
                 title: "Preview Song",
                 artist: "Preview Artist",

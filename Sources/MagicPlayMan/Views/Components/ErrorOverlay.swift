@@ -54,14 +54,14 @@ struct ErrorOverlay: View {
         VStack(spacing: 20) {
             ErrorOverlay(
                 error: .invalidAsset,
-                asset: .init(url: .documentsDirectory, type: .audio, metadata: .init(title: "Test")),
+                asset: .init(url: .documentsDirectory, metadata: .init(title: "Test")),
                 onRetry: {}
             )
             .frame(height: 200)
             
             ErrorOverlay(
                 error: .networkError("Connection timeout"),
-                asset: .init(url: .documentsDirectory, type: .audio, metadata: .init(title: "Test")),
+                asset: .init(url: .documentsDirectory, metadata: .init(title: "Test")),
                 onRetry: {}
             )
             .frame(height: 200)

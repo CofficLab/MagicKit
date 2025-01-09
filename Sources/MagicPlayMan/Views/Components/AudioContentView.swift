@@ -110,7 +110,6 @@ struct AudioContentView: View, SuperLog {
         AudioContentView(
             asset: .init(
                 url: .documentsDirectory,
-                type: .audio,
                 metadata: .init(
                     title: "Test Song",
                     artist: "Test Artist",
@@ -123,7 +122,6 @@ struct AudioContentView: View, SuperLog {
         AudioContentView(
             asset: .init(
                 url: .documentsDirectory,
-                type: .audio,
                 metadata: .init(
                     title: "Test Song",
                     artist: "Test Artist",
@@ -140,7 +138,6 @@ struct AudioContentView: View, SuperLog {
 #Preview("Error State") {
     let errorAsset = MagicAsset(
         url: URL(string: "invalid://url")!,
-        type: .audio,
         metadata: .init(
             title: "Error Test",
             artist: "Error Artist",

@@ -180,7 +180,7 @@ extension MagicPlayMan {
         }
         
         // 设置媒体类型
-        info[MPMediaItemPropertyMediaType] = asset.type == .audio ? 
+        info[MPMediaItemPropertyMediaType] = asset.url.isAudio ? 
             MPMediaType.music.rawValue : MPMediaType.movie.rawValue
         
         // 添加缩略图
