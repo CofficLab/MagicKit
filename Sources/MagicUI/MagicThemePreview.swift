@@ -30,7 +30,7 @@ public struct MagicThemePreview<Content: View>: View {
                 toolbar
                 
                 // MARK: Divider
-                Divider()
+                Divider().padding(.bottom, 10)
                 
                 // MARK: Content Area
                 ScrollView(.vertical, showsIndicators: showsIndicators) {

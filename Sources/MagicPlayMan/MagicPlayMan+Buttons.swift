@@ -1,10 +1,10 @@
+import MagicKit
 import MagicUI
 import SwiftUI
-import MagicKit
 
 public extension MagicPlayMan {
     /// 创建播放/暂停按钮
-    func makePlayPauseButton() -> some View {
+    func makePlayPauseButton() -> MagicButton {
         MagicButton(
             icon: state == .playing ? .iconPauseFill : .iconPlayFill,
             style: state == .playing ? .primary : .secondary,
@@ -24,7 +24,7 @@ public extension MagicPlayMan {
     ///   - 其他情况下，按钮可用
     /// - Important: 当播放列表被禁用但存在导航订阅者时，按钮始终可用，
     ///             导航逻辑将由订阅者控制
-    func makePreviousButton() -> some View {
+    func makePreviousButton() -> MagicButton {
         let disabledReason: String? = if !hasAsset {
             "No media loaded"
         } else if !isPlaylistEnabled && !events.hasNavigationSubscribers {
@@ -34,7 +34,7 @@ public extension MagicPlayMan {
         } else {
             nil
         }
-        
+
         return MagicButton(
             icon: .iconBackwardEndFill,
             style: .secondary,
@@ -54,7 +54,7 @@ public extension MagicPlayMan {
     /// - Important: 当播放列表被禁用但存在导航订阅者时，按钮始终可用，
     ///             导航逻辑将由订阅者控制
     /// - SeeAlso: ``previous()``，用于了解具体的导航实现
-    func makeNextButton() -> some View {
+    func makeNextButton() -> MagicButton {
         let disabledReason: String? = if !hasAsset {
             "No media loaded"
         } else if !isPlaylistEnabled && !events.hasNavigationSubscribers {
@@ -64,7 +64,7 @@ public extension MagicPlayMan {
         } else {
             nil
         }
-        
+
         return MagicButton(
             icon: .iconForwardEndFill,
             style: .secondary,
@@ -75,7 +75,7 @@ public extension MagicPlayMan {
     }
 
     /// 创建快退按钮
-    func makeRewindButton() -> some View {
+    func makeRewindButton() -> MagicButton {
         MagicButton(
             icon: .iconGobackward10,
             style: .secondary,
@@ -89,7 +89,7 @@ public extension MagicPlayMan {
     }
 
     /// 创建快进按钮
-    func makeForwardButton() -> some View {
+    func makeForwardButton() -> MagicButton {
         MagicButton(
             icon: .iconGoforward10,
             style: .secondary,
@@ -103,7 +103,7 @@ public extension MagicPlayMan {
     }
 
     /// 创建播放模式按钮
-    func makePlayModeButton() -> some View {
+    func makePlayModeButton() -> MagicButton {
         MagicButton(
             icon: playMode.iconName,
             style: playMode != .sequence ? .primary : .secondary,
@@ -117,7 +117,7 @@ public extension MagicPlayMan {
     /// - Note: 按钮的外观会根据喜欢状态改变：
     ///   - 喜欢时：使用填充图标和主要样式
     ///   - 未喜欢时：使用轮廓图标和次要样式
-    func makeLikeButton() -> some View {
+    func makeLikeButton() -> MagicButton {
         MagicButton(
             icon: isCurrentAssetLiked ? "heart.fill" : "heart",
             style: isCurrentAssetLiked ? .primary : .secondary,
@@ -125,14 +125,10 @@ public extension MagicPlayMan {
             disabledReason: !hasAsset ? "No media loaded" : nil,
             action: toggleLike
         )
-        .magicShape(.roundedSquare)
-        .magicStyle(.secondary)
-        .magicShapeVisibility(.onHover)
-        .symbolEffect(.bounce, value: isCurrentAssetLiked)
     }
 
     /// 创建播放列表按钮
-    func makePlaylistButton() -> some View {
+    func makePlaylistButton() -> MagicButton {
         MagicButton(
             icon: .iconList,
             style: .secondary,
@@ -155,7 +151,7 @@ public extension MagicPlayMan {
     ///   - 禁用时：使用轮廓图标和次要样式
     /// - Important: 切换播放列表状态时会触发相应的事件通知，
     ///             订阅者可以通过这些事件来响应状态变化
-    func makePlaylistToggleButton() -> some View {
+    func makePlaylistToggleButton() -> MagicButton {
         MagicButton(
             icon: self.isPlaylistEnabled ? .iconListCircleFill : .iconListCircle,
             style: self.isPlaylistEnabled ? .primary : .secondary,
@@ -164,11 +160,10 @@ public extension MagicPlayMan {
                 self.setPlaylistEnabled(!self.isPlaylistEnabled)
             }
         )
-        .symbolEffect(.bounce, value: self.isPlaylistEnabled)
     }
 
     /// 创建订阅者列表按钮
-    func makeSubscribersButton() -> some View {
+    func makeSubscribersButton() -> MagicButton {
         MagicButton(
             icon: .iconPersonGroup,
             style: .secondary,
@@ -182,7 +177,7 @@ public extension MagicPlayMan {
     }
 
     /// 创建支持的格式按钮
-    func makeSupportedFormatsButton() -> some View {
+    func makeSupportedFormatsButton() -> MagicButton {
         MagicButton(
             icon: .iconMusicNote,
             style: .secondary,
@@ -192,11 +187,11 @@ public extension MagicPlayMan {
             )
         )
     }
-    
+
     /// 创建日志按钮
     /// - Returns: 用于显示日志的按钮
     /// - Note: 点击按钮会显示一个包含日志内容的弹出窗口
-    func makeLogButton(shape: MagicButton.Shape = .circle) -> some View {
+    func makeLogButton(shape: MagicButton.Shape = .circle) -> MagicButton {
         MagicButton(
             icon: .iconTerminal,
             popoverContent: AnyView(
@@ -205,9 +200,6 @@ public extension MagicPlayMan {
                     .padding()
             )
         )
-        .magicShape(.roundedSquare)
-        .magicStyle(.secondary)
-        .magicShapeVisibility(.onHover)
     }
 }
 
@@ -216,5 +208,48 @@ public extension MagicPlayMan {
 #Preview("MagicPlayMan") {
     MagicThemePreview {
         MagicPlayMan.PreviewView()
+    }
+}
+
+#Preview("Buttons") {
+    MagicThemePreview {
+        let man = MagicPlayMan()
+        
+        return VStack(spacing: 20) {
+            // 播放控制按钮组
+            HStack(spacing: 16) {
+                man.makePreviousButton()
+                man.makeRewindButton()
+                man.makePlayPauseButton()
+                man.makeForwardButton()
+                man.makeNextButton()
+            }
+            
+            // 功能按钮组
+            HStack(spacing: 16) {
+                man.makePlayModeButton()
+                man.makeLikeButton()
+                man.makePlaylistButton()
+                man.makePlaylistToggleButton()
+            }
+            
+            // 工具按钮组
+            HStack(spacing: 16) {
+                man.makeSubscribersButton()
+                man.makeSupportedFormatsButton()
+                man.makeLogButton()
+            }
+            
+            // 不同形状的按钮示例
+            VStack(spacing: 16) {
+                Text("Different Shapes").font(.caption)
+                HStack(spacing: 16) {
+                    man.makeLikeButton()
+                    man.makeLikeButton().magicShape(.circle)
+                    man.makeLikeButton().magicShape(.roundedSquare)
+                }
+            }
+        }
+        .padding()
     }
 }
