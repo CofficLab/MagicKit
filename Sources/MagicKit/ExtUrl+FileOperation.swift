@@ -194,11 +194,18 @@ public extension URL {
     /// Creates the directory or file at the URL if it doesn't exist and returns the URL.
     ///
     /// - For directories: Creates the directory and any necessary intermediate directories.
-    /// - For files: Creates an empty file if the URL doesn't have a directory path.
+    /// - For files: Creates an empty file and any necessary parent directories.
     ///
     /// - Returns: The current URL (self)
     /// - Throws: An error if the creation fails
     func createIfNotExist() throws -> URL {
+        // 首先确保父目录存在
+        let parentDir = deletingLastPathComponent()
+        if parentDir.isNotDirExist {
+            try FileManager.default.createDirectory(at: parentDir, withIntermediateDirectories: true)
+        }
+        
+        // 然后处理当前路径
         if hasDirectoryPath {
             if isNotDirExist {
                 try FileManager.default.createDirectory(at: self, withIntermediateDirectories: true)
