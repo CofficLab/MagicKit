@@ -229,7 +229,9 @@ public extension URL {
         var isFirstFetch = true
         let task = Task {
             let result = query.searchMetadataItems(predicates: [
-                NSPredicate(format: "%K BEGINSWITH %@", NSMetadataItemPathKey, self.path),
+                NSPredicate(format: "%K BEGINSWITH %@ AND %K != %@", 
+                           NSMetadataItemPathKey, self.path,
+                           NSMetadataItemPathKey, self.path)
             ])
             
             for try await collection in result {

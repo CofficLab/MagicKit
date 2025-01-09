@@ -28,7 +28,7 @@ extension URL {
             var cache = ThumbnailCache.shared
             cache.verbose = verbose
             cache.save(platformImage, for: self, size: size)
-            
+
             return platformImage.toSwiftUIImage()
         }
         return nil
@@ -141,7 +141,7 @@ extension URL {
         // Try each artwork key
         for key in artworkKeys {
             if verbose {
-                os_log("\(self.t)尝试从音频文件的元数据中获取封面图片: \(key.rawValue)")
+                os_log("\(self.t)🍽️🍽️🍽️ 尝试从音频文件的元数据中获取封面图片: \(key.rawValue)")
             }
 
             let artworkItems = AVMetadataItem.metadataItems(
