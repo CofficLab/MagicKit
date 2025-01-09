@@ -3,6 +3,7 @@ import AVFoundation
 import UniformTypeIdentifiers
 import OSLog
 import SwiftUI
+import ID3TagEditor
 
 /// 写入封面时可能出现的错误
 public enum CoverWriteError: LocalizedError {
@@ -11,6 +12,7 @@ public enum CoverWriteError: LocalizedError {
     case exportSessionCreationFailed
     case exportFailed(Error?)
     case temporaryFileOperationFailed(Error)
+    case mp3ProcessingFailed(Error?)
     
     public var errorDescription: String? {
         switch self {
@@ -33,6 +35,8 @@ public enum CoverWriteError: LocalizedError {
             return "导出失败：\(error?.localizedDescription ?? "未知错误")"
         case .temporaryFileOperationFailed(let error):
             return "临时文件操作失败：\(error.localizedDescription)"
+        case .mp3ProcessingFailed(let error):
+            return "MP3 文件处理失败：\(error?.localizedDescription ?? "未知错误")"
         }
     }
     
@@ -48,6 +52,8 @@ public enum CoverWriteError: LocalizedError {
             return "可能是文件格式不兼容或磁盘空间不足"
         case .temporaryFileOperationFailed:
             return "可能是磁盘空间不足或权限问题"
+        case .mp3ProcessingFailed:
+            return "可能是 MP3 文件处理失败"
         }
     }
     
@@ -63,6 +69,8 @@ public enum CoverWriteError: LocalizedError {
             return "请尝试将文件转换为 M4A 格式后再添加封面"
         case .temporaryFileOperationFailed:
             return "请确保磁盘有足够空间并检查权限设置"
+        case .mp3ProcessingFailed:
+            return "请检查 MP3 文件处理逻辑"
         }
     }
 }
@@ -93,6 +101,12 @@ extension URL {
             throw CoverWriteError.fileNotWritable(path: self.path)
         }
         
+        // 对于 MP3 文件，使用专门的处理方法
+        if self.pathExtension.lowercased() == "mp3" {
+            try await writeCoverToMP3File(imageData: imageData, verbose: verbose)
+            return
+        }
+        
         // 2. 创建临时文件路径，始终使用 .m4a 扩展名
         let temporaryURL = FileManager.default.temporaryDirectory
             .appendingPathComponent(UUID().uuidString)
@@ -103,8 +117,8 @@ extension URL {
         let (exportPreset, outputFileType): (String, AVFileType) = {
             switch self.pathExtension.lowercased() {
             case "mp3":
-                // 对于 MP3，保持原始格式
-                return (AVAssetExportPresetPassthrough, .mp3)
+                // MP3 文件我们需要使用 m4a 作为中间格式
+                return (AVAssetExportPresetPassthrough, .m4a)
             case "m4a", "m4b", "m4r":
                 // 对于 M4A 系列，使用无损复制
                 return (AVAssetExportPresetPassthrough, .m4a)
@@ -190,12 +204,21 @@ extension URL {
                     try FileManager.default.removeItem(at: self)
                 }
                 
-                // 10. 移动文件并保持原始扩展名
-                let finalURL = self.deletingPathExtension().appendingPathExtension("m4a")
-                try FileManager.default.moveItem(at: temporaryURL, to: finalURL)
+                let originalExtension = self.pathExtension.lowercased()
+                if originalExtension == "mp3" {
+                    // 对于 MP3 文件，我们需要使用 ID3 标签库来写入封面
+                    // 这里需要添加 MP3 元数据处理的代码
+                    // TODO: 使用 ID3 标签库来处理 MP3 文件
+                    os_log("需要实现 MP3 文件的元数据处理")
+                    throw CoverWriteError.exportFailed(nil)
+                } else {
+                    // 10. 移动文件并保持原始扩展名
+                    let finalURL = self.deletingPathExtension().appendingPathExtension(originalExtension)
+                    try FileManager.default.moveItem(at: temporaryURL, to: finalURL)
+                }
                 
                 if verbose {
-                    os_log("成功写入封面到文件：\(finalURL.path)")
+                    os_log("成功写入封面到文件：\(self.path)")
                 }
             } catch {
                 throw CoverWriteError.temporaryFileOperationFailed(error)
@@ -246,6 +269,44 @@ extension URL {
             imageType: "image/jpeg",
             verbose: verbose
         )
+    }
+    
+    /// 专门处理 MP3 文件的封面写入
+    private func writeCoverToMP3File(
+        imageData: Data,
+        verbose: Bool = false
+    ) async throws {
+        if verbose {
+            os_log("使用 ID3TagEditor 处理 MP3 文件：\(self.path)")
+        }
+        
+        do {
+            let id3TagEditor = ID3TagEditor()
+            
+            // 使用 Builder 模式创建标签
+            let id3Tag = ID32v3TagBuilder()
+                .attachedPicture(
+                    pictureType: .frontCover,
+                    frame: ID3FrameAttachedPicture(
+                        picture: imageData,
+                        type: .frontCover,
+                        format: .jpeg
+                    )
+                )
+                .build()
+            
+            // 写入文件
+            try id3TagEditor.write(tag: id3Tag, to: self.path)
+            
+            if verbose {
+                os_log("成功写入 MP3 封面")
+            }
+        } catch {
+            if verbose {
+                os_log("MP3 封面写入失败：\(error.localizedDescription)")
+            }
+            throw CoverWriteError.mp3ProcessingFailed(error)
+        }
     }
 }
 
