@@ -13,6 +13,7 @@ public enum CoverWriteError: LocalizedError {
     case exportFailed(Error?)
     case temporaryFileOperationFailed(Error)
     case mp3ProcessingFailed(Error?)
+    case wavProcessingFailed(Error?)
     
     public var errorDescription: String? {
         switch self {
@@ -37,6 +38,8 @@ public enum CoverWriteError: LocalizedError {
             return "临时文件操作失败：\(error.localizedDescription)"
         case .mp3ProcessingFailed(let error):
             return "MP3 文件处理失败：\(error?.localizedDescription ?? "未知错误")"
+        case .wavProcessingFailed(let error):
+            return "WAV 文件处理失败：\(error?.localizedDescription ?? "未知错误")"
         }
     }
     
@@ -54,6 +57,8 @@ public enum CoverWriteError: LocalizedError {
             return "可能是磁盘空间不足或权限问题"
         case .mp3ProcessingFailed:
             return "可能是 MP3 文件处理失败"
+        case .wavProcessingFailed:
+            return "可能是 WAV 文件处理失败"
         }
     }
     
@@ -71,17 +76,14 @@ public enum CoverWriteError: LocalizedError {
             return "请确保磁盘有足够空间并检查权限设置"
         case .mp3ProcessingFailed:
             return "请检查 MP3 文件处理逻辑"
+        case .wavProcessingFailed:
+            return "请检查 WAV 文件处理逻辑"
         }
     }
 }
 
 extension URL {
     /// 将图片写入媒体文件作为封面
-    /// - Parameters:
-    ///   - imageData: 要写入的图片数据
-    ///   - imageType: 图片的 MIME 类型 (例如: "image/jpeg", "image/png")
-    ///   - verbose: 是否输出详细日志
-    /// - Throws: 写入过程中的错误
     public func writeCoverToMediaFile(
         imageData: Data,
         imageType: String = "image/jpeg",
@@ -107,6 +109,12 @@ extension URL {
             return
         }
         
+        // 对于 WAV 文件，使用专门的处理方法
+        if self.pathExtension.lowercased() == "wav" {
+            try await writeCoverToWAVFile(imageData: imageData, verbose: verbose)
+            return
+        }
+        
         // 2. 创建临时文件路径，始终使用 .m4a 扩展名
         let temporaryURL = FileManager.default.temporaryDirectory
             .appendingPathComponent(UUID().uuidString)
@@ -122,19 +130,17 @@ extension URL {
             case "m4a", "m4b", "m4r":
                 // 对于 M4A 系列，使用无损复制
                 return (AVAssetExportPresetPassthrough, .m4a)
-            case "wav":
-                // 对于 WAV，保持原始格式
-                return (AVAssetExportPresetPassthrough, .wav)
             case "aif", "aiff":
-                // 对于其他格式，转换为 M4A
-                return (AVAssetExportPresetAppleM4A, .m4a)
+                // 对于其他格式，使用高质量编码
+                return (AVAssetExportPresetHighestQuality, .m4a)
             default:
-                // 默认尝试 M4A
-                return (AVAssetExportPresetAppleM4A, .m4a)
+                // 默认使用高质量编码
+                return (AVAssetExportPresetHighestQuality, .m4a)
             }
         }()
         
         if verbose {
+            let sourceSize = (try? FileManager.default.attributesOfItem(atPath: self.path)[.size] as? Int64) ?? 0
             os_log("""
             文件信息：
             - 源文件路径：\(self.path)
@@ -142,6 +148,7 @@ extension URL {
             - 临时文件路径：\(temporaryURL.path)
             - 导出预设：\(exportPreset)
             - 输出文件类型：\(outputFileType.rawValue)
+            - 源文件大小：\(sourceSize) bytes
             """)
         }
         
@@ -173,13 +180,8 @@ extension URL {
         
         // 6. 添加新的封面元数据
         let artworkItem = AVMutableMetadataItem()
-        if outputFileType == .wav || outputFileType == .mp3 {
-            artworkItem.key = AVMetadataKey.id3MetadataKeyAttachedPicture.rawValue as NSString
-            artworkItem.keySpace = .id3
-        } else {
-            artworkItem.key = AVMetadataKey.iTunesMetadataKeyCoverArt.rawValue as NSString
-            artworkItem.keySpace = .iTunes
-        }
+        artworkItem.key = AVMetadataKey.iTunesMetadataKeyCoverArt.rawValue as NSString
+        artworkItem.keySpace = .iTunes
         artworkItem.value = imageData as NSData
         artworkItem.dataType = kUTTypeJPEG as String
         metadata.append(artworkItem)
@@ -188,10 +190,6 @@ extension URL {
         // 7. 执行导出
         if verbose {
             os_log("开始导出文件...")
-            os_log("源文件: \(self.path)")
-            os_log("目标文件: \(temporaryURL.path)")
-            os_log("导出预设: \(exportPreset)")
-            os_log("输出文件类型: \(outputFileType.rawValue)")
         }
         
         await exportSession.export()
@@ -204,18 +202,9 @@ extension URL {
                     try FileManager.default.removeItem(at: self)
                 }
                 
-                let originalExtension = self.pathExtension.lowercased()
-                if originalExtension == "mp3" {
-                    // 对于 MP3 文件，我们需要使用 ID3 标签库来写入封面
-                    // 这里需要添加 MP3 元数据处理的代码
-                    // TODO: 使用 ID3 标签库来处理 MP3 文件
-                    os_log("需要实现 MP3 文件的元数据处理")
-                    throw CoverWriteError.exportFailed(nil)
-                } else {
-                    // 10. 移动文件并保持原始扩展名
-                    let finalURL = self.deletingPathExtension().appendingPathExtension(originalExtension)
-                    try FileManager.default.moveItem(at: temporaryURL, to: finalURL)
-                }
+                // 10. 移动文件并保持原始扩展名
+                let finalURL = self.deletingPathExtension().appendingPathExtension(self.pathExtension)
+                try FileManager.default.moveItem(at: temporaryURL, to: finalURL)
                 
                 if verbose {
                     os_log("成功写入封面到文件：\(self.path)")
@@ -235,40 +224,6 @@ extension URL {
             }
             throw CoverWriteError.exportFailed(exportSession.error)
         }
-    }
-    
-    /// 将图片写入媒体文件作为封面
-    /// - Parameters:
-    ///   - image: 要写入的图片
-    ///   - verbose: 是否输出详细日志
-    /// - Throws: 写入过程中的错误
-    public func writeCoverToMediaFile(
-        image: Image.PlatformImage,
-        verbose: Bool = false
-    ) async throws {
-        #if os(macOS)
-        guard let imageData = image.tiffRepresentation else {
-            throw NSError(
-                domain: "MagicKit",
-                code: -1,
-                userInfo: [NSLocalizedDescriptionKey: "无法将图片转换为TIFF数据"]
-            )
-        }
-        #else
-        guard let imageData = image.jpegData(compressionQuality: 0.8) else {
-            throw NSError(
-                domain: "MagicKit",
-                code: -1,
-                userInfo: [NSLocalizedDescriptionKey: "无法将图片转换为JPEG数据"]
-            )
-        }
-        #endif
-        
-        try await writeCoverToMediaFile(
-            imageData: imageData,
-            imageType: "image/jpeg",
-            verbose: verbose
-        )
     }
     
     /// 专门处理 MP3 文件的封面写入
