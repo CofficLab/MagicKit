@@ -103,12 +103,15 @@ extension URL {
         let (exportPreset, outputFileType): (String, AVFileType) = {
             switch self.pathExtension.lowercased() {
             case "mp3":
-                // 对于 MP3，我们需要先转换为 M4A
-                return (AVAssetExportPresetAppleM4A, .m4a)
+                // 对于 MP3，保持原始格式
+                return (AVAssetExportPresetPassthrough, .mp3)
             case "m4a", "m4b", "m4r":
                 // 对于 M4A 系列，使用无损复制
                 return (AVAssetExportPresetPassthrough, .m4a)
-            case "wav", "aif", "aiff":
+            case "wav":
+                // 对于 WAV，保持原始格式
+                return (AVAssetExportPresetPassthrough, .wav)
+            case "aif", "aiff":
                 // 对于其他格式，转换为 M4A
                 return (AVAssetExportPresetAppleM4A, .m4a)
             default:
@@ -156,8 +159,13 @@ extension URL {
         
         // 6. 添加新的封面元数据
         let artworkItem = AVMutableMetadataItem()
-        artworkItem.key = AVMetadataKey.iTunesMetadataKeyCoverArt.rawValue as NSString
-        artworkItem.keySpace = .iTunes
+        if outputFileType == .wav || outputFileType == .mp3 {
+            artworkItem.key = AVMetadataKey.id3MetadataKeyAttachedPicture.rawValue as NSString
+            artworkItem.keySpace = .id3
+        } else {
+            artworkItem.key = AVMetadataKey.iTunesMetadataKeyCoverArt.rawValue as NSString
+            artworkItem.keySpace = .iTunes
+        }
         artworkItem.value = imageData as NSData
         artworkItem.dataType = kUTTypeJPEG as String
         metadata.append(artworkItem)
