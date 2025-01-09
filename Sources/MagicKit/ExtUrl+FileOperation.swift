@@ -16,7 +16,7 @@ public extension URL {
         }
         try FileManager.default.removeItem(at: self)
     }
-    
+
     /// Returns all files in the directory and its subdirectories recursively.
     ///
     /// - Returns: An array of URLs representing all files found in the directory tree.
@@ -24,7 +24,7 @@ public extension URL {
     func flatten() -> [URL] {
         getAllFilesInDirectory()
     }
-    
+
     /// Returns all files in the directory and its subdirectories recursively.
     ///
     /// - Returns: An array of URLs representing all files found in the directory tree.
@@ -33,10 +33,10 @@ public extension URL {
     func getAllFilesInDirectory() -> [URL] {
         let fileManager = FileManager.default
         var fileURLs: [URL] = []
-        
+
         do {
             let urls = try fileManager.contentsOfDirectory(at: self, includingPropertiesForKeys: nil, options: [])
-            
+
             for url in urls {
                 if url.hasDirectoryPath {
                     fileURLs += url.getAllFilesInDirectory()
@@ -47,10 +47,10 @@ public extension URL {
         } catch {
             os_log(.error, "读取目录时发生错误: \(error.localizedDescription)")
         }
-        
+
         return fileURLs.filter { $0.lastPathComponent != ".DS_Store" }
     }
-    
+
     /// Returns immediate children (files and directories) of the current directory.
     ///
     /// - Returns: An array of URLs representing immediate children, sorted by name.
@@ -58,17 +58,17 @@ public extension URL {
     func getChildren() -> [URL] {
         let fileManager = FileManager.default
         var fileURLs: [URL] = []
-        
+
         do {
             let urls = try fileManager.contentsOfDirectory(at: self, includingPropertiesForKeys: nil, options: [])
             fileURLs = urls.sorted { $0.lastPathComponent.localizedStandardCompare($1.lastPathComponent) == .orderedAscending }
         } catch {
             os_log(.error, "读取目录时发生错误: \(error)")
         }
-        
+
         return fileURLs.filter { $0.lastPathComponent != ".DS_Store" }
     }
-    
+
     /// Returns immediate file children (excluding directories) of the current directory.
     ///
     /// - Returns: An array of URLs representing immediate file children, sorted by name.
@@ -76,19 +76,19 @@ public extension URL {
     func getFileChildren() -> [URL] {
         let fileManager = FileManager.default
         var fileURLs: [URL] = []
-        
+
         do {
             let urls = try fileManager.contentsOfDirectory(at: self, includingPropertiesForKeys: nil, options: [])
             fileURLs = urls.filter { !$0.hasDirectoryPath }
         } catch {
             os_log(.error, "读取目录时发生错误: \(error)")
         }
-        
+
         return fileURLs
             .filter { $0.lastPathComponent != ".DS_Store" }
             .sorted { $0.lastPathComponent < $1.lastPathComponent }
     }
-    
+
     /// Returns the next file in the parent directory.
     ///
     /// - Returns: The URL of the next file, or `nil` if this is the last file.
@@ -99,10 +99,10 @@ public extension URL {
         guard let index = files.firstIndex(of: self) else {
             return nil
         }
-        
+
         return index < files.count - 1 ? files[index + 1] : nil
     }
-    
+
     /// Returns the previous file in the parent directory.
     ///
     /// - Returns: The URL of the previous file, or `nil` if this is the first file.
@@ -113,10 +113,10 @@ public extension URL {
         guard let index = files.firstIndex(of: self) else {
             return nil
         }
-        
+
         return index > 0 ? files[index - 1] : nil
     }
-    
+
     /// Calculates the size of a file or directory in bytes.
     ///
     /// For directories, this method recursively calculates the total size of all contained files.
@@ -129,12 +129,12 @@ public extension URL {
             return getAllFilesInDirectory()
                 .reduce(0) { $0 + $1.getSize() }
         }
-        
+
         // 如果是文件，返回文件大小
         let attributes = try? resourceValues(forKeys: [.fileSizeKey])
         return attributes?.fileSize ?? 0
     }
-    
+
     /// Returns the file or directory size in a human-readable format.
     ///
     /// The size is automatically converted to the most appropriate unit (B, KB, MB, GB, or TB).
@@ -145,21 +145,21 @@ public extension URL {
         let units = ["B", "KB", "MB", "GB", "TB"]
         var index = 0
         var convertedSize = size
-        
+
         while convertedSize >= 1024 && index < units.count - 1 {
             convertedSize /= 1024
             index += 1
         }
-        
+
         return String(format: "%.1f %@", convertedSize, units[index])
     }
-    
+
     /// Checks if the URL points to an existing directory.
     var isDirExist: Bool {
         var isDir: ObjCBool = true
         return FileManager.default.fileExists(atPath: path, isDirectory: &isDir)
     }
-    
+
     /// Checks if the URL points to an existing file.
     var isFileExist: Bool {
         FileManager.default.fileExists(atPath: path)
@@ -172,7 +172,7 @@ public extension URL {
     var isNotDirExist: Bool {
         !isDirExist
     }
-    
+
     /// Removes the parent folder of the current file or directory.
     ///
     /// - Throws: An error if the deletion fails or if the folder doesn't have sufficient permissions.
@@ -180,7 +180,7 @@ public extension URL {
     func removeParentFolder() throws {
         try FileManager.default.removeItem(at: deletingLastPathComponent())
     }
-    
+
     /// Conditionally removes the parent folder of the current file or directory.
     ///
     /// - Parameter condition: A Boolean value that determines whether the parent folder should be removed.
@@ -190,7 +190,7 @@ public extension URL {
             try? removeParentFolder()
         }
     }
-    
+
     /// Creates the directory or file at the URL if it doesn't exist and returns the URL.
     ///
     /// - For directories: Creates the directory and any necessary intermediate directories.
@@ -205,7 +205,12 @@ public extension URL {
             }
         } else {
             if isNotFileExist {
-                try Data().write(to: self)
+                do {
+                    try Data().write(to: self)
+                } catch {
+                    os_log(.error, "\(self.t)无法创建文件 \(self.path): \(error.localizedDescription)")
+                    throw error
+                }
             }
         }
         return self
@@ -213,6 +218,7 @@ public extension URL {
 }
 
 // MARK: - Preview
+
 #Preview("File Operations") {
     FileOperationTestView()
 }
@@ -221,10 +227,10 @@ private struct FileOperationTestView: View {
     @State private var selectedFile: URL?
     @State private var error: Error?
     @State private var showError = false
-    
+
     let testDirectory = FileManager.default.temporaryDirectory
         .appendingPathComponent("FileOperationTest", isDirectory: true)
-    
+
     var body: some View {
         List {
             Section("文件操作") {
@@ -232,37 +238,37 @@ private struct FileOperationTestView: View {
                 Button("创建测试文件") {
                     do {
                         try FileManager.default.createDirectory(at: testDirectory, withIntermediateDirectories: true)
-                        
+
                         // 创建一些测试文件
-                        for i in 1...5 {
+                        for i in 1 ... 5 {
                             let fileURL = testDirectory.appendingPathComponent("test\(i).txt")
                             try "Test content \(i)".write(to: fileURL, atomically: true, encoding: .utf8)
                         }
-                        
+
                         // 创建子文件夹
                         let subDir = testDirectory.appendingPathComponent("subdir")
                         try FileManager.default.createDirectory(at: subDir, withIntermediateDirectories: true)
                         try "Subdir content".write(to: subDir.appendingPathComponent("subfile.txt"), atomically: true, encoding: .utf8)
-                        
+
                     } catch {
                         self.error = error
                         showError = true
                     }
                 }
-                
+
                 // 显示文件列表
                 if testDirectory.isDirExist {
                     ForEach(testDirectory.getChildren(), id: \.path) { url in
                         FileRow(url: url, selectedFile: $selectedFile)
                     }
                 }
-                
+
                 // 清理测试文件
                 Button("清理测试文件", role: .destructive) {
                     try? testDirectory.delete()
                 }
             }
-            
+
             if let selectedFile = selectedFile {
                 Section("文件信息") {
                     Text("大小: \(selectedFile.getSizeReadable())")
@@ -274,18 +280,18 @@ private struct FileOperationTestView: View {
                         Text("下一个: \(next.lastPathComponent)")
                     }
                 }
-                
+
                 Section("操作") {
                     #if os(macOS)
-                    Button("在访达中显示") {
-                        selectedFile.showInFinder()
-                    }
+                        Button("在访达中显示") {
+                            selectedFile.showInFinder()
+                        }
                     #endif
-                    
+
                     Button("打开文件夹") {
                         selectedFile.openFolder()
                     }
-                    
+
                     Button("删除", role: .destructive) {
                         try? selectedFile.delete()
                         self.selectedFile = nil
@@ -304,11 +310,11 @@ private struct FileOperationTestView: View {
 private struct FileRow: View {
     let url: URL
     @Binding var selectedFile: URL?
-    
+
     var body: some View {
         HStack {
             Image(systemName: url.hasDirectoryPath ? "folder" : "doc")
-            
+
             VStack(alignment: .leading) {
                 Text(url.lastPathComponent)
                 Text(url.getSizeReadable())
@@ -321,4 +327,4 @@ private struct FileRow: View {
             selectedFile = url
         }
     }
-} 
+}
