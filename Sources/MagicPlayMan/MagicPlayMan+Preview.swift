@@ -43,6 +43,9 @@ public extension MagicPlayMan {
                 },
                 onLikeStatusChanged: { [weak playMan] asset, isLiked in
                     playMan?.log("观察到事件：喜欢状态变化 - \(asset.title) \(isLiked ? "被喜欢" : "取消喜欢")")
+                },
+                onPlayModeChanged: { [weak playMan] newMode in
+                    playMan?.log("观察到事件：播放模式变化 - \(playMan?.playMode.rawValue ?? "未知") -> \(newMode.rawValue)")
                 }
             )
         }

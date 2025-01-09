@@ -76,6 +76,11 @@ public class MagicPlayMan: ObservableObject, SuperLog {
         ///   - isLiked: 新的喜欢状态
         public let onLikeStatusChanged = PassthroughSubject<(asset: MagicAsset, isLiked: Bool), Never>()
         
+        /// 播放模式变化事件
+        /// - Parameters:
+        ///   - mode: 新的播放模式
+        public let onPlayModeChanged = PassthroughSubject<MagicPlayMode, Never>()
+        
         /// 添加订阅者
         func addSubscriber(
             name: String,
@@ -127,7 +132,8 @@ public class MagicPlayMan: ObservableObject, SuperLog {
         onStateChanged: ((PlaybackState) -> Void)? = nil,
         onPreviousRequested: ((MagicAsset) -> Void)? = nil,
         onNextRequested: ((MagicAsset) -> Void)? = nil,
-        onLikeStatusChanged: ((MagicAsset, Bool) -> Void)? = nil
+        onLikeStatusChanged: ((MagicAsset, Bool) -> Void)? = nil,
+        onPlayModeChanged: ((MagicPlayMode) -> Void)? = nil
     ) -> UUID {
         let hasNavigationHandler = onPreviousRequested != nil || onNextRequested != nil
         let subscriberId = events.addSubscriber(
@@ -198,6 +204,15 @@ public class MagicPlayMan: ObservableObject, SuperLog {
                 .store(in: &cancellables)
         }
         
+        if let handler = onPlayModeChanged {
+            events.onPlayModeChanged
+                .sink { [weak self] mode in
+                    self?.log("事件：播放模式变化 - 将由 \(name) 处理")
+                    handler(mode)
+                }
+                .store(in: &cancellables)
+        }
+        
         return subscriberId
     }
     
@@ -212,7 +227,14 @@ public class MagicPlayMan: ObservableObject, SuperLog {
     
     @Published public var items: [MagicAsset] = []
     @Published public var currentIndex: Int = -1
-    @Published public var playMode: MagicPlayMode = .sequence
+    @Published public var playMode: MagicPlayMode = .sequence {
+        didSet {
+            if oldValue != playMode {
+                log("播放模式变更：\(oldValue) -> \(playMode)")
+                events.onPlayModeChanged.send(playMode)
+            }
+        }
+    }
     @Published public var currentAsset: MagicAsset?
     @Published public var state: PlaybackState = .idle
     @Published public var currentTime: TimeInterval = 0
