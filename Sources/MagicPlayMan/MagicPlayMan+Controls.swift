@@ -245,6 +245,32 @@ public extension MagicPlayMan {
             disablePlaylist()
         }
     }
+    
+    /// 切换当前资源的喜欢状态
+    public func toggleLike() {
+        guard let asset = currentAsset else { return }
+        setLike(!likedAssets.contains(asset.url))
+    }
+    
+    /// 设置当前资源的喜欢状态
+    /// - Parameter isLiked: 是否喜欢
+    public func setLike(_ isLiked: Bool) {
+        guard let asset = currentAsset else { return }
+        
+        if isLiked {
+            likedAssets.insert(asset.url)
+            log("Added to liked: \(asset.title)")
+            showToast("Added to liked", icon: .iconHeartFill, style: .info)
+        } else {
+            likedAssets.remove(asset.url)
+            log("Removed from liked: \(asset.title)")
+            showToast("Removed from liked", icon: .iconHeart, style: .info)
+        }
+        
+        // 通知订阅者喜欢状态变化
+        events.onLikeStatusChanged.send((asset: asset, isLiked: isLiked))
+        updateNowPlayingInfo()
+    }
 }
 
 #Preview("MagicPlayMan") {

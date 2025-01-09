@@ -342,26 +342,6 @@ public class MagicPlayMan: ObservableObject, SuperLog {
         max(0, duration - currentTime)
     }
 
-    /// 切换当前资源的喜欢状态
-    public func toggleLike() {
-        guard let asset = currentAsset else { return }
-        let newLikeStatus = !likedAssets.contains(asset.url)
-        
-        if newLikeStatus {
-            likedAssets.insert(asset.url)
-            log("Added to liked: \(asset.title)")
-            showToast("Added to liked", icon: .iconHeartFill, style: .info)
-        } else {
-            likedAssets.remove(asset.url)
-            log("Removed from liked: \(asset.title)")
-            showToast("Removed from liked", icon: .iconHeart, style: .info)
-        }
-        
-        // 通知订阅者喜欢状态变化
-        events.onLikeStatusChanged.send((asset: asset, isLiked: newLikeStatus))
-        updateNowPlayingInfo()
-    }
-
     /// 检查指定资源是否被喜欢
     public func isAssetLiked(_ asset: MagicAsset) -> Bool {
         likedAssets.contains(asset.url)
