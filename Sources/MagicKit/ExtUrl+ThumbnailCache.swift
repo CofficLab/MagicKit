@@ -115,7 +115,7 @@ public class ThumbnailCache: SuperLog {
         
         // 1. 检查内存缓存
         if let cachedImage = memoryCache.object(forKey: url as NSURL) {
-            if verbose { os_log("\(self.t) Found in memory cache: \(url.absoluteString)") }
+            if verbose { os_log("\(self.t) 🧲🧲🧲 Found in memory cache: \(url.shortPath())") }
             return cachedImage
         }
         
@@ -123,11 +123,11 @@ public class ThumbnailCache: SuperLog {
         let diskURL = diskCacheURL.appendingPathComponent(key)
         guard let data = try? Data(contentsOf: diskURL),
               let image = Image.PlatformImage.fromCacheData(data) else {
-            if verbose { os_log("\(self.t) Cache miss for: \(url.absoluteString)") }
+            if verbose { os_log("\(self.t) Cache miss for: \(url.shortPath())") }
             return nil
         }
         
-        if verbose { os_log("\(self.t) Found in disk cache: \(url.absoluteString)") }
+        if verbose { os_log("\(self.t) 💾💾💾 Found in disk cache: \(url.shortPath())") }
         memoryCache.setObject(image, forKey: url as NSURL)
         return image
     }
@@ -141,13 +141,13 @@ public class ThumbnailCache: SuperLog {
         let diskURL = diskCacheURL.appendingPathComponent(key)
         
         guard let data = image.cacheData else {
-            if verbose { os_log("\(self.t) Failed to get cache data for: \(url.absoluteString)") }
+            if verbose { os_log("\(self.t) Failed to get cache data for: \(url.shortPath())") }
             return
         }
         
         do {
             try data.write(to: diskURL)
-            if verbose { os_log("\(self.t) Successfully saved cache for: \(url.absoluteString)") }
+            if verbose { os_log("\(self.t) Successfully saved cache for: \(url.shortPath())") }
         } catch {
             if verbose { os_log("\(self.t) Failed to save cache: \(error.localizedDescription)") }
         }

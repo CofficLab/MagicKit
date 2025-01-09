@@ -121,17 +121,34 @@ extension URL {
         #endif
     }
 
-    /// Returns the last three components of the URL path joined with "/"
-    /// For example, "path/to/folder/a/b/c.png" returns "a/b/c.png"
-    /// If there are fewer than 3 components, returns all available components
+    /// Returns a shortened version of the URL path by showing only the last three components.
+    /// This method is useful for displaying long file paths in a more readable format.
+    ///
+    /// - Returns: A string containing the last three components of the path, separated by "/".
+    ///
+    /// - Example:
+    ///   ```
+    ///   let url = URL(string: "file:///path/to/folder/documents/report.pdf")!
+    ///   print(url.shortPath()) // Prints: "folder/documents/report.pdf"
+    ///   ```
+    public func shortPath() -> String {
+        self.lastThreeComponents()
+    }
+
+    /// Returns the last three components of the URL path joined with "/".
+    ///
+    /// - Returns: A string containing up to three path components from the end, joined by "/".
+    ///           If there are fewer than 3 components, returns all available components.
+    ///
+    /// - Example:
+    ///   ```
+    ///   let url = URL(string: "file:///path/to/folder/a/b/c.png")!
+    ///   print(url.lastThreeComponents()) // Prints: "a/b/c.png"
+    ///   ```
     public func lastThreeComponents() -> String {
         let components = self.pathComponents.filter { $0 != "/" }
         let lastThree = components.suffix(3)
         return lastThree.joined(separator: "/")
-    }
-    
-    public func shortPath() -> String {
-        self.lastThreeComponents()
     }
 }
 

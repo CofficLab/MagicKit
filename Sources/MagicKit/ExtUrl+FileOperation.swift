@@ -194,7 +194,7 @@ public extension URL {
     /// Creates the directory or file at the URL if it doesn't exist and returns the URL.
     ///
     /// - For directories: Creates the directory and any necessary intermediate directories.
-    /// - For files: Creates an empty file and any necessary parent directories.
+/// - For files: reates an empty file and any necessary parent directories.
     ///
     /// - Returns: The current URL (self)
     /// - Throws: An error if the creation fails
