@@ -51,6 +51,17 @@ struct MagicAppDemoView: View {
                             LabeledContent("设备名称", value: deviceName)
                             LabeledContent("设备型号", value: deviceModel)
                             LabeledContent("系统版本", value: systemVersion)
+                            Divider()
+                            Group {
+                                LabeledContent("是否为 iPhone", value: MagicApp.isiPhone ? "是" : "否")
+                                LabeledContent("是否为 iPad", value: MagicApp.isiPad ? "是" : "否")
+                                LabeledContent("是否为 Mac", value: MagicApp.isMac ? "是" : "否")
+                                LabeledContent("是否为 Watch", value: MagicApp.isWatch ? "是" : "否")
+                                LabeledContent("是否为 TV", value: MagicApp.isTV ? "是" : "否")
+                                if #available(iOS 17.0, *) {
+                                    LabeledContent("是否为 Vision", value: MagicApp.isVision ? "是" : "否")
+                                }
+                            }
                         }
                         .padding(.top, 4)
                     }

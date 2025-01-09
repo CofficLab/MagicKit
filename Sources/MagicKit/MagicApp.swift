@@ -432,10 +432,81 @@ public class MagicApp {
             #endif
         }
 
+        /// 判断当前设备是否为 iOS 设备
+        /// - Returns: 如果是 iOS 平台返回 true，其他平台返回 false
+        public static var isiOS: Bool {
+            #if os(iOS)
+            return true
+            #else
+            return false
+            #endif
+        }
+
         /// 判断当前设备是否为非桌面设备
         /// - Returns: 如果是移动平台（iOS、tvOS、watchOS 等）返回 true，macOS 平台返回 false
         public static var isNotDesktop: Bool {
             !isDesktop
+        }
+
+        /// 判断当前设备是否为 iPhone
+        /// - Returns: 如果是 iPhone 返回 true，其他设备返回 false
+        public static var isiPhone: Bool {
+            #if os(iOS)
+            return UIDevice.current.userInterfaceIdiom == .phone
+            #else
+            return false
+            #endif
+        }
+
+        /// 判断当前设备是否为 iPad
+        /// - Returns: 如果是 iPad 返回 true，其他设备返回 false
+        public static var isiPad: Bool {
+            #if os(iOS)
+            return UIDevice.current.userInterfaceIdiom == .pad
+            #else
+            return false
+            #endif
+        }
+
+        /// 判断当前设备是否为 Mac
+        /// - Returns: 如果是 Mac 返回 true，其他设备返回 false
+        public static var isMac: Bool {
+            #if os(macOS)
+            return true
+            #else
+            return false
+            #endif
+        }
+
+        /// 判断当前设备是否为 Apple Watch
+        /// - Returns: 如果是 Apple Watch 返回 true，其他设备返回 false
+        public static var isWatch: Bool {
+            #if os(watchOS)
+            return true
+            #else
+            return false
+            #endif
+        }
+
+        /// 判断当前设备是否为 Apple TV
+        /// - Returns: 如果是 Apple TV 返回 true，其他设备返回 false
+        public static var isTV: Bool {
+            #if os(tvOS)
+            return true
+            #else
+            return false
+            #endif
+        }
+
+        /// 判断当前设备是否为 Vision Pro
+        /// - Returns: 如果是 Vision Pro 返回 true，其他设备返回 false
+        @available(iOS 17.0, *)
+        public static var isVision: Bool {
+            #if os(visionOS)
+            return true
+            #else
+            return false
+            #endif
         }
 }
 
