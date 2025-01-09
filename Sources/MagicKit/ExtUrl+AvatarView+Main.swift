@@ -1,6 +1,7 @@
 import Combine
 import os
 import SwiftUI
+import UniformTypeIdentifiers
 
 // MARK: - Avatar View
 
@@ -60,6 +61,15 @@ public struct AvatarView: View, SuperLog {
 
     /// 视图背景色
     var backgroundColor: Color = .blue.opacity(0.1)
+    
+    /// 控制文件选择器的显示
+    @State private var isImagePickerPresented = false
+    
+    /// 控制日志显示
+    @State private var showLogSheet = false
+    
+    /// 日志记录
+    @State private var logs: [String] = []
 
     // MARK: - Computed Properties
 
@@ -114,6 +124,18 @@ public struct AvatarView: View, SuperLog {
             }
         }
     }
+    
+    // MARK: - Private Methods
+    
+    private func addLog(_ message: String) {
+        let timestamp = Date().formatted(date: .omitted, time: .standard)
+        let logEntry = "[\(timestamp)] \(message)"
+        logs.append(logEntry)
+        
+        if verbose {
+            os_log("\(Self.t)\(message)")
+        }
+    }
 
     // MARK: - Body
 
@@ -140,6 +162,80 @@ public struct AvatarView: View, SuperLog {
             if state.error != nil {
                 shape.strokeBorder(color: Color.red.opacity(0.5))
             }
+        }
+        .contextMenu {
+            if url.isFileURL {
+                Button("设置封面") {
+                    isImagePickerPresented = true
+                }
+                
+                Divider()
+                
+                Button("查看日志") {
+                    showLogSheet = true
+                }
+            }
+        }
+        .fileImporter(
+            isPresented: $isImagePickerPresented,
+            allowedContentTypes: [.image],
+            allowsMultipleSelection: false
+        ) { result in
+            switch result {
+            case .success(let files):
+                if let selectedURL = files.first {
+                    Task {
+                        do {
+                            addLog("开始设置封面：\(selectedURL.lastPathComponent)")
+                            let imageData = try Data(contentsOf: selectedURL)
+                            try await url.writeCoverToMediaFile(
+                                imageData: imageData,
+                                imageType: "image/jpeg",
+                                verbose: verbose
+                            )
+                            // 重新加载缩略图
+                            state.reset()
+                            await loadThumbnail()
+                            addLog("封面设置成功")
+                        } catch {
+                            let errorMessage = "设置封面失败: \(error.localizedDescription)"
+                            addLog(errorMessage)
+                            state.setError(ViewError.thumbnailGenerationFailed)
+                        }
+                    }
+                }
+            case .failure(let error):
+                let errorMessage = "选择图片失败: \(error.localizedDescription)"
+                addLog(errorMessage)
+                state.setError(ViewError.thumbnailGenerationFailed)
+            }
+        }
+        .sheet(isPresented: $showLogSheet) {
+            NavigationView {
+                List(logs, id: \.self) { log in
+                    Text(log)
+                        .font(.system(.body, design: .monospaced))
+                }
+                .navigationTitle("操作日志")
+                .toolbar {
+                    #if os(macOS)
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("关闭") {
+                            showLogSheet = false
+                        }
+                    }
+                    #else
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button("关闭") {
+                            showLogSheet = false
+                        }
+                    }
+                    #endif
+                }
+            }
+            #if os(macOS)
+            .frame(minWidth: 400, minHeight: 300)
+            #endif
         }
         .onChange(of: progressBinding?.wrappedValue) {
             if let progress = progressBinding?.wrappedValue, progress >= 1.0 {
