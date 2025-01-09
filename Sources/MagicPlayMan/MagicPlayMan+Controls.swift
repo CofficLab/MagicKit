@@ -3,7 +3,6 @@ import MagicUI
 import AVFoundation
 import SwiftUI
 
-@MainActor
 public extension MagicPlayMan {
     /// 添加资源到播放列表并播放
     func play(asset: MagicAsset) {
@@ -40,7 +39,7 @@ public extension MagicPlayMan {
     }
     
     /// 播放下一首
-    public func next() {
+    func next() {
         guard hasAsset else { return }
         
         if isPlaylistEnabled {
@@ -56,7 +55,7 @@ public extension MagicPlayMan {
     }
     
     /// 播放上一首
-    public func previous() {
+    func previous() {
         guard hasAsset else { return }
         
         if isPlaylistEnabled {
@@ -250,6 +249,36 @@ public extension MagicPlayMan {
     func toggleLike() {
         guard let asset = currentAsset else { return }
         setLike(!likedAssets.contains(asset.url))
+    }
+
+    func showToast(_ message: String, icon: String, style: MagicToast.Style) {
+        DispatchQueue.main.async {
+            NotificationCenter.default.post(
+                name: .showToast,
+                object: nil,
+                userInfo: [
+                    "message": message,
+                    "icon": icon,
+                    "style": style
+                ]
+            )
+        }
+    }
+
+    func log(_ message: String, level: PlaybackLog.Level = .info) {
+        logger.log(message, level: level)
+    }
+
+    /// 清理所有缓存
+    func clearCache() {
+        do {
+            try cache?.clear()
+            log("Cache cleared")
+            showToast("Cache cleared successfully", icon: "trash", style: .info)
+        } catch {
+            log("Failed to clear cache: \(error.localizedDescription)", level: .error)
+            showToast("Failed to clear cache", icon: "exclamationmark.triangle", style: .error)
+        }
     }
     
     /// 设置当前资源的喜欢状态
