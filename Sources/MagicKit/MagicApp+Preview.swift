@@ -24,6 +24,7 @@ struct MagicAppDemoView: View {
     @State private var cloudDocumentsPath: String = MagicApp.getCloudDocumentsDirectory()?.path ?? "iCloud 不可用"
     @State private var cachePath: String = MagicApp.getCacheDirectory().path
     @State private var databasePath: String = MagicApp.getDatabaseDirectory().path
+    @State private var deviceType: String = MagicApp.isDesktop ? "桌面设备" : "移动设备"
     
     // 定时器引用
     @State private var uptimeTimer: Timer? = nil
@@ -39,6 +40,7 @@ struct MagicAppDemoView: View {
                             LabeledContent("版本", value: version)
                             LabeledContent("构建号", value: buildNumber)
                             LabeledContent("Bundle ID", value: MagicApp.getBundleIdentifier())
+                            LabeledContent("设备类型", value: deviceType)
                         }
                         .padding(.top, 4)
                     }

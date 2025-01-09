@@ -150,6 +150,36 @@ extension URL {
         let lastThree = components.suffix(3)
         return lastThree.joined(separator: "/")
     }
+
+    /// Appends a folder to the end of the current URL path
+    /// - Parameter folderName: Name of the folder to append
+    /// - Returns: A new URL with the folder appended
+    /// - Example:
+    ///   ```
+    ///   let url = URL(string: "file:///path/to")!
+    ///   let newUrl = url.appendingFolder("documents")
+    ///   // Result: "file:///path/to/documents"
+    ///   ```
+    public func appendingFolder(_ folderName: String) -> URL {
+        // Remove any trailing slashes from the folder name
+        let cleanFolderName = folderName.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+        return self.appendingPathComponent(cleanFolderName, isDirectory: true)
+    }
+
+    /// Appends a file to the end of the current URL path
+    /// - Parameter fileName: Name of the file to append
+    /// - Returns: A new URL with the file appended
+    /// - Example:
+    ///   ```
+    ///   let url = URL(string: "file:///path/to")!
+    ///   let newUrl = url.appendingFile("document.txt")
+    ///   // Result: "file:///path/to/document.txt"
+    ///   ```
+    public func appendingFile(_ fileName: String) -> URL {
+        // Remove any trailing slashes from the file name
+        let cleanFileName = fileName.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+        return self.appendingPathComponent(cleanFileName, isDirectory: false)
+    }
 }
 
 #if os(macOS)

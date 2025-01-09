@@ -421,6 +421,22 @@ public class MagicApp {
         public static func getDatabasePath(filename: String) -> URL {
             return getDatabaseDirectory().appendingPathComponent(filename)
         }
+
+        /// 判断当前设备是否为桌面设备
+        /// - Returns: 如果是 macOS 平台返回 true，其他平台返回 false
+        public static var isDesktop: Bool {
+            #if os(macOS)
+            return true
+            #else
+            return false
+            #endif
+        }
+
+        /// 判断当前设备是否为非桌面设备
+        /// - Returns: 如果是移动平台（iOS、tvOS、watchOS 等）返回 true，macOS 平台返回 false
+        public static var isNotDesktop: Bool {
+            !isDesktop
+        }
 }
 
 #Preview {
