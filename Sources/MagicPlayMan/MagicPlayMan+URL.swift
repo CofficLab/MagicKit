@@ -16,7 +16,7 @@ public extension MagicPlayMan {
         autoPlay: Bool = true
     ) -> Bool {
         // 检查 URL 是否有效
-        guard url.isFileURL || url.scheme == "http" || url.scheme == "https" else {
+        guard url.isFileURL || url.isNetworkURL else {
             log("Invalid URL scheme: \(url.scheme ?? "nil")", level: .error)
             return false
         }
@@ -46,6 +46,8 @@ public extension MagicPlayMan {
             type: type,
             metadata: metadata
         )
+        
+        self.currentAsset = asset
         
         // 加载资源
         if autoPlay {

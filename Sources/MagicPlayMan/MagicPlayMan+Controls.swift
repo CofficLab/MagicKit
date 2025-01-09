@@ -247,15 +247,18 @@ public extension MagicPlayMan {
     }
     
     /// 切换当前资源的喜欢状态
-    public func toggleLike() {
+    func toggleLike() {
         guard let asset = currentAsset else { return }
         setLike(!likedAssets.contains(asset.url))
     }
     
     /// 设置当前资源的喜欢状态
     /// - Parameter isLiked: 是否喜欢
-    public func setLike(_ isLiked: Bool) {
-        guard let asset = currentAsset else { return }
+    func setLike(_ isLiked: Bool) {
+        guard let asset = currentAsset else { 
+            log("Cannot set like: no asset loaded", level: .warning)
+            return 
+        }
         
         if isLiked {
             likedAssets.insert(asset.url)
