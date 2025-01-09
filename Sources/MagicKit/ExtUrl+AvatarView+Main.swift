@@ -70,6 +70,11 @@ public struct AvatarView: View, SuperLog {
     
     /// 日志记录
     @State private var logs: [String] = []
+    
+    /// 控制复制提示的显示
+    @State private var showToast = false
+    @State private var toastMessage = ""
+    @State private var copiedLogIndex: Int?
 
     // MARK: - Computed Properties
 
@@ -136,6 +141,187 @@ public struct AvatarView: View, SuperLog {
             os_log("\(Self.t)\(message)")
         }
     }
+    
+    private func copyAllLogs() {
+        #if os(macOS)
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(logs.joined(separator: "\n"), forType: .string)
+        #else
+        UIPasteboard.general.string = logs.joined(separator: "\n")
+        #endif
+        
+        showToastMessage("所有日志已复制")
+    }
+    
+    private func copyLog(at index: Int) {
+        guard index < logs.count else { return }
+        
+        #if os(macOS)
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(logs[index], forType: .string)
+        #else
+        UIPasteboard.general.string = logs[index]
+        #endif
+        
+        withAnimation {
+            copiedLogIndex = index
+        }
+        
+        showToastMessage("日志已复制")
+        
+        // 2秒后清除复制状态
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            withAnimation {
+                if copiedLogIndex == index {
+                    copiedLogIndex = nil
+                }
+            }
+        }
+    }
+    
+    private func showToastMessage(_ message: String) {
+        toastMessage = message
+        withAnimation {
+            showToast = true
+        }
+        
+        // 2秒后隐藏提示
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            withAnimation {
+                showToast = false
+            }
+        }
+    }
+
+    // MARK: - Private Types
+    
+    private struct LogEntry: Identifiable {
+        let id: Int
+        let timestamp: String
+        let message: String
+        
+        init(index: Int, rawLog: String) {
+            self.id = index
+            if let timeEnd = rawLog.firstIndex(of: "]"),
+               let timeStart = rawLog.firstIndex(of: "[") {
+                self.timestamp = String(rawLog[rawLog.index(after: timeStart)..<timeEnd])
+                self.message = String(rawLog[rawLog.index(after: timeEnd)...]).trimmingCharacters(in: .whitespaces)
+            } else {
+                self.timestamp = ""
+                self.message = rawLog
+            }
+        }
+    }
+    
+    private var logEntries: [LogEntry] {
+        logs.enumerated().map { LogEntry(index: $0.offset, rawLog: $0.element) }
+    }
+    
+    // MARK: - Private Views
+    
+    private struct LogTableView: View {
+        let entries: [LogEntry]
+        let copiedLogIndex: Int?
+        let onCopy: (Int) -> Void
+        
+        var body: some View {
+            Table(entries) {
+                TableColumn("Time") { entry in
+                    Text(entry.timestamp)
+                        .font(.caption.monospaced())
+                        .foregroundStyle(.secondary)
+                }
+                .width(60)
+                
+                TableColumn("Message") { entry in
+                    Text(entry.message)
+                        .font(.caption)
+                }
+                
+                TableColumn("") { entry in
+                    CopyButtonView(
+                        id: entry.id,
+                        copiedLogIndex: copiedLogIndex,
+                        onCopy: onCopy
+                    )
+                }
+                .width(50)
+            }
+        }
+    }
+    
+    private struct CopyButtonView: View {
+        let id: Int
+        let copiedLogIndex: Int?
+        let onCopy: (Int) -> Void
+        
+        var body: some View {
+            HStack {
+                if copiedLogIndex == id {
+                    Image(systemName: "checkmark")
+                        .foregroundStyle(.green)
+                        .font(.caption)
+                        .transition(.scale.combined(with: .opacity))
+                }
+                
+                Button(action: { onCopy(id) }) {
+                    Image(systemName: "doc.on.doc")
+                        .foregroundStyle(.secondary)
+                        .font(.caption)
+                }
+                .buttonStyle(.plain)
+            }
+            .animation(.default, value: copiedLogIndex)
+        }
+    }
+    
+    private struct HeaderView: View {
+        let onCopyAll: () -> Void
+        let onClear: () -> Void
+        let onClose: () -> Void
+        let showToast: Bool
+        let toastMessage: String
+        
+        var body: some View {
+            HStack {
+                Text("操作日志")
+                    .font(.headline)
+                    .foregroundStyle(.secondary)
+                
+                Spacer()
+                
+                Button(action: onCopyAll) {
+                    Image(systemName: "doc.on.doc")
+                        .font(.system(size: 12))
+                }
+                .buttonStyle(.borderless)
+                
+                Button(action: onClear) {
+                    Image(systemName: "trash")
+                        .font(.system(size: 12))
+                }
+                .buttonStyle(.borderless)
+                
+                #if os(macOS)
+                Button("关闭", action: onClose)
+                #endif
+            }
+            .padding(.horizontal)
+            .frame(height: 40)
+            .overlay {
+                if showToast {
+                    Text(toastMessage)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(.ultraThinMaterial)
+                        .clipShape(Capsule())
+                        .transition(.scale.combined(with: .opacity))
+                }
+            }
+        }
+    }
 
     // MARK: - Body
 
@@ -187,6 +373,19 @@ public struct AvatarView: View, SuperLog {
                     Task {
                         do {
                             addLog("开始设置封面：\(selectedURL.lastPathComponent)")
+                            
+                            // 获取文件的安全访问权限
+                            guard selectedURL.startAccessingSecurityScopedResource() else {
+                                addLog("无法获取文件访问权限")
+                                state.setError(ViewError.thumbnailGenerationFailed)
+                                return
+                            }
+                            
+                            defer {
+                                // 完成后释放访问权限
+                                selectedURL.stopAccessingSecurityScopedResource()
+                            }
+                            
                             let imageData = try Data(contentsOf: selectedURL)
                             try await url.writeCoverToMediaFile(
                                 imageData: imageData,
@@ -212,29 +411,29 @@ public struct AvatarView: View, SuperLog {
         }
         .sheet(isPresented: $showLogSheet) {
             NavigationView {
-                List(logs, id: \.self) { log in
-                    Text(log)
-                        .font(.system(.body, design: .monospaced))
+                VStack(alignment: .leading, spacing: 4) {
+                    HeaderView(
+                        onCopyAll: copyAllLogs,
+                        onClear: { logs.removeAll() },
+                        onClose: { showLogSheet = false },
+                        showToast: showToast,
+                        toastMessage: toastMessage
+                    )
+                    
+                    LogTableView(
+                        entries: logEntries,
+                        copiedLogIndex: copiedLogIndex,
+                        onCopy: copyLog
+                    )
                 }
-                .navigationTitle("操作日志")
-                .toolbar {
-                    #if os(macOS)
-                    ToolbarItem(placement: .cancellationAction) {
-                        Button("关闭") {
-                            showLogSheet = false
-                        }
-                    }
-                    #else
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button("关闭") {
-                            showLogSheet = false
-                        }
-                    }
-                    #endif
-                }
+                #if os(iOS)
+                .navigationBarItems(trailing: Button("关闭") {
+                    showLogSheet = false
+                })
+                #endif
             }
             #if os(macOS)
-            .frame(minWidth: 400, minHeight: 300)
+            .frame(minWidth: 500, minHeight: 300)
             #endif
         }
         .onChange(of: progressBinding?.wrappedValue) {
