@@ -144,4 +144,86 @@ public extension Image.PlatformImage {
         return Image(uiImage: self)
         #endif
     }
+    
+    /// 创建一个示例图片，包含渐变色和文字
+    /// - Parameter size: 图片尺寸
+    /// - Returns: 生成的示例图片
+    static func sampleImage(size: CGSize) -> Image.PlatformImage {
+        #if os(macOS)
+        let image = NSImage(size: size)
+        
+        image.lockFocus()
+        
+        // 创建渐变背景
+        let gradient = NSGradient(
+            colors: [
+                NSColor.systemBlue,
+                NSColor.systemPurple
+            ]
+        )
+        gradient?.draw(in: NSRect(origin: .zero, size: size), angle: 45)
+        
+        // 添加文字
+        let text = "Sample Cover"
+        let font = NSFont.systemFont(ofSize: size.width * 0.1)
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: font,
+            .foregroundColor: NSColor.white
+        ]
+        
+        let textSize = text.size(withAttributes: attributes)
+        let textRect = NSRect(
+            x: (size.width - textSize.width) / 2,
+            y: (size.height - textSize.height) / 2,
+            width: textSize.width,
+            height: textSize.height
+        )
+        
+        text.draw(in: textRect, withAttributes: attributes)
+        
+        image.unlockFocus()
+        
+        return image
+        #else
+        let renderer = UIGraphicsImageRenderer(size: size)
+        
+        return renderer.image { context in
+            // 创建渐变背景
+            let colors = [
+                UIColor.systemBlue.cgColor,
+                UIColor.systemPurple.cgColor
+            ]
+            let gradient = CGGradient(
+                colorsSpace: CGColorSpaceCreateDeviceRGB(),
+                colors: colors as CFArray,
+                locations: [0, 1]
+            )!
+            
+            context.cgContext.drawLinearGradient(
+                gradient,
+                start: CGPoint(x: 0, y: 0),
+                end: CGPoint(x: size.width, y: size.height),
+                options: []
+            )
+            
+            // 添加文字
+            let text = "Sample Cover"
+            let font = UIFont.systemFont(ofSize: size.width * 0.1)
+            let attributes: [NSAttributedString.Key: Any] = [
+                .font: font,
+                .foregroundColor: UIColor.white
+            ]
+            
+            let textSize = text.size(withAttributes: attributes)
+            let textRect = CGRect(
+                x: (size.width - textSize.width) / 2,
+                y: (size.height - textSize.height) / 2,
+                width: textSize.width,
+                height: textSize.height
+            )
+            
+            text.draw(in: textRect, withAttributes: attributes)
+        }
+        #endif
+    }
 }

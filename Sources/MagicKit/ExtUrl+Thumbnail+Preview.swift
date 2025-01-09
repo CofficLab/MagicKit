@@ -35,8 +35,14 @@ struct ThumbnailPreview: View {
                             .background(Color.gray.opacity(0.2))
                     }
 
-                    Button("加载音频封面") {
-                        loadAudioThumbnail()
+                    HStack(spacing: 20) {
+                        Button("加载音频封面") {
+                            loadAudioThumbnail()
+                        }
+                        
+                        Button("写入测试封面") {
+                            writeSampleCover()
+                        }
                     }
                 }
 
@@ -66,8 +72,19 @@ struct ThumbnailPreview: View {
                 }
 
                 if let errorMessage {
-                    Text(errorMessage)
-                        .foregroundColor(.red)
+                    HStack {
+                        Text(errorMessage)
+                            .foregroundColor(.red)
+                        
+                        Button(action: {
+                            errorMessage.copy()
+                        }) {
+                            Image(systemName: "doc.on.doc")
+                                .foregroundColor(.gray)
+                        }
+                        .buttonStyle(.plain)
+                        .help("复制错误信息")
+                    }
                 }
             }
             .padding()
@@ -115,6 +132,42 @@ struct ThumbnailPreview: View {
             } catch {
                 await MainActor.run {
                     errorMessage = "加载视频封面失败: \(error.localizedDescription)"
+                }
+            }
+
+            await MainActor.run {
+                isLoading = false
+            }
+        }
+    }
+
+    private func writeSampleCover() {
+        let url = audioURL
+
+        isLoading = true
+        errorMessage = nil
+
+        Task {
+            do {
+                // 创建一个示例图片
+                let image = Image.PlatformImage.sampleImage(size: CGSize(width: 500, height: 500))
+                // 获取图片数据
+                #if os(macOS)
+                guard let imageData = image.tiffRepresentation else {
+                    throw NSError(domain: "MagicKit", code: -1, userInfo: [NSLocalizedDescriptionKey: "无法获取图片数据"])
+                }
+                #else
+                guard let imageData = image.pngData() else {
+                    throw NSError(domain: "MagicKit", code: -1, userInfo: [NSLocalizedDescriptionKey: "无法获取图片数据"])
+                }
+                #endif
+                
+                try await url.writeCoverToMediaFile(imageData: imageData, verbose: true)
+                // 重新加载显示新封面
+                await loadAudioThumbnail()
+            } catch {
+                await MainActor.run {
+                    errorMessage = "写入封面失败: \(error.localizedDescription)"
                 }
             }
 
