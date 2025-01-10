@@ -19,7 +19,7 @@ public class ThumbnailCache: SuperLog {
     public static let shared = ThumbnailCache()
     
     /// 内存缓存
-    private let memoryCache = NSCache<NSURL, Image.PlatformImage>()
+    private let memoryCache = NSCache<NSString, Image.PlatformImage>()
     
     /// 磁盘缓存目录
     private let diskCacheURL: URL
@@ -108,19 +108,25 @@ public class ThumbnailCache: SuperLog {
         return "\(url.lastPathComponent)_\(Int(size.width))x\(Int(size.height)).\(fileExtension)"
     }
     
+    /// 生成内存缓存键
+    private func memoryCacheKey(for url: URL, size: CGSize) -> String {
+        return "\(url.absoluteString)_\(Int(size.width))x\(Int(size.height))"
+    }
+    
     /// 获取缓存
     public func fetch(for url: URL, size: CGSize) -> Image.PlatformImage? {
-        let key = cacheKey(for: url, size: size)
-        if verbose { os_log("\(self.t) Fetching cache for key: \(key)") }
+        let diskKey = cacheKey(for: url, size: size)
+        let memKey = memoryCacheKey(for: url, size: size)
+        if verbose { os_log("\(self.t) Fetching cache for key: \(diskKey)") }
         
         // 1. 检查内存缓存
-        if let cachedImage = memoryCache.object(forKey: url as NSURL) {
+        if let cachedImage = memoryCache.object(forKey: memKey as NSString) {
             if verbose { os_log("\(self.t) 🧲🧲🧲 Found in memory cache: \(url.shortPath())") }
             return cachedImage
         }
         
         // 2. 检查磁盘缓存
-        let diskURL = diskCacheURL.appendingPathComponent(key)
+        let diskURL = diskCacheURL.appendingPathComponent(diskKey)
         guard let data = try? Data(contentsOf: diskURL),
               let image = Image.PlatformImage.fromCacheData(data) else {
             if verbose { os_log("\(self.t) Cache miss for: \(url.shortPath())") }
@@ -128,17 +134,18 @@ public class ThumbnailCache: SuperLog {
         }
         
         if verbose { os_log("\(self.t) 💾💾💾 Found in disk cache: \(url.shortPath())") }
-        memoryCache.setObject(image, forKey: url as NSURL)
+        memoryCache.setObject(image, forKey: memKey as NSString)
         return image
     }
     
     /// 保存缓存
     public func save(_ image: Image.PlatformImage, for url: URL, size: CGSize) {
-        let key = cacheKey(for: url, size: size)
+        let diskKey = cacheKey(for: url, size: size)
+        let memKey = memoryCacheKey(for: url, size: size)
         if verbose { os_log("\(self.t) Saving cache for: \(url.shortPath())") }
         
-        memoryCache.setObject(image, forKey: url as NSURL)
-        let diskURL = diskCacheURL.appendingPathComponent(key)
+        memoryCache.setObject(image, forKey: memKey as NSString)
+        let diskURL = diskCacheURL.appendingPathComponent(diskKey)
         
         guard let data = image.cacheData else {
             if verbose { os_log("\(self.t) Failed to get cache data for: \(url.shortPath())") }
