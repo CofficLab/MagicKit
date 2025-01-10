@@ -10,11 +10,19 @@ public extension MagicPlayMan {
     /// - Parameters:
     ///   - cacheDirectory: 自定义缓存目录。如果为 nil，则使用系统默认缓存目录
     ///   - playlistEnabled: 是否启用播放列表，默认为 true
+    ///   - verbose: 是否启用详细日志模式，默认为 false
     convenience init(
         cacheDirectory: URL? = nil,
-        playlistEnabled: Bool = true
+        playlistEnabled: Bool = true,
+        verbose: Bool = false
     ) {
         self.init()
+        
+        // 设置详细日志模式
+        self.verbose = verbose
+        if verbose {
+            log("Verbose mode enabled")
+        }
         
         // 初始化缓存，如果失败则禁用缓存功能
         do {
