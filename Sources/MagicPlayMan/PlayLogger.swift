@@ -2,6 +2,7 @@ import Foundation
 import SwiftUI
 import OSLog
 import MagicKit
+import MagicUI
 
 public class PlayLogger: ObservableObject, SuperLog {
     public static var emoji = "🎵"
@@ -65,22 +66,6 @@ public struct PlaybackLog: Identifiable {
         case info
         case warning
         case error
-        
-        var color: Color {
-            switch self {
-            case .info: return .primary
-            case .warning: return .orange
-            case .error: return .red
-            }
-        }
-        
-        var icon: String {
-            switch self {
-            case .info: return "info.circle"
-            case .warning: return "exclamationmark.triangle"
-            case .error: return "xmark.circle"
-            }
-        }
         
         var osLogType: OSLogType {
             switch self {
