@@ -1,4 +1,5 @@
 import Foundation
+import CryptoKit
 import OSLog
 import SwiftUI
 
@@ -16,9 +17,30 @@ extension URL: SuperLog {
 
 extension URL {
     public func getHash(verbose: Bool = true) -> String {
-        FileHelper.getMD5(self)
+        if self.isFolder {
+            return ""
+        }
+
+        do {
+            let bufferSize = 1024
+            var hash = Insecure.MD5()
+            let fileHandle = try FileHandle(forReadingFrom: self)
+            defer { fileHandle.closeFile() }
+
+            while autoreleasepool(invoking: {
+                let data = fileHandle.readData(ofLength: bufferSize)
+                hash.update(data: data)
+                return data.count > 0
+            }) {}
+
+            return hash.finalize().map { String(format: "%02hhx", $0) }.joined()
+        } catch {
+            os_log(.error, "计算MD5出错 -> \(error.localizedDescription)")
+            print(error)
+            return ""
+        }
     }
-    
+
     public func getBlob() throws -> String {
         let url = self
 
@@ -61,7 +83,7 @@ extension URL {
     public func nearestFolder() -> URL {
         self.isFolder ? self : self.deletingLastPathComponent()
     }
-    
+
     public static var null: URL {
         URL(filePath: "/dev/null")
     }
@@ -107,17 +129,17 @@ extension URL {
     /// 生成默认音频缩略图
     public func defaultAudioThumbnail(size: CGSize) -> Image {
         #if os(macOS)
-        if let defaultIcon = NSImage(systemSymbolName: "music.note", accessibilityDescription: nil) {
-            let resizedIcon = defaultIcon.resize(to: size)
-            return Image(nsImage: resizedIcon)
-        }
-        return Image(systemName: "music.note")
+            if let defaultIcon = NSImage(systemSymbolName: "music.note", accessibilityDescription: nil) {
+                let resizedIcon = defaultIcon.resize(to: size)
+                return Image(nsImage: resizedIcon)
+            }
+            return Image(systemName: "music.note")
         #else
-        if let defaultIcon = UIImage(systemName: "music.note") {
-            let resizedIcon = defaultIcon.resize(to: size)
-            return Image(uiImage: resizedIcon)
-        }
-        return Image(systemName: "music.note")
+            if let defaultIcon = UIImage(systemName: "music.note") {
+                let resizedIcon = defaultIcon.resize(to: size)
+                return Image(uiImage: resizedIcon)
+            }
+            return Image(systemName: "music.note")
         #endif
     }
 
@@ -183,28 +205,28 @@ extension URL {
 }
 
 #if os(macOS)
-extension NSImage {
-    func resize(to size: CGSize) -> NSImage {
-        let newImage = NSImage(size: size)
-        newImage.lockFocus()
-        
-        NSGraphicsContext.current?.imageInterpolation = .high
-        draw(in: NSRect(origin: .zero, size: size),
-             from: NSRect(origin: .zero, size: self.size),
-             operation: .copy,
-             fraction: 1.0)
-        
-        newImage.unlockFocus()
-        return newImage
-    }
-}
-#else
-extension UIImage {
-    func resize(to size: CGSize) -> UIImage {
-        let renderer = UIGraphicsImageRenderer(size: size)
-        return renderer.image { _ in
-            self.draw(in: CGRect(origin: .zero, size: size))
+    extension NSImage {
+        func resize(to size: CGSize) -> NSImage {
+            let newImage = NSImage(size: size)
+            newImage.lockFocus()
+
+            NSGraphicsContext.current?.imageInterpolation = .high
+            draw(in: NSRect(origin: .zero, size: size),
+                 from: NSRect(origin: .zero, size: self.size),
+                 operation: .copy,
+                 fraction: 1.0)
+
+            newImage.unlockFocus()
+            return newImage
         }
     }
-}
+#else
+    extension UIImage {
+        func resize(to size: CGSize) -> UIImage {
+            let renderer = UIGraphicsImageRenderer(size: size)
+            return renderer.image { _ in
+                self.draw(in: CGRect(origin: .zero, size: size))
+            }
+        }
+    }
 #endif
