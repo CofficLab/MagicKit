@@ -55,7 +55,7 @@ public extension MagicPlayMan {
     /// - Returns: 返回一个根据当前媒体资源类型自动适配的视图：
     /// - 当没有加载资源时，返回空视图
     /// - 当资源为视频时，返回视频播放视图
-    /// - 当资源为音频时，返回音频播放视图
+    /// - 当资源为音频时，返回音频播放视图，包括了音频的标题
     func makeMediaView() -> some View {
         return Group {
             if currentAsset == nil {
@@ -104,22 +104,14 @@ public extension MagicPlayMan {
     
     /// 创建主要展示视图
     /// - Returns: 返回一个根据当前媒体资源类型自动适配的主要展示视图：
-    /// - 当资源为音频时，显示音频缩略图
+    /// - 当资源为音频时，显示音频缩略图，不包括音频的标题和艺术家
     /// - 当资源为视频时，显示视频播放视图
     func makeHeroView() -> some View {
         Group {
             if currentAsset == nil {
                 makeEmptyView()
             } else if currentAsset!.isAudio {
-                if let thumbnail = self.currentThumbnail {
-                    thumbnail
-                } else {
-                    Image(systemName: "music.note")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .padding()
-                        .foregroundColor(.secondary)
-                }
+                ThumbnailView(url: currentAsset!)
             } else {
                 makeVideoView()
             }

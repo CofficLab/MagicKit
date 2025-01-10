@@ -32,6 +32,7 @@ extension MagicPlayMan {
         public let onNextRequested = PassthroughSubject<URL, Never>()
         public let onLikeStatusChanged = PassthroughSubject<(asset: URL, isLiked: Bool), Never>()
         public let onPlayModeChanged = PassthroughSubject<MagicPlayMode, Never>()
+        public let onCurrentURLChanged = PassthroughSubject<URL, Never>()
         
         func addSubscriber(
             name: String,
@@ -70,7 +71,8 @@ extension MagicPlayMan {
         onPreviousRequested: ((URL) -> Void)? = nil,
         onNextRequested: ((URL) -> Void)? = nil,
         onLikeStatusChanged: ((URL, Bool) -> Void)? = nil,
-        onPlayModeChanged: ((MagicPlayMode) -> Void)? = nil
+        onPlayModeChanged: ((MagicPlayMode) -> Void)? = nil,
+        onCurrentURLChanged: ((URL) -> Void)? = nil
     ) -> UUID {
         let hasNavigationHandler = onPreviousRequested != nil || onNextRequested != nil
         let subscriberId = events.addSubscriber(
@@ -146,6 +148,15 @@ extension MagicPlayMan {
                 .sink { [weak self] mode in
                     self?.log("事件：播放模式变化 - 将由 \(name) 处理")
                     handler(mode)
+                }
+                .store(in: &cancellables)
+        }
+        
+        if let handler = onCurrentURLChanged {
+            events.onCurrentURLChanged
+                .sink { [weak self] url in
+                    self?.log("事件：当前 URL 变化 - 将由 \(name) 处理")
+                    handler(url)
                 }
                 .store(in: &cancellables)
         }

@@ -6,7 +6,10 @@ import SwiftUI
 
 extension MagicPlayMan {
     /// 从 URL 加载媒体
-    func loadFromURL(_ url: URL) {
+    /// - Parameters:
+    ///   - url: 媒体文件的 URL
+    ///   - autoPlay: 是否自动开始播放，默认为 true
+    func loadFromURL(_ url: URL, autoPlay: Bool = true) {
         log("Loading asset from URL: \(url.absoluteString)")
         
         stop()
@@ -33,8 +36,10 @@ extension MagicPlayMan {
             case .readyToPlay:
                 self.duration = item.duration.seconds
                 if case .loading = self.state {
-                    self.state = .playing
-                    self.play()
+                    self.state = autoPlay ? .playing : .paused
+                    if autoPlay {
+                        self.play()
+                    }
                 }
             case .failed:
                 let message = item.error?.localizedDescription ?? "Unknown error"

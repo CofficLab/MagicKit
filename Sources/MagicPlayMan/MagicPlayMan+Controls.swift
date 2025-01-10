@@ -27,26 +27,15 @@ public extension MagicPlayMan {
         self.currentURL = url
 
         // 加载资源
-        if autoPlay {
-            if isPlaylistEnabled {
-                if playlist.play(url) {
-                    loadFromURL(url)
-                } else {
-                    playlist.append(url)
-                    _ = playlist.play(url)
-                    loadFromURL(url)
-                }
-            } else {
-                loadFromURL(url)
-            }
-        } else if isPlaylistEnabled {
+        loadFromURL(url, autoPlay: autoPlay)
+
+        if isPlaylistEnabled {
             append(url)
+            log("▶️ Added URL to playlist: \(url.absoluteString)")
         } else {
-            log("Cannot append: playlist is disabled", level: .warning)
-            return false
+            log("▶️ Not added URL to playlist, playlist is disabled, just play it: \(url.absoluteString)")
         }
 
-        log("▶️ Added URL to playlist: \(url.absoluteString)")
         return true
     }
 
