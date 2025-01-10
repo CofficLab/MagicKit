@@ -1,17 +1,40 @@
 import Foundation
 import OSLog
 
+/// A lightweight HTTP client that supports common HTTP methods with fluent interface.
+/// Example usage:
+/// ```swift
+/// let client = HttpClient(url: URL(string: "https://api.example.com")!)
+///     .withToken("your-token")
+///     .withBody(["key": "value"])
+/// let response = try await client.post()
+/// ```
 public class HttpClient: SuperLog {
     public static let emoji = "🛞"
-    var url: URL
-    var headers: [String: String] = [
+    private var url: URL
+    private var headers: [String: String] = [
         "Content-Type": "application/json",
         "Accept": "application/json",
     ]
-    var body: [String:Any]=[:]
-
-    init(url: URL) {
+    private var body: [String:Any] = [:]
+    private var timeoutInterval: TimeInterval = 30
+    private var task: URLSessionDataTask?
+    
+    public init(url: URL) {
         self.url = url
+    }
+    
+    /// Sets request timeout interval in seconds
+    /// - Parameter timeout: The timeout interval in seconds
+    /// - Returns: Self for method chaining
+    public func withTimeout(_ timeout: TimeInterval) -> Self {
+        self.timeoutInterval = timeout
+        return self
+    }
+    
+    /// Cancels any ongoing request
+    public func cancel() {
+        task?.cancel()
     }
     
     public func withHeaders(_ headers: [String:String]) -> Self {
@@ -219,5 +242,27 @@ public class HttpClient: SuperLog {
         } else {
             os_log("\(self.t)返回内容为空")
         }
+    }
+
+    private func executeRequest(_ request: URLRequest) async throws -> (Data, HTTPURLResponse) {
+        var urlRequest = request
+        urlRequest.timeoutInterval = timeoutInterval
+        
+        let session = URLSession.shared
+        let (data, response) = try await session.data(for: urlRequest)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw HttpError.HttpNoResponse
+        }
+        
+        if !httpResponse.statusCode.isHttpOkCode() {
+            os_log(.error, "\(self.t)Http Error -> \(httpResponse.statusCode)")
+            os_log(.error, "\(self.t)URL -> \(self.url.absoluteString)")
+            os_log(.error, "\(self.t)Headers -> \(self.headers)")
+            printHttpError(data, httpResponse: httpResponse)
+            throw HttpError.HttpStatusError(httpResponse.statusCode)
+        }
+        
+        return (data, httpResponse)
     }
 }
