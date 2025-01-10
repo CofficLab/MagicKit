@@ -183,7 +183,7 @@ extension URL {
         artworkItem.key = AVMetadataKey.iTunesMetadataKeyCoverArt.rawValue as NSString
         artworkItem.keySpace = .iTunes
         artworkItem.value = imageData as NSData
-        artworkItem.dataType = kUTTypeJPEG as String
+        artworkItem.dataType = UTType.jpeg.identifier
         metadata.append(artworkItem)
         exportSession.metadata = metadata
         
