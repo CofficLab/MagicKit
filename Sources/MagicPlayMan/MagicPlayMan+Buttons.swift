@@ -201,6 +201,21 @@ public extension MagicPlayMan {
             )
         )
     }
+
+    /// 创建媒体选择按钮
+    /// - Returns: 用于选择媒体资源的按钮
+    /// - Note: 按钮会显示当前选中的媒体名称，如果没有选中则显示默认文本
+    func makeMediaPickerButton() -> some View {
+        MediaPickerButton(
+            man: self,
+            selectedName: currentAsset?.title,
+            onSelect: { url in
+                Task {
+                    await self.play(url: url)
+                }
+            }
+        )
+    }
 }
 
 // MARK: - Preview
@@ -216,6 +231,9 @@ public extension MagicPlayMan {
         let man = MagicPlayMan()
         
         return VStack(spacing: 20) {
+            // 媒体选择按钮
+            man.makeMediaPickerButton()
+            
             // 播放控制按钮组
             HStack(spacing: 16) {
                 man.makePreviousButton()

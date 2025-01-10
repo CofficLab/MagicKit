@@ -102,19 +102,7 @@ public extension MagicPlayMan {
 
         private var leadingToolbarItems: some View {
             HStack {
-                MediaPickerButton(
-                    formats: playMan.supportedFormats,
-                    selectedName: selectedSampleName,
-                    onSelect: { asset in
-                        selectedSampleName = asset.metadata.title
-                        playMan.load(asset: asset)
-                    }
-                )
-
-                if let asset = playMan.currentAsset {
-                    Text(asset.title)
-                        .font(.headline)
-                }
+                playMan.makeMediaPickerButton()
             }
         }
 
