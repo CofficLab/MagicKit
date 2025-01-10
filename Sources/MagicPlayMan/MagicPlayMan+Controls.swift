@@ -268,7 +268,7 @@ public extension MagicPlayMan {
     func log(_ message: String, level: PlaybackLog.Level = .info) {
         logger.log(message, level: level)
     }
-
+    
     /// 清理所有缓存
     func clearCache() {
         do {
@@ -302,6 +302,18 @@ public extension MagicPlayMan {
         // 通知订阅者喜欢状态变化
         events.onLikeStatusChanged.send((asset: asset, isLiked: isLiked))
         updateNowPlayingInfo()
+    }
+    
+    /// 设置详细日志模式
+    /// - Parameter enabled: 是否启用详细日志
+    func setVerboseMode(_ enabled: Bool) {
+        self.verbose = enabled
+        log("Verbose mode \(enabled ? "enabled" : "disabled")")
+        showToast(
+            "Verbose mode \(enabled ? "enabled" : "disabled")",
+            icon: enabled ? "text.bubble.fill" : "text.bubble",
+            style: .info
+        )
     }
 }
 
