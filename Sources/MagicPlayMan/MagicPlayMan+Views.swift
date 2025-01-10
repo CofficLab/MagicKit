@@ -102,6 +102,30 @@ public extension MagicPlayMan {
     func makeSupportedFormatsView() -> some View {
         FormatInfoView(formats: SupportedFormat.allFormats)
     }
+    
+    /// 创建主要展示视图
+    /// - Returns: 返回一个根据当前媒体资源类型自动适配的主要展示视图：
+    /// - 当资源为音频时，显示音频缩略图
+    /// - 当资源为视频时，显示视频播放视图
+    func makeHeroView() -> some View {
+        Group {
+            if currentAsset == nil {
+                makeEmptyView()
+            } else if currentAsset!.url.isAudio {
+                if let thumbnail = self.currentThumbnail {
+                    thumbnail
+                } else {
+                    Image(systemName: "music.note")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .padding()
+                        .foregroundColor(.secondary)
+                }
+            } else {
+                makeVideoView()
+            }
+        }
+    }
 }
 
 // MARK: - Preview
