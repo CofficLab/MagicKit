@@ -133,11 +133,17 @@ public extension MagicPlayMan {
         }
 
         private var mainContent: some View {
-            Group {
-                if let asset = playMan.currentAsset {
-                    assetContentView(for: asset)
-                } else {
-                    playMan.makeEmptyView()
+            ZStack {
+                playMan.makeMediaView()
+
+                if case let .loading(loadingState) = playMan.state, let asset = playMan.currentAsset {
+                    LoadingOverlay(state: loadingState, assetTitle: asset.title)
+                }
+
+                if case let .failed(error) = playMan.state, let asset = playMan.asset {
+                    ErrorOverlay(error: error, asset: asset) {
+                        playMan.load(asset: asset)
+                    }
                 }
             }
         }
@@ -198,24 +204,6 @@ public extension MagicPlayMan {
                 }
             }
             .padding()
-        }
-
-        // MARK: - Asset Content Views
-
-        private func assetContentView(for asset: MagicAsset) -> some View {
-            ZStack {
-                playMan.makeAssetView()
-
-                if case let .loading(loadingState) = playMan.state {
-                    LoadingOverlay(state: loadingState, assetTitle: asset.title)
-                }
-
-                if case let .failed(error) = playMan.state {
-                    ErrorOverlay(error: error, asset: asset) {
-                        playMan.load(asset: asset)
-                    }
-                }
-            }
         }
 
         // MARK: - Overlay Components

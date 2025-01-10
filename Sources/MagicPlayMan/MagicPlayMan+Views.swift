@@ -6,21 +6,20 @@ import MagicKit
 public extension MagicPlayMan {
     /// 创建音频播放视图
     /// - Returns: 音频播放视图
-    func makeAudioView() -> some View {
+    private func makeAudioView(url: URL) -> some View {
         AudioPlayerView(
             title: currentAsset?.metadata.title ?? "No Title",
             artist: currentAsset?.metadata.artist,
-            artwork: currentThumbnail
+            url: url
         )
     }
     
     /// 创建空状态视图
     /// - Returns: 空状态视图
-    func makeEmptyView() -> some View {
+    private func makeEmptyView() -> some View {
         AudioPlayerView(
             title: "No Media Selected",
-            artist: "Select a media file to play",
-            artwork: nil
+            artist: "Select a media file to play"
         )
     }
     
@@ -58,16 +57,22 @@ public extension MagicPlayMan {
     /// - 当没有加载资源时，返回空视图
     /// - 当资源为视频时，返回视频播放视图
     /// - 当资源为音频时，返回音频播放视图
-    func makeAssetView() -> some View {
+    func makeMediaView() -> some View {
         return Group {
             if currentAsset == nil {
                 makeEmptyView()
-            } else if currentAsset?.url.isVideo ?? false {
-                makeVideoView()
+            } else if currentAsset!.url.isAudio {
+                makeAudioView(url: currentAsset!.url)
             } else {
-                makeAudioView()
+                makeVideoView()
             }
         }
+    }
+    
+    /// 创建视频播放视图
+    /// - Returns: 视频播放视图
+    private func makeVideoView() -> some View {
+        VideoPlayerView(player: player)
     }
 
     /// 创建播放进度条视图

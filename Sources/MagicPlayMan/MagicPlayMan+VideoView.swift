@@ -1,16 +1,8 @@
 import SwiftUI
 import AVKit
 
-public extension MagicPlayMan {
-    /// 创建视频播放视图
-    /// - Returns: 视频播放视图
-    func makeVideoView() -> some View {
-        VideoPlayerView(player: player)
-    }
-}
-
 // MARK: - Video Player View
-private struct VideoPlayerView: View {
+struct VideoPlayerView: View {
     let player: AVPlayer
     
     var body: some View {
