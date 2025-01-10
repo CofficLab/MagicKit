@@ -1,39 +1,30 @@
 import SwiftUI
 import MagicKit
 
-public extension MagicPlayMan {
-    /// 创建音频播放视图
-    /// - Returns: 音频播放视图
-    func makeAudioView() -> some View {
-        AudioPlayerView(
-            title: currentAsset?.metadata.title ?? "No Title",
-            artist: currentAsset?.metadata.artist,
-            artwork: currentThumbnail
-        )
-    }
-    
-    /// 创建空状态视图
-    /// - Returns: 空状态视图
-    func makeEmptyView() -> some View {
-        AudioPlayerView(
-            title: "No Media Selected",
-            artist: "Select a media file to play",
-            artwork: nil
-        )
-    }
-}
-
 // MARK: - Audio Player View
-private struct AudioPlayerView: View {
+struct AudioPlayerView: View {
     let title: String
     let artist: String?
     let artwork: Image?
+    @State private var loadedArtwork: Image?
+    let url: URL?
+    
+    init(title: String, artist: String? = nil, artwork: Image? = nil, url: URL? = nil) {
+        self.title = title
+        self.artist = artist
+        self.artwork = artwork
+        self.url = url
+    }
     
     var body: some View {
         VStack(spacing: 20) {
             // 封面图
             Group {
-                if let artwork = artwork {
+                if let loadedArtwork = loadedArtwork {
+                    loadedArtwork
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                } else if let artwork = artwork {
                     artwork
                         .resizable()
                         .aspectRatio(contentMode: .fit)
@@ -64,6 +55,15 @@ private struct AudioPlayerView: View {
             }
         }
         .padding()
+        .task {
+            if let url = url {
+                do {
+                    loadedArtwork = try await url.thumbnail(size: CGSize(width: 600, height: 600), verbose: true)
+                } catch {
+                    print("Failed to load thumbnail: \(error.localizedDescription)")
+                }
+            }
+        }
     }
 }
 
