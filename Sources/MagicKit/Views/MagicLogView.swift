@@ -207,32 +207,3 @@ public struct MagicLogView: View {
     .frame(width: 400, height: 300)
     .padding()
 }
-
-// MARK: - Date Extension
-
-extension Date {
-    var logTime: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "HH:mm:ss"
-        return formatter.string(from: self)
-    }
-}
-
-// MARK: - String Extension
-
-#if os(macOS)
-import AppKit
-#else
-import UIKit
-#endif
-
-extension String {
-    func copy() {
-        #if os(macOS)
-        NSPasteboard.general.clearContents()
-        NSPasteboard.general.setString(self, forType: .string)
-        #else
-        UIPasteboard.general.string = self
-        #endif
-    }
-} 

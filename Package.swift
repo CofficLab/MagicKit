@@ -14,9 +14,6 @@ let package = Package(
             name: "MagicKit",
             targets: ["MagicKit"]),
         .library(
-            name: "MagicUI",
-            targets: ["MagicUI"]),
-        .library(
             name: "MagicPlayMan",
             targets: ["MagicPlayMan"])
     ],
@@ -33,11 +30,8 @@ let package = Package(
             ]
         ),
         .target(
-            name: "MagicUI"
-        ),
-        .target(
             name: "MagicPlayMan",
-            dependencies: ["MagicKit", "MagicUI"]
+            dependencies: ["MagicKit"]
         ),
         .testTarget(
             name: "MagicKitTests",

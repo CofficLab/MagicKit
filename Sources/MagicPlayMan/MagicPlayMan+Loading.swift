@@ -1,5 +1,5 @@
 import AVFoundation
-import MagicUI
+import MagicKit
 import Combine
 import Foundation
 import SwiftUI

@@ -2,7 +2,7 @@ import Foundation
 import SwiftUI
 import AVFoundation
 import OSLog
-import MagicUI
+
 import AVKit
 
 extension URL {

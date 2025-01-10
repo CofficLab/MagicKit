@@ -1,6 +1,6 @@
 import Foundation
 import SwiftUI
-import MagicUI
+
 import UniformTypeIdentifiers
 
 public extension URL {

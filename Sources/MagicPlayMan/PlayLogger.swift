@@ -2,7 +2,7 @@ import Foundation
 import SwiftUI
 import OSLog
 import MagicKit
-import MagicUI
+
 
 public class PlayLogger: ObservableObject, SuperLog {
     public static var emoji = "🎵"

@@ -1,5 +1,5 @@
 import Foundation
-import MagicUI
+
 import SwiftUI
 import MagicKit
 

@@ -1,6 +1,6 @@
 import Foundation
 import SwiftUI
-import MagicUI
+
 
 #if os(macOS)
     import AppKit

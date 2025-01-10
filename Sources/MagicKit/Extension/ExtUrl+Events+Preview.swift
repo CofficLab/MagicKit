@@ -1,5 +1,5 @@
 import Combine
-import MagicUI
+
 import SwiftUI
 
 struct URLEventsPreview: View {

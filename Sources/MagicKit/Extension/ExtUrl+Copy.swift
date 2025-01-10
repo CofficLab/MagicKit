@@ -1,7 +1,7 @@
 import Foundation
 import OSLog
 import SwiftUI
-import MagicUI
+
 
 public extension URL {
     /// 复制文件到目标位置，支持 iCloud 文件的自动下载

@@ -1,7 +1,7 @@
 import Foundation
 import OSLog
 import SwiftUI
-import MagicUI
+
 
 public extension URL {
     /// 下载方式

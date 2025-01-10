@@ -1,6 +1,6 @@
 import SwiftUI
 import MagicKit
-import MagicUI
+
 
 struct AudioContentView: View, SuperLog {
     static var emoji = "🎧"

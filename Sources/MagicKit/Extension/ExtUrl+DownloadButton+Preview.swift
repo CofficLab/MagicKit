@@ -1,5 +1,5 @@
 import SwiftUI
-import MagicUI
+
 
 struct DownloadButtonPreview: View {
     var body: some View {

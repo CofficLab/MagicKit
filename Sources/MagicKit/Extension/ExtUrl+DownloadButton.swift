@@ -1,5 +1,5 @@
 import SwiftUI
-import MagicUI
+
 
 struct DownloadButtonView: View, SuperLog {
     static var emoji: String = "🐯"

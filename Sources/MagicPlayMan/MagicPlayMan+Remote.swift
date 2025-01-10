@@ -2,7 +2,7 @@ import Foundation
 import MediaPlayer
 import AVFoundation
 import SwiftUI
-import MagicUI
+import MagicKit
 
 #if os(macOS)
 import AppKit

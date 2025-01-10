@@ -1,4 +1,4 @@
-import MagicUI
+
 import SwiftUI
 
 struct MagicAppDemoView: View {

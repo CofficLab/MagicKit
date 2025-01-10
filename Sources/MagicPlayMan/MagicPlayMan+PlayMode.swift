@@ -1,5 +1,5 @@
 import Foundation
-import MagicUI
+import MagicKit
 import SwiftUI
 
 public extension MagicPlayMan {

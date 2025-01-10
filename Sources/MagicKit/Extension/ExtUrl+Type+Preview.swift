@@ -1,5 +1,5 @@
 import SwiftUI
-import MagicUI
+
 
 // MARK: - Preview Container
 struct FileTypePreviewContainer: View {

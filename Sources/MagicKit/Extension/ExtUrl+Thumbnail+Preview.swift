@@ -1,5 +1,5 @@
 import AVFoundation
-import MagicUI
+
 import SwiftUI
 
 struct ThumbnailPreview: View {

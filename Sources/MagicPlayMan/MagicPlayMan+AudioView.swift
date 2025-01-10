@@ -1,5 +1,5 @@
 import SwiftUI
-import MagicUI
+import MagicKit
 
 public extension MagicPlayMan {
     /// 创建音频播放视图
