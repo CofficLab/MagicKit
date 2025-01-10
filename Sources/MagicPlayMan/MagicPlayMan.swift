@@ -22,7 +22,7 @@ public class MagicPlayMan: ObservableObject, SuperLog {
     /// 播放相关的事件发布者
     public private(set) lazy var events = PlaybackEvents()
     
-    @Published public var items: [MagicAsset] = []
+    @Published public var items: [URL] = []
     @Published public var currentIndex: Int = -1
     @Published public var playMode: MagicPlayMode = .sequence {
         didSet {
@@ -32,7 +32,7 @@ public class MagicPlayMan: ObservableObject, SuperLog {
             }
         }
     }
-    @Published public var currentAsset: MagicAsset?
+    @Published public var currentURL: URL?
     @Published public var state: PlaybackState = .idle
     @Published public var currentTime: TimeInterval = 0
     @Published public var duration: TimeInterval = 0
@@ -44,15 +44,16 @@ public class MagicPlayMan: ObservableObject, SuperLog {
     @Published public var likedAssets: Set<URL> = []
 
     public var player: AVPlayer { _player }
-    public var asset: MagicAsset? { self.currentAsset }
     public var playing: Bool { self.state == .playing }
-    public var hasAsset: Bool { self.asset != nil }
+    public var hasAsset: Bool { self.currentURL != nil }
     public var playlist: Playlist { _playlist }
+    public var currentAsset: URL? { currentURL }
+    public var asset: URL? { currentURL }
     
     /// 当前资源是否被喜欢
     public var isCurrentAssetLiked: Bool {
-        guard let asset = currentAsset else { return false }
-        return likedAssets.contains(asset.url)
+        guard let url = currentURL else { return false }
+        return likedAssets.contains(url)
     }
 
     /// 格式化后的当前播放时间，格式为 "mm:ss" 或 "hh:mm:ss"

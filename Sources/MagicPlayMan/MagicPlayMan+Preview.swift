@@ -140,9 +140,9 @@ public extension MagicPlayMan {
                     LoadingOverlay(state: loadingState, assetTitle: asset.title)
                 }
 
-                if case let .failed(error) = playMan.state, let asset = playMan.asset {
+                if case let .failed(error) = playMan.state, let asset = playMan.currentAsset {
                     ErrorOverlay(error: error, asset: asset) {
-                        playMan.loadFromURL(asset.url)
+                        playMan.loadFromURL(asset)
                     }
                 }
             }
@@ -226,7 +226,7 @@ public extension MagicPlayMan {
             }
         }
 
-        private func ErrorOverlay(error: PlaybackState.PlaybackError, asset: MagicAsset, onRetry: @escaping () -> Void) -> some View {
+        private func ErrorOverlay(error: PlaybackState.PlaybackError, asset: URL, onRetry: @escaping () -> Void) -> some View {
             ZStack {
                 Rectangle()
                     .fill(.ultraThinMaterial)

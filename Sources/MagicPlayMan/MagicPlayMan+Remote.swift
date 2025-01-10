@@ -174,20 +174,15 @@ extension MagicPlayMan {
             MPNowPlayingInfoPropertyPlaybackRate: state == .playing ? 1.0 : 0.0
         ]
         
-        if let artist = asset.metadata.artist {
-            info[MPMediaItemPropertyArtist] = artist
-            log("Added artist info: \(artist)")
-        }
-        
         // 设置媒体类型
-        info[MPMediaItemPropertyMediaType] = asset.url.isAudio ? 
+        info[MPMediaItemPropertyMediaType] = asset.isAudio ?
             MPMediaType.music.rawValue : MPMediaType.movie.rawValue
         
         // 添加缩略图
         log("Generating thumbnail")
         Task {
             do {
-                if let platformImage = try await asset.url.platformThumbnail(
+                if let platformImage = try await asset.platformThumbnail(
                     size: CGSize(width: 600, height: 600), verbose: verbose
                 ) {
                     info[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(

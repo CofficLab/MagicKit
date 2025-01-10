@@ -24,13 +24,13 @@ extension MagicPlayMan {
         
         @Published private(set) var subscribers: [Subscriber] = []
         
-        public let onTrackFinished = PassthroughSubject<MagicAsset, Never>()
+        public let onTrackFinished = PassthroughSubject<URL, Never>()
         public let onPlaybackFailed = PassthroughSubject<PlaybackState.PlaybackError, Never>()
         public let onBufferingStateChanged = PassthroughSubject<Bool, Never>()
         public let onStateChanged = PassthroughSubject<PlaybackState, Never>()
-        public let onPreviousRequested = PassthroughSubject<MagicAsset, Never>()
-        public let onNextRequested = PassthroughSubject<MagicAsset, Never>()
-        public let onLikeStatusChanged = PassthroughSubject<(asset: MagicAsset, isLiked: Bool), Never>()
+        public let onPreviousRequested = PassthroughSubject<URL, Never>()
+        public let onNextRequested = PassthroughSubject<URL, Never>()
+        public let onLikeStatusChanged = PassthroughSubject<(asset: URL, isLiked: Bool), Never>()
         public let onPlayModeChanged = PassthroughSubject<MagicPlayMode, Never>()
         
         func addSubscriber(
@@ -63,13 +63,13 @@ extension MagicPlayMan {
     @discardableResult
     public func subscribe(
         name: String,
-        onTrackFinished: ((MagicAsset) -> Void)? = nil,
+        onTrackFinished: ((URL) -> Void)? = nil,
         onPlaybackFailed: ((PlaybackState.PlaybackError) -> Void)? = nil,
         onBufferingStateChanged: ((Bool) -> Void)? = nil,
         onStateChanged: ((PlaybackState) -> Void)? = nil,
-        onPreviousRequested: ((MagicAsset) -> Void)? = nil,
-        onNextRequested: ((MagicAsset) -> Void)? = nil,
-        onLikeStatusChanged: ((MagicAsset, Bool) -> Void)? = nil,
+        onPreviousRequested: ((URL) -> Void)? = nil,
+        onNextRequested: ((URL) -> Void)? = nil,
+        onLikeStatusChanged: ((URL, Bool) -> Void)? = nil,
         onPlayModeChanged: ((MagicPlayMode) -> Void)? = nil
     ) -> UUID {
         let hasNavigationHandler = onPreviousRequested != nil || onNextRequested != nil

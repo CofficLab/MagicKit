@@ -31,14 +31,14 @@ public struct PlaylistContentView: View {
     
     public var body: some View {
         List {
-            ForEach(playMan.items) { asset in
+            ForEach(playMan.items, id: \.self) { asset in
                 PlaylistItemRow(
                     asset: asset,
                     isPlaying: asset == playMan.currentAsset
                 )
                 .contentShape(Rectangle())
                 .onTapGesture {
-                    playMan.play(url: asset.url)
+                    playMan.play(url: asset)
                 }
             }
             .onMove { from, to in
@@ -57,28 +57,22 @@ public struct PlaylistContentView: View {
 
 // MARK: - Playlist Item Row
 private struct PlaylistItemRow: View {
-    let asset: MagicAsset
+    let asset: URL
     let isPlaying: Bool
     
     var body: some View {
         HStack(spacing: 12) {
             // 媒体类型图标
-            Image(systemName: asset.url.isAudio ? "music.note" : "film")
+            Image(systemName: asset.isAudio ? "music.note" : "film")
                 .font(.system(size: 24))
                 .foregroundStyle(isPlaying ? Color.accentColor : .secondary)
                 .frame(width: 32)
             
             // 标题和艺术家
             VStack(alignment: .leading, spacing: 4) {
-                Text(asset.metadata.title)
+                Text(asset.title)
                     .font(.headline)
                     .foregroundStyle(isPlaying ? Color.primary : .secondary)
-                
-                if let artist = asset.metadata.artist {
-                    Text(artist)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
             }
             
             Spacer()

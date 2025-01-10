@@ -8,8 +8,7 @@ public extension MagicPlayMan {
     /// - Returns: 音频播放视图
     private func makeAudioView(url: URL) -> some View {
         AudioPlayerView(
-            title: currentAsset?.metadata.title ?? "No Title",
-            artist: currentAsset?.metadata.artist,
+            title: url.title,
             url: url
         )
     }
@@ -61,8 +60,8 @@ public extension MagicPlayMan {
         return Group {
             if currentAsset == nil {
                 makeEmptyView()
-            } else if currentAsset!.url.isAudio {
-                makeAudioView(url: currentAsset!.url)
+            } else if currentAsset!.isAudio {
+                makeAudioView(url: currentAsset!)
             } else {
                 makeVideoView()
             }
@@ -111,7 +110,7 @@ public extension MagicPlayMan {
         Group {
             if currentAsset == nil {
                 makeEmptyView()
-            } else if currentAsset!.url.isAudio {
+            } else if currentAsset!.isAudio {
                 if let thumbnail = self.currentThumbnail {
                     thumbnail
                 } else {

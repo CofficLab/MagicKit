@@ -24,37 +24,23 @@ public extension MagicPlayMan {
             return false
         }
 
-        // 创建资源元数据
-        let metadata = MagicAsset.Metadata(
-            title: url.title,
-            artist: nil,
-            album: nil,
-            artwork: nil
-        )
-
-        // 创建资源对象
-        let asset = MagicAsset(
-            url: url,
-            metadata: metadata
-        )
-
-        self.currentAsset = asset
+        self.currentURL = url
 
         // 加载资源
         if autoPlay {
             if isPlaylistEnabled {
-                if playlist.play(asset) {
-                    loadFromURL(asset.url)
+                if playlist.play(url) {
+                    loadFromURL(url)
                 } else {
-                    playlist.append(asset)
-                    _ = playlist.play(asset)
-                    loadFromURL(asset.url)
+                    playlist.append(url)
+                    _ = playlist.play(url)
+                    loadFromURL(url)
                 }
             } else {
-                loadFromURL(asset.url)
+                loadFromURL(url)
             }
         } else if isPlaylistEnabled {
-            append(asset)
+            append(url)
         } else {
             log("Cannot append: playlist is disabled", level: .warning)
             return false
@@ -94,12 +80,12 @@ public extension MagicPlayMan {
 
     /// 手动刷新当前资源的缩略图
     func reloadThumbnail() {
-        guard let asset = currentAsset else { return }
-        loadThumbnail(for: asset.url)
+        guard let url = currentURL else { return }
+        loadThumbnail(for: url)
     }
 
     /// 添加资源到播放列表
-    func append(_ asset: MagicAsset) {
+    func append(_ asset: URL) {
         guard isPlaylistEnabled else {
             log("Cannot append: playlist is disabled", level: .warning)
             return
@@ -122,7 +108,7 @@ public extension MagicPlayMan {
 
         if isPlaylistEnabled {
             if let nextAsset = _playlist.playNext(mode: playMode) {
-                loadFromURL(nextAsset.url)
+                loadFromURL(nextAsset)
             }
         } else if events.hasNavigationSubscribers {
             // 如果播放列表被禁用但有订阅者，发送请求下一首事件
@@ -138,11 +124,11 @@ public extension MagicPlayMan {
 
         if isPlaylistEnabled {
             if let previousAsset = _playlist.playPrevious(mode: playMode) {
-                loadFromURL(previousAsset.url)
+                loadFromURL(previousAsset)
             }
         } else if events.hasNavigationSubscribers {
             // 如果播放列表被禁用但有订阅者，发送请求上一首事件
-            if let currentAsset = currentAsset {
+            if let currentAsset = currentURL {
                 events.onPreviousRequested.send(currentAsset)
             }
         }
@@ -179,7 +165,7 @@ public extension MagicPlayMan {
 
         _player.play()
         state = .playing
-        log("▶️ Started playback: \(currentAsset?.title ?? "Unknown")")
+        log("▶️ Started playback: \(currentURL?.title ?? "Unknown")")
         updateNowPlayingInfo()
     }
 
@@ -298,7 +284,7 @@ public extension MagicPlayMan {
         log("📑 Playlist disabled")
 
         // 如果禁用播放列表，保留当前播放的资源
-        if let currentAsset = currentAsset {
+        if let currentAsset = currentURL {
             items = [currentAsset]
             currentIndex = 0
         } else {
@@ -325,8 +311,8 @@ public extension MagicPlayMan {
 
     /// 切换当前资源的喜欢状态
     func toggleLike() {
-        guard let asset = currentAsset else { return }
-        setLike(!likedAssets.contains(asset.url))
+        guard let asset = currentURL else { return }
+        setLike(!likedAssets.contains(asset))
     }
 
     func showToast(_ message: String, icon: String, style: MagicToast.Style) {
@@ -362,17 +348,17 @@ public extension MagicPlayMan {
     /// 设置当前资源的喜欢状态
     /// - Parameter isLiked: 是否喜欢
     func setLike(_ isLiked: Bool) {
-        guard let asset = currentAsset else {
+        guard let asset = currentURL else {
             log("⚠️ Cannot set like: no asset loaded", level: .warning)
             return
         }
 
         if isLiked {
-            likedAssets.insert(asset.url)
+            likedAssets.insert(asset)
             log("❤️ Added to liked: \(asset.title)")
             showToast("Added to liked", icon: .iconHeartFill, style: .info)
         } else {
-            likedAssets.remove(asset.url)
+            likedAssets.remove(asset)
             log("💔 Removed from liked: \(asset.title)")
             showToast("Removed from liked", icon: .iconHeart, style: .info)
         }

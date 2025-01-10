@@ -207,7 +207,7 @@ public extension MagicPlayMan {
     func makeMediaPickerButton() -> some View {
         MediaPickerButton(
             man: self,
-            selectedName: currentAsset?.title,
+            selectedName: currentURL?.title,
             onSelect: { url in
                 Task {
                     await self.play(url: url)

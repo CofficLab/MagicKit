@@ -10,7 +10,7 @@ extension MagicPlayMan {
         log("Loading asset from URL: \(url.absoluteString)")
         
         stop()
-        currentAsset = MagicAsset(url: url, metadata: MagicAsset.Metadata(title: url.title))
+        currentURL = url
         state = .loading(.preparing)
 
         // 预检查文件是否可访问

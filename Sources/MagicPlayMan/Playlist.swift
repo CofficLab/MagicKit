@@ -1,13 +1,13 @@
 import Foundation
 
 public class Playlist: ObservableObject {
-    @Published public private(set) var items: [MagicAsset] = []
+    @Published public private(set) var items: [URL] = []
     @Published public private(set) var currentIndex: Int = -1
     private var shuffledIndices: [Int] = []
     
     // MARK: - Public Properties
     
-    public var currentItem: MagicAsset? {
+    public var currentItem: URL? {
         guard currentIndex >= 0, currentIndex < items.count else { return nil }
         return items[currentIndex]
     }
@@ -17,7 +17,7 @@ public class Playlist: ObservableObject {
     
     // MARK: - Public Methods
     
-    public func append(_ asset: MagicAsset) {
+    public func append(_ asset: URL) {
         items.append(asset)
         updateShuffleIndices()
     }
@@ -57,7 +57,7 @@ public class Playlist: ObservableObject {
     
     // MARK: - Navigation Methods
     
-    public func play(_ asset: MagicAsset) -> Bool {
+    public func play(_ asset: URL) -> Bool {
         if let index = items.firstIndex(of: asset) {
             currentIndex = index
             return true
@@ -65,7 +65,7 @@ public class Playlist: ObservableObject {
         return false
     }
     
-    public func playNext(mode: MagicPlayMode) -> MagicAsset? {
+    public func playNext(mode: MagicPlayMode) -> URL? {
         guard !items.isEmpty else { return nil }
         
         switch mode {
@@ -80,7 +80,7 @@ public class Playlist: ObservableObject {
         }
     }
     
-    public func playPrevious(mode: MagicPlayMode) -> MagicAsset? {
+    public func playPrevious(mode: MagicPlayMode) -> URL? {
         guard !items.isEmpty else { return nil }
         
         switch mode {
@@ -97,14 +97,14 @@ public class Playlist: ObservableObject {
     
     // MARK: - Private Methods
     
-    private func nextItem() -> MagicAsset? {
+    private func nextItem() -> URL? {
         let nextIndex = currentIndex + 1
         guard nextIndex < items.count else { return nil }
         currentIndex = nextIndex
         return items[nextIndex]
     }
     
-    private func nextWithRepeat() -> MagicAsset? {
+    private func nextWithRepeat() -> URL? {
         var nextIndex = currentIndex + 1
         if nextIndex >= items.count {
             nextIndex = 0
@@ -113,7 +113,7 @@ public class Playlist: ObservableObject {
         return items[nextIndex]
     }
     
-    private func nextShuffledItem() -> MagicAsset? {
+    private func nextShuffledItem() -> URL? {
         guard let nextIndex = shuffledIndices.first(where: { $0 > currentIndex }) else {
             updateShuffleIndices()
             if let firstIndex = shuffledIndices.first {
@@ -126,14 +126,14 @@ public class Playlist: ObservableObject {
         return items[nextIndex]
     }
     
-    private func previousItem() -> MagicAsset? {
+    private func previousItem() -> URL? {
         let prevIndex = currentIndex - 1
         guard prevIndex >= 0 else { return nil }
         currentIndex = prevIndex
         return items[prevIndex]
     }
     
-    private func previousWithRepeat() -> MagicAsset? {
+    private func previousWithRepeat() -> URL? {
         var prevIndex = currentIndex - 1
         if prevIndex < 0 {
             prevIndex = items.count - 1
@@ -142,7 +142,7 @@ public class Playlist: ObservableObject {
         return items[prevIndex]
     }
     
-    private func previousShuffledItem() -> MagicAsset? {
+    private func previousShuffledItem() -> URL? {
         guard let prevIndex = shuffledIndices.last(where: { $0 < currentIndex }) else {
             if let lastIndex = shuffledIndices.last {
                 currentIndex = lastIndex

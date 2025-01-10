@@ -131,7 +131,7 @@ internal extension MagicPlayMan {
             .sink { [weak self] _ in
                 guard let self = self else { return }
                 
-                if let currentAsset = self.currentAsset {
+                if let currentAsset = self.currentURL {
                     self.log("播放完成：\(currentAsset.title)")
                     
                     // 如果是单曲循环模式，重新播放当前曲目
@@ -152,7 +152,7 @@ internal extension MagicPlayMan {
                         // 如果播放列表启用，播放下一首
                         self.log("播放列表已启用，即将播放下一首：\(nextAsset.title)")
                         Task { @MainActor in
-                            self.loadFromURL(nextAsset.url)
+                            self.loadFromURL(nextAsset)
                         }
                     } else {
                         self.log("播放列表已到末尾", level: .warning)
