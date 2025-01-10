@@ -1,35 +1,28 @@
 import AVFoundation
-import MagicKit
 import Combine
 import Foundation
+import MagicKit
 import SwiftUI
 
-public extension MagicPlayMan {
-    /// 加载媒体资源
-    /// - Parameter asset: 要加载的资源
-    func load(asset: MagicAsset) {
-        Task { @MainActor in
-            stop() // 确保在主线程上调用
-            currentAsset = asset
-            state = .loading(.preparing)
-            log("Loading asset: \(asset.metadata.title)")
-
-            self.loadFromURL(asset.url)
-        }
-    }
-
+extension MagicPlayMan {
     /// 从 URL 加载媒体
-    private func loadFromURL(_ url: URL) {
+    func loadFromURL(_ url: URL) {
         log("Loading asset from URL: \(url.absoluteString)")
+        
+        stop()
+        currentAsset = MagicAsset(url: url, metadata: MagicAsset.Metadata(title: url.title))
+        state = .loading(.preparing)
 
         // 预检查文件是否可访问
         #if os(macOS)
-            if url.isFileURL && !FileManager.default.fileExists(atPath: url.path) {
+            if url.isNotFileExist {
                 state = .failed(.invalidAsset)
                 log("File not found: \(url.path)", level: .error)
                 return
             }
         #endif
+
+        self.loadThumbnail(for: url)
 
         let item = AVPlayerItem(url: url)
 
@@ -140,25 +133,14 @@ public extension MagicPlayMan {
     }
 
     /// 加载资源的缩略图
-    private func loadThumbnail(for asset: MagicAsset) {
+    func loadThumbnail(for url: URL) {
         Task { @MainActor in
             do {
-                currentThumbnail = try await asset.url.thumbnail(size: CGSize(width: 600, height: 600), verbose: self.verbose)
+                currentThumbnail = try await url.thumbnail(size: CGSize(width: 600, height: 600), verbose: self.verbose)
             } catch {
                 log("Failed to load thumbnail: \(error.localizedDescription)", level: .warning)
             }
         }
-    }
-
-    /// 手动刷新当前资源的缩略图
-    func reloadThumbnail() {
-        guard let asset = currentAsset else { return }
-        loadThumbnail(for: asset)
-    }
-
-    /// 检查是否是示例资源
-    private func isSampleAsset(_ asset: MagicAsset) -> Bool {
-        SupportedFormat.allSamples.contains { $0.asset.url == asset.url }
     }
 }
 

@@ -38,7 +38,7 @@ public struct PlaylistContentView: View {
                 )
                 .contentShape(Rectangle())
                 .onTapGesture {
-                    playMan.play(asset: asset)
+                    playMan.play(url: asset.url)
                 }
             }
             .onMove { from, to in

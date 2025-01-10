@@ -142,7 +142,7 @@ public extension MagicPlayMan {
 
                 if case let .failed(error) = playMan.state, let asset = playMan.asset {
                     ErrorOverlay(error: error, asset: asset) {
-                        playMan.load(asset: asset)
+                        playMan.loadFromURL(asset.url)
                     }
                 }
             }

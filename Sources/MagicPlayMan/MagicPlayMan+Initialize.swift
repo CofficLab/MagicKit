@@ -152,7 +152,7 @@ internal extension MagicPlayMan {
                         // 如果播放列表启用，播放下一首
                         self.log("播放列表已启用，即将播放下一首：\(nextAsset.title)")
                         Task { @MainActor in
-                            self.load(asset: nextAsset)
+                            self.loadFromURL(nextAsset.url)
                         }
                     } else {
                         self.log("播放列表已到末尾", level: .warning)
