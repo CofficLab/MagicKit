@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 public extension String {
     // MARK: - 文档相关
@@ -532,6 +533,16 @@ public extension String {
     
     /// 地球图标名称 (globe)
     static let iconGlobe = "globe"
+
+    // MARK: - 安全相关
+    /// 指纹图标名称 (touchid)
+    static let iconFingerprint = "touchid"
+    
+    /// 指纹填充图标名称 (touchid.fill)
+    static let iconFingerprintFill = "touchid.fill"
+    
+    /// 二进制文档图标名称 (doc.text.fill.viewfinder)
+    static let iconDocBinary = "doc.text.fill.viewfinder"
     
     // MARK: - 开发和调试
     /// 代码图标名称 (chevron.left.forwardslash.chevron.right)
@@ -569,4 +580,142 @@ public extension String {
     
     /// 加号图标名称 (plus)
     static let iconPlus = "plus"
+    
+    // MARK: - 数字相关
+    /// 数字1填充圆形图标名称 (1.circle.fill)
+    static let iconNumberCircleFill1 = "1.circle.fill"
+    
+    /// 数字2填充圆形图标名称 (2.circle.fill)
+    static let iconNumberCircleFill2 = "2.circle.fill"
+    
+    /// 数字3填充圆形图标名称 (3.circle.fill)
+    static let iconNumberCircleFill3 = "3.circle.fill"
+    
+    // MARK: - 时间相关    
+    /// 计时器图标名称 (timer)
+    static let iconTimer = "timer"
+    
+    /// 计时器填充图标名称 (timer.fill)
+    static let iconTimerFill = "timer.fill"
 } 
+
+#if DEBUG
+/// String+Icon 扩展功能演示视图
+struct StringIconExtensionDemoView: View {
+    var body: some View {
+        TabView {
+            // 文档图标演示
+            MagicThemePreview {
+                VStack(spacing: 20) {
+                    // 文档相关
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("文档相关")
+                            .font(.headline)
+                            .foregroundStyle(.secondary)
+                        
+                        LazyVGrid(columns: [
+                            GridItem(.adaptive(minimum: 60))
+                        ], spacing: 16) {
+                            IconDemoItem(name: "文档", systemName: .iconDocument)
+                            IconDemoItem(name: "文件夹", systemName: .iconFolder)
+                            IconDemoItem(name: "文本", systemName: .iconTextDocument)
+                            IconDemoItem(name: "PDF", systemName: .iconPDFDocument)
+                            IconDemoItem(name: "图片", systemName: .iconImageDocument)
+                            IconDemoItem(name: "视频", systemName: .iconVideoDocument)
+                            IconDemoItem(name: "音频", systemName: .iconAudioDocument)
+                            IconDemoItem(name: "压缩", systemName: .iconZipDocument)
+                        }
+                        .padding()
+                        .background(.background.secondary)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                    }
+                    
+                    // 操作相关
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("操作相关")
+                            .font(.headline)
+                            .foregroundStyle(.secondary)
+                        
+                        LazyVGrid(columns: [
+                            GridItem(.adaptive(minimum: 60))
+                        ], spacing: 16) {
+                            IconDemoItem(name: "添加", systemName: .iconAdd)
+                            IconDemoItem(name: "删除", systemName: .iconTrash)
+                            IconDemoItem(name: "编辑", systemName: .iconEdit)
+                            IconDemoItem(name: "分享", systemName: .iconShare)
+                            IconDemoItem(name: "复制", systemName: .iconCopy)
+                            IconDemoItem(name: "剪切", systemName: .iconCut)
+                            IconDemoItem(name: "粘贴", systemName: .iconPaste)
+                            IconDemoItem(name: "搜索", systemName: .iconSearch)
+                        }
+                        .padding()
+                        .background(.background.secondary)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                    }
+                }
+                .padding()
+            }
+            .tabItem {
+                Image(systemName: .iconDocument)
+                Text("文档")
+            }
+            
+            // 媒体控制演示
+            MagicThemePreview {
+                VStack(spacing: 20) {
+                    // 播放控制
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("播放控制")
+                            .font(.headline)
+                            .foregroundStyle(.secondary)
+                        
+                        LazyVGrid(columns: [
+                            GridItem(.adaptive(minimum: 60))
+                        ], spacing: 16) {
+                            IconDemoItem(name: "播放", systemName: .iconPlay)
+                            IconDemoItem(name: "暂停", systemName: .iconPause)
+                            IconDemoItem(name: "停止", systemName: .iconStop)
+                            IconDemoItem(name: "快进", systemName: .iconForward)
+                            IconDemoItem(name: "快退", systemName: .iconBackward)
+                            IconDemoItem(name: "音量", systemName: .iconVolume)
+                            IconDemoItem(name: "静音", systemName: .iconMute)
+                            IconDemoItem(name: "全屏", systemName: .iconFullscreen)
+                        }
+                        .padding()
+                        .background(.background.secondary)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                    }
+                }
+                .padding()
+            }
+            .tabItem {
+                Image(systemName: .iconPlay)
+                Text("媒体")
+            }
+        }
+    }
+}
+
+/// 图标演示项
+struct IconDemoItem: View {
+    let name: String
+    let systemName: String
+    
+    var body: some View {
+        VStack {
+            Image(systemName: systemName)
+                .font(.title2)
+                .frame(height: 30)
+            Text(name)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+    }
+}
+
+#Preview("图标演示") {
+    NavigationStack {
+        StringIconExtensionDemoView()
+    }
+}
+#endif 
