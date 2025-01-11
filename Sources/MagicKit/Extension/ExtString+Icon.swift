@@ -600,6 +600,47 @@ public extension String {
     
     /// 计时器填充图标名称 (timer.fill)
     static let iconTimerFill = "timer.fill"
+    
+    // MARK: - 设置相关
+    /// 通知设置图标名称 (bell.badge)
+    static let iconNotificationSetting = "bell.badge"
+    
+    /// 主题设置图标名称 (paintbrush.fill)
+    static let iconThemeSetting = "paintbrush.fill"
+    
+    /// 音量设置图标名称 (speaker.wave.3)
+    static let iconVolumeSetting = "speaker.wave.3"
+    
+    /// 开发者设置图标名称 (hammer.circle)
+    static let iconDeveloperSetting = "hammer.circle"
+    
+    /// 质量设置图标名称 (dial.high.fill)
+    static let iconQualitySetting = "dial.high.fill"
+    
+    /// 状态设置图标名称 (circle.fill)
+    static let iconStatusSetting = "circle.fill"
+    
+    /// 缓存设置图标名称 (trash.circle)
+    static let iconCacheSetting = "trash.circle"
+    
+    /// 连接设置图标名称 (network)
+    static let iconConnectionSetting = "network"
+    
+    /// 账户设置图标名称 (person.circle)
+    static let iconAccountSetting = "person.circle"
+    
+    /// 版本信息图标名称 (info.circle)
+    static let iconVersionInfo = "info.circle"
+    
+    // MARK: - 音乐仓库
+    /// 音乐仓库图标名称 (music.note.house)
+    static let iconMusicLibrary = "music.note.house"
+    
+    /// 音乐仓库填充图标名称 (music.note.house.fill)
+    static let iconMusicLibraryFill = "music.note.house.fill"
+    
+    /// 音乐文件夹图标名称 (folder.fill.badge.plus)
+    static let iconMusicFolder = "folder.fill.badge.plus"
 } 
 
 #if DEBUG

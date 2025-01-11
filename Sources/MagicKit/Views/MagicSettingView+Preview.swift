@@ -8,6 +8,9 @@ public struct SettingExampleView: View {
     @State private var developerMode = false
     @State private var quality = "High"
     
+    private let version = "1.0.0"
+    private let build = "100"
+    
     public init() {}
     
     public var body: some View {
@@ -18,7 +21,7 @@ public struct SettingExampleView: View {
                         MagicSettingToggle(
                             title: "Enable Notifications",
                             description: "Show notifications when new updates are available",
-                            icon: "bell.badge",
+                            icon: .iconNotificationSetting,
                             isOn: $notifications
                         )
                         
@@ -27,7 +30,7 @@ public struct SettingExampleView: View {
                         MagicSettingPicker(
                             title: "Theme",
                             description: "Choose your preferred app theme",
-                            icon: "paintbrush",
+                            icon: .iconThemeSetting,
                             options: ["System", "Light", "Dark"],
                             selection: $theme
                         ) { $0 }
@@ -37,7 +40,7 @@ public struct SettingExampleView: View {
                         MagicSettingSlider(
                             title: "Volume",
                             description: "Adjust the default playback volume",
-                            icon: "speaker.wave.3",
+                            icon: .iconVolumeSetting,
                             value: $volume,
                             range: 0...1,
                             step: 0.1
@@ -50,7 +53,7 @@ public struct SettingExampleView: View {
                         MagicSettingToggle(
                             title: "Developer Mode",
                             description: "Enable advanced features and debugging tools",
-                            icon: "hammer",
+                            icon: .iconDeveloperSetting,
                             isOn: $developerMode
                         )
                         
@@ -59,7 +62,7 @@ public struct SettingExampleView: View {
                         MagicSettingPicker(
                             title: "Quality",
                             description: "Set the audio quality for playback",
-                            icon: "dial.high",
+                            icon: .iconQualitySetting,
                             options: ["Low", "Medium", "High"],
                             selection: $quality
                         ) { $0 }
@@ -72,7 +75,7 @@ public struct SettingExampleView: View {
                         MagicSettingRow(
                             title: "Status",
                             description: "Current application status",
-                            icon: "circle.fill"
+                            icon: .iconStatusSetting
                         ) {
                             Text("Running")
                                 .foregroundColor(.secondary)
@@ -84,7 +87,7 @@ public struct SettingExampleView: View {
                         MagicSettingRow(
                             title: "Cache",
                             description: "Clear temporary files to free up space",
-                            icon: "trash"
+                            icon: .iconCacheSetting
                         ) {
                             Button("Clear Cache") {
                                 // Action
@@ -97,7 +100,7 @@ public struct SettingExampleView: View {
                         MagicSettingRow(
                             title: "Connection",
                             description: "Server connection status",
-                            icon: "network"
+                            icon: .iconConnectionSetting
                         ) {
                             HStack(spacing: 8) {
                                 Circle()
@@ -114,7 +117,7 @@ public struct SettingExampleView: View {
                         MagicSettingRow(
                             title: "Account",
                             description: "Manage your account settings",
-                            icon: "person.circle"
+                            icon: .iconAccountSetting
                         ) {
                             HStack(spacing: 12) {
                                 Button("Edit") {
@@ -125,6 +128,29 @@ public struct SettingExampleView: View {
                                 }
                                 .foregroundColor(.red)
                             }
+                        }
+                    }
+                }
+                
+                MagicSettingSection(title: "About") {
+                    VStack(spacing: 0) {
+                        MagicSettingRow(
+                            title: "Version",
+                            description: "Current application version",
+                            icon: .iconVersionInfo
+                        ) {
+                            Text("\(version) (\(build))")
+                                .foregroundColor(.secondary)
+                        }
+                        
+                        Divider()
+                        
+                        MagicSettingRow(
+                            title: "Copyright",
+                            description: "© 2024 Your Company. All rights reserved.",
+                            icon: .iconInfo
+                        ) {
+                            EmptyView()
                         }
                     }
                 }
