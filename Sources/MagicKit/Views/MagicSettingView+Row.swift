@@ -6,6 +6,7 @@ public struct MagicSettingRow<Content: View>: View {
     let description: String?
     let icon: String?
     let content: Content
+    let action: (() -> Void)?
     
     @State private var isHovered = false
     @State private var isPressed = false
@@ -14,38 +15,46 @@ public struct MagicSettingRow<Content: View>: View {
         title: String,
         description: String? = nil,
         icon: String? = nil,
+        action: (() -> Void)? = nil,
         @ViewBuilder content: () -> Content
     ) {
         self.title = title
         self.description = description
         self.icon = icon
+        self.action = action
         self.content = content()
     }
     
     public var body: some View {
-        HStack(alignment: .center, spacing: 16) {
-            if let icon = icon {
-                Image(systemName: icon)
-                    .font(.system(size: 20))
-                    .foregroundStyle(.secondary)
-                    .frame(width: 24, height: 24)
-            }
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text(title)
-                    .font(.body)
-                
-                if let description = description {
-                    Text(description)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+        Button(action: {
+            action?()
+        }) {
+            HStack(alignment: .center, spacing: 16) {
+                if let icon = icon {
+                    Image(systemName: icon)
+                        .font(.system(size: 20))
+                        .foregroundStyle(.secondary)
+                        .frame(width: 24, height: 24)
                 }
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(title)
+                        .font(.body)
+                    
+                    if let description = description {
+                        Text(description)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                
+                Spacer()
+                
+                content
             }
-            
-            Spacer()
-            
-            content
+            .contentShape(Rectangle())
         }
+        .buttonStyle(.plain)
         .padding(.vertical, 8)
         .padding(.horizontal, 8)
         .background {
