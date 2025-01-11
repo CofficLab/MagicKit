@@ -15,7 +15,13 @@ let package = Package(
             targets: ["MagicKit"]),
         .library(
             name: "MagicPlayMan",
-            targets: ["MagicPlayMan"])
+            targets: ["MagicPlayMan"]),
+        .library(
+            name: "MagicWeb",
+            targets: ["MagicWeb"]),
+        .library(
+            name: "MagicAsset",
+            targets: ["MagicAsset"]),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-async-algorithms", from: "0.1.0"),
@@ -31,6 +37,14 @@ let package = Package(
         ),
         .target(
             name: "MagicPlayMan",
+            dependencies: ["MagicKit"]
+        ),
+        .target(
+            name: "MagicWeb",
+            dependencies: ["MagicKit"]
+        ),
+        .target(
+            name: "MagicAsset",
             dependencies: ["MagicKit"]
         ),
         .testTarget(

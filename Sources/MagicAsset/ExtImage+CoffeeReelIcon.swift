@@ -1,4 +1,5 @@
 import SwiftUI
+import MagicKit
 
 public extension Image {
     static func makeCoffeeReelIcon(useDefaultBackground: Bool = true, plateColor: Color = .white) -> some View {
