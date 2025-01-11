@@ -5,9 +5,10 @@ public extension Image {
     static func makeBookIcon(
         useDefaultBackground: Bool = true,
         borderColor: Color = .blue,
-        size: CGFloat? = nil
+        size: CGFloat? = nil,
+        shape: IconShape = .circle
     ) -> some View {
-        IconContainer(size: size) {
+        IconContainer(size: size, shape: shape) {
             BookIcon(
                 useDefaultBackground: useDefaultBackground,
                 borderColor: borderColor
@@ -61,7 +62,21 @@ struct BookIcon: View {
 }
 
 #Preview {
-    IconPreviewHelper(title: "Book Icon") {
-        Image.makeBookIcon()
+    VStack(spacing: 20) {
+        IconPreviewHelper(title: "Book Icon (Default)") {
+            Image.makeBookIcon()
+        }
+        
+        IconPreviewHelper(title: "Book Icon (Circle)") {
+            Image.makeBookIcon(shape: .circle)
+        }
+        
+        IconPreviewHelper(title: "Book Icon (Rectangle)") {
+            Image.makeBookIcon(shape: .rectangle)
+        }
+        
+        IconPreviewHelper(title: "Book Icon (Custom Rounded)") {
+            Image.makeBookIcon(shape: .roundedRectangle(radius: 24))
+        }
     }
 }
