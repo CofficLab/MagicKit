@@ -1,55 +1,64 @@
-import SwiftUI
 import MagicKit
+import SwiftUI
 
 public extension Image {
-    static func makeGlobeIcon(useDefaultBackground: Bool = true, borderColor: Color = .blue) -> some View {
-        GlobeIcon(useDefaultBackground: useDefaultBackground, borderColor: borderColor)
+    static func makeGlobeIcon(
+        useDefaultBackground: Bool = true,
+        borderColor: Color = .blue,
+        size: CGFloat? = nil
+    ) -> some View {
+        IconContainer(size: size) {
+            GlobeIcon(
+                useDefaultBackground: useDefaultBackground,
+                borderColor: borderColor
+            )
+        }
     }
 }
 
 struct GlobeIcon: View {
     let useDefaultBackground: Bool
     let borderColor: Color
-    
+
     var body: some View {
         GeometryReader { geometry in
             let size = min(geometry.size.width, geometry.size.height)
-            
+
             ZStack {
                 // 背景层：深邃的太空渐变
                 if useDefaultBackground {
                     LinearGradient(
                         colors: [
                             Color(red: 0.1, green: 0.1, blue: 0.2),
-                            Color(red: 0.15, green: 0.15, blue: 0.3)
+                            Color(red: 0.15, green: 0.15, blue: 0.3),
                         ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     )
-                    
+
                     // 星星背景
-                    ForEach(0..<20) { index in
+                    ForEach(0 ..< 20) { _ in
                         Circle()
                             .fill(.white)
                             .frame(width: size * 0.01)
                             .offset(
-                                x: CGFloat.random(in: -size/2...size/2),
-                                y: CGFloat.random(in: -size/2...size/2)
+                                x: CGFloat.random(in: -size / 2 ... size / 2),
+                                y: CGFloat.random(in: -size / 2 ... size / 2)
                             )
-                            .opacity(Double.random(in: 0.3...0.8))
+                            .opacity(Double.random(in: 0.3 ... 0.8))
                     }
                 } else {
                     Color.clear
                 }
-                
+
                 // 边框层：圆角矩形边框
                 RoundedRectangle(cornerRadius: size * 0.2)
                     .stroke(borderColor, lineWidth: size * 0.08)
                     .frame(width: size * 0.9, height: size * 0.9)
-                
+
                 ZStack {
                     // 轨道环
-                    ForEach(0..<2) { index in
+                    ForEach(0 ..< 2) { index in
                         Ellipse()
                             .stroke(
                                 .linearGradient(
@@ -63,7 +72,7 @@ struct GlobeIcon: View {
                             .rotationEffect(.degrees(Double(index) * 60))
                             .shadow(color: .blue.opacity(0.3), radius: 4)
                     }
-                    
+
                     // 地球主体
                     ZStack {
                         // 地球底色
@@ -72,15 +81,15 @@ struct GlobeIcon: View {
                                 LinearGradient(
                                     colors: [
                                         Color(red: 0.2, green: 0.5, blue: 0.8),
-                                        Color(red: 0.1, green: 0.3, blue: 0.6)
+                                        Color(red: 0.1, green: 0.3, blue: 0.6),
                                     ],
                                     startPoint: .topLeading,
                                     endPoint: .bottomTrailing
                                 )
                             )
-                        
+
                         // 大陆轮廓
-                        ForEach(0..<3) { index in
+                        ForEach(0 ..< 3) { index in
                             Path { path in
                                 path.move(to: CGPoint(x: -20, y: CGFloat(index * 10) - 10))
                                 path.addCurve(
@@ -96,7 +105,7 @@ struct GlobeIcon: View {
                     }
                     .frame(width: size * 0.45, height: size * 0.45)
                     .shadow(color: .blue.opacity(0.5), radius: 10)
-                    
+
                     // 卫星
                     Circle()
                         .fill(.white)
@@ -104,7 +113,7 @@ struct GlobeIcon: View {
                         .offset(x: size * 0.25, y: -size * 0.15)
                         .shadow(color: .white.opacity(0.5), radius: 4)
                 }
-                
+
                 // 大气层光晕效果
                 Circle()
                     .fill(
@@ -123,14 +132,16 @@ struct GlobeIcon: View {
 }
 
 #Preview {
-    MagicThemePreview {
-        VStack(spacing: 20) {
-            Image.makeGlobeIcon(useDefaultBackground: true)
-                .frame(width: 500, height: 500)
-            
-            Image.makeGlobeIcon(useDefaultBackground: false, borderColor: .red)
-                .frame(width: 500, height: 500)
-                .background(Color.gray.opacity(0.2))
+    VStack(spacing: 30) {
+        IconPreviewHelper(title: "Globe Icon") {
+            Image.makeGlobeIcon()
+        }
+
+        IconPreviewHelper(title: "Globe Icon (Custom)") {
+            Image.makeGlobeIcon(
+                useDefaultBackground: false,
+                borderColor: .purple
+            )
         }
     }
-} 
+}

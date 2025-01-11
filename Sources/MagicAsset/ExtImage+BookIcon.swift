@@ -1,20 +1,28 @@
-import SwiftUI
 import MagicKit
+import SwiftUI
 
 public extension Image {
-    static func makeBookIcon(useDefaultBackground: Bool = true, borderColor: Color = .blue) -> some View {
-        BookIcon(useDefaultBackground: useDefaultBackground, borderColor: borderColor)
+    static func makeBookIcon(
+        useDefaultBackground: Bool = true,
+        borderColor: Color = .blue,
+        size: CGFloat? = nil
+    ) -> some View {
+        IconContainer(size: size) {
+            BookIcon(
+                useDefaultBackground: useDefaultBackground,
+                borderColor: borderColor
+            )
+        }
     }
 }
 
 struct BookIcon: View {
     let useDefaultBackground: Bool
     let borderColor: Color
-    
+
     var body: some View {
         GeometryReader { geometry in
             let size = min(geometry.size.width, geometry.size.height)
-            
             ZStack {
                 // 背景层：紫色到蓝色的渐变，营造知识的神秘感
                 if useDefaultBackground {
@@ -26,12 +34,12 @@ struct BookIcon: View {
                 } else {
                     Color.clear
                 }
-                
+
                 // 边框层：圆角矩形边框，提供图标的基本轮廓
                 RoundedRectangle(cornerRadius: size * 0.2)
                     .stroke(borderColor, lineWidth: size * 0.08)
                     .frame(width: size * 0.9, height: size * 0.9)
-                
+
                 // 图标层：书本图标带有渐变色填充
                 Image(systemName: "book.fill")
                     .resizable()
@@ -53,14 +61,7 @@ struct BookIcon: View {
 }
 
 #Preview {
-    MagicThemePreview {
-        VStack(spacing: 20) {
-            Image.makeBookIcon(useDefaultBackground: true)
-                .frame(width: 500, height: 500)
-            
-            Image.makeBookIcon(useDefaultBackground: false, borderColor: .red)
-                .frame(width: 500, height: 500)
-                .background(Color.gray.opacity(0.2))
-        }
+    IconPreviewHelper(title: "Book Icon") {
+        Image.makeBookIcon()
     }
-} 
+}

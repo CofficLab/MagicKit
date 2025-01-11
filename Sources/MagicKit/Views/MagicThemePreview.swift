@@ -7,6 +7,59 @@ public struct MagicThemePreview<Content: View>: View {
     private let content: Content
     private let showsIndicators: Bool
     @State private var isDarkMode = false
+    @State private var selectedSize: PreviewSize = .full
+    
+    // Add this enum
+    private enum PreviewSize: String, CaseIterable {
+        case full = "全屏"
+        case iPhoneSE = "iPhone SE"
+        case iPhone = "iPhone 14"
+        case iPhonePlus = "iPhone 14 Plus"
+        case iPhoneMax = "iPhone 14 Pro Max"
+        case iPadMini = "iPad mini"
+        case iPad = "iPad"
+        case iPadPro11 = "iPad Pro 11"
+        case iPadPro12 = "iPad Pro 12.9"
+        case mac = "Mac"
+        
+        var size: CGSize {
+            switch self {
+            case .full:
+                return CGSize(width: CGFloat.infinity, height: CGFloat.infinity)
+            case .iPhoneSE:
+                return CGSize(width: 375, height: 667)
+            case .iPhone:
+                return CGSize(width: 390, height: 844)
+            case .iPhonePlus:
+                return CGSize(width: 428, height: 926)
+            case .iPhoneMax:
+                return CGSize(width: 430, height: 932)
+            case .iPadMini:
+                return CGSize(width: 744, height: 1133)
+            case .iPad:
+                return CGSize(width: 820, height: 1180)
+            case .iPadPro11:
+                return CGSize(width: 834, height: 1194)
+            case .iPadPro12:
+                return CGSize(width: 1024, height: 1366)
+            case .mac:
+                return CGSize(width: 1024, height: 768)
+            }
+        }
+        
+        var icon: String {
+            switch self {
+            case .full:
+                return "rectangle"
+            case .iPhoneSE, .iPhone, .iPhonePlus, .iPhoneMax:
+                return "iphone"
+            case .iPadMini, .iPad, .iPadPro11, .iPadPro12:
+                return "ipad"
+            case .mac:
+                return "desktopcomputer"
+            }
+        }
+    }
     
     // MARK: - Initialization
     /// 创建主题预览容器
@@ -35,7 +88,28 @@ public struct MagicThemePreview<Content: View>: View {
                 // MARK: Content Area
                 ScrollView(.vertical, showsIndicators: showsIndicators) {
                     content
+                        .frame(
+                            maxWidth: selectedSize == .full ? .infinity : selectedSize.size.width,
+                            maxHeight: selectedSize == .full ? .infinity : selectedSize.size.height
+                        )
                         .frame(maxWidth: .infinity)
+                        .background(selectedSize == .full ? nil : Color.primary.opacity(0.05))
+                        .clipShape(RoundedRectangle(cornerRadius: selectedSize == .full ? 0 : 8))
+                        .overlay(
+                            Group {
+                                if selectedSize != .full {
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .strokeBorder(style: StrokeStyle(
+                                            lineWidth: 2,
+                                            dash: [8, 4]
+                                        ))
+                                        .foregroundStyle(.secondary.opacity(0.8))
+                                        .padding(20)
+                                }
+                            }
+                        )
+                        .padding(.horizontal, selectedSize == .full ? 0 : 40)
+                        .padding(.vertical, selectedSize == .full ? 0 : 20)
                 }
             }
         }
@@ -48,6 +122,19 @@ public struct MagicThemePreview<Content: View>: View {
     // MARK: - Toolbar View
     private var toolbar: some View {
         HStack(spacing: 8) {
+            // MARK: Size Selector
+            Picker("Size", selection: $selectedSize) {
+                ForEach(PreviewSize.allCases, id: \.self) { size in
+                    HStack {
+                        Image(systemName: size.icon)
+                        Text(size.rawValue)
+                    }
+                    .tag(size)
+                }
+            }
+            .pickerStyle(.menu)
+            .frame(width: 120)
+            
             Spacer()
             
             // MARK: Theme Toggle Button

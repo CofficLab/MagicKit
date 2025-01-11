@@ -1,9 +1,18 @@
-import SwiftUI
 import MagicKit
+import SwiftUI
 
 public extension Image {
-    static func makeCoffeeReelIcon(useDefaultBackground: Bool = true, plateColor: Color = .white) -> some View {
-        CoffeeReelIcon(useDefaultBackground: useDefaultBackground, plateColor: plateColor)
+    static func makeCoffeeReelIcon(
+        useDefaultBackground: Bool = true,
+        plateColor: Color = .white,
+        size: CGFloat? = nil
+    ) -> some View {
+        IconContainer(size: size) {
+            CoffeeReelIcon(
+                useDefaultBackground: useDefaultBackground,
+                plateColor: plateColor
+            )
+        }
     }
 }
 
@@ -108,18 +117,8 @@ struct CoffeeReelIcon: View {
     }
 }
 
-// 预览
 #Preview {
-    MagicThemePreview {
-        VStack {
-            Image.makeCoffeeReelIcon(useDefaultBackground: true)
-                .frame(height: 500)
-                .frame(width: 500)
-
-            Image.makeCoffeeReelIcon(useDefaultBackground: false, plateColor: .blue)
-                .frame(height: 500)
-                .frame(width: 500)
-                .background(Color.gray.opacity(0.2))
-        }
+    IconPreviewHelper(title: "Coffee Reel Icon") {
+        Image.makeCoffeeReelIcon()
     }
 }

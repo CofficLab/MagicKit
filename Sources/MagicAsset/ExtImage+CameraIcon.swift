@@ -1,20 +1,28 @@
-import SwiftUI
 import MagicKit
+import SwiftUI
 
 public extension Image {
-    static func makeCameraIcon(useDefaultBackground: Bool = true, borderColor: Color = .blue) -> some View {
-        CameraIcon(useDefaultBackground: useDefaultBackground, borderColor: borderColor)
+    static func makeCameraIcon(
+        useDefaultBackground: Bool = true,
+        borderColor: Color = .blue,
+        size: CGFloat? = nil
+    ) -> some View {
+        IconContainer(size: size) {
+            CameraIcon(
+                useDefaultBackground: useDefaultBackground,
+                borderColor: borderColor
+            )
+        }
     }
 }
 
 struct CameraIcon: View {
     let useDefaultBackground: Bool
     let borderColor: Color
-    
+
     var body: some View {
         GeometryReader { geometry in
             let size = min(geometry.size.width, geometry.size.height)
-            
             ZStack {
                 // 背景层：绿色到蓝色的渐变，营造科技感
                 if useDefaultBackground {
@@ -26,12 +34,12 @@ struct CameraIcon: View {
                 } else {
                     Color.clear
                 }
-                
+
                 // 边框层：圆角矩形边框
                 RoundedRectangle(cornerRadius: size * 0.2)
                     .stroke(borderColor, lineWidth: size * 0.08)
                     .frame(width: size * 0.9, height: size * 0.9)
-                
+
                 ZStack {
                     // 相机主体：使用系统相机图标
                     Image(systemName: "camera.fill")
@@ -46,7 +54,7 @@ struct CameraIcon: View {
                                 endPoint: .bottom
                             )
                         )
-                    
+
                     // 镜头效果：使用圆形渐变模拟镜头
                     Circle()
                         .fill(
@@ -66,14 +74,7 @@ struct CameraIcon: View {
 }
 
 #Preview {
-    MagicThemePreview {
-        VStack(spacing: 20) {
-            Image.makeCameraIcon(useDefaultBackground: true)
-                .frame(width: 500, height: 500)
-            
-            Image.makeCameraIcon(useDefaultBackground: false, borderColor: .orange)
-                .frame(width: 500, height: 500)
-                .background(Color.gray.opacity(0.2))
-        }
+    IconPreviewHelper(title: "Camera Icon") {
+        Image.makeCameraIcon()
     }
 }
