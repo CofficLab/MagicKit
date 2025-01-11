@@ -7,6 +7,9 @@ public struct MagicSettingRow<Content: View>: View {
     let icon: String?
     let content: Content
     
+    @State private var isHovered = false
+    @State private var isPressed = false
+    
     public init(
         title: String,
         description: String? = nil,
@@ -44,6 +47,40 @@ public struct MagicSettingRow<Content: View>: View {
             content
         }
         .padding(.vertical, 8)
+        .padding(.horizontal, 8)
+        .background {
+            RoundedRectangle(cornerRadius: 6)
+                .fill(isPressed ? Color.primary.opacity(0.1) :
+                      isHovered ? Color.primary.opacity(0.05) : Color.clear)
+                .animation(.easeOut(duration: 0.15), value: isHovered)
+                .animation(.easeOut(duration: 0.1), value: isPressed)
+        }
+        .onHover { hovering in
+            isHovered = hovering
+        }
+        .pressAction { isPressed in
+            self.isPressed = isPressed
+        }
+    }
+}
+
+// MARK: - Press Action Modifier
+extension View {
+    fileprivate func pressAction(onPress: @escaping (Bool) -> Void) -> some View {
+        modifier(PressActionModifier(onPress: onPress))
+    }
+}
+
+fileprivate struct PressActionModifier: ViewModifier {
+    let onPress: (Bool) -> Void
+    
+    func body(content: Content) -> some View {
+        content
+            .simultaneousGesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { _ in onPress(true) }
+                    .onEnded { _ in onPress(false) }
+            )
     }
 }
 
@@ -55,7 +92,7 @@ public struct MagicSettingRow<Content: View>: View {
             MagicSettingRow(
                 title: "Basic Setting",
                 description: "A simple setting row with text content",
-                icon: "gear"
+                icon: .iconGear
             ) {
                 Text("Value")
                     .foregroundColor(.secondary)
@@ -66,7 +103,7 @@ public struct MagicSettingRow<Content: View>: View {
             // Row with button
             MagicSettingRow(
                 title: "Action Setting",
-                icon: "arrow.up.circle"
+                icon: .iconArrowUpCircle
             ) {
                 Button("Open") {
                     // Action
@@ -79,9 +116,9 @@ public struct MagicSettingRow<Content: View>: View {
             MagicSettingRow(
                 title: "Image Setting",
                 description: "Setting with system image",
-                icon: "star"
+                icon: .iconStar
             ) {
-                Image(systemName: "star.fill")
+                Image(systemName: .iconStarFill)
                     .foregroundColor(.yellow)
             }
             
@@ -91,7 +128,7 @@ public struct MagicSettingRow<Content: View>: View {
             MagicSettingRow(
                 title: "Custom Control",
                 description: "Setting with custom control",
-                icon: "dot.circle"
+                icon: .iconDotCircle
             ) {
                 HStack(spacing: 8) {
                     Circle()
@@ -104,10 +141,10 @@ public struct MagicSettingRow<Content: View>: View {
             
             Divider()
             
-            // Row with multiple controls
+            // Row with multiple actions
             MagicSettingRow(
                 title: "Multiple Controls",
-                icon: "person.circle"
+                icon: .iconPersonCircle
             ) {
                 HStack(spacing: 12) {
                     Button("Edit") {
@@ -119,6 +156,6 @@ public struct MagicSettingRow<Content: View>: View {
                     .foregroundColor(.red)
                 }
             }
-        }.padding()
+        }
     }
 }

@@ -265,8 +265,8 @@ public extension String {
     /// 云下载图标名称 (cloud.download)
     static let iconCloudDownload = "cloud.download"
     
-    /// 云上传图标名称 (cloud.upload)
-    static let iconCloudUpload = "cloud.upload"
+    /// 云上传图标名称 (icloud.and.arrow.up)
+    static let iconCloudUpload = "icloud.and.arrow.up"
     
     // MARK: - 系统状态
     /// 占位图标名称 (placeholder)
@@ -641,6 +641,46 @@ public extension String {
     
     /// 音乐文件夹图标名称 (folder.fill.badge.plus)
     static let iconMusicFolder = "folder.fill.badge.plus"
+    
+    // MARK: - 音频设备
+    /// 输入设备图标名称 (mic)
+    static let iconAudioInput = "mic"
+    
+    /// 输出设备图标名称 (speaker.wave.2.circle)
+    static let iconAudioOutput = "speaker.wave.2.circle"
+    
+    // MARK: - 云同步
+    /// 云禁用图标名称 (icloud.slash)
+    static let iconCloudSlash = "icloud.slash"
+    
+    /// 箭头循环图标名称 (arrow.clockwise)
+    static let iconArrowClockwise = "arrow.clockwise"
+    
+    // MARK: - 设置行图标
+    /// 齿轮图标名称 (gearshape)
+    static let iconGear = "gearshape"
+    
+    /// 向上箭头圆形图标名称 (arrow.up.circle)
+    static let iconArrowUpCircle = "arrow.up.circle"
+        
+    /// 圆点圆形图标名称 (dot.circle)
+    static let iconDotCircle = "dot.circle"
+    
+    /// 人物圆形图标名称 (person.circle)
+    static let iconPersonCircle = "person.circle"
+    
+    // MARK: - 性能和质量
+    /// 速度计图标名称 (gauge.medium)
+    static let iconSpeedometer = "gauge.medium"
+    
+    /// 中速速度计图标名称 (gauge.high)
+    static let iconSpeedometerMedium = "gauge.high"
+    
+    /// 高速速度计图标名称 (gauge.badge.plus)
+    static let iconSpeedometerHigh = "gauge.badge.plus"
+        
+    /// 图表图标名称 (chart.bar)
+    static let iconChart = "chart.bar"
 } 
 
 #if DEBUG
