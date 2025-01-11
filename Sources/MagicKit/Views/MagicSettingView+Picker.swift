@@ -4,6 +4,7 @@ import SwiftUI
 public struct MagicSettingPicker<T: Hashable>: View {
     let title: String
     let description: String?
+    let icon: String?
     let options: [T]
     let optionToString: (T) -> String
     @Binding var selection: T
@@ -11,19 +12,21 @@ public struct MagicSettingPicker<T: Hashable>: View {
     public init(
         title: String,
         description: String? = nil,
+        icon: String? = nil,
         options: [T],
         selection: Binding<T>,
         optionToString: @escaping (T) -> String
     ) {
         self.title = title
         self.description = description
+        self.icon = icon
         self.options = options
         self._selection = selection
         self.optionToString = optionToString
     }
     
     public var body: some View {
-        MagicSettingRow(title: title, description: description) {
+        MagicSettingRow(title: title, description: description, icon: icon) {
             Picker("", selection: $selection) {
                 ForEach(options, id: \.self) { option in
                     Text(optionToString(option))
@@ -43,6 +46,7 @@ public struct MagicSettingPicker<T: Hashable>: View {
             MagicSettingPicker(
                 title: "Theme",
                 description: "Choose your preferred app theme",
+                icon: "paintbrush",
                 options: ["System", "Light", "Dark"],
                 selection: .constant("System")
             ) { $0 }
@@ -51,6 +55,7 @@ public struct MagicSettingPicker<T: Hashable>: View {
             
             MagicSettingPicker(
                 title: "Quality",
+                icon: "dial.high",
                 options: ["Low", "Medium", "High"],
                 selection: .constant("High")
             ) { $0 }

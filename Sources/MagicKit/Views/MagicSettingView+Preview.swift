@@ -18,6 +18,7 @@ public struct SettingExampleView: View {
                         MagicSettingToggle(
                             title: "Enable Notifications",
                             description: "Show notifications when new updates are available",
+                            icon: "bell.badge",
                             isOn: $notifications
                         )
                         
@@ -26,6 +27,7 @@ public struct SettingExampleView: View {
                         MagicSettingPicker(
                             title: "Theme",
                             description: "Choose your preferred app theme",
+                            icon: "paintbrush",
                             options: ["System", "Light", "Dark"],
                             selection: $theme
                         ) { $0 }
@@ -35,6 +37,7 @@ public struct SettingExampleView: View {
                         MagicSettingSlider(
                             title: "Volume",
                             description: "Adjust the default playback volume",
+                            icon: "speaker.wave.3",
                             value: $volume,
                             range: 0...1,
                             step: 0.1
@@ -47,6 +50,7 @@ public struct SettingExampleView: View {
                         MagicSettingToggle(
                             title: "Developer Mode",
                             description: "Enable advanced features and debugging tools",
+                            icon: "hammer",
                             isOn: $developerMode
                         )
                         
@@ -55,6 +59,7 @@ public struct SettingExampleView: View {
                         MagicSettingPicker(
                             title: "Quality",
                             description: "Set the audio quality for playback",
+                            icon: "dial.high",
                             options: ["Low", "Medium", "High"],
                             selection: $quality
                         ) { $0 }
@@ -66,7 +71,8 @@ public struct SettingExampleView: View {
                         // Basic row with text
                         MagicSettingRow(
                             title: "Status",
-                            description: "Current application status"
+                            description: "Current application status",
+                            icon: "circle.fill"
                         ) {
                             Text("Running")
                                 .foregroundColor(.secondary)
@@ -77,7 +83,8 @@ public struct SettingExampleView: View {
                         // Row with button
                         MagicSettingRow(
                             title: "Cache",
-                            description: "Clear temporary files to free up space"
+                            description: "Clear temporary files to free up space",
+                            icon: "trash"
                         ) {
                             Button("Clear Cache") {
                                 // Action
@@ -89,7 +96,8 @@ public struct SettingExampleView: View {
                         // Row with indicator
                         MagicSettingRow(
                             title: "Connection",
-                            description: "Server connection status"
+                            description: "Server connection status",
+                            icon: "network"
                         ) {
                             HStack(spacing: 8) {
                                 Circle()
@@ -105,7 +113,8 @@ public struct SettingExampleView: View {
                         // Row with multiple actions
                         MagicSettingRow(
                             title: "Account",
-                            description: "Manage your account settings"
+                            description: "Manage your account settings",
+                            icon: "person.circle"
                         ) {
                             HStack(spacing: 12) {
                                 Button("Edit") {
