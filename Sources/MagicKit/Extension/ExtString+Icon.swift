@@ -46,6 +46,9 @@ public extension String {
     /// 清除图标名称 (trash)
     static let iconTrash = "trash"
     
+    /// 重置图标名称 (arrow.counterclockwise)
+    static let iconReset = "arrow.counterclockwise"
+    
     /// 清除填充图标名称 (trash.fill)
     static let iconTrashFill = "trash.fill"
     
@@ -647,6 +650,7 @@ struct StringIconExtensionDemoView: View {
                             IconDemoItem(name: "剪切", systemName: .iconCut)
                             IconDemoItem(name: "粘贴", systemName: .iconPaste)
                             IconDemoItem(name: "搜索", systemName: .iconSearch)
+                            IconDemoItem(name: "重置", systemName: .iconReset)
                         }
                         .padding()
                         .background(.background.secondary)

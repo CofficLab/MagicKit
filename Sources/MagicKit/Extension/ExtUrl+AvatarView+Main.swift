@@ -313,7 +313,7 @@ public struct AvatarView: View, SuperLog {
                     }
                 } else {
                     viewError = .thumbnailGenerationFailed
-                    addLog("未知错误: \(error.localizedDescription)", level: .error)
+                    addLog("🙋 未知错误: \(error.localizedDescription)", level: .error)
                 }
 
                 await state.setError(viewError)
