@@ -80,7 +80,23 @@ public extension String {
         !isEven
     }
     
-    // ... 其他现有方法保持不变 ...
+    /// 创建一个带有图标预览的按钮
+    /// ```swift
+    /// let button = "star".previewIconButton()
+    /// ```
+    /// - Returns: 一个 MagicButton，点击后会显示所有图标的预览
+    func previewIconButton() -> MagicButton {
+        MagicButton(
+            icon: self,
+            style: .secondary,
+            size: .regular,
+            shape: .roundedRectangle,
+            popoverContent: AnyView(
+                StringIconExtensionDemoView()
+                    .frame(width: 500)
+            )
+        )
+    }
 }
 
 #if DEBUG
@@ -122,6 +138,30 @@ struct StringExtensionDemoView: View {
                             MagicKeyValue(key: "7.isOdd", value: "true") {
                                 Image(systemName: "7".isOdd ? .iconCheckmark : .iconClose)
                                     .foregroundStyle(.green)
+                            }
+                        }
+                        .padding()
+                        .background(.background.secondary)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                    }
+                    
+                    // 图标预览按钮
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("图标预览按钮")
+                            .font(.headline)
+                            .foregroundStyle(.secondary)
+                        
+                        VStack(spacing: 8) {
+                            MagicKeyValue(key: "\"star\".previewIconButton()", value: "") {
+                                "star".previewIconButton()
+                            }
+                            
+                            MagicKeyValue(key: "组合使用", value: "") {
+                                HStack(spacing: 12) {
+                                    "heart".previewIconButton()
+                                    "music.note".previewIconButton()
+                                    "photo".previewIconButton()
+                                }
                             }
                         }
                         .padding()
