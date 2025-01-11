@@ -1,6 +1,5 @@
 import SwiftUI
 
-
 /// 头像视图的功能展示组件
 public struct AvatarDemoView: View {
     @State private var downloadProgress: Double = 0.0

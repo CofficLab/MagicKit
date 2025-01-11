@@ -77,19 +77,31 @@ public extension URL {
         return false
     }
     
+    /// 判断 URL 对应的文件是否正在从 iCloud 下载中
+    /// - Returns: 如果文件是 iCloud 文件且正在下载返回 true，否则返回 false
+    /// - Note: 此属性会检查以下条件：
+    ///   1. 文件必须是 iCloud 文件
+    ///   2. 文件当前状态必须是正在下载（URLUbiquitousItemDownloadingStatus）
     var isDownloading: Bool {
-        guard isiCloud,
-              let resources = try? self.resourceValues(forKeys: [
-                .ubiquitousItemDownloadingStatusKey
-              ]) else {
+        // 首先确保是 iCloud 文件
+        guard isiCloud else {
             return false
         }
         
+        // 获取文件的下载状态
+        guard let resources = try? self.resourceValues(forKeys: [
+            .ubiquitousItemDownloadingStatusKey
+        ]) else {
+            return false
+        }
+        
+        // 检查下载状态
         guard let status = resources.ubiquitousItemDownloadingStatus else {
             return false
         }
         
-        return status == .notDownloaded || status == .downloaded
+        // 使用原始字符串比较，因为 Apple 的 API 在不同系统版本中可能有差异
+        return status.rawValue == "NSMetadataUbiquitousItemDownloadingStatusDownloading"
     }
     
     var isNotDownloaded: Bool {

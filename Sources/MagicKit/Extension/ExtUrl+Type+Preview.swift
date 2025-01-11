@@ -4,40 +4,40 @@ import SwiftUI
 // MARK: - Preview Container
 struct FileTypePreviewContainer: View {
     var body: some View {
-        TabView {
-            // 媒体文件预览
-            MediaFilesPreview()
-                .tabItem {
-                    Label("媒体", systemImage: .iconPlay)
-                }
-            
-            // 文档文件预览
-            DocumentFilesPreview()
-                .tabItem {
-                    Label("文档", systemImage: .iconDocument)
-                }
-            
-            // 开发文件预览
-            DeveloperFilesPreview()
-                .tabItem {
-                    Label("开发", systemImage: .iconCode)
-                }
-            
-            // 其他文件预览
-            OtherFilesPreview()
-                .tabItem {
-                    Label("其他", systemImage: .iconMore)
-                }
+        MagicThemePreview {
+            TabView {
+                // 媒体文件预览
+                MediaFilesPreview()
+                    .tabItem {
+                        Label("媒体", systemImage: .iconPlay)
+                    }
+                
+                // 文档文件预览
+                DocumentFilesPreview()
+                    .tabItem {
+                        Label("文档", systemImage: .iconDocument)
+                    }
+                
+                // 开发文件预览
+                DeveloperFilesPreview()
+                    .tabItem {
+                        Label("开发", systemImage: .iconCode)
+                    }
+                
+                // 其他文件预览
+                OtherFilesPreview()
+                    .tabItem {
+                        Label("其他", systemImage: .iconMore)
+                    }
+            }
         }
-        .frame(width: 500, height: 600)
-        .background(MagicBackground.mysticalForest)
     }
 }
 
 // MARK: - Media Files Preview
 private struct MediaFilesPreview: View {
     var body: some View {
-        List {
+        LazyVStack(alignment: .leading, spacing: 16) {
             Group {
                 // 音频文件
                 PreviewSection(title: "音频文件") {
@@ -63,13 +63,14 @@ private struct MediaFilesPreview: View {
                 }
             }
         }
+        .padding()
     }
 }
 
 // MARK: - Document Files Preview
 private struct DocumentFilesPreview: View {
     var body: some View {
-        List {
+        LazyVStack(alignment: .leading, spacing: 16) {
             Group {
                 // 文档文件
                 PreviewSection(title: "Office文档") {
@@ -93,13 +94,14 @@ private struct DocumentFilesPreview: View {
                 }
             }
         }
+        .padding()
     }
 }
 
 // MARK: - Developer Files Preview
 private struct DeveloperFilesPreview: View {
     var body: some View {
-        List {
+        LazyVStack(alignment: .leading, spacing: 16) {
             Group {
                 // 代码文件
                 PreviewSection(title: "代码文件") {
@@ -116,13 +118,14 @@ private struct DeveloperFilesPreview: View {
                 }
             }
         }
+        .padding()
     }
 }
 
 // MARK: - Other Files Preview
 private struct OtherFilesPreview: View {
     var body: some View {
-        List {
+        LazyVStack(alignment: .leading, spacing: 16) {
             Group {
                 // 压缩文件
                 PreviewSection(title: "压缩文件") {
@@ -139,6 +142,7 @@ private struct OtherFilesPreview: View {
                 }
             }
         }
+        .padding()
     }
 }
 
@@ -153,9 +157,14 @@ private struct PreviewSection<Content: View>: View {
     }
     
     var body: some View {
-        Section(title) {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(title)
+                .font(.title2)
+                .fontWeight(.bold)
+            
             content
         }
+        .padding(.vertical, 8)
     }
 }
 
@@ -168,8 +177,16 @@ private struct FileTypeRow: View {
             Text(title)
                 .font(.headline)
             
-            url.label
-                .foregroundStyle(.secondary)
+            HStack(spacing: 20) {
+                // 普通状态
+                VStack {
+                    url.defaultImage
+                        .font(.title)
+                    Text("已下载")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+            }
             
             Text(url.lastPathComponent)
                 .font(.caption)

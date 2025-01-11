@@ -116,11 +116,10 @@ public struct MediaFileView: View {
     /// 创建媒体文件视图
     /// - Parameters:
     ///   - url: 文件的 URL
-    ///   - size: 文件大小的字符串表示
-    public init(url: URL, size: String, verbose: Bool) {
+    public init(url: URL, verbose: Bool) {
         self.url = url
-        self.size = size
         self.verbose = verbose
+        self.size = url.getSizeReadable()
     }
 
     public var body: some View {

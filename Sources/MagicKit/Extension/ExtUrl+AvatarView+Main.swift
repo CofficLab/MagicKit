@@ -61,20 +61,15 @@ public struct AvatarView: View, SuperLog {
 
     /// 视图背景色
     var backgroundColor: Color = .blue.opacity(0.1)
-    
+
     /// 控制文件选择器的显示
     @State private var isImagePickerPresented = false
-    
+
     /// 控制日志显示
     @State private var showLogSheet = false
-    
+
     /// 日志记录
-    @State private var logs: [String] = []
-    
-    /// 控制复制提示的显示
-    @State private var showToast = false
-    @State private var toastMessage = ""
-    @State private var copiedLogIndex: Int?
+    @State private var logs: [MagicLogEntry] = []
 
     // MARK: - Computed Properties
 
@@ -129,198 +124,11 @@ public struct AvatarView: View, SuperLog {
             }
         }
     }
-    
-    // MARK: - Private Methods
-    
-    private func addLog(_ message: String) {
-        let timestamp = Date().formatted(date: .omitted, time: .standard)
-        let logEntry = "[\(timestamp)] \(message)"
-        logs.append(logEntry)
-        
-        if verbose {
-            os_log("\(Self.t)\(message)")
-        }
-    }
-    
-    private func copyAllLogs() {
-        #if os(macOS)
-        NSPasteboard.general.clearContents()
-        NSPasteboard.general.setString(logs.joined(separator: "\n"), forType: .string)
-        #else
-        UIPasteboard.general.string = logs.joined(separator: "\n")
-        #endif
-        
-        showToastMessage("所有日志已复制")
-    }
-    
-    private func copyLog(at index: Int) {
-        guard index < logs.count else { return }
-        
-        #if os(macOS)
-        NSPasteboard.general.clearContents()
-        NSPasteboard.general.setString(logs[index], forType: .string)
-        #else
-        UIPasteboard.general.string = logs[index]
-        #endif
-        
-        withAnimation {
-            copiedLogIndex = index
-        }
-        
-        showToastMessage("日志已复制")
-        
-        // 2秒后清除复制状态
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            withAnimation {
-                if copiedLogIndex == index {
-                    copiedLogIndex = nil
-                }
-            }
-        }
-    }
-    
-    private func showToastMessage(_ message: String) {
-        toastMessage = message
-        withAnimation {
-            showToast = true
-        }
-        
-        // 2秒后隐藏提示
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            withAnimation {
-                showToast = false
-            }
-        }
-    }
 
-    // MARK: - Private Types
-    
-    private struct LogEntry: Identifiable {
-        let id: Int
-        let timestamp: String
-        let message: String
-        
-        init(index: Int, rawLog: String) {
-            self.id = index
-            if let timeEnd = rawLog.firstIndex(of: "]"),
-               let timeStart = rawLog.firstIndex(of: "[") {
-                self.timestamp = String(rawLog[rawLog.index(after: timeStart)..<timeEnd])
-                self.message = String(rawLog[rawLog.index(after: timeEnd)...]).trimmingCharacters(in: .whitespaces)
-            } else {
-                self.timestamp = ""
-                self.message = rawLog
-            }
-        }
-    }
-    
-    private var logEntries: [LogEntry] {
-        logs.enumerated().map { LogEntry(index: $0.offset, rawLog: $0.element) }
-    }
-    
-    // MARK: - Private Views
-    
-    private struct LogTableView: View {
-        let entries: [LogEntry]
-        let copiedLogIndex: Int?
-        let onCopy: (Int) -> Void
-        
-        var body: some View {
-            Table(entries) {
-                TableColumn("Time") { entry in
-                    Text(entry.timestamp)
-                        .font(.caption.monospaced())
-                        .foregroundStyle(.secondary)
-                }
-                .width(60)
-                
-                TableColumn("Message") { entry in
-                    Text(entry.message)
-                        .font(.caption)
-                }
-                
-                TableColumn("") { entry in
-                    CopyButtonView(
-                        id: entry.id,
-                        copiedLogIndex: copiedLogIndex,
-                        onCopy: onCopy
-                    )
-                }
-                .width(50)
-            }
-        }
-    }
-    
-    private struct CopyButtonView: View {
-        let id: Int
-        let copiedLogIndex: Int?
-        let onCopy: (Int) -> Void
-        
-        var body: some View {
-            HStack {
-                if copiedLogIndex == id {
-                    Image(systemName: "checkmark")
-                        .foregroundStyle(.green)
-                        .font(.caption)
-                        .transition(.scale.combined(with: .opacity))
-                }
-                
-                Button(action: { onCopy(id) }) {
-                    Image(systemName: "doc.on.doc")
-                        .foregroundStyle(.secondary)
-                        .font(.caption)
-                }
-                .buttonStyle(.plain)
-            }
-            .animation(.default, value: copiedLogIndex)
-        }
-    }
-    
-    private struct HeaderView: View {
-        let onCopyAll: () -> Void
-        let onClear: () -> Void
-        let onClose: () -> Void
-        let showToast: Bool
-        let toastMessage: String
-        
-        var body: some View {
-            HStack {
-                Text("操作日志")
-                    .font(.headline)
-                    .foregroundStyle(.secondary)
-                
-                Spacer()
-                
-                Button(action: onCopyAll) {
-                    Image(systemName: "doc.on.doc")
-                        .font(.system(size: 12))
-                }
-                .buttonStyle(.borderless)
-                
-                Button(action: onClear) {
-                    Image(systemName: "trash")
-                        .font(.system(size: 12))
-                }
-                .buttonStyle(.borderless)
-                
-                #if os(macOS)
-                Button("关闭", action: onClose)
-                #endif
-            }
-            .padding(.horizontal)
-            .frame(height: 40)
-            .overlay {
-                if showToast {
-                    Text(toastMessage)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(.ultraThinMaterial)
-                        .clipShape(Capsule())
-                        .transition(.scale.combined(with: .opacity))
-                }
-            }
-        }
+    // MARK: - Private Methods
+
+    private func addLog(_ message: String, level: MagicLogEntry.Level = .info) {
+        logs.append(MagicLogEntry(message: message, level: level))
     }
 
     // MARK: - Body
@@ -337,7 +145,7 @@ public struct AvatarView: View, SuperLog {
                 ProgressView()
                     .controlSize(.small)
             } else {
-                Image(systemName: url.systemIcon)
+                url.defaultImage
                     .foregroundStyle(.secondary)
             }
         }
@@ -354,9 +162,9 @@ public struct AvatarView: View, SuperLog {
                 Button("设置封面") {
                     isImagePickerPresented = true
                 }
-                
+
                 Divider()
-                
+
                 Button("查看日志") {
                     showLogSheet = true
                 }
@@ -368,24 +176,24 @@ public struct AvatarView: View, SuperLog {
             allowsMultipleSelection: false
         ) { result in
             switch result {
-            case .success(let files):
+            case let .success(files):
                 if let selectedURL = files.first {
                     Task {
                         do {
                             addLog("开始设置封面：\(selectedURL.lastPathComponent)")
-                            
+
                             // 获取文件的安全访问权限
                             guard selectedURL.startAccessingSecurityScopedResource() else {
                                 addLog("无法获取文件访问权限")
                                 state.setError(ViewError.thumbnailGenerationFailed)
                                 return
                             }
-                            
+
                             defer {
                                 // 完成后释放访问权限
                                 selectedURL.stopAccessingSecurityScopedResource()
                             }
-                            
+
                             let imageData = try Data(contentsOf: selectedURL)
                             try await url.writeCoverToMediaFile(
                                 imageData: imageData,
@@ -403,34 +211,24 @@ public struct AvatarView: View, SuperLog {
                         }
                     }
                 }
-            case .failure(let error):
+            case let .failure(error):
                 let errorMessage = "选择图片失败: \(error.localizedDescription)"
-                addLog(errorMessage)
+                addLog(errorMessage, level: .error)
                 state.setError(ViewError.thumbnailGenerationFailed)
             }
         }
         .sheet(isPresented: $showLogSheet) {
             NavigationView {
-                VStack(alignment: .leading, spacing: 4) {
-                    HeaderView(
-                        onCopyAll: copyAllLogs,
-                        onClear: { logs.removeAll() },
-                        onClose: { showLogSheet = false },
-                        showToast: showToast,
-                        toastMessage: toastMessage
-                    )
-                    
-                    LogTableView(
-                        entries: logEntries,
-                        copiedLogIndex: copiedLogIndex,
-                        onCopy: copyLog
-                    )
+                MagicLogView(logs: logs) {
+                    logs.removeAll()
                 }
-                #if os(iOS)
-                .navigationBarItems(trailing: Button("关闭") {
-                    showLogSheet = false
-                })
-                #endif
+                .toolbar {
+                    ToolbarItem(placement: .automatic) {
+                        Button("关闭") {
+                            showLogSheet = false
+                        }
+                    }
+                }
             }
             #if os(macOS)
             .frame(minWidth: 500, minHeight: 300)
@@ -460,34 +258,43 @@ public struct AvatarView: View, SuperLog {
     // MARK: - Private Methods
 
     @Sendable private func loadThumbnail() async {
-        guard state.thumbnail == nil && !state.isLoading && !url.isDownloading else {
+        if state.thumbnail != nil {
+            addLog("跳过缩略图加载：已存在缩略图")
+            return
+        }
+
+        if state.isLoading {
+            addLog("跳过缩略图加载：正在加载中")
+            return
+        }
+
+        if url.isDownloading {
+            addLog("跳过缩略图加载：文件正在下载中")
             return
         }
 
         // 使用后台任务队列
         await Task.detached(priority: .utility) {
+            addLog("开始加载缩略图: \(url.title)")
             if verbose { os_log("\(self.t)🪞🪞🪞 开始加载缩略图: \(url.title)") }
             await state.setLoading(true)
 
             do {
+                addLog("正在生成缩略图，目标尺寸: \(size.width)x\(size.height)")
                 // 在后台线程中处理图片生成
-                let image = try await withThrowingTaskGroup(of: Image?.self) { group in
-                    group.addTask(priority: .utility) {
-                        try await url.thumbnail(size: size, verbose: verbose)
-                    }
-
-                    // 等待结果或超时
-                    return try await group.next() ?? nil
-                }
+                let image = try await url.thumbnail(size: size, verbose: verbose)
 
                 if let image = image {
+                    addLog("缩略图生成成功")
                     await state.setThumbnail(image)
                     await state.setError(nil)
                 } else {
+                    addLog("缩略图生成失败，使用默认图片", level: .warning)
                     await state.setThumbnail(url.defaultImage)
                     await state.setError(ViewError.thumbnailGenerationFailed)
                 }
             } catch URLError.cancelled {
+                addLog("缩略图加载已取消", level: .warning)
                 if verbose { os_log("\(self.t)缩略图加载已取消") }
             } catch {
                 let viewError: ViewError
@@ -495,13 +302,17 @@ public struct AvatarView: View, SuperLog {
                     switch urlError.code {
                     case .notConnectedToInternet, .networkConnectionLost, .timedOut:
                         viewError = .downloadFailed
+                        addLog("网络错误: \(urlError.localizedDescription)", level: .error)
                     case .fileDoesNotExist:
                         viewError = .fileNotFound
+                        addLog("文件不存在: \(url.path)", level: .error)
                     default:
                         viewError = .thumbnailGenerationFailed
+                        addLog("生成缩略图失败: \(urlError.localizedDescription)", level: .error)
                     }
                 } else {
                     viewError = .thumbnailGenerationFailed
+                    addLog("未知错误: \(error.localizedDescription)", level: .error)
                 }
 
                 await state.setError(viewError)
@@ -509,27 +320,36 @@ public struct AvatarView: View, SuperLog {
             }
 
             await state.setLoading(false)
+            addLog("缩略图加载流程结束")
         }.value
     }
 
     @Sendable private func setupDownloadMonitor() async {
         guard monitorDownload && url.isiCloud && progressBinding == nil else {
+            addLog("跳过下载监控设置：不需要监控或非 iCloud 文件")
             return
         }
 
+        addLog("开始设置下载监控: \(url.path)")
         if verbose { os_log("\(self.t)设置下载监控: \(url.path)") }
 
         downloadMonitor.startMonitoring(
             url: url,
             onProgress: { progress in
                 state.setProgress(progress)
+                // 记录下载进度
+                if progress >= 0 {
+                    addLog("下载进度: \(Int(progress * 100))%")
+                }
                 // 如果下载失败（进度为负数），设置相应的错误
                 if progress < 0 {
+                    addLog("下载失败", level: .error)
                     state.setError(ViewError.downloadFailed)
                 }
             },
             onFinished: {
                 Task {
+                    addLog("下载完成，开始重新加载缩略图")
                     state.reset()
                     await loadThumbnail()
                 }
