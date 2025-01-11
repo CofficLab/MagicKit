@@ -266,10 +266,10 @@ struct ActionButtonsView: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            url.makeOpenButton()
-            if showDownloadButton {
+            if showDownloadButton && url.isNotDownloaded {
                 url.makeDownloadButton()
             }
+            url.makeOpenButton()
         }
         .padding(.trailing, 8)
     }

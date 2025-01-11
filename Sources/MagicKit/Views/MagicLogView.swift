@@ -40,23 +40,41 @@ public struct MagicLogEntry: Identifiable {
 public struct MagicLogView: View {
     let logs: [MagicLogEntry]
     let onClear: () -> Void
+    let onClose: (() -> Void)?
     @State private var copiedLogId: UUID?
     @State private var showToast = false
     @State private var toastMessage = ""
     
-    public init(logs: [MagicLogEntry], onClear: @escaping () -> Void) {
+    public init(
+        logs: [MagicLogEntry],
+        onClear: @escaping () -> Void,
+        onClose: (() -> Void)? = nil
+    ) {
         self.logs = logs
         self.onClear = onClear
+        self.onClose = onClose
     }
     
     public var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack {
+                if let onClose {
+                    MagicButton(
+                        icon: "xmark",
+                        style: .secondary,
+                        size: .small,
+                        shape: .circle,
+                        action: onClose
+                    )
+
+                Spacer()
+                }
+                
                 Text("Logs")
                     .font(.headline)
                     .foregroundStyle(.secondary)
                 
-                Spacer().frame(maxWidth: .infinity)
+                Spacer()
                 
                 MagicButton(
                     icon: "doc.on.doc",
@@ -114,6 +132,7 @@ public struct MagicLogView: View {
                 .width(30)
             }
         }
+        .padding()
     }
     
     private func showToastMessage(_ message: String) {
@@ -199,11 +218,15 @@ public struct MagicLogView: View {
 }
 
 #Preview("With Logs") {
-    MagicLogView(logs: [
-        MagicLogEntry(message: "This is an info message", level: .info),
-        MagicLogEntry(message: "This is a warning message", level: .warning),
-        MagicLogEntry(message: "This is an error message", level: .error)
-    ], onClear: {})
+    MagicLogView(
+        logs: [
+            MagicLogEntry(message: "This is an info message", level: .info),
+            MagicLogEntry(message: "This is a warning message", level: .warning),
+            MagicLogEntry(message: "This is an error message", level: .error)
+        ],
+        onClear: {},
+        onClose: {}
+    )
     .frame(width: 400, height: 300)
     .padding()
 }

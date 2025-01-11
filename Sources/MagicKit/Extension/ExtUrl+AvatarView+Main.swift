@@ -221,13 +221,8 @@ public struct AvatarView: View, SuperLog {
             NavigationView {
                 MagicLogView(logs: logs) {
                     logs.removeAll()
-                }
-                .toolbar {
-                    ToolbarItem(placement: .automatic) {
-                        Button("关闭") {
-                            showLogSheet = false
-                        }
-                    }
+                } onClose: {
+                    showLogSheet = false
                 }
             }
             #if os(macOS)

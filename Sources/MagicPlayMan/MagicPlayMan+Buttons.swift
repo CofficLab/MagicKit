@@ -196,7 +196,6 @@ public extension MagicPlayMan {
             popoverContent: AnyView(
                 self.makeLogView()
                     .frame(width: 400, height: 400)
-                    .padding()
             )
         )
     }
