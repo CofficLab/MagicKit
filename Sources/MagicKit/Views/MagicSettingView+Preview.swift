@@ -13,9 +13,9 @@ public struct SettingExampleView: View {
     public var body: some View {
         MagicThemePreview {
             VStack(alignment: .leading, spacing: 24) {
-                SettingSection(title: "General") {
+                MagicSettingSection(title: "General") {
                     VStack(spacing: 0) {
-                        SettingToggle(
+                        MagicSettingToggle(
                             title: "Enable Notifications",
                             description: "Show notifications when new updates are available",
                             isOn: $notifications
@@ -32,7 +32,7 @@ public struct SettingExampleView: View {
                         
                         Divider()
                         
-                        SettingSlider(
+                        MagicSettingSlider(
                             title: "Volume",
                             description: "Adjust the default playback volume",
                             value: $volume,
@@ -42,9 +42,9 @@ public struct SettingExampleView: View {
                     }
                 }
                 
-                SettingSection(title: "Advanced") {
+                MagicSettingSection(title: "Advanced") {
                     VStack(spacing: 0) {
-                        SettingToggle(
+                        MagicSettingToggle(
                             title: "Developer Mode",
                             description: "Enable advanced features and debugging tools",
                             isOn: $developerMode
@@ -58,6 +58,65 @@ public struct SettingExampleView: View {
                             options: ["Low", "Medium", "High"],
                             selection: $quality
                         ) { $0 }
+                    }
+                }
+                
+                MagicSettingSection(title: "Custom Row Examples") {
+                    VStack(spacing: 0) {
+                        // Basic row with text
+                        MagicSettingRow(
+                            title: "Status",
+                            description: "Current application status"
+                        ) {
+                            Text("Running")
+                                .foregroundColor(.secondary)
+                        }
+                        
+                        Divider()
+                        
+                        // Row with button
+                        MagicSettingRow(
+                            title: "Cache",
+                            description: "Clear temporary files to free up space"
+                        ) {
+                            Button("Clear Cache") {
+                                // Action
+                            }
+                        }
+                        
+                        Divider()
+                        
+                        // Row with indicator
+                        MagicSettingRow(
+                            title: "Connection",
+                            description: "Server connection status"
+                        ) {
+                            HStack(spacing: 8) {
+                                Circle()
+                                    .fill(.green)
+                                    .frame(width: 8, height: 8)
+                                Text("Connected")
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        
+                        Divider()
+                        
+                        // Row with multiple actions
+                        MagicSettingRow(
+                            title: "Account",
+                            description: "Manage your account settings"
+                        ) {
+                            HStack(spacing: 12) {
+                                Button("Edit") {
+                                    // Action
+                                }
+                                Button("Sign Out") {
+                                    // Action
+                                }
+                                .foregroundColor(.red)
+                            }
+                        }
                     }
                 }
             }

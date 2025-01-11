@@ -1,7 +1,7 @@
 import SwiftUI
 
 /// A slider setting component
-public struct SettingSlider<V: BinaryFloatingPoint>: View where V.Stride: BinaryFloatingPoint {
+public struct MagicSettingSlider<V: BinaryFloatingPoint>: View where V.Stride: BinaryFloatingPoint {
     let title: String
     let description: String?
     @Binding var value: V
@@ -34,7 +34,7 @@ public struct SettingSlider<V: BinaryFloatingPoint>: View where V.Stride: Binary
 #Preview {
     MagicThemePreview {
         VStack(spacing: 0) {
-            SettingSlider(
+            MagicSettingSlider(
                 title: "Volume",
                 description: "Adjust the playback volume",
                 value: .constant(0.7),
@@ -44,7 +44,7 @@ public struct SettingSlider<V: BinaryFloatingPoint>: View where V.Stride: Binary
             
             Divider()
             
-            SettingSlider(
+            MagicSettingSlider(
                 title: "Opacity",
                 value: .constant(50),
                 range: 0...100,

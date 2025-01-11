@@ -1,7 +1,7 @@
 import SwiftUI
 
 /// A container view that groups related settings together
-public struct SettingSection<Content: View>: View {
+public struct MagicSettingSection<Content: View>: View {
     let title: String
     let content: Content
     
@@ -26,7 +26,7 @@ public struct SettingSection<Content: View>: View {
 // MARK: - Preview
 #Preview {
     MagicThemePreview {
-        SettingSection(title: "General") {
+        MagicSettingSection(title: "General") {
             VStack(spacing: 8) {
                 Text("Setting Item 1")
                 Text("Setting Item 2")

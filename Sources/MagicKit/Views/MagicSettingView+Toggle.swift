@@ -1,7 +1,7 @@
 import SwiftUI
 
 /// A toggle setting component
-public struct SettingToggle: View {
+public struct MagicSettingToggle: View {
     let title: String
     let description: String?
     @Binding var isOn: Bool
@@ -29,7 +29,7 @@ public struct SettingToggle: View {
 #Preview {
     MagicThemePreview {
         VStack(spacing: 0) {
-            SettingToggle(
+            MagicSettingToggle(
                 title: "Enable Feature",
                 description: "Turn this on to enable the awesome feature",
                 isOn: .constant(true)
@@ -37,7 +37,7 @@ public struct SettingToggle: View {
             
             Divider()
             
-            SettingToggle(
+            MagicSettingToggle(
                 title: "Simple Toggle",
                 isOn: .constant(false)
             )
