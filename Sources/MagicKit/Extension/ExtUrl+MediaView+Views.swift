@@ -113,7 +113,10 @@ public struct MediaFileView: View, SuperLog {
     var showFileInfo: Bool = true
     var showFileStatus: Bool = true
     var showFileSize: Bool = true
+    var showAvatar: Bool = true
     @State private var isHovering = false
+    @State private var showLogSheet = false
+    @State private var logs: [MagicLogEntry] = []
 
     /// 创建媒体文件视图
     /// - Parameters:
@@ -144,25 +147,30 @@ public struct MediaFileView: View, SuperLog {
         VStack(spacing: 0) {
             HStack(alignment: .center, spacing: 12) {
                 // 左侧缩略图
-                let avatarView = url.makeAvatarView(verbose: self.verbose)
-                    .magicSize(avatarSize)
-                    .magicAvatarShape(avatarShape)
-                    .magicBackground(avatarBackgroundColor)
-                    .magicDownloadMonitor(monitorDownload)
-                
-                // 根据是否有进度绑定来决定是否应用进度修改器
-                let finalAvatarView = if let progress = avatarProgressBinding {
-                    avatarView.magicDownloadProgress(progress)
-                } else {
-                    avatarView
+                if showAvatar {
+                    let avatarView = url.makeAvatarView(verbose: self.verbose)
+                        .magicSize(avatarSize)
+                        .magicAvatarShape(avatarShape)
+                        .magicBackground(avatarBackgroundColor)
+                        .magicDownloadMonitor(monitorDownload)
+                        .onLog { message, level in
+                            addLog(message, level: level)
+                        }
+                    
+                    // 根据是否有进度绑定来决定是否应用进度修改器
+                    let finalAvatarView = if let progress = avatarProgressBinding {
+                        avatarView.magicDownloadProgress(progress)
+                    } else {
+                        avatarView
+                    }
+                    
+                    finalAvatarView
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 0)
+                                .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [4]))
+                                .foregroundColor(showBorder ? .blue : .clear)
+                        )
                 }
-                
-                finalAvatarView
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 0)
-                            .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [4]))
-                            .foregroundColor(showBorder ? .blue : .clear)
-                    )
                 
                 // 右侧文件信息
                 VStack(alignment: .leading, spacing: 4) {
@@ -209,7 +217,7 @@ public struct MediaFileView: View, SuperLog {
                 
                 // 操作按钮
                 if showActions {
-                    ActionButtonsView(url: url, showDownloadButton: showDownloadButton)
+                    ActionButtonsView(url: url, showDownloadButton: showDownloadButton, showLogSheet: $showLogSheet)
                         .opacity(isHovering ? 1 : 0)
                         .overlay(
                             RoundedRectangle(cornerRadius: 0)
@@ -226,6 +234,22 @@ public struct MediaFileView: View, SuperLog {
             .padding(.horizontal, horizontalPadding)
             .padding(.vertical, verticalPadding)
         }
+        .sheet(isPresented: $showLogSheet) {
+            NavigationView {
+                MagicLogView(title: "MediaFileView Logs", logs: logs) {
+                    logs.removeAll()
+                } onClose: {
+                    showLogSheet = false
+                }
+            }
+            #if os(macOS)
+            .frame(minWidth: 500, minHeight: 300, idealHeight: 500)
+            #endif
+        }
+    }
+    
+    private func addLog(_ message: String, level: MagicLogEntry.Level = .info) {
+        logs.append(MagicLogEntry(message: message, level: level))
     }
 }
 
@@ -256,24 +280,6 @@ struct ErrorMessageView: View {
                     isHovering = hovering
                 }
             }
-    }
-}
-
-// MARK: - Action Buttons View
-
-struct ActionButtonsView: View {
-    let url: URL
-    let showDownloadButton: Bool
-    @Environment(\.colorScheme) private var colorScheme
-
-    var body: some View {
-        HStack(spacing: 12) {
-            if showDownloadButton && url.isNotDownloaded {
-                url.makeDownloadButton()
-            }
-            url.makeOpenButton()
-        }
-        .padding(.trailing, 8)
     }
 }
 

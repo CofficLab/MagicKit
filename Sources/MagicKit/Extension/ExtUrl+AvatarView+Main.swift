@@ -71,6 +71,9 @@ public struct AvatarView: View, SuperLog {
     /// 日志记录
     @State private var logs: [MagicLogEntry] = []
 
+    /// 日志回调
+    var onLog: ((String, MagicLogEntry.Level) -> Void)?
+
     // MARK: - Computed Properties
 
     /// 当前的下载进度
@@ -127,8 +130,9 @@ public struct AvatarView: View, SuperLog {
 
     // MARK: - Private Methods
 
-    private func addLog(_ message: String, level: MagicLogEntry.Level = .info) {
+    public func addLog(_ message: String, level: MagicLogEntry.Level = .info) {
         logs.append(MagicLogEntry(message: message, level: level))
+        onLog?("AvatarView: \(message)", level) // 调用回调
     }
 
     // MARK: - Body

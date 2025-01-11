@@ -17,12 +17,14 @@ public struct MagicLogEntry: Identifiable {
         case info
         case warning
         case error
+        case debug
         
         public var color: Color {
             switch self {
             case .info: return .primary
             case .warning: return .orange
             case .error: return .red
+            case .debug: return .blue
             }
         }
         
@@ -31,6 +33,7 @@ public struct MagicLogEntry: Identifiable {
             case .info: return "info.circle"
             case .warning: return "exclamationmark.triangle"
             case .error: return "xmark.circle"
+            case .debug: return "doc.text.magnifyingglass"
             }
         }
     }
@@ -191,6 +194,8 @@ public struct MagicLogView: View {
             return .orange
         case .error:
             return .red
+        case .debug:
+            return .blue
         }
     }
     

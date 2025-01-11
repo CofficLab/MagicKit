@@ -80,6 +80,15 @@ public extension AvatarView {
         view.backgroundColor = color
         return view
     }
+
+    /// 设置日志回调
+    /// - Parameter callback: 日志回调闭包，接收日志消息和日志级别
+    /// - Returns: 修改后的视图
+    func onLog(_ callback: @escaping (String, MagicLogEntry.Level) -> Void) -> AvatarView {
+        var view = self
+        view.onLog = callback
+        return view
+    }
 }
 
 // MARK: - Preview
