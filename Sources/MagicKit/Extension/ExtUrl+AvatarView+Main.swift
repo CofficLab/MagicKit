@@ -82,13 +82,13 @@ public struct AvatarView: View, SuperLog {
     private var isDownloading: Bool {
         // 检查手动控制的进度
         if let binding = progressBinding {
-            if binding.wrappedValue < 1 {
+            if binding.wrappedValue <= 1 {
                 return true
             }
         }
 
         // 检查自动监控的进度
-        if downloadProgress > 0 && downloadProgress < 1 {
+        if downloadProgress > 0 && downloadProgress <= 1 {
             return true
         }
 
@@ -135,7 +135,7 @@ public struct AvatarView: View, SuperLog {
 
     public var body: some View {
         Group {
-            if isDownloading {
+            if isDownloading && downloadProgress < 1{
                 DownloadProgressView(progress: downloadProgress)
             } else if let thumbnail = state.thumbnail {
                 ThumbnailImageView(image: thumbnail)
@@ -219,7 +219,7 @@ public struct AvatarView: View, SuperLog {
         }
         .sheet(isPresented: $showLogSheet) {
             NavigationView {
-                MagicLogView(logs: logs) {
+                MagicLogView(title: "AvatarView Logs", logs: logs) {
                     logs.removeAll()
                 } onClose: {
                     showLogSheet = false
@@ -230,6 +230,8 @@ public struct AvatarView: View, SuperLog {
             #endif
         }
         .onChange(of: progressBinding?.wrappedValue) {
+            addLog("⏬ 外部将下载进度设置为: \(progressBinding?.wrappedValue)")
+
             if let progress = progressBinding?.wrappedValue, progress >= 1.0 {
                 Task {
                     state.reset()
@@ -270,17 +272,17 @@ public struct AvatarView: View, SuperLog {
 
         // 使用后台任务队列
         await Task.detached(priority: .utility) {
-            addLog("开始加载缩略图: \(url.title)")
+            addLog("🛫 开始加载缩略图: \(url.title)")
             if verbose { os_log("\(self.t)🪞🪞🪞 开始加载缩略图: \(url.title)") }
             await state.setLoading(true)
 
             do {
-                addLog("正在生成缩略图，目标尺寸: \(size.width)x\(size.height)")
+                addLog("🛫 正在生成缩略图，目标尺寸: \(size.width)x\(size.height)")
                 // 在后台线程中处理图片生成
                 let image = try await url.thumbnail(size: size, verbose: verbose)
 
                 if let image = image {
-                    addLog("缩略图生成成功")
+                    addLog("🎉 缩略图生成成功")
                     await state.setThumbnail(image)
                     await state.setError(nil)
                 } else {
@@ -315,17 +317,17 @@ public struct AvatarView: View, SuperLog {
             }
 
             await state.setLoading(false)
-            addLog("缩略图加载流程结束")
+            addLog("🔚 缩略图加载流程结束")
         }.value
     }
 
     @Sendable private func setupDownloadMonitor() async {
         guard monitorDownload && url.isiCloud && progressBinding == nil else {
-            addLog("跳过下载监控设置：不需要监控或非 iCloud 文件")
+            addLog("🚫 跳过下载监控设置：不需要监控或非 iCloud 文件")
             return
         }
 
-        addLog("开始设置下载监控: \(url.path)")
+        addLog("🛫 开始设置下载监控: \(url.path)")
         if verbose { os_log("\(self.t)设置下载监控: \(url.path)") }
 
         downloadMonitor.startMonitoring(
@@ -334,17 +336,17 @@ public struct AvatarView: View, SuperLog {
                 state.setProgress(progress)
                 // 记录下载进度
                 if progress >= 0 {
-                    addLog("下载进度: \(Int(progress * 100))%")
+                    addLog("🍋 下载进度: \(Int(progress * 100))%")
                 }
                 // 如果下载失败（进度为负数），设置相应的错误
                 if progress < 0 {
-                    addLog("下载失败", level: .error)
+                    addLog("🚫 下载失败", level: .error)
                     state.setError(ViewError.downloadFailed)
                 }
             },
             onFinished: {
                 Task {
-                    addLog("下载完成，开始重新加载缩略图")
+                    addLog("🎉 下载完成，开始重新加载缩略图")
                     state.reset()
                     await loadThumbnail()
                 }

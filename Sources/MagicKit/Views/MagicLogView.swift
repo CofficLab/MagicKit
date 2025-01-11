@@ -38,6 +38,7 @@ public struct MagicLogEntry: Identifiable {
 
 /// 通用日志视图组件
 public struct MagicLogView: View {
+    let title: String
     let logs: [MagicLogEntry]
     let onClear: () -> Void
     let onClose: (() -> Void)?
@@ -46,10 +47,12 @@ public struct MagicLogView: View {
     @State private var toastMessage = ""
     
     public init(
+        title: String = "Logs",
         logs: [MagicLogEntry],
         onClear: @escaping () -> Void,
         onClose: (() -> Void)? = nil
     ) {
+        self.title = title
         self.logs = logs
         self.onClear = onClear
         self.onClose = onClose
@@ -70,7 +73,7 @@ public struct MagicLogView: View {
                 Spacer()
                 }
                 
-                Text("Logs")
+                Text(title)
                     .font(.headline)
                     .foregroundStyle(.secondary)
                 
@@ -219,6 +222,7 @@ public struct MagicLogView: View {
 
 #Preview("With Logs") {
     MagicLogView(
+        title: "Debug Logs",
         logs: [
             MagicLogEntry(message: "This is an info message", level: .info),
             MagicLogEntry(message: "This is a warning message", level: .warning),

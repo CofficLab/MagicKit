@@ -2,8 +2,32 @@ import Foundation
 import OSLog
 import SwiftUI
 
-
 public extension URL {
+    /// 获取文件的状态信息
+    /// 
+    /// 这个属性返回文件的当前状态描述，例如：
+    /// - "远程文件"：表示文件是一个网络 URL
+    /// - "本地文件"：表示文件存储在本地
+    /// - "iCloud 文件"：表示文件存储在 iCloud 中
+    /// - "正在从 iCloud 下载"：表示文件正在从 iCloud 下载
+    var magicFileStatus: String? {
+        if isNetworkURL {
+            return "远程文件"
+        } else if isFileURL {
+            if isiCloud {
+                if isDownloading {
+                    return "正在从 iCloud 下载"
+                } else if isDownloaded {
+                    return "已从 iCloud 下载"
+                } else {
+                    return "未从 iCloud 下载"
+                }
+            }
+            return isLocal ? "本地文件" : nil
+        }
+        return nil
+    }
+
     /// 下载方式
     enum DownloadMethod {
         /// 轮询方式

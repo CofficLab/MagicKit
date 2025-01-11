@@ -425,6 +425,29 @@ public extension MediaFileView {
     func magicHideFileSize() -> MediaFileView {
         magicShowFileSize(false)
     }
+    
+    /// 设置是否启用详细模式
+    /// 
+    /// 这个修改器允许你控制视图是否显示详细信息。
+    /// 
+    /// 示例：
+    /// ```swift
+    /// // 启用详细模式（默认）
+    /// url.makeMediaView()
+    ///     .magicVerbose(true)
+    /// 
+    /// // 禁用详细模式
+    /// url.makeMediaView()
+    ///     .magicVerbose(false)
+    /// ```
+    /// 
+    /// - Parameter enabled: 是否启用详细模式
+    /// - Returns: 修改后的视图
+    func magicVerbose(_ enabled: Bool = true) -> MediaFileView {
+        var view = self
+        view.verbose = enabled
+        return view
+    }
 }
 
 #Preview("Media View") {
