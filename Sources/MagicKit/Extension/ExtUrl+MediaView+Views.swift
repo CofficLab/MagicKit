@@ -145,75 +145,77 @@ public struct MediaFileView: View, SuperLog {
 
     private var mainContent: some View {
         VStack(spacing: 0) {
-            HStack(alignment: .center, spacing: 12) {
-                // 左侧缩略图
-                if showAvatar {
-                    let avatarView = url.makeAvatarView(verbose: self.verbose)
-                        .magicSize(avatarSize)
-                        .magicAvatarShape(avatarShape)
-                        .magicBackground(avatarBackgroundColor)
-                        .magicDownloadMonitor(monitorDownload)
-                        .onLog { message, level in
-                            addLog(message, level: level)
-                        }
-                    
-                    // 根据是否有进度绑定来决定是否应用进度修改器
-                    let finalAvatarView = if let progress = avatarProgressBinding {
-                        avatarView.magicDownloadProgress(progress)
-                    } else {
-                        avatarView
-                    }
-                    
-                    finalAvatarView
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 0)
-                                .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [4]))
-                                .foregroundColor(showBorder ? .blue : .clear)
-                        )
-                }
-                
-                // 右侧文件信息
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(url.lastPathComponent)
-                        .font(.headline)
-                        .lineLimit(1)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 0)
-                                .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [4]))
-                                .foregroundColor(showBorder ? .green : .clear)
-                        )
-                    
-                    HStack {
-                        if showFileSize {
-                            Text(size)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 0)
-                                        .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [4]))
-                                        .foregroundColor(showBorder ? .green : .clear)
-                                )
+            ZStack(alignment: .trailing) {
+                HStack(alignment: .center, spacing: 12) {
+                    // 左侧缩略图
+                    if showAvatar {
+                        let avatarView = url.makeAvatarView(verbose: self.verbose)
+                            .magicSize(avatarSize)
+                            .magicAvatarShape(avatarShape)
+                            .magicBackground(avatarBackgroundColor)
+                            .magicDownloadMonitor(monitorDownload)
+                            .onLog { message, level in
+                                addLog(message, level: level)
+                            }
+                        
+                        // 根据是否有进度绑定来决定是否应用进度修改器
+                        let finalAvatarView = if let progress = avatarProgressBinding {
+                            avatarView.magicDownloadProgress(progress)
+                        } else {
+                            avatarView
                         }
                         
-                        if showFileStatus, let status = url.magicFileStatus {
-                            Text(status)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 0)
-                                        .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [4]))
-                                        .foregroundColor(showBorder ? .green : .clear)
-                                )
+                        finalAvatarView
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 0)
+                                    .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [4]))
+                                    .foregroundColor(showBorder ? .blue : .clear)
+                            )
+                    }
+                    
+                    // 右侧文件信息
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(url.lastPathComponent)
+                            .font(.headline)
+                            .lineLimit(1)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 0)
+                                    .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [4]))
+                                    .foregroundColor(showBorder ? .green : .clear)
+                            )
+                        
+                        HStack {
+                            if showFileSize {
+                                Text(size)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 0)
+                                            .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [4]))
+                                            .foregroundColor(showBorder ? .green : .clear)
+                                    )
+                            }
+                            
+                            if showFileStatus, let status = url.magicFileStatus {
+                                Text(status)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 0)
+                                            .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [4]))
+                                            .foregroundColor(showBorder ? .green : .clear)
+                                    )
+                            }
                         }
                     }
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 0)
+                            .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [4]))
+                            .foregroundColor(showBorder ? .purple : .clear)
+                    )
+                    
+                    Spacer()
                 }
-                .overlay(
-                    RoundedRectangle(cornerRadius: 0)
-                        .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [4]))
-                        .foregroundColor(showBorder ? .purple : .clear)
-                )
-                
-                Spacer()
                 
                 // 操作按钮
                 if showActions {
@@ -224,6 +226,7 @@ public struct MediaFileView: View, SuperLog {
                                 .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [4]))
                                 .foregroundColor(showBorder ? .orange : .clear)
                         )
+                        .padding(.trailing, horizontalPadding)
                 }
             }
             .overlay(
