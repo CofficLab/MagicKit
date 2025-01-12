@@ -1,7 +1,7 @@
 import Foundation
 
-import SwiftUI
 import MagicKit
+import SwiftUI
 
 /// 支持的媒体格式
 public struct SupportedFormat {
@@ -13,18 +13,18 @@ public struct SupportedFormat {
     public let mimeTypes: [String]
     /// 示例资源
     public let samples: [Sample]
-    
+
     /// 示例资源
     public struct Sample {
         public let name: String
         public let asset: MagicAsset
-        
+
         public init(name: String, asset: MagicAsset) {
             self.name = name
             self.asset = asset
         }
     }
-    
+
     /// 所有支持的格式
     public static let allFormats: [SupportedFormat] = [
         // MP3
@@ -134,10 +134,10 @@ public struct SupportedFormat {
                             album: "中国传统音乐"
                         )
                     )
-                )
+                ),
             ]
         ),
-        
+
         // WAV
         SupportedFormat(
             name: "WA",
@@ -211,10 +211,10 @@ public struct SupportedFormat {
                             album: "自然音效"
                         )
                     )
-                )
+                ),
             ]
         ),
-        
+
         // MP4
         SupportedFormat(
             name: "MP4",
@@ -289,10 +289,10 @@ public struct SupportedFormat {
                             album: "开源动画"
                         )
                     )
-                )
+                ),
             ]
         ),
-        
+
         // HLS
         SupportedFormat(
             name: "HLS",
@@ -365,33 +365,32 @@ public struct SupportedFormat {
                             album: "测试直播"
                         )
                     )
-                )
+                ),
             ]
-        )
+        ),
     ]
-    
+
     /// 获取所有音频示例
     public static var audioSamples: [Sample] {
         allFormats
 //            .filter { true }
             .flatMap(\.samples)
     }
-    
+
     /// 获取所有视频示例
     public static var videoSamples: [Sample] {
         allFormats
 //            .filter { true }
             .flatMap(\.samples)
     }
-    
+
     /// 获取所有示例
     public static var allSamples: [Sample] {
         allFormats.flatMap(\.samples)
     }
-} 
+}
 
 #Preview("With Logs") {
-    MagicThemePreview {
-        MagicPlayMan.PreviewView()
-    }
+    MagicPlayMan.PreviewView()
+        .inMagicContainer()
 }

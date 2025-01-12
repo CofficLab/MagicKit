@@ -36,7 +36,7 @@ public extension MagicPlayMan {
 
 // MARK: - Preview
 #Preview("MagicPlayMan") {
-    MagicThemePreview {
+
         MagicPlayMan.PreviewView()
-    }
+        .inMagicContainer()
 }

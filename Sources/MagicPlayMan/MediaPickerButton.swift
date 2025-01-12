@@ -35,7 +35,7 @@ struct MediaPickerButton: View {
 // MARK: - Preview
 
 #Preview("MagicPlayMan") {
-    MagicThemePreview {
+    
         MagicPlayMan.PreviewView()
-    }
+        .inMagicContainer()
 }

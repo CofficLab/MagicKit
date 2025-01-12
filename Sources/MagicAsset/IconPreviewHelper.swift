@@ -16,16 +16,14 @@ struct IconPreviewHelper<Content: View>: View {
     }
 
     var body: some View {
-        MagicThemePreview {
-            ForEach(sizes, id: \.self) { size in
-                VStack {
-                    content
-                        .frame(width: size, height: size)
+        ForEach(sizes, id: \.self) { size in
+            VStack {
+                content
+                    .frame(width: size, height: size)
 
-                    Text("\(Int(size))pt")
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                }
+                Text("\(Int(size))pt")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
             }
         }
     }
@@ -36,5 +34,5 @@ struct IconPreviewHelper<Content: View>: View {
 #Preview {
     IconPreviewHelper(title: "Book Icon") {
         Image.makeBookIcon()
-    }
+    }.inMagicContainer()
 }

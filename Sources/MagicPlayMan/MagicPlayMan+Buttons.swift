@@ -218,14 +218,12 @@ public extension MagicPlayMan {
 
 // MARK: - Preview
 
-#Preview("MagicPlayMan") {
-    MagicThemePreview {
-        MagicPlayMan.PreviewView()
-    }
+#Preview("MagicPlayMan") {        MagicPlayMan.PreviewView().inMagicContainer()
+    
 }
 
 #Preview("Buttons") {
-    MagicThemePreview {
+    
         let man = MagicPlayMan()
         
         return VStack(spacing: 20) {
@@ -267,5 +265,5 @@ public extension MagicPlayMan {
             }
         }
         .padding()
-    }
+        .inMagicContainer()
 }

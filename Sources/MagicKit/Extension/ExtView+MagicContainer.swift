@@ -9,75 +9,74 @@ public extension View {
     }
 }
 
+enum PreviewSize: String, CaseIterable {
+    case full = "全屏"
+    case iPhoneSE = "iPhone SE"
+    case iPhone = "iPhone 14"
+    case iPhonePlus = "iPhone 14 Plus"
+    case iPhoneMax = "iPhone 14 Pro Max"
+    case iPadMini = "iPad mini"
+    case iPad = "iPad"
+    case iPadPro11 = "iPad Pro 11"
+    case iPadPro12 = "iPad Pro 12.9"
+    case mac = "Mac"
+    
+    var size: CGSize {
+        switch self {
+        case .full:
+            return CGSize(width: CGFloat.infinity, height: CGFloat.infinity)
+        case .iPhoneSE:
+            return .iPhoneSE
+        case .iPhone:
+            return .iPhone
+        case .iPhonePlus:
+            return .iPhonePlus
+        case .iPhoneMax:
+            return .iPhoneMax
+        case .iPadMini:
+            return .iPadMini
+        case .iPad:
+            return .iPad
+        case .iPadPro11:
+            return .iPadPro11
+        case .iPadPro12:
+            return .iPadPro12
+        case .mac:
+            return .mac
+        }
+    }
+    
+    var icon: String {
+        switch self {
+        case .full:
+            return "rectangle"
+        case .iPhoneSE, .iPhone, .iPhonePlus, .iPhoneMax:
+            return "iphone"
+        case .iPadMini, .iPad, .iPadPro11, .iPadPro12:
+            return "ipad"
+        case .mac:
+            return "desktopcomputer"
+        }
+    }
+    
+    var dimensions: String {
+        let size = self.size
+        if size.width == .infinity || size.height == .infinity {
+            return "自适应"
+        }
+        return String(format: "%.0f × %.0f", size.width, size.height)
+    }
+}
+
 // MARK: - MagicThemePreview
 /// 主题预览容器，提供亮暗主题切换功能
-public struct MagicThemePreview<Content: View>: View {
+struct MagicThemePreview<Content: View>: View {
     // MARK: - Properties
     private let content: Content
     private let showsIndicators: Bool
     @Environment(\.colorScheme) private var systemColorScheme
     @State private var isDarkMode: Bool = false
     @State private var selectedSize: PreviewSize = .full
-    
-    // Add this enum
-    private enum PreviewSize: String, CaseIterable {
-        case full = "全屏"
-        case iPhoneSE = "iPhone SE"
-        case iPhone = "iPhone 14"
-        case iPhonePlus = "iPhone 14 Plus"
-        case iPhoneMax = "iPhone 14 Pro Max"
-        case iPadMini = "iPad mini"
-        case iPad = "iPad"
-        case iPadPro11 = "iPad Pro 11"
-        case iPadPro12 = "iPad Pro 12.9"
-        case mac = "Mac"
-        
-        var size: CGSize {
-            switch self {
-            case .full:
-                return CGSize(width: CGFloat.infinity, height: CGFloat.infinity)
-            case .iPhoneSE:
-                return .iPhoneSE
-            case .iPhone:
-                return .iPhone
-            case .iPhonePlus:
-                return .iPhonePlus
-            case .iPhoneMax:
-                return .iPhoneMax
-            case .iPadMini:
-                return .iPadMini
-            case .iPad:
-                return .iPad
-            case .iPadPro11:
-                return .iPadPro11
-            case .iPadPro12:
-                return .iPadPro12
-            case .mac:
-                return .mac
-            }
-        }
-        
-        var icon: String {
-            switch self {
-            case .full:
-                return "rectangle"
-            case .iPhoneSE, .iPhone, .iPhonePlus, .iPhoneMax:
-                return "iphone"
-            case .iPadMini, .iPad, .iPadPro11, .iPadPro12:
-                return "ipad"
-            case .mac:
-                return "desktopcomputer"
-            }
-        }
-        
-        var dimensions: String {
-            let size = self.size
-            if size.width == .infinity || size.height == .infinity {
-                return "自适应"
-            }
-            return String(format: "%.0f × %.0f", size.width, size.height)
-        }
-    }
     
     // MARK: - Initialization
     /// 创建主题预览容器
@@ -118,8 +117,8 @@ public struct MagicThemePreview<Content: View>: View {
                             lineWidth: 2,
                             dash: [8, 4]
                         )
-                        .padding(.horizontal, selectedSize == .full ? 0 : 40)
-                        .padding(.vertical, selectedSize == .full ? 0 : 20)
+                        .padding(.horizontal, selectedSize == .full ? 16 : 40)
+                        .padding(.vertical, selectedSize == .full ? 12 : 20)
                 }
             }
         }
@@ -180,83 +179,79 @@ public struct MagicThemePreview<Content: View>: View {
 #Preview("MagicThemePreview") {
     TabView {
         // MARK: Basic Example
-        MagicThemePreview {
-            Text("Hello, World!")
-                .padding()
-        }
-        .tabItem {
-            Image(systemName: "1.circle.fill")
-            Text("基本")
-        }
+        Text("Hello, World!")
+            .padding()
+            .inMagicContainer()
+            .tabItem {
+                Image(systemName: "1.circle.fill")
+                Text("基本")
+            }
         
         // MARK: Simple Content Example
-        MagicThemePreview {
-            VStack {
-                Image(systemName: "star.fill")
-                    .font(.title)
-                Text("Star")
-            }
-            .padding()
+        VStack {
+            Image(systemName: "star.fill")
+                .font(.title)
+            Text("Star")
         }
+        .padding()
+        .inMagicContainer()
         .tabItem {
             Image(systemName: "2.circle.fill")
             Text("简单")
         }
         
         // MARK: Complex Content Example
-        MagicThemePreview {
-            VStack(spacing: 12) {
-                Circle()
-                    .fill(.blue.opacity(0.2))
-                    .frame(width: 60, height: 60)
-                    .overlay {
-                        Image(systemName: "hand.wave.fill")
-                            .font(.title)
-                            .foregroundStyle(.blue)
-                    }
-                
-                Text("Welcome")
-                    .font(.headline)
-                
-                Text("This is a demo of MagicThemePreview")
-                    .font(.caption)
-                    .multilineTextAlignment(.center)
-            }
-            .padding()
+        VStack(spacing: 12) {
+            Circle()
+                .fill(.blue.opacity(0.2))
+                .frame(width: 60, height: 60)
+                .overlay {
+                    Image(systemName: "hand.wave.fill")
+                        .font(.title)
+                        .foregroundStyle(.blue)
+                }
+            
+            Text("Welcome")
+                .font(.headline)
+            
+            Text("This is a demo of MagicThemePreview")
+                .font(.caption)
+                .multilineTextAlignment(.center)
         }
+        .padding()
+        .inMagicContainer()
         .tabItem {
             Image(systemName: "3.circle.fill")
             Text("复杂")
         }
         
         // MARK: Scrolling Content Example
-        MagicThemePreview {
-            VStack(spacing: 16) {
-                ForEach(1...20, id: \.self) { index in
-                    HStack {
-                        Circle()
-                            .fill(.blue.opacity(0.2))
-                            .frame(width: 40, height: 40)
-                            .overlay {
-                                Text("\(index)")
-                                    .foregroundStyle(.blue)
-                            }
-                        
-                        VStack(alignment: .leading) {
-                            Text("Item \(index)")
-                                .font(.headline)
-                            Text("This is a long description for item \(index) to demonstrate scrolling behavior")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+        VStack(spacing: 16) {
+            ForEach(1...20, id: \.self) { index in
+                HStack {
+                    Circle()
+                        .fill(.blue.opacity(0.2))
+                        .frame(width: 40, height: 40)
+                        .overlay {
+                            Text("\(index)")
+                                .foregroundStyle(.blue)
                         }
+                    
+                    VStack(alignment: .leading) {
+                        Text("Item \(index)")
+                            .font(.headline)
+                        Text("This is a long description for item \(index) to demonstrate scrolling behavior")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
                     }
-                    .padding()
-                    .background(.ultraThinMaterial)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
                 }
+                .padding()
+                .background(.ultraThinMaterial)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
             }
-            .padding()
         }
+        .padding()
+        .inMagicContainer()
         .tabItem {
             Image(systemName: "4.circle.fill")
             Text("滚动")

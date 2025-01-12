@@ -1,5 +1,5 @@
-import SwiftUI
 import MagicKit
+import SwiftUI
 
 public struct IconContainer<Content: View>: View {
     private let content: Content
@@ -36,33 +36,31 @@ public struct IconContainer<Content: View>: View {
 
 // 更新预览以展示新的形状选项
 #Preview {
-    MagicThemePreview {
-        VStack(spacing: 20) {
-            // 圆形
-            IconContainer(size: 100, shape: .circle) {
-                Color.red
-            }
-
-            // 圆角矩形
-            IconContainer(size: 100, shape: .roundedRectangle(radius: 20)) {
-                Color.blue
-            }
-
-            // 矩形（默认）
-            IconContainer(size: 100) {
-                Color.green
-            }
-
-            // 在 HStack 中使用不同形状
-            HStack {
-                IconContainer(shape: .circle) {
-                    Color.yellow
-                }
-                IconContainer(shape: .roundedRectangle(radius: 10)) {
-                    Color.purple
-                }
-            }
-            .frame(height: 50)
+    VStack(spacing: 20) {
+        // 圆形
+        IconContainer(size: 100, shape: .circle) {
+            Color.red
         }
-    }
+
+        // 圆角矩形
+        IconContainer(size: 100, shape: .roundedRectangle(radius: 20)) {
+            Color.blue
+        }
+
+        // 矩形（默认）
+        IconContainer(size: 100) {
+            Color.green
+        }
+
+        // 在 HStack 中使用不同形状
+        HStack {
+            IconContainer(shape: .circle) {
+                Color.yellow
+            }
+            IconContainer(shape: .roundedRectangle(radius: 10)) {
+                Color.purple
+            }
+        }
+        .frame(height: 50)
+    }.inMagicContainer()
 }
