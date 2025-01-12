@@ -3,7 +3,7 @@ import SwiftUI
 import OSLog
 import WebKit
 
-#if os(iOS)
+#if os(iOS) || os(visionOS)
     typealias ViewRepresentable = UIViewRepresentable
 #elseif os(macOS)
     typealias ViewRepresentable = NSViewRepresentable
@@ -51,7 +51,7 @@ public struct MagicWebView: ViewRepresentable {
 
     @StateObject var delegate = WebViewDelegate()
 
-    #if os(iOS)
+    #if os(iOS) || os(visionOS)
         public func makeUIView(context: Context) -> WKWebView {
             makeView()
         }
