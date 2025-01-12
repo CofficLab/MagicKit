@@ -179,7 +179,7 @@ public extension MediaFileView {
     /// 显示或隐藏布局边框
     /// - Parameter show: 是否显示边框
     /// - Returns: 修改后的视图
-    public func magicShowBorder(_ show: Bool = true) -> MediaFileView {
+    func magicShowBorder(_ show: Bool = true) -> MediaFileView {
         var view = self
         view.showBorder = show
         return view
@@ -456,6 +456,61 @@ public extension MediaFileView {
     func showAvatar(_ show: Bool) -> MediaFileView {
         var view = self
         view.showAvatar = show
+        return view
+    }
+
+    /// 控制是否显示日志按钮
+    ///
+    /// 这个修改器允许你控制是否在操作按钮区域显示日志按钮。
+    ///
+    /// 示例：
+    /// ```swift
+    /// // 隐藏日志按钮
+    /// url.makeMediaView()
+    ///     .magicHideLogButton()
+    ///
+    /// // 显示日志按钮（默认）
+    /// url.makeMediaView()
+    ///     .magicShowLogButton(true)
+    /// ```
+    ///
+    /// - Parameter show: 是否显示日志按钮
+    /// - Returns: 修改后的视图
+    func magicShowLogButton(_ show: Bool = true) -> MediaFileView {
+        var view = self
+        view.showLogButton = show
+        return view
+    }
+
+    /// 隐藏日志按钮
+    ///
+    /// 这是 `magicShowLogButton(false)` 的便捷方法。
+    ///
+    /// - Returns: 隐藏日志按钮的视图
+    func magicHideLogButton() -> MediaFileView {
+        magicShowLogButton(false)
+    }
+
+    /// 仅在 DEBUG 模式下显示日志按钮
+    ///
+    /// 这个修改器会根据编译模式来控制日志按钮的显示：
+    /// - 在 DEBUG 模式下显示日志按钮
+    /// - 在 RELEASE 模式下隐藏日志按钮
+    ///
+    /// 示例：
+    /// ```swift
+    /// url.makeMediaView()
+    ///     .magicShowLogButtonInDebug()
+    /// ```
+    ///
+    /// - Returns: 修改后的视图
+    func magicShowLogButtonInDebug() -> MediaFileView {
+        var view = self
+        #if DEBUG
+        view.showLogButton = true
+        #else
+        view.showLogButton = false
+        #endif
         return view
     }
 }

@@ -114,6 +114,7 @@ public struct MediaFileView: View, SuperLog {
     var showFileStatus: Bool = true
     var showFileSize: Bool = true
     var showAvatar: Bool = true
+    var showLogButton: Bool = true
     @State private var isHovering = false
     @State private var showLogSheet = false
     @State private var logs: [MagicLogEntry] = []

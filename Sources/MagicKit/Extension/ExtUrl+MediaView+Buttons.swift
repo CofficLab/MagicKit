@@ -13,14 +13,16 @@ import SwiftUI
 public struct ActionButtonsView: View {
     let url: URL
     let showDownloadButton: Bool
+    let showLogButton: Bool
     @Environment(\.colorScheme) private var colorScheme
     
     // 添加日志相关状态
     @Binding var showLogSheet: Bool
 
-    public init(url: URL, showDownloadButton: Bool = true, showLogSheet: Binding<Bool>) {
+    public init(url: URL, showDownloadButton: Bool = true, showLogButton: Bool = true, showLogSheet: Binding<Bool>) {
         self.url = url
         self.showDownloadButton = showDownloadButton
+        self.showLogButton = showLogButton
         self._showLogSheet = showLogSheet
     }
 
@@ -30,12 +32,18 @@ public struct ActionButtonsView: View {
                 url.makeDownloadButton()
             }
             
-            MagicButton(icon: "doc.text.magnifyingglass", action: {
-                showLogSheet = true
-            }).magicShape(.circle).magicSize(.small)
+            if showLogButton {
+                MagicButton(icon: .iconLog, action: {
+                    showLogSheet = true
+                }).magicShape(.circle).magicSize(.small)
+            }
             
             url.makeOpenButton()
         }
         .padding(.trailing, 8)
     }
+}
+
+#Preview("Media View") {
+    MediaViewPreviewContainer().inMagicContainer()
 }
