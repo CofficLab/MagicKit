@@ -226,16 +226,17 @@ public struct MagicLogView: View {
 }
 
 #Preview("With Logs") {
-    MagicLogView(
-        title: "Debug Logs",
-        logs: [
-            MagicLogEntry(message: "This is an info message", level: .info),
-            MagicLogEntry(message: "This is a warning message", level: .warning),
-            MagicLogEntry(message: "This is an error message", level: .error)
-        ],
-        onClear: {},
-        onClose: {}
-    )
-    .frame(width: 400, height: 300)
-    .padding()
+    MagicThemePreview {
+        MagicLogView(
+            title: "Debug Logs",
+            logs: [
+                MagicLogEntry(message: "This is an info message", level: .info),
+                MagicLogEntry(message: "This is a warning message", level: .warning),
+                MagicLogEntry(message: "This is an error message", level: .error)
+            ],
+            onClear: {},
+            onClose: {}
+        )
+        .frame(height: 500)
+    }
 }

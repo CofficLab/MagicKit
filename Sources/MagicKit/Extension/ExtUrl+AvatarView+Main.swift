@@ -234,7 +234,7 @@ public struct AvatarView: View, SuperLog {
             #endif
         }
         .onChange(of: progressBinding?.wrappedValue) {
-            addLog("⏬ 外部将下载进度设置为: \(progressBinding?.wrappedValue)")
+            addLog("外部将下载进度设置为: \(progressBinding?.wrappedValue)")
 
             if let progress = progressBinding?.wrappedValue, progress >= 1.0 {
                 Task {
@@ -276,7 +276,7 @@ public struct AvatarView: View, SuperLog {
 
         // 使用后台任务队列
         await Task.detached(priority: .utility) {
-            addLog("🛫 开始加载缩略图: \(url.title)")
+            addLog("开始加载缩略图: \(url.title)")
             if verbose { os_log("\(self.t)开始加载缩略图: \(url.title)") }
             await state.setLoading(true)
 
@@ -321,7 +321,7 @@ public struct AvatarView: View, SuperLog {
             }
 
             await state.setLoading(false)
-            addLog("🔚 缩略图加载流程结束")
+            addLog("缩略图加载流程结束")
         }.value
     }
 
@@ -331,7 +331,7 @@ public struct AvatarView: View, SuperLog {
             return
         }
 
-        addLog("🛫 开始设置下载监控: \(url.path)")
+        addLog("开始设置下载监控: \(url.path)")
         if verbose { os_log("\(self.t)设置下载监控: \(url.path)") }
 
         downloadMonitor.startMonitoring(

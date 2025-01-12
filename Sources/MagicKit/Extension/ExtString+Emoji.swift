@@ -13,6 +13,12 @@ extension String {
     private func generateContextEmoji() -> String {
         let lowercased = self.lowercased()
 
+        // 跳过相关
+        if lowercased.contains("skip") || lowercased.contains("ignore") || lowercased.contains("bypass") ||
+            lowercased.contains("跳过") || lowercased.contains("忽略") || lowercased.contains("略过") {
+            return "⏭️"
+        }
+
         // 错误和警告
         if lowercased.contains("error") || lowercased.contains("fail") || lowercased.contains("crash") ||
             lowercased.contains("错误") || lowercased.contains("失败") || lowercased.contains("崩溃") {
@@ -116,6 +122,10 @@ extension String {
             // 用户交互
             "用户点击登录按钮",
             "检测到双指手势",
+
+            // 跳过相关
+            "跳过此步骤",
+            "忽略错误继续",
         ]
 
         var body: some View {
