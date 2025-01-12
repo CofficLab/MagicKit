@@ -37,23 +37,23 @@ public struct MagicThemePreview<Content: View>: View {
             case .full:
                 return CGSize(width: CGFloat.infinity, height: CGFloat.infinity)
             case .iPhoneSE:
-                return CGSize(width: 375, height: 667)
+                return .iPhoneSE
             case .iPhone:
-                return CGSize(width: 390, height: 844)
+                return .iPhone
             case .iPhonePlus:
-                return CGSize(width: 428, height: 926)
+                return .iPhonePlus
             case .iPhoneMax:
-                return CGSize(width: 430, height: 932)
+                return .iPhoneMax
             case .iPadMini:
-                return CGSize(width: 744, height: 1133)
+                return .iPadMini
             case .iPad:
-                return CGSize(width: 820, height: 1180)
+                return .iPad
             case .iPadPro11:
-                return CGSize(width: 834, height: 1194)
+                return .iPadPro11
             case .iPadPro12:
-                return CGSize(width: 1024, height: 1366)
+                return .iPadPro12
             case .mac:
-                return CGSize(width: 1024, height: 768)
+                return .mac
             }
         }
         
@@ -68,6 +68,14 @@ public struct MagicThemePreview<Content: View>: View {
             case .mac:
                 return "desktopcomputer"
             }
+        }
+        
+        var dimensions: String {
+            let size = self.size
+            if size.width == .infinity || size.height == .infinity {
+                return "自适应"
+            }
+            return String(format: "%.0f × %.0f", size.width, size.height)
         }
     }
     
@@ -99,24 +107,16 @@ public struct MagicThemePreview<Content: View>: View {
                 ScrollView(.vertical, showsIndicators: showsIndicators) {
                     content
                         .frame(
-                            maxWidth: selectedSize == .full ? .infinity : selectedSize.size.width,
-                            maxHeight: selectedSize == .full ? .infinity : selectedSize.size.height
+                            width: selectedSize == .full ? nil : selectedSize.size.width,
+                            height: selectedSize == .full ? nil : selectedSize.size.height
                         )
                         .frame(maxWidth: .infinity)
                         .background(selectedSize == .full ? nil : Color.primary.opacity(0.05))
                         .clipShape(RoundedRectangle(cornerRadius: selectedSize == .full ? 0 : 8))
-                        .overlay(
-                            Group {
-                                if selectedSize != .full {
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .strokeBorder(style: StrokeStyle(
-                                            lineWidth: 2,
-                                            dash: [8, 4]
-                                        ))
-                                        .foregroundStyle(.secondary.opacity(0.8))
-                                        .padding(20)
-                                }
-                            }
+                        .dashedBorder(
+                            color: .secondary.opacity(0.8),
+                            lineWidth: 2,
+                            dash: [8, 4]
                         )
                         .padding(.horizontal, selectedSize == .full ? 0 : 40)
                         .padding(.vertical, selectedSize == .full ? 0 : 20)
@@ -148,6 +148,17 @@ public struct MagicThemePreview<Content: View>: View {
             }
             .pickerStyle(.menu)
             .frame(width: 120)
+            
+            // MARK: Size Dimensions Label
+            if selectedSize != .full {
+                Text(selectedSize.dimensions)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Color.secondary.opacity(0.1))
+                    .clipShape(RoundedRectangle(cornerRadius: 4))
+            }
             
             Spacer()
             
