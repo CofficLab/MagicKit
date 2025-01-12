@@ -44,7 +44,6 @@ public class MagicPlayMan: ObservableObject, SuperLog {
     @Published public var duration: TimeInterval = 0
     @Published public var isBuffering = false
     @Published public var progress: Double = 0
-    @Published public var logs: [PlaybackLog] = []
     @Published public var currentThumbnail: Image?
     @Published public var isPlaylistEnabled: Bool = true
     @Published public var likedAssets: Set<URL> = []
@@ -72,7 +71,7 @@ public class MagicPlayMan: ObservableObject, SuperLog {
         duration.displayFormat
     }
 
-    public let logger = PlayLogger()
+    public let logger = MagicLogger()
 
     /// 支持的媒体格式
     public var supportedFormats: [SupportedFormat] {

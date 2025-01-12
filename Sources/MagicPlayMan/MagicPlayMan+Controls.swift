@@ -318,7 +318,7 @@ public extension MagicPlayMan {
         }
     }
 
-    func log(_ message: String, level: PlaybackLog.Level = .info) {
+    func log(_ message: String, level: MagicLogEntry.Level = .info) {
         logger.log(message, level: level)
     }
 

@@ -34,7 +34,7 @@ public extension MagicPlayMan {
     /// - Returns: 返回一个显示播放器日志信息的视图
     /// 用于展示播放器的事件历史和操作记录
     func makeLogView() -> some View {
-        logger.makeLogView()
+        logger.logView()
     }
 
     /// 创建播放列表视图

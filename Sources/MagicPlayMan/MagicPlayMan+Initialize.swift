@@ -58,10 +58,6 @@ public extension MagicPlayMan {
                 self?.currentIndex = index
             }
             .store(in: &cancellables)
-        
-        // 监听日志变化
-        logger.$logs
-            .assign(to: &$logs)
     }
 }
 
