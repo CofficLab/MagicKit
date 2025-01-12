@@ -10,6 +10,8 @@ public protocol SuperLog {
 }
 
 extension SuperLog {
+    public static var emoji: String { "🈳" }
+
     public func r(_ s: String) -> String { makeReason(s) }
     
     public func makeReason(_ s: String) -> String { " ➡️ " + s }
