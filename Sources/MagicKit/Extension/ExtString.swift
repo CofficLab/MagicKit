@@ -97,6 +97,31 @@ public extension String {
             )
         )
     }
+    
+    func saveToFile(_ url: URL) {
+            let verbose = false
+            
+            if verbose {
+                os_log("保存到 -> \(url.relativePath)")
+            }
+            
+            let f = FileManager.default
+            let folder = url.deletingLastPathComponent()
+            
+            if !f.fileExists(atPath: folder.path) {
+                do {
+                    try f.createDirectory(at: folder, withIntermediateDirectories: true, attributes: nil)
+                } catch {
+                    print("创建文件夹时发生错误: \(error)")
+                }
+            }
+
+            do {
+                try self.write(to: url, atomically: true, encoding: .utf8)
+            } catch {
+                os_log(.error, "保存失败 -> \(error)")
+            }
+        }
 }
 
 /// String 扩展功能演示视图
