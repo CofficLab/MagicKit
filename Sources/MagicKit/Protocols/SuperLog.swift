@@ -40,21 +40,8 @@ extension SuperLog {
     public static var onInit: String {  "\(t)🚩🚩🚩 Init " }
     public static var t: String {
         let emoji = Self.emoji
-        let qos = Thread.current.qualityOfService
-        let qosDesc = qosDescription(qos, withName: false)
+        let qosDesc = Thread.currentQosDescription
             
         return "\(qosDesc) | \(emoji) \(author.padding(toLength: 20, withPad: " ", startingAt: 0)) | "
     }
-    
-    static public func qosDescription(_ qos: QualityOfService, withName: Bool = true) -> String {
-        switch qos {
-        case .userInteractive: return withName ? "🔥 UserInteractive" : "🔥"
-        case .userInitiated: return withName ? "2️⃣ UserInitiated" : "2️⃣"
-        case .default: return withName ? "3️⃣ Default" : "3️⃣"
-        case .utility: return withName ? "4️⃣ Utility" : "4️⃣"
-        case .background: return withName ? "5️⃣ Background" : "5️⃣"
-        default: return withName ? "6️⃣ Unknown" : "6️⃣"
-        }
-    }
-
 }
