@@ -1,6 +1,5 @@
 import SwiftUI
 
-#if DEBUG
 // MARK: - Basic Preview
 private struct BasicButtonsPreview: View {
     var body: some View {
@@ -979,4 +978,3 @@ struct MagicButtonPreview: View {
     MagicButtonPreview()
         .frame(height: 800)
 }
-#endif 
