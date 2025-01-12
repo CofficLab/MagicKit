@@ -20,6 +20,9 @@ let package = Package(
             name: "MagicWeb",
             targets: ["MagicWeb"]),
         .library(
+            name: "MagicSync",
+            targets: ["MagicSync"]),
+        .library(
             name: "MagicAsset",
             targets: ["MagicAsset"]),
     ],
@@ -41,6 +44,10 @@ let package = Package(
         ),
         .target(
             name: "MagicWeb",
+            dependencies: ["MagicKit"]
+        ),
+        .target(
+            name: "MagicSync",
             dependencies: ["MagicKit"]
         ),
         .target(
