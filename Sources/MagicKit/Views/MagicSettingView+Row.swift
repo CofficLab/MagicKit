@@ -55,7 +55,7 @@ public struct MagicSettingRow<Content: View>: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .padding(.vertical, 8)
+        .padding(.vertical, 4)
         .padding(.horizontal, 8)
         .background {
             RoundedRectangle(cornerRadius: 6)

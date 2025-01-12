@@ -277,7 +277,7 @@ public struct AvatarView: View, SuperLog {
         // 使用后台任务队列
         await Task.detached(priority: .utility) {
             addLog("🛫 开始加载缩略图: \(url.title)")
-            if verbose { os_log("\(self.t)🪞🪞🪞 开始加载缩略图: \(url.title)") }
+            if verbose { os_log("\(self.t)开始加载缩略图: \(url.title)") }
             await state.setLoading(true)
 
             do {
@@ -286,7 +286,7 @@ public struct AvatarView: View, SuperLog {
                 let image = try await url.thumbnail(size: size, verbose: verbose)
 
                 if let image = image {
-                    addLog("🎉 缩略图生成成功")
+                    addLog("缩略图生成成功")
                     await state.setThumbnail(image)
                     await state.setError(nil)
                 } else {
@@ -313,7 +313,7 @@ public struct AvatarView: View, SuperLog {
                     }
                 } else {
                     viewError = .thumbnailGenerationFailed
-                    addLog("🙋 未知错误: \(error.localizedDescription)", level: .error)
+                    addLog("未知错误: \(error.localizedDescription)", level: .error)
                 }
 
                 await state.setError(viewError)
@@ -327,7 +327,7 @@ public struct AvatarView: View, SuperLog {
 
     @Sendable private func setupDownloadMonitor() async {
         guard monitorDownload && url.isiCloud && progressBinding == nil else {
-            addLog("🚫 跳过下载监控设置：不需要监控或非 iCloud 文件")
+            addLog("跳过下载监控设置：不需要监控或非 iCloud 文件")
             return
         }
 
@@ -340,17 +340,17 @@ public struct AvatarView: View, SuperLog {
                 state.setProgress(progress)
                 // 记录下载进度
                 if progress >= 0 {
-                    addLog("🍋 下载进度: \(Int(progress * 100))%")
+                    addLog("下载进度: \(Int(progress * 100))%")
                 }
                 // 如果下载失败（进度为负数），设置相应的错误
                 if progress < 0 {
-                    addLog("🚫 下载失败", level: .error)
+                    addLog("下载失败", level: .error)
                     state.setError(ViewError.downloadFailed)
                 }
             },
             onFinished: {
                 Task {
-                    addLog("🎉 下载完成，开始重新加载缩略图")
+                    addLog("下载完成，开始重新加载缩略图")
                     state.reset()
                     await loadThumbnail()
                 }

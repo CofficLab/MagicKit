@@ -8,7 +8,7 @@ public struct MagicLogEntry: Identifiable {
     public let timestamp: Date
     
     public init(message: String, level: Level, timestamp: Date = Date()) {
-        self.message = message
+        self.message = message.withContextEmoji
         self.level = level
         self.timestamp = timestamp
     }
