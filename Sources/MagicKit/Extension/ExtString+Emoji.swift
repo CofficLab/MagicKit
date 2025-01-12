@@ -31,8 +31,14 @@ extension String {
         }
 
         // 成功和完成
-        if lowercased.contains("success") || lowercased.contains("complete") || lowercased.contains("finish") ||
-            lowercased.contains("成功") || lowercased.contains("完成") || lowercased.contains("结束") {
+        if lowercased.contains("success") 
+        || lowercased.contains("complete") 
+        || lowercased.contains("finish") 
+        || lowercased.contains("ok") 
+        || lowercased.contains("ready") 
+        || lowercased.contains("成功") 
+        || lowercased.contains("完成") 
+        || lowercased.contains("结束") {
             return "✅"
         }
 

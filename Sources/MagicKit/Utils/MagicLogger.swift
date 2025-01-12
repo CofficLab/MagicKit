@@ -173,7 +173,6 @@ public class MagicLogger: ObservableObject {
             popoverContent: AnyView(
                 logView()
                     .frame(width: 600, height: 400)
-                    .padding()
             )
         )
     }
