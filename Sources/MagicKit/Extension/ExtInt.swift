@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 /// Int 类型的扩展，提供常用的工具方法
 public extension Int {
@@ -82,9 +83,6 @@ public extension Int {
         return String(format: "%.1f %@", size, units[unitIndex])
     }
 }
-
-#if DEBUG
-import SwiftUI
 
 /// Int 扩展功能演示视图
 struct IntExtensionDemoView: View {
@@ -177,4 +175,3 @@ struct IntExtensionDemoView: View {
         IntExtensionDemoView()
     }
 }
-#endif

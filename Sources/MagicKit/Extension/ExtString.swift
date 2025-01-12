@@ -99,7 +99,6 @@ public extension String {
     }
 }
 
-#if DEBUG
 /// String 扩展功能演示视图
 struct StringExtensionDemoView: View {
     var body: some View {
@@ -186,4 +185,3 @@ struct StringExtensionDemoView: View {
         StringExtensionDemoView()
     }
 }
-#endif

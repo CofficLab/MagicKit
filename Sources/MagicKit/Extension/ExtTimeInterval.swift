@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 /// TimeInterval 类型的扩展，提供时间格式化功能
 public extension TimeInterval {
@@ -47,9 +48,6 @@ public struct TimeFormatter {
         }
     }
 }
-
-#if DEBUG
-import SwiftUI
 
 /// TimeInterval 扩展功能演示视图
 struct TimeIntervalExtensionDemoView: View {
@@ -117,4 +115,3 @@ struct TimeIntervalExtensionDemoView: View {
         TimeIntervalExtensionDemoView()
     }
 }
-#endif 

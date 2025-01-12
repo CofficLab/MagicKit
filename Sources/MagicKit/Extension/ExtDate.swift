@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 /// Date 类型的扩展，提供常用的日期格式化和转换功能
 public extension Date {    
@@ -98,9 +99,6 @@ public extension Date {
     }
 }
 
-#if DEBUG
-import SwiftUI
-
 /// 日期格式化演示视图
 struct DateFormattingDemoView: View {
     @State private var date = Date()
@@ -165,4 +163,3 @@ struct DateFormattingDemoView: View {
         DateFormattingDemoView()
     }
 }
-#endif

@@ -249,7 +249,6 @@ public extension Image.PlatformImage {
     }
 }
 
-#if DEBUG
 /// 平台图片功能演示视图
 struct PlatformImageDemoView: View {
     /// 创建平台无关的 SwiftUI Image
@@ -358,4 +357,3 @@ struct PlatformImageDemoView: View {
         PlatformImageDemoView()
     }
 }
-#endif

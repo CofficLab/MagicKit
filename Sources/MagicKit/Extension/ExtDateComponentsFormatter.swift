@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 /// DateComponentsFormatter 的扩展，提供预配置的时间格式化器
 public extension DateComponentsFormatter {
@@ -48,8 +49,7 @@ public extension DateComponentsFormatter {
     }()
 }
 
-#if DEBUG
-import SwiftUI
+
 
 /// 时间格式化演示视图
 struct DateComponentsFormatterDemoView: View {
@@ -160,4 +160,3 @@ struct DateComponentsFormatterDemoView: View {
         DateComponentsFormatterDemoView()
     }
 }
-#endif

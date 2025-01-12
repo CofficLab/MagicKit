@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 extension String {
     /// 根据字符串内容生成相关的 emoji 并添加到原始内容前
@@ -80,10 +81,7 @@ extension String {
         // 默认返回一个通用的 emoji
         return "📝"
     }
-}
-
-#if DEBUG
-    import SwiftUI
+}   
 
     struct StringEmojiPreview: View {
         let examples = [
@@ -144,5 +142,4 @@ extension String {
 
     #Preview {
         StringEmojiPreview().inMagicContainer()
-    }
-#endif
+    }   

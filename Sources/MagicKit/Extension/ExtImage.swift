@@ -584,9 +584,6 @@ public extension Image {
     }
 }
 
-#if DEBUG
-import SwiftUI
-
 /// 系统图标演示视图
 struct SystemIconsDemoView: View {
     var body: some View {
@@ -741,4 +738,3 @@ struct SystemIconsDemoView: View {
         SystemIconsDemoView()
     }
 }
-#endif

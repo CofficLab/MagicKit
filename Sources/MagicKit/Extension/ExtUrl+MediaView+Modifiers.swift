@@ -516,5 +516,5 @@ public extension MediaFileView {
 }
 
 #Preview("Media View") {
-    MediaViewPreviewContainer()
+    MediaViewPreviewContainer().inMagicContainer()
 }

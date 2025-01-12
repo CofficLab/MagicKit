@@ -259,7 +259,6 @@ public extension URL {
     }
 }
 
-#if DEBUG
 /// URL 扩展功能演示视图
 struct URLExtensionDemoView: View {
     var body: some View {
@@ -363,4 +362,3 @@ struct URLExtensionDemoView: View {
         URLExtensionDemoView()
     }
 }
-#endif

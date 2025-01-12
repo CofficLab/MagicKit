@@ -1,6 +1,5 @@
 import SwiftUI
 
-#if DEBUG
 // MARK: - Basic Preview
 private struct BasicToastPreview: View {
     var body: some View {
@@ -168,4 +167,3 @@ struct MagicToastPreview: View {
 #Preview("MagicToast") {
     MagicToastPreview()
 }
-#endif 
