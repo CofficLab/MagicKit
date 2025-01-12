@@ -259,7 +259,7 @@ public struct AvatarView: View, SuperLog {
     // MARK: - Private Methods
 
     @Sendable private func loadThumbnail() async {
-        if state.thumbnail != nil {
+        if state.thumbnail != nil && url.isDownloaded {
             addLog("跳过缩略图加载：已存在缩略图")
             return
         }
