@@ -13,82 +13,80 @@ struct ThumbnailPreview: View {
     private let videoURL = URL.sample_temp_mp4
 
     var body: some View {
-        MagicThemePreview {
-            VStack(spacing: 20) {
-                Text("缩略图预览")
-                    .font(.title)
-                    .padding()
+        VStack(spacing: 20) {
+            Text("缩略图预览")
+                .font(.title)
+                .padding()
 
-                // 音频缩略图展示
-                Group {
-                    Text("音频文件缩略图")
-                        .font(.headline)
+            // 音频缩略图展示
+            Group {
+                Text("音频文件缩略图")
+                    .font(.headline)
 
-                    if let audioThumbnail {
-                        audioThumbnail
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 200, height: 200)
-                    } else {
-                        Text("无封面")
-                            .frame(width: 200, height: 200)
-                            .background(Color.gray.opacity(0.2))
-                    }
-
-                    HStack(spacing: 20) {
-                        Button("加载音频封面") {
-                            loadAudioThumbnail()
-                        }
-                        
-                        Button("写入测试封面") {
-                            writeSampleCover()
-                        }
-                    }
+                if let audioThumbnail {
+                    audioThumbnail
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 200, height: 200)
+                } else {
+                    Text("无封面")
+                        .frame(width: 200, height: 200)
+                        .background(Color.gray.opacity(0.2))
                 }
 
-                // 视频缩略图展示
-                Group {
-                    Text("视频文件缩略图")
-                        .font(.headline)
-
-                    if let videoThumbnail {
-                        videoThumbnail
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 200, height: 200)
-                    } else {
-                        Text("无封面")
-                            .frame(width: 200, height: 200)
-                            .background(Color.gray.opacity(0.2))
+                HStack(spacing: 20) {
+                    Button("加载音频封面") {
+                        loadAudioThumbnail()
                     }
 
-                    Button("加载视频封面") {
-                        loadVideoThumbnail()
-                    }
-                }
-
-                if isLoading {
-                    ProgressView()
-                }
-
-                if let errorMessage {
-                    HStack {
-                        Text(errorMessage)
-                            .foregroundColor(.red)
-                        
-                        Button(action: {
-                            errorMessage.copy()
-                        }) {
-                            Image(systemName: "doc.on.doc")
-                                .foregroundColor(.gray)
-                        }
-                        .buttonStyle(.plain)
-                        .help("复制错误信息")
+                    Button("写入测试封面") {
+                        writeSampleCover()
                     }
                 }
             }
-            .padding()
+
+            // 视频缩略图展示
+            Group {
+                Text("视频文件缩略图")
+                    .font(.headline)
+
+                if let videoThumbnail {
+                    videoThumbnail
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 200, height: 200)
+                } else {
+                    Text("无封面")
+                        .frame(width: 200, height: 200)
+                        .background(Color.gray.opacity(0.2))
+                }
+
+                Button("加载视频封面") {
+                    loadVideoThumbnail()
+                }
+            }
+
+            if isLoading {
+                ProgressView()
+            }
+
+            if let errorMessage {
+                HStack {
+                    Text(errorMessage)
+                        .foregroundColor(.red)
+
+                    Button(action: {
+                        errorMessage.copy()
+                    }) {
+                        Image(systemName: "doc.on.doc")
+                            .foregroundColor(.gray)
+                    }
+                    .buttonStyle(.plain)
+                    .help("复制错误信息")
+                }
+            }
         }
+        .padding()
     }
 
     private func loadAudioThumbnail() {
@@ -153,18 +151,18 @@ struct ThumbnailPreview: View {
                 let image = Image.PlatformImage.sampleImage(size: CGSize(width: 500, height: 500))
                 // 获取图片数据
                 #if os(macOS)
-                guard let imageData = image.tiffRepresentation else {
-                    throw NSError(domain: "MagicKit", code: -1, userInfo: [NSLocalizedDescriptionKey: "无法获取图片数据"])
-                }
+                    guard let imageData = image.tiffRepresentation else {
+                        throw NSError(domain: "MagicKit", code: -1, userInfo: [NSLocalizedDescriptionKey: "无法获取图片数据"])
+                    }
                 #else
-                guard let imageData = image.pngData() else {
-                    throw NSError(domain: "MagicKit", code: -1, userInfo: [NSLocalizedDescriptionKey: "无法获取图片数据"])
-                }
+                    guard let imageData = image.pngData() else {
+                        throw NSError(domain: "MagicKit", code: -1, userInfo: [NSLocalizedDescriptionKey: "无法获取图片数据"])
+                    }
                 #endif
-                
+
                 try await url.writeCoverToMediaFile(imageData: imageData, verbose: true)
                 // 重新加载显示新封面
-                await loadAudioThumbnail()
+                loadAudioThumbnail()
             } catch {
                 await MainActor.run {
                     errorMessage = "写入封面失败: \(error.localizedDescription)"
@@ -179,5 +177,5 @@ struct ThumbnailPreview: View {
 }
 
 #Preview {
-    ThumbnailPreview()
+    ThumbnailPreview().inMagicContainer()
 }

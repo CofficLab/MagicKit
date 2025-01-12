@@ -129,22 +129,20 @@ extension String {
         ]
 
         var body: some View {
-            MagicThemePreview {
-                VStack(alignment: .leading, spacing: 4) {
-                    ForEach(examples, id: \.self) { text in
-                        Text("原始文本：\(text)")
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
-                        Text("添加 Emoji：\(text.withContextEmoji)")
-                            .font(.body)
-                    }
-                    .padding(.vertical, 4)
+            VStack(alignment: .leading, spacing: 4) {
+                ForEach(examples, id: \.self) { text in
+                    Text("原始文本：\(text)")
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                    Text("添加 Emoji：\(text.withContextEmoji)")
+                        .font(.body)
                 }
+                .padding(.vertical, 4)
             }
         }
     }
 
     #Preview {
-        StringEmojiPreview()
+        StringEmojiPreview().inMagicContainer()
     }
 #endif

@@ -61,5 +61,5 @@ public extension URL {
 
 // MARK: - Preview
 #Preview("头像视图") {
-    AvatarDemoView()
+    AvatarDemoView().inMagicContainer()
 }

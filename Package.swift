@@ -24,6 +24,7 @@ let package = Package(
             targets: ["MagicAsset"]),
     ],
     dependencies: [
+        .package(url: "https://github.com/apple/swift-async-algorithms", from: "0.1.0"),
         .package(url: "https://github.com/chicio/ID3TagEditor", from: "4.5.0")
     ],
     targets: [

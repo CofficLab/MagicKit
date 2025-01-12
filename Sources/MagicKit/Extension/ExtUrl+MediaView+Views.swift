@@ -287,5 +287,5 @@ struct ErrorMessageView: View {
 }
 
 #Preview("Media View") {
-    MediaViewPreviewContainer()
+    MediaViewPreviewContainer().inMagicContainer()
 }

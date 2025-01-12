@@ -1,5 +1,14 @@
 import SwiftUI
 
+public extension View {
+    /// 为预览视图添加通用容器
+    func inMagicContainer() -> some View {
+        MagicThemePreview {
+            self
+        }
+    }
+}
+
 // MARK: - MagicThemePreview
 /// 主题预览容器，提供亮暗主题切换功能
 public struct MagicThemePreview<Content: View>: View {
@@ -116,8 +125,8 @@ public struct MagicThemePreview<Content: View>: View {
         }
         .background(.background)
         .environment(\.colorScheme, isDarkMode ? .dark : .light)
-        .frame(minHeight: 800)
-        .frame(idealHeight: 1200)
+        .frame(minHeight: 750)
+        .frame(idealHeight: 1000)
         .onAppear {
             // 初始化时跟随系统主题
             isDarkMode = systemColorScheme == .dark

@@ -426,7 +426,5 @@ private struct FileStatusContent: View {
 }
 
 #Preview("Media View") {
-    MagicThemePreview {
-        MediaViewPreviewContainer()
-    }
+    MediaViewPreviewContainer().inMagicContainer()
 }
