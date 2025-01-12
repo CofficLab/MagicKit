@@ -20,6 +20,16 @@ extension View {
                 .foregroundColor(color)
         )
     }
+
+    /// 让视图仅在 Debug 模式下显示
+    /// - Returns: 在 Debug 模式下返回原视图，在 Release 模式下返回空视图
+    public func onlyDebug() -> some View {
+        #if DEBUG
+        return self
+        #else
+        return EmptyView()
+        #endif
+    }
 }
 
 #Preview {
@@ -49,6 +59,12 @@ extension View {
             .font(.largeTitle)
             .padding()
             .dashedBorder(color: .orange, lineWidth: 2, dash: [8, 4])
+        
+        // 添加 onlyDebug 预览示例
+        Text("Debug Only View")
+            .padding()
+            .background(Color.yellow)
+            .onlyDebug()
     }
     .padding()
     .inMagicContainer()
