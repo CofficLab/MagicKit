@@ -6,7 +6,7 @@ import SwiftData
 
 /// For syncing the local database with the iCloud database
 public final actor SmartSync: SuperThread, SuperLog {
-    static let emoji = "⛅️"
+    public static let emoji = "⛅️"
 
     let emoji = SmartSync.emoji
     let nc = NotificationCenter.default

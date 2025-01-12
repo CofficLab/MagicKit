@@ -5,7 +5,7 @@ import Foundation
 
 /// Represent the state of the cloud database
 public struct CloudState: Decodable, Encodable, SuperLog, SuperThread {
-    var emoji = "🍽️"
+    public static var emoji = "🍽️"
     
     var url: URL
     
@@ -21,7 +21,7 @@ public struct CloudState: Decodable, Encodable, SuperLog, SuperThread {
     init(reason: String, url: URL) throws {
         let verbose = false
         if verbose {
-            os_log("\(Logger.initLog) CloudState(\(reason))")
+            os_log("\(Self.i) CloudState(\(reason))")
         }
         
         self.url = url
@@ -44,7 +44,7 @@ public struct CloudState: Decodable, Encodable, SuperLog, SuperThread {
             let data = try JSONDecoder().decode(CloudStateData.self, from: blob)
 
             if verbose {
-                os_log("\(self.t)从磁盘解析 CloudState 成功，更新时间 \(data.updatedAt.string)")
+                os_log("\(self.t)从磁盘解析 CloudState 成功，更新时间 \(data.updatedAt.logTime)")
             }
             
             return data.stateSerialization
