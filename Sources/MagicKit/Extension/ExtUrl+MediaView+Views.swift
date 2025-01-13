@@ -271,18 +271,19 @@ private struct LogViewPresentation<LogContent: View>: ViewModifier {
     }
     
     func body(content: Content) -> some View {
-        content
-            .sheet(isPresented: isPresented, content: {
-                if style == .sheet {
+        Group {
+            switch style {
+            case .sheet:
+                content.sheet(isPresented: isPresented) {
                     logContent()
                 }
-            })
-            .popover(isPresented: isPresented, content: {
-                if style == .popover {
+            case .popover:
+                content.popover(isPresented: isPresented) {
                     logContent()
                         .frame(width: 600, height: 400)
                 }
-            })
+            }
+        }
     }
 }
 
