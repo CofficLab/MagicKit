@@ -100,6 +100,7 @@ private struct FoldersContent: View {
                     URL.sample_temp_folder.makeMediaView()
                         .magicBackground(MagicBackground.mint)
                         .magicShowBorder(showBorder)
+                        .magicLogAsPopover()
                 }
                 
                 Group {
@@ -110,6 +111,7 @@ private struct FoldersContent: View {
                         .magicBackground(MagicBackground.aurora)
                         .magicShowFolderContent()
                         .magicShowBorder(showBorder)
+                        .magicLogAsPopover()
                 }
             }
             .padding()
@@ -130,6 +132,7 @@ private struct ShapesContent: View {
                     URL.sample_web_jpg_earth.makeMediaView()
                         .magicBackground(MagicBackground.mint)
                         .magicShowBorder(showBorder)
+                        .magicLogAsPopover()
                 }
                 
                 Group {
@@ -140,6 +143,7 @@ private struct ShapesContent: View {
                         .magicBackground(MagicBackground.aurora)
                         .magicShape(.roundedRectangle(cornerRadius: 8))
                         .magicShowBorder(showBorder)
+                        .magicLogAsPopover()
                 }
                 
                 Group {
@@ -150,6 +154,7 @@ private struct ShapesContent: View {
                         .magicBackground(MagicBackground.sunset)
                         .magicShape(.roundedRectangle(cornerRadius: 16))
                         .magicShowBorder(showBorder)
+                        .magicLogAsPopover()
                 }
             }
             .padding()
@@ -172,6 +177,7 @@ private struct AvatarShapesContent: View {
                         .magicCircleAvatar()
                         .magicAvatarBackground(.red.opacity(0.1))
                         .magicShowBorder(showBorder)
+                        .magicLogAsPopover()
                 }
                 
                 Group {
@@ -184,6 +190,7 @@ private struct AvatarShapesContent: View {
                         .magicRoundedAvatar(8)
                         .magicAvatarBackground(.green.opacity(0.1))
                         .magicShowBorder(showBorder)
+                        .magicLogAsPopover()
                 }
                 
                 Group {
@@ -196,6 +203,7 @@ private struct AvatarShapesContent: View {
                         .magicRectangleAvatar()
                         .magicAvatarBackground(.purple.opacity(0.1))
                         .magicShowBorder(showBorder)
+                        .magicLogAsPopover()
                 }
                 
                 Group {
@@ -209,6 +217,7 @@ private struct AvatarShapesContent: View {
                         .magicAvatarShape(.circle)
                         .magicAvatarBackground(.yellow.opacity(0.1))
                         .magicShowBorder(showBorder)
+                        .magicLogAsPopover()
                 }
             }
             .padding()
@@ -229,6 +238,7 @@ private struct RemoteFilesContent: View {
                     URL.sample_web_jpg_earth.makeMediaView()
                         .magicBackground(MagicBackground.mint)
                         .magicShowBorder(showBorder)
+                        .magicLogAsPopover()
                 }
                 
                 Group {
@@ -239,6 +249,7 @@ private struct RemoteFilesContent: View {
                         .magicBackground(MagicBackground.sunset)
                         .magicShowDownloadButton(false)
                         .magicShowBorder(showBorder)
+                        .magicLogAsPopover()
                 }
                 
                 Group {
@@ -248,6 +259,7 @@ private struct RemoteFilesContent: View {
                     URL.sample_web_mp3_kennedy.makeMediaView()
                         .magicBackground(MagicBackground.aurora)
                         .magicShowBorder(showBorder)
+                        .magicLogAsPopover()
                 }
                 
                 Group {
@@ -258,6 +270,7 @@ private struct RemoteFilesContent: View {
                         .magicBackground(MagicBackground.ocean)
                         .magicShowDownloadButton(false)
                         .magicShowBorder(showBorder)
+                        .magicLogAsPopover()
                 }
             }
             .padding()
@@ -278,6 +291,7 @@ private struct LocalFilesContent: View {
                     URL.sample_temp_jpg.makeMediaView()
                         .magicBackground(MagicBackground.mint)
                         .magicShowBorder(showBorder)
+                        .magicLogAsPopover()
                 }
                 
                 Group {
@@ -287,6 +301,7 @@ private struct LocalFilesContent: View {
                     URL.sample_temp_mp3.makeMediaView()
                         .magicBackground(MagicBackground.aurora)
                         .magicShowBorder(showBorder)
+                        .magicLogAsPopover()
                 }
             }
             .padding()
@@ -307,6 +322,7 @@ private struct PaddingContent: View {
                     URL.sample_web_jpg_earth.makeMediaView()
                         .magicBackground(MagicBackground.mint)
                         .magicShowBorder(showBorder)
+                        .magicLogAsPopover()
                 }
                 
                 Group {
@@ -317,6 +333,7 @@ private struct PaddingContent: View {
                         .magicBackground(MagicBackground.mint)
                         .magicPadding(horizontal: 0, vertical: 0)
                         .magicShowBorder(showBorder)
+                        .magicLogAsPopover()
                 }
                 
                 Group {
@@ -327,6 +344,7 @@ private struct PaddingContent: View {
                         .magicBackground(MagicBackground.aurora)
                         .magicVerticalPadding(24)
                         .magicShowBorder(showBorder)
+                        .magicLogAsPopover()
                 }
                 
                 Group {
@@ -337,6 +355,7 @@ private struct PaddingContent: View {
                         .magicBackground(MagicBackground.sunset)
                         .magicHorizontalPadding(32)
                         .magicShowBorder(showBorder)
+                        .magicLogAsPopover()
                 }
                 
                 Group {
@@ -347,6 +366,7 @@ private struct PaddingContent: View {
                         .magicBackground(MagicBackground.ocean)
                         .magicPadding(horizontal: 32, vertical: 24)
                         .magicShowBorder(showBorder)
+                        .magicLogAsPopover()
                 }
             }
             .padding()
@@ -368,6 +388,7 @@ private struct FileStatusContent: View {
                     URL.sample_web_jpg_earth.makeMediaView()
                         .magicBackground(MagicBackground.mint.opacity(0.1))
                         .magicShowBorder(showBorder)
+                        .magicLogAsPopover()
                 }
                 
                 Group {
@@ -378,6 +399,7 @@ private struct FileStatusContent: View {
                         .magicBackground(MagicBackground.aurora.opacity(0.1))
                         .magicHideFileStatus()
                         .magicShowBorder(showBorder)
+                        .magicLogAsPopover()
                 }
                 
                 Group {
@@ -387,6 +409,7 @@ private struct FileStatusContent: View {
                     URL.sample_temp_jpg.makeMediaView()
                         .magicBackground(MagicBackground.sunset.opacity(0.1))
                         .magicShowBorder(showBorder)
+                        .magicLogAsPopover()
                 }
                 
                 Group {
@@ -397,6 +420,7 @@ private struct FileStatusContent: View {
                         .magicBackground(MagicBackground.ocean.opacity(0.1))
                         .magicHideFileStatus()
                         .magicShowBorder(showBorder)
+                        .magicLogAsPopover()
                 }
                 
                 Group {
@@ -407,6 +431,7 @@ private struct FileStatusContent: View {
                         .magicBackground(MagicBackground.ocean.opacity(0.1))
                         .magicHideFileSize()
                         .magicShowBorder(showBorder)
+                        .magicLogAsPopover()
                 }
 
                 Group {
@@ -418,6 +443,7 @@ private struct FileStatusContent: View {
                         .magicHideFileSize()
                         .magicHideFileStatus()
                         .magicShowBorder(showBorder)
+                        .magicLogAsPopover()
                 }
             }
             .padding()

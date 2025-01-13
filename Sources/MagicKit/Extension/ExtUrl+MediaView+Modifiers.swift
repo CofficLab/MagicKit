@@ -513,6 +513,59 @@ public extension MediaFileView {
         #endif
         return view
     }
+
+    /// 设置日志视图的显示样式
+    ///
+    /// 这个修改器允许你控制日志视图的显示方式，可以选择以 sheet 或 popover 的形式显示。
+    ///
+    /// 示例：
+    /// ```swift
+    /// // 以 sheet 形式显示（默认）
+    /// url.makeMediaView()
+    ///     .magicLogStyle(.sheet)
+    ///
+    /// // 以 popover 形式显示
+    /// url.makeMediaView()
+    ///     .magicLogStyle(.popover)
+    /// ```
+    ///
+    /// - Parameter style: 日志视图的显示样式
+    /// - Returns: 配置了日志视图样式的视图
+    func magicLogStyle(_ style: LogViewStyle) -> MediaFileView {
+        var view = self
+        view.logStyle = style
+        return view
+    }
+
+    /// 以 sheet 形式显示日志视图
+    ///
+    /// 这是 `magicLogStyle(.sheet)` 的便捷方法。
+    ///
+    /// 示例：
+    /// ```swift
+    /// url.makeMediaView()
+    ///     .magicLogAsSheet()
+    /// ```
+    ///
+    /// - Returns: 配置为以 sheet 形式显示日志的视图
+    func magicLogAsSheet() -> MediaFileView {
+        magicLogStyle(.sheet)
+    }
+
+    /// 以 popover 形式显示日志视图
+    ///
+    /// 这是 `magicLogStyle(.popover)` 的便捷方法。
+    ///
+    /// 示例：
+    /// ```swift
+    /// url.makeMediaView()
+    ///     .magicLogAsPopover()
+    /// ```
+    ///
+    /// - Returns: 配置为以 popover 形式显示日志的视图
+    func magicLogAsPopover() -> MediaFileView {
+        magicLogStyle(.popover)
+    }
 }
 
 #Preview("Media View") {

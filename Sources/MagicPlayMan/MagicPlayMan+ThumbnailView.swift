@@ -8,11 +8,13 @@ struct ThumbnailView: View, SuperLog {
     static var emoji = "🖥️"
 
     let url: URL?
+    let verbose: Bool
     private let preferredThumbnailSize: CGFloat = 512 // 或其他合适的尺寸
     @State private var loadedArtwork: Image?
 
-    init(url: URL? = nil) {
+    init(url: URL? = nil, verbose: Bool = false) {
         self.url = url
+        self.verbose = verbose
     }
 
     var body: some View {
@@ -29,14 +31,18 @@ struct ThumbnailView: View, SuperLog {
                                 height: min(geo.size.width - 40, geo.size.height - 40)
                             )
                             .onAppear {
-                                os_log("\(self.t) artwork loaded")
+                                if verbose {
+                                    os_log("\(self.t) artwork loaded")
+                                }
                             }
                     } else {
                         Image(systemName: "music.note")
                             .font(.system(size: min(geo.size.width, geo.size.height) * 0.3))
                             .foregroundStyle(.secondary)
                             .onAppear {
-                                os_log("\(self.t) artwork default")
+                                if verbose {
+                                    os_log("\(self.t) artwork default")
+                                }
                             }
                     }
                 }

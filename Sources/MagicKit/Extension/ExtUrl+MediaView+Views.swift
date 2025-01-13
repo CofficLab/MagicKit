@@ -3,17 +3,33 @@ import SwiftUI
 import OSLog
 
 // MARK: - Media View Style
-
-/// 媒体视图的背景样式
 public enum MediaViewStyle {
-    /// 无背景
     case none
-    /// 自定义背景视图
     case background(AnyView)
 }
 
-// MARK: - Background Modifier
+// MARK: - Log View Style
+public enum LogViewStyle {
+    case sheet
+    case popover
+}
 
+// MARK: - View Model
+final class MediaFileViewModel: ObservableObject {
+    @Published var isHovering = false
+    
+    let url: URL
+    let verbose: Bool
+    let size: String
+    
+    init(url: URL, verbose: Bool) {
+        self.url = url
+        self.verbose = verbose
+        self.size = url.getSizeReadable()
+    }
+}
+
+// MARK: - Background Modifier
 struct MediaViewBackground: ViewModifier {
     let style: MediaViewStyle
 
@@ -32,72 +48,16 @@ struct MediaViewBackground: ViewModifier {
 }
 
 // MARK: - Media File View
-
-/// 用于显示文件信息的视图组件
-///
-/// 这个视图组件可以显示文件的缩略图、名称、大小等信息，并提供文件操作功能。
-/// 支持以下特性：
-/// - 自动生成文件缩略图
-/// - 显示文件大小
-/// - 错误状态展示
-/// - 悬停时显示操作按钮
-/// - 可自定义背景样式
-/// - 可自定义缩略图形状
-/// - 可调整垂直内边距
-/// - 支持 iCloud 文件下载进度监听
-/// - 支持手动控制下载进度
-/// - 支持文件夹内容展示
-///
-/// 基本用法：
-/// ```swift
-/// // 基本使用
-/// let url = URL(fileURLWithPath: "path/to/file")
-/// url.makeMediaView()
-///
-/// // 自定义样式
-/// url.makeMediaView()
-///     .withBackground(MagicBackground.mint)
-///     .thumbnailShape(.roundedRectangle(cornerRadius: 8))
-///     .verticalPadding(16)
-/// ```
-///
-/// 下载进度显示：
-/// ```swift
-/// // 自动监听 iCloud 文件下载进度
-/// url.makeMediaView()
-///
-/// // 手动控制下载进度
-/// struct DownloadView: View {
-///     @State private var progress: Double = 0.0
-///
-///     var body: some View {
-///         VStack {
-///             url.makeMediaView()
-///                 .downloadProgress($progress)
-///
-///             Button("开始下载") {
-///                 withAnimation {
-///                     progress = 1.0
-///                 }
-///             }
-///         }
-///     }
-/// }
-/// ```
-///
-/// 文件夹内容展示：
-/// ```swift
-/// // 显示文件夹内容
-/// folderURL.makeMediaView()
-///     .showFolderContent()
-///     .withBackground(MagicBackground.mint)
-/// ```
 public struct MediaFileView: View, SuperLog {
     public static var emoji = "🖥️"
-    var verbose: Bool
+    
+    @StateObject private var viewModel: MediaFileViewModel
+    @State private var showLogSheet = false
+    
     let url: URL
-    let size: String
+    var verbose: Bool
     var style: MediaViewStyle = .none
+    var logStyle: LogViewStyle = .sheet
     var showActions: Bool = true
     var shape: AvatarViewShape = .circle
     var avatarShape: AvatarViewShape = .circle
@@ -115,150 +75,161 @@ public struct MediaFileView: View, SuperLog {
     var showFileSize: Bool = true
     var showAvatar: Bool = true
     var showLogButton: Bool = true
-    @State private var isHovering = false
-    @State private var showLogSheet = false
-    @State private var logs: [MagicLogEntry] = []
 
-    /// 创建媒体文件视图
-    /// - Parameters:
-    ///   - url: 文件的 URL
     public init(url: URL, verbose: Bool) {
         self.url = url
         self.verbose = verbose
-        self.size = url.getSizeReadable()
+        self._viewModel = StateObject(wrappedValue: MediaFileViewModel(url: url, verbose: verbose))
     }
 
     public var body: some View {
         mainContent
             .modifier(FolderContentModifier(url: url, isVisible: folderContentVisible))
             .modifier(MediaViewBackground(style: style))
-            .overlay(
-                RoundedRectangle(cornerRadius: 0)
-                    .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [4]))
-                    .foregroundColor(showBorder ? .red : .clear)
-            )
+            .overlay(borderOverlay)
             .onHover { hovering in
                 withAnimation(.easeInOut(duration: 0.2)) {
-                    isHovering = hovering
+                    viewModel.isHovering = hovering
                 }
             }
     }
+}
 
-    private var mainContent: some View {
+// MARK: - MediaFileView Extensions
+private extension MediaFileView {
+    var mainContent: some View {
         VStack(spacing: 0) {
-            ZStack(alignment: .trailing) {
-                HStack(alignment: .center, spacing: 12) {
-                    // 左侧缩略图
-                    if showAvatar {
-                        let avatarView = url.makeAvatarView(verbose: self.verbose)
-                            .magicSize(avatarSize)
-                            .magicAvatarShape(avatarShape)
-                            .magicBackground(avatarBackgroundColor)
-                            .magicDownloadMonitor(monitorDownload)
-                            .onLog { message, level in
-                                addLog(message, level: level)
-                            }
-                        
-                        // 根据是否有进度绑定来决定是否应用进度修改器
-                        let finalAvatarView = if let progress = avatarProgressBinding {
-                            avatarView.magicDownloadProgress(progress)
-                        } else {
-                            avatarView
-                        }
-                        
-                        finalAvatarView
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 0)
-                                    .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [4]))
-                                    .foregroundColor(showBorder ? .blue : .clear)
-                            )
-                    }
-                    
-                    // 右侧文件信息
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(url.lastPathComponent)
-                            .font(.headline)
-                            .lineLimit(1)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 0)
-                                    .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [4]))
-                                    .foregroundColor(showBorder ? .green : .clear)
-                            )
-                        
-                        HStack {
-                            if showFileSize {
-                                Text(size)
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 0)
-                                            .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [4]))
-                                            .foregroundColor(showBorder ? .green : .clear)
-                                    )
-                            }
-                            
-                            if showFileStatus, let status = url.magicFileStatus {
-                                Text(status)
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 0)
-                                            .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [4]))
-                                            .foregroundColor(showBorder ? .green : .clear)
-                                    )
-                            }
-                        }
-                    }
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 0)
-                            .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [4]))
-                            .foregroundColor(showBorder ? .purple : .clear)
-                    )
-                    
-                    Spacer()
-                }
-                
-                // 操作按钮
-                if showActions {
-                    ActionButtonsView(url: url, showDownloadButton: showDownloadButton, showLogSheet: $showLogSheet)
-                        .opacity(isHovering ? 1 : 0)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 0)
-                                .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [4]))
-                                .foregroundColor(showBorder ? .orange : .clear)
-                        )
-                        .padding(.trailing, horizontalPadding)
-                }
-            }
-            .overlay(
-                RoundedRectangle(cornerRadius: 0)
-                    .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [4]))
-                    .foregroundColor(showBorder ? .yellow : .clear)
-            )
-            .padding(.horizontal, horizontalPadding)
-            .padding(.vertical, verticalPadding)
+            contentStack
         }
-        .sheet(isPresented: $showLogSheet) {
-            NavigationView {
-                MagicLogView(title: "MediaFileView Logs", logs: logs) {
-                    logs.removeAll()
-                } onClose: {
-                    showLogSheet = false
-                }
+        .modifier(LogViewPresentation(
+            isPresented: $showLogSheet,
+            style: logStyle,
+            content: {
+                MagicLogger.logView(
+                    title: "MediaFileView Logs",
+                    onClose: { showLogSheet = false }
+                )
             }
-            #if os(macOS)
-            .frame(minWidth: 500, minHeight: 300, idealHeight: 500)
-            #endif
-        }
+        ))
     }
     
-    private func addLog(_ message: String, level: MagicLogEntry.Level = .info) {
-        logs.append(MagicLogEntry(message: message, level: level))
+    var contentStack: some View {
+        ZStack(alignment: .trailing) {
+            HStack(alignment: .center, spacing: 12) {
+                if showAvatar {
+                    AvatarSection(
+                        url: url,
+                        verbose: verbose,
+                        avatarShape: avatarShape,
+                        avatarSize: avatarSize,
+                        avatarBackgroundColor: avatarBackgroundColor,
+                        monitorDownload: monitorDownload,
+                        avatarProgressBinding: avatarProgressBinding,
+                        showBorder: showBorder,
+                        viewModel: viewModel
+                    )
+                }
+                
+                FileInfoSection(
+                    url: url,
+                    size: viewModel.size,
+                    showFileSize: showFileSize,
+                    showFileStatus: showFileStatus,
+                    showBorder: showBorder
+                )
+                
+                Spacer()
+            }
+            
+            if showActions {
+                ActionButtonsSection(
+                    viewModel: viewModel,
+                    url: url,
+                    showDownloadButton: showDownloadButton,
+                    showLogSheet: $showLogSheet,
+                    horizontalPadding: horizontalPadding,
+                    showBorder: showBorder
+                )
+            }
+        }
+        .padding(.horizontal, horizontalPadding)
+        .padding(.vertical, verticalPadding)
+    }
+    
+    var borderOverlay: some View {
+        RoundedRectangle(cornerRadius: 0)
+            .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [4]))
+            .foregroundColor(showBorder ? .red : .clear)
+    }
+}
+
+// MARK: - File Info Section
+private struct FileInfoSection: View {
+    let url: URL
+    let size: String
+    let showFileSize: Bool
+    let showFileStatus: Bool
+    let showBorder: Bool
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(url.lastPathComponent)
+                .font(.headline)
+                .lineLimit(1)
+                .overlay(borderOverlay(.green))
+            
+            HStack {
+                if showFileSize {
+                    Text(size)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .overlay(borderOverlay(.green))
+                }
+                
+                if showFileStatus, let status = url.magicFileStatus {
+                    Text(status)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .overlay(borderOverlay(.green))
+                }
+            }
+        }
+        .overlay(borderOverlay(.purple))
+    }
+    
+    private func borderOverlay(_ color: Color) -> some View {
+        RoundedRectangle(cornerRadius: 0)
+            .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [4]))
+            .foregroundColor(showBorder ? color : .clear)
+    }
+}
+
+// MARK: - Action Buttons Section
+private struct ActionButtonsSection: View {
+    @ObservedObject var viewModel: MediaFileViewModel
+    let url: URL
+    let showDownloadButton: Bool
+    let showLogSheet: Binding<Bool>
+    let horizontalPadding: CGFloat
+    let showBorder: Bool
+    
+    var body: some View {
+        ActionButtonsView(
+            url: url,
+            showDownloadButton: showDownloadButton,
+            showLogSheet: showLogSheet
+        )
+        .opacity(viewModel.isHovering ? 1 : 0)
+        .overlay(
+            RoundedRectangle(cornerRadius: 0)
+                .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [4]))
+                .foregroundColor(showBorder ? .orange : .clear)
+        )
+        .padding(.trailing, horizontalPadding)
     }
 }
 
 // MARK: - Error Message View
-
 struct ErrorMessageView: View {
     let error: Error
     @State private var isHovering = false
@@ -284,6 +255,34 @@ struct ErrorMessageView: View {
                     isHovering = hovering
                 }
             }
+    }
+}
+
+// MARK: - Log View Presentation Modifier
+private struct LogViewPresentation<LogContent: View>: ViewModifier {
+    let isPresented: Binding<Bool>
+    let style: LogViewStyle
+    let logContent: () -> LogContent
+    
+    init(isPresented: Binding<Bool>, style: LogViewStyle, content: @escaping () -> LogContent) {
+        self.isPresented = isPresented
+        self.style = style
+        self.logContent = content
+    }
+    
+    func body(content: Content) -> some View {
+        content
+            .sheet(isPresented: isPresented, content: {
+                if style == .sheet {
+                    logContent()
+                }
+            })
+            .popover(isPresented: isPresented, content: {
+                if style == .popover {
+                    logContent()
+                        .frame(width: 600, height: 400)
+                }
+            })
     }
 }
 

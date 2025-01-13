@@ -89,6 +89,15 @@ public extension AvatarView {
         view.onLog = callback
         return view
     }
+    
+    /// 设置是否显示右键菜单
+    /// - Parameter enabled: 是否启用右键菜单
+    /// - Returns: 修改后的视图
+    func magicContextMenu(_ enabled: Bool) -> AvatarView {
+        var view = self
+        view.showContextMenu = enabled
+        return view
+    }
 }
 
 // MARK: - Preview

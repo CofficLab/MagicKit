@@ -62,6 +62,9 @@ public struct AvatarView: View, SuperLog {
     /// 视图背景色
     var backgroundColor: Color = .blue.opacity(0.1)
 
+    /// 是否显示右键菜单
+    var showContextMenu: Bool = true
+
     /// 控制文件选择器的显示
     @State private var isImagePickerPresented = false
 
@@ -162,7 +165,7 @@ public struct AvatarView: View, SuperLog {
             }
         }
         .contextMenu {
-            if url.isFileURL {
+            if showContextMenu && url.isFileURL {
                 Button("设置封面") {
                     isImagePickerPresented = true
                 }
