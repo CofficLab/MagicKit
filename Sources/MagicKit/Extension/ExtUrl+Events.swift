@@ -213,7 +213,7 @@ public extension URL {
     func onDirectoryChanged(
         verbose: Bool = true,
         caller: String,
-        _ onChange: @escaping (_ files: [MetaWrapper], _ isInitialFetch: Bool) -> Void
+        _ onChange: @escaping (_ files: [MetaWrapper], _ isInitialFetch: Bool) async -> Void
     ) -> AnyCancellable {
         let queue = OperationQueue()
         queue.maxConcurrentOperationCount = 1
@@ -238,10 +238,8 @@ public extension URL {
                 if verbose {
                     os_log("\(self.t)🍋🍋🍋 [\(caller)] 文件夹内容已更新 -> \(self.title)")
                 }
-                await MainActor.run {
-                    onChange(collection.items, isFirstFetch)
-                    isFirstFetch = false
-                }
+                await onChange(collection.items, isFirstFetch)
+                isFirstFetch = false
             }
         }
         
