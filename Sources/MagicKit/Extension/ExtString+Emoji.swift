@@ -36,6 +36,7 @@ extension String {
         || lowercased.contains("finish") 
         || lowercased.contains("ok") 
         || lowercased.contains("ready") 
+        || lowercased.contains("done") 
         || lowercased.contains("成功") 
         || lowercased.contains("完成") 
         || lowercased.contains("结束") {

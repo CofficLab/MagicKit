@@ -234,7 +234,7 @@ public extension URL {
             
             for try await collection in result {
                 if verbose {
-                    os_log("\(self.t)🍋🍋🍋 [\(caller)] 文件夹内容已更新 -> \(self.title)")
+                    os_log("\(self.t)🍋🍋🍋 [\(caller)] 文件夹内容已更新 -> \(self.shortPath())")
                 }
                 await onChange(collection.items, isFirstFetch)
                 isFirstFetch = false
@@ -243,7 +243,7 @@ public extension URL {
         
         return AnyCancellable {
             if verbose {
-                os_log("\(self.t)🔚🔚🔚 [\(caller)] 停止监听文件夹变化 -> \(self.title)")
+                os_log("\(self.t)🔚🔚🔚 [\(caller)] 停止监听文件夹变化 -> \(self.shortPath())")
             }
             task.cancel()
             query.stop()
