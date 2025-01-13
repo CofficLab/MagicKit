@@ -122,7 +122,7 @@ public extension URL {
     ///     }
     /// }
     /// ```
-    func makeMediaView(verbose: Bool = true) -> MediaFileView {
+    func makeMediaView(verbose: Bool = false) -> MediaFileView {
         MediaFileView(url: self, verbose: verbose)
     }
 }

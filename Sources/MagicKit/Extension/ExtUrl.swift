@@ -17,9 +17,9 @@ public extension URL {
     /// let fileURL = URL(fileURLWithPath: "/path/to/file.txt")
     /// let hash = fileURL.getHash() // "d41d8cd98f00b204e9800998ecf8427e"
     /// ```
-    /// - Parameter verbose: 是否打印详细日志，默认为 true
+    /// - Parameter verbose: 是否打印详细日志，默认为 false
     /// - Returns: 文件的 MD5 哈希值字符串，如果是文件夹或计算失败则返回空字符串
-    public func getHash(verbose: Bool = true) -> String {
+    public func getHash(verbose: Bool = false) -> String {
         if self.isFolder {
             return ""
         }
