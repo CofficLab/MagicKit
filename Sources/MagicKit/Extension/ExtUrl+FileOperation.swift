@@ -121,18 +121,18 @@ public extension URL {
     ///
     /// For directories, this method recursively calculates the total size of all contained files.
     ///
-    /// - Returns: The size in bytes.
+    /// - Returns: The size in bytes as Int64.
     /// - Note: Returns 0 if the size cannot be determined.
-    func getSize() -> Int {
+    func getSize() -> Int64 {
         // 如果是文件夹，计算所有子项的大小总和
         if hasDirectoryPath {
             return getAllFilesInDirectory()
-                .reduce(0) { $0 + $1.getSize() }
+                .reduce(Int64(0)) { $0 + $1.getSize() }
         }
 
         // 如果是文件，返回文件大小
         let attributes = try? resourceValues(forKeys: [.fileSizeKey])
-        return attributes?.fileSize ?? 0
+        return Int64(attributes?.fileSize ?? 0)
     }
 
     /// Returns the file or directory size in a human-readable format.

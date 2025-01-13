@@ -359,6 +359,37 @@ public extension URL {
             query.start()
         }
     }
+    
+    /// 获取文件的下载进度
+    /// - Returns: 下载进度（0.0 到 1.0 之间）
+    ///   - 对于本地文件，返回 1.0
+    ///   - 对于 iCloud 文件，返回实际下载进度
+    ///   - 如果无法获取进度信息，返回 0.0
+    var downloadProgress: Double {
+        // 如果是本地文件，直接返回 1.0
+        if isLocal {
+            return 1.0
+        }
+        
+        // 如果是 iCloud 文件，获取下载进度
+        if isiCloud {
+            guard let resources = try? self.resourceValues(forKeys: [
+                .fileSizeKey,
+                .fileAllocatedSizeKey
+            ]) else {
+                return 0.0
+            }
+            
+            guard let totalSize = resources.fileSize,
+                  let downloadedSize = resources.fileAllocatedSize else {
+                return 0.0
+            }
+            
+            return Double(downloadedSize) / Double(totalSize)
+        }
+        
+        return 0.0
+    }
 }
 
 #Preview {

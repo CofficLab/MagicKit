@@ -2,6 +2,7 @@ import Foundation
 import Combine
 import SwiftUI
 import OSLog
+import Darwin
 
 public extension URL {
     /// 监听文件夹内容变化
@@ -11,84 +12,92 @@ public extension URL {
     ///   - onChange: 文件夹变化回调
     ///     - files: 文件列表
     ///     - isInitialFetch: 是否是初始的全量数据
+    ///     - error: 可能发生的错误
     /// - Returns: 可用于取消监听的 AnyCancellable
     func onDirectoryChanged(
         verbose: Bool = true,
         caller: String,
-        _ onChange: @escaping (_ files: [NSMetadataItem], _ isInitialFetch: Bool) async -> Void
+        _ onChange: @escaping (_ files: [URL], _ isInitialFetch: Bool, _ error: Error?) async -> Void
     ) -> AnyCancellable {
-        let queue = OperationQueue()
-        queue.maxConcurrentOperationCount = 1
-        queue.qualityOfService = .background
+        let logger = Logger(subsystem: "MagicKit", category: "FileMonitor")
         
-        let query = NSMetadataQuery()
-        query.searchScopes = [NSMetadataQueryUbiquitousDocumentsScope]
-        query.predicate = NSPredicate(format: "%K BEGINSWITH %@ AND %K != %@", 
-                                    NSMetadataItemPathKey, self.path,
-                                    NSMetadataItemPathKey, self.path)
-        query.operationQueue = queue
-        
-        if verbose {
-            os_log("\(self.t)👂👂👂 [\(caller)] 开始监听文件夹变化 -> \(self.title)")
+        // 创建文件监视器
+        let fileDescriptor = Darwin.open(self.path, O_EVTONLY)
+        if fileDescriptor < 0 {
+            logger.error("Failed to open file descriptor for \(self.path)")
+            return AnyCancellable {}
         }
         
-        var isFirstFetch = true
+        let monitor = DispatchSource.makeFileSystemObjectSource(
+            fileDescriptor: fileDescriptor,
+            eventMask: .write,
+            queue: .global(qos: .background)
+        )
+        
+        if verbose {
+            logger.info("[\(caller)] Start monitoring directory: \(self.lastPathComponent)")
+        }
+        
+        // 使用 actor 来管理状态
+        actor DirectoryMonitorState {
+            private var isFirstFetch = true
+            
+            func getAndUpdateFirstFetch() -> Bool {
+                let current = isFirstFetch
+                isFirstFetch = false
+                return current
+            }
+        }
+        
+        let state = DirectoryMonitorState()
+        
+        @Sendable func scanDirectory() async throws {
+            // 在函数内部创建 FileManager 实例，而不是捕获外部实例
+            let fileManager = FileManager.default
+            
+            guard fileManager.fileExists(atPath: self.path) else {
+                throw URLError(.fileDoesNotExist)
+            }
+            
+            let urls = try fileManager.contentsOfDirectory(
+                at: self,
+                includingPropertiesForKeys: [.contentModificationDateKey],
+                options: [.skipsHiddenFiles]
+            )
+            
+            if verbose {
+                logger.info("[\(caller)] Directory content updated: \(self.lastPathComponent)")
+            }
+            
+            let isFirstFetch = await state.getAndUpdateFirstFetch()
+            await onChange(urls, isFirstFetch, nil)
+        }
+        
         let task = Task {
-            try await withTaskCancellationHandler {
-                let stream = AsyncStream<Notification> { continuation in
-                    // 监听初始数据收集完成的通知
-                    NotificationCenter.default.addObserver(
-                        forName: .NSMetadataQueryDidFinishGathering,
-                        object: query,
-                        queue: queue
-                    ) { notification in
-                        continuation.yield(notification)
-                    }
-                    
-                    // 监听数据更新的通知
-                    NotificationCenter.default.addObserver(
-                        forName: .NSMetadataQueryDidUpdate,
-                        object: query,
-                        queue: queue
-                    ) { notification in
-                        continuation.yield(notification)
+            do {
+                // 初始化监听
+                try await scanDirectory()
+                
+                // 设置文件变化处理
+                monitor.setEventHandler {
+                    Task {
+                        try await scanDirectory()
                     }
                 }
                 
-                for await _ in stream {
-                    guard !Task.isCancelled else { break }
-                    
-                    let items = query.results.compactMap { item -> NSMetadataItem? in
-                        guard let metadataItem = item as? NSMetadataItem else { return nil }
-                        return metadataItem
-                    }
-                    
-                    if verbose {
-                        os_log("\(self.t)🍋🍋🍋 [\(caller)] 文件夹内容已更新 -> \(self.shortPath())")
-                    }
-                    
-                    await onChange(items, isFirstFetch)
-                    isFirstFetch = false
-                }
-            } onCancel: {
-                query.stop()
-                NotificationCenter.default.removeObserver(self, 
-                    name: .NSMetadataQueryDidFinishGathering, 
-                    object: query)
-                NotificationCenter.default.removeObserver(self, 
-                    name: .NSMetadataQueryDidUpdate, 
-                    object: query)
+                monitor.resume()
+            } catch {
+                await onChange([], false, error)
             }
         }
         
-        query.start()
-        
         return AnyCancellable {
             if verbose {
-                os_log("\(self.t)🔚🔚🔚 [\(caller)] 停止监听文件夹变化 -> \(self.shortPath())")
+                logger.info("[\(caller)] Stop monitoring directory: \(self.lastPathComponent)")
             }
             task.cancel()
-            query.stop()
+            monitor.cancel()
+            Darwin.close(fileDescriptor)
         }
     }
 } 
