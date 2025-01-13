@@ -7,22 +7,25 @@ public extension URL {
     func onDirChange(
         verbose: Bool = true,
         caller: String,
-        _ onChange: @escaping (_ files: [URL], _ isInitialFetch: Bool, _ error: Error?) async -> Void
+        _ onChange: @escaping (_ files: [URL], _ isInitialFetch: Bool, _ error: Error?) async -> Void,
+        onDownloadProgress: @escaping (_ url: URL, _ progress: Double) -> Void
     ) -> AnyCancellable {
         let logger = Logger(subsystem: "MagicKit", category: "DirectoryMonitor")
         
         if isiCloud {
             if verbose {
-                logger.info("[\(caller)] Using iCloud monitor for: \(self.lastPathComponent)")
+                logger.info("[\(caller)] Using iCloud monitor for: \(self.shortPath())")
             }
             return onICloudDirectoryChanged(verbose: verbose, caller: caller) { files, isInitial, error in
                 Task {
                     await onChange(files, isInitial, error)
                 }
+            } onDownloadProgress: { url, progress in
+                onDownloadProgress(url, progress)
             }
         } else {
             if verbose {
-                logger.info("[\(caller)] Using local monitor for: \(self.lastPathComponent)")
+                logger.info("[\(caller)] Using local monitor for: \(self.shortPath())")
             }
             return onLocalDirectoryChanged(verbose: verbose, caller: caller, onChange)
         }
@@ -131,7 +134,8 @@ public extension URL {
     private func onICloudDirectoryChanged(
         verbose: Bool = true,
         caller: String,
-        _ onChange: @escaping (_ files: [URL], _ isInitialFetch: Bool, _ error: Error?) -> Void
+        _ onChange: @escaping (_ files: [URL], _ isInitialFetch: Bool, _ error: Error?) -> Void,
+        onDownloadProgress: @escaping (_ url: URL, _ progress: Double) -> Void
     ) -> AnyCancellable {
         let logger = Logger(subsystem: "MagicKit", category: "iCloudMonitor")
         let query = NSMetadataQuery()
@@ -148,7 +152,10 @@ public extension URL {
         // 设置要获取的属性
         query.valueListAttributes = [
             NSMetadataItemURLKey,
-            NSMetadataItemFSNameKey
+            NSMetadataItemFSNameKey,
+            NSMetadataUbiquitousItemIsDownloadingKey,
+            NSMetadataUbiquitousItemDownloadingStatusKey,
+            NSMetadataUbiquitousItemPercentDownloadedKey
         ]
         
         if verbose {
@@ -184,6 +191,15 @@ public extension URL {
             let urls = results.compactMap { item -> URL? in
                 guard let url = item.value(forAttribute: NSMetadataItemURLKey) as? URL else {
                     return nil
+                }
+                
+                // 检查文件是否正在下载
+                if let isDownloading = item.value(forAttribute: NSMetadataUbiquitousItemIsDownloadingKey) as? Bool,
+                   isDownloading {
+                    // 获取下载进度
+                    if let percentDownloaded = item.value(forAttribute: NSMetadataUbiquitousItemPercentDownloadedKey) as? Double {
+                        onDownloadProgress(url, percentDownloaded / 100.0)
+                    }
                 }
                 
                 if verbose {
