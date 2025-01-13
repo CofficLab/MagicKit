@@ -44,6 +44,40 @@ public struct ActionButtonsView: View {
     }
 }
 
+/// Action Buttons Section View
+public struct ActionButtonsSection: View {
+    public let url: URL
+    public let showDownloadButton: Bool
+    public let showLogSheet: Binding<Bool>
+    public let horizontalPadding: CGFloat
+    public let showBorder: Bool
+    public let isHovering: Bool
+    
+    public init(url: URL, showDownloadButton: Bool, showLogSheet: Binding<Bool>, horizontalPadding: CGFloat, showBorder: Bool, isHovering: Bool) {
+        self.url = url
+        self.showDownloadButton = showDownloadButton
+        self.showLogSheet = showLogSheet
+        self.horizontalPadding = horizontalPadding
+        self.showBorder = showBorder
+        self.isHovering = isHovering
+    }
+    
+    public var body: some View {
+        ActionButtonsView(
+            url: url,
+            showDownloadButton: showDownloadButton,
+            showLogSheet: showLogSheet
+        )
+        .opacity(isHovering ? 1 : 0)
+        .overlay(
+            RoundedRectangle(cornerRadius: 0)
+                .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [4]))
+                .foregroundColor(showBorder ? .orange : .clear)
+        )
+        .padding(.trailing, horizontalPadding)
+    }
+}
+
 #Preview("Media View") {
     MediaViewPreviewContainer().inMagicContainer()
 }

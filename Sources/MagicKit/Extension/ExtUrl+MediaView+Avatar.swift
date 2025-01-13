@@ -9,7 +9,7 @@ struct AvatarSection: View {
     let monitorDownload: Bool
     let avatarProgressBinding: Binding<Double>?
     let showBorder: Bool
-    let viewModel: MediaFileViewModel
+    let isHovering: Bool
     
     var body: some View {
         let avatarView = url.makeAvatarView(verbose: verbose)
@@ -47,6 +47,6 @@ struct AvatarSection: View {
         monitorDownload: true,
         avatarProgressBinding: .constant(0.5),
         showBorder: true,
-        viewModel: MediaFileViewModel(url: URL(string: "https://example.com")!, verbose: true)
+        isHovering: false
     )
 }

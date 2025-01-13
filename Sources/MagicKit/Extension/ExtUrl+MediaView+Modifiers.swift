@@ -1,5 +1,64 @@
 import SwiftUI
 
+// MARK: - Background Modifier
+struct MediaViewBackground: ViewModifier {
+    let style: MediaViewStyle
+
+    func body(content: Content) -> some View {
+        Group {
+            switch style {
+            case .none:
+                content
+            case let .background(background):
+                content
+                    .background(background)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+            }
+        }
+    }
+}
+
+// MARK: - Media View Style
+public enum MediaViewStyle {
+    case none
+    case background(AnyView)
+}
+
+// MARK: - Log View Style
+public enum LogViewStyle {
+    case sheet
+    case popover
+}
+
+// MARK: - Log View Presentation Modifier
+struct LogViewPresentation<LogContent: View>: ViewModifier {
+    let isPresented: Binding<Bool>
+    let style: LogViewStyle
+    let logContent: () -> LogContent
+    
+    init(isPresented: Binding<Bool>, style: LogViewStyle, content: @escaping () -> LogContent) {
+        self.isPresented = isPresented
+        self.style = style
+        self.logContent = content
+    }
+    
+    func body(content: Content) -> some View {
+        Group {
+            switch style {
+            case .sheet:
+                content.sheet(isPresented: isPresented) {
+                    logContent()
+                }
+            case .popover:
+                content.popover(isPresented: isPresented) {
+                    logContent()
+                        .frame(width: 600, height: 400)
+                }
+            }
+        }
+    }
+}
+
 // MARK: - Media File View Modifiers
 
 public extension MediaFileView {
@@ -33,7 +92,7 @@ public extension MediaFileView {
     /// - Returns: 使用指定形状的视图
     func magicShape(_ shape: AvatarViewShape) -> MediaFileView {
         var view = self
-        view.shape = shape
+        view.avatarShape = shape
         return view
     }
 
