@@ -221,9 +221,7 @@ public extension URL {
         let query = ItemQuery(queue: queue)
         
         if verbose {
-            Task.detached {
-                os_log("\(self.t)👂👂👂 [\(caller)] 开始监听文件夹变化 -> \(self.title)")
-            }
+            os_log("\(self.t)👂👂👂 [\(caller)] 开始监听文件夹变化 -> \(self.title)")
         }
         
         var isFirstFetch = true
