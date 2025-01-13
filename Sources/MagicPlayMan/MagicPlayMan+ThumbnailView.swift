@@ -47,13 +47,6 @@ struct ThumbnailView: View, SuperLog {
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(.ultraThinMaterial)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12)
-                        .strokeBorder(.secondary.opacity(0.1))
-                )
-                .padding(20)
             }
             .task(id: url) {
                 if let url = url {
