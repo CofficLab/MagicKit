@@ -1,9 +1,21 @@
 import Foundation
 import Combine
 import OSLog
+import Darwin
 
 public extension URL {
     /// 智能监听文件夹变化（自动判断本地/iCloud文件夹）
+    /// - Parameters:
+    ///   - verbose: 是否输出详细日志，默认为 true
+    ///   - caller: 调用者标识，用于日志输出
+    ///   - onChange: 文件夹内容变化时的回调
+    ///     - files: 文件夹中的所有文件 URL 列表
+    ///     - isInitialFetch: 是否为首次获取数据
+    ///     - error: 如果发生错误，则包含错误信息
+    ///   - onDownloadProgress: iCloud 文件下载进度回调
+    ///     - url: 正在下载的文件 URL
+    ///     - progress: 下载进度，范围 0.0-1.0
+    /// - Returns: 可用于取消监听的 AnyCancellable 对象
     func onDirChange(
         verbose: Bool = true,
         caller: String,
@@ -32,6 +44,11 @@ public extension URL {
     }
     
     /// 监听本地文件夹变化
+    /// - Parameters:
+    ///   - verbose: 是否输出详细日志
+    ///   - caller: 调用者标识
+    ///   - onChange: 文件夹内容变化时的回调
+    /// - Returns: 可用于取消监听的 AnyCancellable 对象
     private func onLocalDirectoryChanged(
         verbose: Bool = true,
         caller: String,
@@ -55,12 +72,23 @@ public extension URL {
         let monitor = DispatchSource.makeFileSystemObjectSource(
             fileDescriptor: fileDescriptor,
             eventMask: .all,
-            queue: .global(qos: .background)
+            queue: .global(qos: .userInitiated) // 提升优先级以获得更好的响应性
         )
         
         // 使用 actor 来管理状态
         actor MonitorState {
             private var isFirstFetch = true
+            private var lastScanTime: TimeInterval = 0
+            private let debounceInterval: TimeInterval = 0.5 // 添加防抖间隔
+            
+            func shouldPerformScan() -> Bool {
+                let now = Date().timeIntervalSince1970
+                if now - lastScanTime >= debounceInterval {
+                    lastScanTime = now
+                    return true
+                }
+                return false
+            }
             
             func getAndUpdateFirstFetch() -> Bool {
                 let current = isFirstFetch
@@ -71,17 +99,24 @@ public extension URL {
         
         let state = MonitorState()
         
-        // 扫描目录内容的函数
+        /// 扫描目录内容的函数
         @Sendable func scanDirectory() async {
+            // 添加防抖逻辑
+            guard await state.shouldPerformScan() else { return }
+            
             do {
                 let urls = try FileManager.default.contentsOfDirectory(
                     at: self,
-                    includingPropertiesForKeys: [.contentModificationDateKey],
+                    includingPropertiesForKeys: [
+                        .contentModificationDateKey,
+                        .creationDateKey,
+                        .fileSizeKey
+                    ],
                     options: [.skipsHiddenFiles]
-                )
+                ).sorted { $0.lastPathComponent < $1.lastPathComponent } // 保持稳定的排序
                 
                 if verbose {
-                    logger.info("[\(caller)] Directory content updated: \(self.lastPathComponent)")
+                    logger.info("[\(caller)] Directory content updated: \(self.lastPathComponent), found \(urls.count) files")
                 }
                 
                 let isFirstFetch = await state.getAndUpdateFirstFetch()
@@ -124,13 +159,11 @@ public extension URL {
     
     /// 监听 iCloud 文件夹内容变化
     /// - Parameters:
-    ///   - verbose: 是否打印详细日志
-    ///   - caller: 调用者名称
-    ///   - onChange: 文件夹变化回调
-    ///     - files: 文件URL列表
-    ///     - isInitialFetch: 是否是初始的全量数据
-    ///     - error: 可能发生的错误
-    /// - Returns: 可用于取消监听的 AnyCancellable
+    ///   - verbose: 是否输出详细日志
+    ///   - caller: 调用者标识
+    ///   - onChange: 文件夹内容变化时的回调
+    ///   - onDownloadProgress: 文件下载进度回调
+    /// - Returns: 可用于取消监听的 AnyCancellable 对象
     private func onICloudDirectoryChanged(
         verbose: Bool = true,
         caller: String,
@@ -155,7 +188,9 @@ public extension URL {
             NSMetadataItemFSNameKey,
             NSMetadataUbiquitousItemIsDownloadingKey,
             NSMetadataUbiquitousItemDownloadingStatusKey,
-            NSMetadataUbiquitousItemPercentDownloadedKey
+            NSMetadataUbiquitousItemPercentDownloadedKey,
+            NSMetadataItemFSContentChangeDateKey,
+            NSMetadataItemFSSizeKey
         ]
         
         if verbose {
@@ -207,7 +242,7 @@ public extension URL {
                 }
                 
                 return url
-            }
+            }.sorted { $0.lastPathComponent < $1.lastPathComponent } // 保持稳定的排序
             
             onChange(urls, isInitial, nil)
         }
