@@ -91,17 +91,14 @@ internal extension MagicPlayMan {
                         self.state = .playing
                     }
                     self.isBuffering = false
-                    self.events.onStateChanged.send(self.state)
                 case .paused:
                     if case .playing = self.state {
                         self.state = self.currentTime == 0 ? .stopped : .paused
-                        self.events.onStateChanged.send(self.state)
                     }
                 case .waitingToPlayAtSpecifiedRate:
                     self.isBuffering = true
                     if case .playing = self.state {
                         self.state = .loading(.buffering)
-                        self.events.onStateChanged.send(self.state)
                     }
                 @unknown default:
                     break
@@ -116,7 +113,11 @@ internal extension MagicPlayMan {
                 guard let self = self else { return }
                 if let isEmpty = isEmpty {
                     self.isBuffering = isEmpty
-                    self.events.onBufferingStateChanged.send(isEmpty)
+                    if isEmpty, case .playing = self.state {
+                        self.state = .loading(.buffering)
+                    } else if !isEmpty, case .loading(.buffering) = self.state {
+                        self.state = .playing
+                    }
                 }
             }
             .store(in: &cancellables)
@@ -135,7 +136,7 @@ internal extension MagicPlayMan {
                         self.log("单曲循环模式，重新播放：\(currentAsset.title)")
                         Task { @MainActor in
                             self.seek(time: 0)
-                            self.play()
+                            self.state = .playing
                         }
                         return
                     }
@@ -143,6 +144,7 @@ internal extension MagicPlayMan {
                     if !self.isPlaylistEnabled {
                         // 如果播放列表被禁用，通知调用者播放完成
                         self.log("播放列表已禁用，等待订阅者处理下一首")
+                        self.state = .stopped
                         self.events.onNextRequested.send(currentAsset)
                     } else if let nextAsset = self._playlist.playNext(mode: self.playMode) {
                         // 如果播放列表启用，播放下一首
@@ -152,6 +154,7 @@ internal extension MagicPlayMan {
                         }
                     } else {
                         self.log("播放列表已到末尾", level: .warning)
+                        self.state = .stopped
                     }
                 }
             }

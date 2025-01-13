@@ -39,7 +39,14 @@ public class MagicPlayMan: ObservableObject, SuperLog {
             }
         }
     }
-    @Published public var state: PlaybackState = .idle
+    @Published public var state: PlaybackState = .idle {
+        didSet {
+            if oldValue != state {
+                log("播放状态变更：\(oldValue) -> \(state)")
+                events.onStateChanged.send(state)
+            }
+        }
+    }
     @Published public var currentTime: TimeInterval = 0
     @Published public var duration: TimeInterval = 0
     @Published public var isBuffering = false
