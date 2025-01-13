@@ -24,7 +24,7 @@ public extension Int {
     /// let count = 42
     /// let text = count.string // "42"
     /// ```
-    public var string: String {
+    var string: String {
         "\(self)"
     }
     

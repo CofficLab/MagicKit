@@ -266,7 +266,7 @@ extension String {
 
 /// String 类型的扩展，提供常用的工具方法
 public extension String {
-    public func toURL() -> URL {
+    func toURL() -> URL {
         URL(string: self)!
     }
     

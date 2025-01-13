@@ -19,7 +19,7 @@ public extension URL {
     /// ```
     /// - Parameter verbose: 是否打印详细日志，默认为 false
     /// - Returns: 文件的 MD5 哈希值字符串，如果是文件夹或计算失败则返回空字符串
-    public func getHash(verbose: Bool = false) -> String {
+    func getHash(verbose: Bool = false) -> String {
         if self.isFolder {
             return ""
         }
@@ -53,7 +53,7 @@ public extension URL {
     /// ```
     /// - Returns: 文件内容的 Base64 编码或文本内容
     /// - Throws: 读取文件失败时抛出错误
-    public func getBlob() throws -> String {
+    func getBlob() throws -> String {
         if self.isImage {
             do {
                 let data = try Data(contentsOf: self)
@@ -75,7 +75,7 @@ public extension URL {
     /// ```
     /// - Returns: 文件的文本内容
     /// - Throws: 读取文件失败时抛出错误
-    public func getContent() throws -> String {
+    func getContent() throws -> String {
         do {
             return try String(contentsOfFile: self.path, encoding: .utf8)
         } catch {
@@ -91,21 +91,21 @@ public extension URL {
     /// let parent = fileURL.getParent() // "/path/to"
     /// ```
     /// - Returns: 父目录的 URL
-    public func getParent() -> URL {
+    func getParent() -> URL {
         self.deletingLastPathComponent()
     }
 
     /// 判断是否为文件夹
-    public var isFolder: Bool { self.hasDirectoryPath }
+    var isFolder: Bool { self.hasDirectoryPath }
 
     /// 判断是否不是文件夹
-    public var isNotFolder: Bool { !isFolder }
+    var isNotFolder: Bool { !isFolder }
 
     /// 获取文件或文件夹名称
-    public var name: String { self.lastPathComponent }
+    var name: String { self.lastPathComponent }
 
     /// 获取下一个文件
-    public func next() -> URL? {
+    func next() -> URL? {
         self.getNextFile()
     }
 
@@ -117,12 +117,12 @@ public extension URL {
     /// let folder = fileURL.nearestFolder() // "/path/to"
     /// ```
     /// - Returns: 最近的文件夹 URL
-    public func nearestFolder() -> URL {
+    func nearestFolder() -> URL {
         self.isFolder ? self : self.deletingLastPathComponent()
     }
 
     /// 获取空设备路径
-    public static var null: URL {
+    static var null: URL {
         URL(filePath: "/dev/null")
     }
 
@@ -135,7 +135,7 @@ public extension URL {
     /// ```
     /// - Parameter length: 要读取的字节数
     /// - Returns: 文件头部字节数组，读取失败时返回 nil
-    public func readFileHeader(length: Int) -> [UInt8]? {
+    func readFileHeader(length: Int) -> [UInt8]? {
         do {
             let fileData = try Data(contentsOf: self, options: .mappedIfSafe)
             return Array(fileData.prefix(length))
@@ -152,31 +152,31 @@ public extension URL {
     /// let path = url.removingLeadingSlashes() // "path/to/file"
     /// ```
     /// - Returns: 移除开头斜杠后的路径字符串
-    public func removingLeadingSlashes() -> String {
+    func removingLeadingSlashes() -> String {
         return self.path.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
     }
 
     /// 获取简短标题
-    public var title: String { self.lastPathComponent.mini() }
+    var title: String { self.lastPathComponent.mini() }
 
     /// 添加请求体
     /// - Parameter body: 请求体参数
     /// - Returns: HTTP 客户端实例
-    public func withBody(_ body: [String: Any]) -> HttpClient {
+    func withBody(_ body: [String: Any]) -> HttpClient {
         HttpClient(url: self).withBody(body)
     }
 
     /// 添加认证令牌
     /// - Parameter token: 认证令牌
     /// - Returns: HTTP 客户端实例
-    public func withToken(_ token: String) -> HttpClient {
+    func withToken(_ token: String) -> HttpClient {
         HttpClient(url: self).withToken(token)
     }
 
     // MARK: - 文件类型判断
 
     /// 文件类型签名字典
-    public var imageSignatures: [String: [UInt8]] {
+    var imageSignatures: [String: [UInt8]] {
         [
             "jpg": [0xFF, 0xD8, 0xFF],
             "png": [0x89, 0x50, 0x4E, 0x47],
@@ -189,7 +189,7 @@ public extension URL {
     /// 生成默认音频缩略图
     /// - Parameter size: 缩略图大小
     /// - Returns: 音频缩略图
-    public func defaultAudioThumbnail(size: CGSize) -> Image {
+    func defaultAudioThumbnail(size: CGSize) -> Image {
         #if os(macOS)
             if let defaultIcon = NSImage(systemSymbolName: .iconMusicNote, accessibilityDescription: nil) {
                 let resizedIcon = defaultIcon.resize(to: size)
@@ -213,7 +213,7 @@ public extension URL {
     /// print(url.shortPath()) // "folder/documents/report.pdf"
     /// ```
     /// - Returns: 包含最后三个路径组件的字符串
-    public func shortPath() -> String {
+    func shortPath() -> String {
         self.lastThreeComponents()
     }
 
@@ -224,7 +224,7 @@ public extension URL {
     /// print(url.lastThreeComponents()) // "a/b/c.png"
     /// ```
     /// - Returns: 最后三个路径组件组成的字符串
-    public func lastThreeComponents() -> String {
+    func lastThreeComponents() -> String {
         let components = self.pathComponents.filter { $0 != "/" }
         let lastThree = components.suffix(3)
         return lastThree.joined(separator: "/")
@@ -239,7 +239,7 @@ public extension URL {
     /// ```
     /// - Parameter folderName: 要添加的文件夹名称
     /// - Returns: 添加文件夹后的新 URL
-    public func appendingFolder(_ folderName: String) -> URL {
+    func appendingFolder(_ folderName: String) -> URL {
         let cleanFolderName = folderName.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
         return self.appendingPathComponent(cleanFolderName, isDirectory: true)
     }
@@ -253,7 +253,7 @@ public extension URL {
     /// ```
     /// - Parameter fileName: 要添加的文件名
     /// - Returns: 添加文件后的新 URL
-    public func appendingFile(_ fileName: String) -> URL {
+    func appendingFile(_ fileName: String) -> URL {
         let cleanFileName = fileName.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
         return self.appendingPathComponent(cleanFileName, isDirectory: false)
     }
