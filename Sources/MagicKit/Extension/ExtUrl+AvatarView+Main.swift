@@ -45,6 +45,9 @@ public struct AvatarView: View, SuperLog {
     /// 文件的URL
     let url: URL
 
+    /// 日志回调，用于让调用者接收本视图内部的日志
+    var onLog: ((String, MagicLogEntry.Level) -> Void)?
+
     let verbose: Bool
 
     /// 视图的形状
@@ -71,11 +74,8 @@ public struct AvatarView: View, SuperLog {
     /// 控制日志显示
     @State private var showLogSheet = false
 
-    /// 日志记录
-    @State private var logs: [MagicLogEntry] = []
-
-    /// 日志回调
-    var onLog: ((String, MagicLogEntry.Level) -> Void)?
+    /// 日志记录器
+    private let logger = MagicLogger()
 
     // MARK: - Computed Properties
 
@@ -133,9 +133,8 @@ public struct AvatarView: View, SuperLog {
 
     // MARK: - Private Methods
 
-    public func addLog(_ message: String, level: MagicLogEntry.Level = .info) {
-        logs.append(MagicLogEntry(message: message, level: level))
-        onLog?("AvatarView: \(message)", level) // 调用回调
+    private func addLog(_ message: String, level: MagicLogEntry.Level = .info) {
+        logger.log(message, level: level)
     }
 
     // MARK: - Body
@@ -226,9 +225,7 @@ public struct AvatarView: View, SuperLog {
         }
         .sheet(isPresented: $showLogSheet) {
             NavigationView {
-                MagicLogView(title: "AvatarView Logs", logs: logs) {
-                    logs.removeAll()
-                } onClose: {
+                logger.logView(title: "AvatarView Logs") {
                     showLogSheet = false
                 }
             }

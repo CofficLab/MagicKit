@@ -2,26 +2,23 @@ import SwiftUI
 
 /// 通用日志视图组件
 public struct MagicLogView: View {
+    @ObservedObject private var logger: MagicLogger
     let title: String
-    let logs: [MagicLogEntry]
-    let onClear: () -> Void
     let onClose: (() -> Void)?
     @State private var copiedLogId: UUID?
     @State private var showToast = false
     @State private var toastMessage = ""
-    
+
     public init(
         title: String = "Logs",
-        logs: [MagicLogEntry],
-        onClear: @escaping () -> Void,
+        logger: MagicLogger,
         onClose: (() -> Void)? = nil
     ) {
         self.title = title
-        self.logs = logs
-        self.onClear = onClear
+        self.logger = logger
         self.onClose = onClose
     }
-    
+
     public var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack {
@@ -34,15 +31,15 @@ public struct MagicLogView: View {
                         action: onClose
                     )
 
-                Spacer()
+                    Spacer()
                 }
-                
+
                 Text(title)
                     .font(.headline)
                     .foregroundStyle(.secondary)
-                
+
                 Spacer()
-                
+
                 MagicButton(
                     icon: "doc.on.doc",
                     style: .secondary,
@@ -50,13 +47,13 @@ public struct MagicLogView: View {
                     shape: .circle,
                     action: copyAllLogs
                 )
-                
+
                 MagicButton(
                     icon: "trash",
                     style: .secondary,
                     size: .small,
                     shape: .circle,
-                    action: onClear
+                    action: { logger.clearLogs() }
                 )
             }
             .frame(height: 40)
@@ -72,27 +69,27 @@ public struct MagicLogView: View {
                         .transition(.scale.combined(with: .opacity))
                 }
             }
-            
-            Table(logs.reversed()) {
+
+            Table(logger.logs.reversed()) {
                 TableColumn("Time") { log in
                     Text(log.timestamp.logTime)
                         .font(.caption.monospaced())
                         .foregroundStyle(.secondary)
                 }
                 .width(50)
-                
+
                 TableColumn("Message") { log in
                     HStack {
                         Circle()
                             .fill(logColor(for: log.level))
                             .frame(width: 8, height: 8)
-                        
+
                         Text(log.message)
                             .font(.caption)
                             .foregroundStyle(log.level == .error ? .red : .primary)
                     }
                 }
-                
+
                 TableColumn("") { log in
                     CopyColumn(log: log, copiedLogId: copiedLogId, onCopy: copyLog)
                 }
@@ -101,13 +98,13 @@ public struct MagicLogView: View {
         }
         .padding()
     }
-    
+
     private func showToastMessage(_ message: String) {
         toastMessage = message
         withAnimation {
             showToast = true
         }
-        
+
         // 2秒后隐藏提示
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             withAnimation {
@@ -115,24 +112,24 @@ public struct MagicLogView: View {
             }
         }
     }
-    
+
     private func copyAllLogs() {
-        logs.map { formatLogEntry($0) }
+        logger.logs.map { formatLogEntry($0) }
             .joined(separator: "\n")
             .copy()
-        
+
         showToastMessage("所有日志已复制")
     }
-    
+
     private func copyLog(_ log: MagicLogEntry) {
         formatLogEntry(log).copy()
-        
+
         withAnimation {
             copiedLogId = log.id
         }
-        
+
         showToastMessage("日志已复制")
-        
+
         // 2秒后清除复制状态
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             withAnimation {
@@ -142,11 +139,11 @@ public struct MagicLogView: View {
             }
         }
     }
-    
+
     private func formatLogEntry(_ log: MagicLogEntry) -> String {
         "\(log.timestamp.logTime) [\(log.level)] \(log.message)"
     }
-    
+
     private func logColor(for level: MagicLogEntry.Level) -> Color {
         switch level {
         case .info:
@@ -159,12 +156,12 @@ public struct MagicLogView: View {
             return .blue
         }
     }
-    
+
     private struct CopyColumn: View {
         let log: MagicLogEntry
         let copiedLogId: UUID?
         let onCopy: (MagicLogEntry) -> Void
-        
+
         var body: some View {
             HStack {
                 if copiedLogId == log.id {
@@ -173,7 +170,7 @@ public struct MagicLogView: View {
                         .font(.caption)
                         .transition(.scale.combined(with: .opacity))
                 }
-                
+
                 Button(action: { onCopy(log) }) {
                     Image(systemName: "doc.on.doc")
                         .foregroundStyle(.secondary)
@@ -188,16 +185,14 @@ public struct MagicLogView: View {
 
 #Preview("With Logs") {
     MagicThemePreview {
-        MagicLogView(
-            title: "Debug Logs",
-            logs: [
-                MagicLogEntry(message: "This is an info message", level: .info),
-                MagicLogEntry(message: "This is a warning message", level: .warning),
-                MagicLogEntry(message: "This is an error message", level: .error)
-            ],
-            onClear: {},
-            onClose: {}
-        )
-        .frame(height: 500)
+        let logger = MagicLogger.shared
+        logger.logView()
+            .frame(height: 500)
+            .onAppear {
+                logger.clearLogs()
+                logger.info("This is an info message")
+                logger.warning("This is a warning message")
+                logger.error("This is an error message")
+            }
     }
 }
