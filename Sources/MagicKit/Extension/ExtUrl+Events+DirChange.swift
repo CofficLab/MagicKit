@@ -211,7 +211,9 @@ public extension URL {
         
         // 配置查询参数
         query.searchScopes = [NSMetadataQueryUbiquitousDocumentsScope]
-        query.predicate = NSPredicate(format: "(%K BEGINSWITH %@)", NSMetadataItemPathKey, self.path)
+        query.predicate = NSPredicate(format: "(%K BEGINSWITH %@) AND (%K != %@)", 
+            NSMetadataItemPathKey, self.path,
+            NSMetadataItemPathKey, self.path)
         query.valueListAttributes = [
             NSMetadataItemURLKey,
             NSMetadataUbiquitousItemPercentDownloadedKey,
