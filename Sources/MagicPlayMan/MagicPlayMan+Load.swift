@@ -121,9 +121,14 @@ extension MagicPlayMan {
 
     /// 加载资源的缩略图
     func loadThumbnail(for url: URL) {
-        Task { @MainActor in
+        Task.detached(priority: .background) {
             do {
-                currentThumbnail = try await url.thumbnail(size: CGSize(width: 600, height: 600), verbose: self.verbose)
+                if self.verbose {
+                    os_log("%{public}@🖥️ Loading thumbnail for %{public}@", log: .default, type: .debug, self.t, url.shortPath())
+                }
+                let thumbnail = try await url.thumbnail(size: CGSize(width: 600, height: 600), verbose: self.verbose)
+
+                await self.setCurrentThumbnail(thumbnail)
             } catch {
                 os_log("%{public}@Failed to load thumbnail: %{public}@", log: .default, type: .error, self.t, error.localizedDescription)
             }

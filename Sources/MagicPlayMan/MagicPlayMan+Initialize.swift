@@ -4,6 +4,7 @@ import Foundation
 import SwiftUI
 import MagicKit
 import MediaPlayer
+import OSLog
 
 public extension MagicPlayMan {
     /// 初始化播放器
@@ -22,6 +23,7 @@ public extension MagicPlayMan {
         self.verbose = verbose
         if verbose {
             log("Verbose mode enabled")
+            os_log("\(self.t)Verbose mode enabled")
         }
         
         // 初始化缓存，如果失败则禁用缓存功能

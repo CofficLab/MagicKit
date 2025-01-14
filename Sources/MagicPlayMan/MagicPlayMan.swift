@@ -47,13 +47,13 @@ public class MagicPlayMan: ObservableObject, SuperLog {
             }
         }
     }
-    @Published public var currentTime: TimeInterval = 0
-    @Published public var duration: TimeInterval = 0
-    @Published public var isBuffering = false
-    @Published public var progress: Double = 0
-    @Published public var currentThumbnail: Image?
-    @Published public var isPlaylistEnabled: Bool = true
-    @Published public var likedAssets: Set<URL> = []
+    @Published public internal(set) var currentTime: TimeInterval = 0
+    @Published public internal(set) var duration: TimeInterval = 0
+    @Published public internal(set) var isBuffering = false
+    @Published public internal(set) var progress: Double = 0
+    @Published public internal(set) var currentThumbnail: Image?
+    @Published public internal(set) var isPlaylistEnabled: Bool = true
+    @Published public internal(set) var likedAssets: Set<URL> = []
 
     public var player: AVPlayer { _player }
     public var playing: Bool { self.state == .playing }

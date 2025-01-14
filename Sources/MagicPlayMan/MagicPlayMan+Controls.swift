@@ -288,16 +288,6 @@ public extension MagicPlayMan {
         )
     }
 
-    /// 设置播放列表启用状态
-    /// - Parameter enabled: 是否启用播放列表
-    func setPlaylistEnabled(_ enabled: Bool) {
-        if enabled {
-            enablePlaylist()
-        } else {
-            disablePlaylist()
-        }
-    }
-
     /// 切换当前资源的喜欢状态
     func toggleLike() {
         guard let asset = currentURL else { return }
