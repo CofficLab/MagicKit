@@ -170,7 +170,45 @@ public extension URL {
         let logger = Logger(subsystem: "MagicKit", category: "iCloudMonitor")
         let query = NSMetadataQuery()
         var cancellables = Set<AnyCancellable>()
-
+        
+        // 添加进度更新节流控制
+        actor ProgressThrottle {
+            private var lastUpdateTime: [URL: Date] = [:]
+            private var lastProgress: [URL: Double] = [:] // 记录上次的进度
+            private let minInterval: TimeInterval = 0.5
+            
+            func shouldUpdate(for url: URL, progress: Double) -> Bool {
+                let now = Date()
+                let lastTime = lastUpdateTime[url] ?? .distantPast
+                let previousProgress = lastProgress[url] ?? 0.0
+                
+                // 在以下情况下必须更新：
+                // 1. 首次更新 (lastProgress 为 0)
+                // 2. 达到 100% 时
+                // 3. 距离上次更新超过最小间隔时间
+                // 4. 进度变化超过阈值 (比如 5%)
+                let isFirstUpdate = lastProgress[url] == nil
+                let isComplete = progress >= 1.0
+                let timeElapsed = now.timeIntervalSince(lastTime) >= minInterval
+                let significantChange = abs(progress - previousProgress) >= 0.05
+                
+                if isFirstUpdate || isComplete || timeElapsed || significantChange {
+                    lastUpdateTime[url] = now
+                    lastProgress[url] = progress
+                    return true
+                }
+                
+                return false
+            }
+            
+            func reset(for url: URL) {
+                lastUpdateTime.removeValue(forKey: url)
+                lastProgress.removeValue(forKey: url)
+            }
+        }
+        
+        let progressThrottle = ProgressThrottle()
+        
         // 配置查询参数
         query.searchScopes = [NSMetadataQueryUbiquitousDocumentsScope]
         query.predicate = NSPredicate(format: "(%K BEGINSWITH %@)", NSMetadataItemPathKey, self.path)
@@ -186,21 +224,34 @@ public extension URL {
 
         // 处理文件下载进度
         func handleDownloadProgress(_ items: [NSMetadataItem]) {
-            DispatchQueue.global(qos: .utility).async {
+            Task.detached {
                 for item in items {
                     guard let url = item.value(forAttribute: NSMetadataItemURLKey) as? URL,
                           let isDownloading = item.value(forAttribute: NSMetadataUbiquitousItemIsDownloadingKey) as? Bool,
-                          isDownloading,
                           let percentDownloaded = item.value(forAttribute: NSMetadataUbiquitousItemPercentDownloadedKey) as? Double
                     else { continue }
-
+                    
                     let progress = max(0.0, min(1.0, percentDownloaded / 100))
-                    if verbose {
-                        logger.info("\(self.t)📥 [\(caller)] \(url.lastPathComponent): \(Int(progress * 100))%")
-                    }
-                    // 只有回调需要在主线程执行
-                    DispatchQueue.main.async {
-                        onProgress(url, progress)
+                    
+                    if isDownloading || progress >= 1.0 { // 添加对完成状态的检查
+                        // 检查是否应该更新进度
+                        guard await progressThrottle.shouldUpdate(for: url, progress: progress) else { continue }
+                        
+                        if verbose {
+                            logger.info("\(self.t)📥 [\(caller)] \(url.lastPathComponent): \(Int(progress * 100))%")
+                        }
+                        
+                        await MainActor.run {
+                            onProgress(url, progress)
+                        }
+                        
+                        // 如果下载完成，重置节流状态
+                        if progress >= 1.0 {
+                            await progressThrottle.reset(for: url)
+                        }
+                    } else {
+                        // 下载停止时，重置该 URL 的节流状态
+                        await progressThrottle.reset(for: url)
                     }
                 }
             }
