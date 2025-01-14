@@ -169,244 +169,93 @@ public extension URL {
     ) -> AnyCancellable {
         let logger = Logger(subsystem: "MagicKit", category: "iCloudMonitor")
         let query = NSMetadataQuery()
-
-        // 添加更详细的日志
-        if verbose {
-            logger.info("\(self.t)🔄 [\(caller)] Initializing iCloud query")
-        }
-
-        // 修改查询范围和谓词设置
+        var cancellables = Set<AnyCancellable>()
+        
+        // 配置查询参数
         query.searchScopes = [NSMetadataQueryUbiquitousDocumentsScope]
-
-        // 修改谓词以确保正确匹配 iCloud 路径
-        let predicateFormat = "(%K BEGINSWITH %@)"
-        let searchPath = self.path
-        query.predicate = NSPredicate(format: predicateFormat, NSMetadataItemPathKey, searchPath)
-
-        // 输出谓词信息到日志
-        if verbose {
-            logger.info("\(self.t)🔍 [\(caller)] Search path: \(self.path)")
-            logger.info("\(self.t)🎯 [\(caller)] Search scopes: \(query.searchScopes)")
-        }
-
-        // 添加更多相关属性以更好地跟踪文件状态
+        query.predicate = NSPredicate(format: "(%K BEGINSWITH %@)", NSMetadataItemPathKey, self.path)
         query.valueListAttributes = [
             NSMetadataItemURLKey,
-            NSMetadataItemFSNameKey,
             NSMetadataUbiquitousItemPercentDownloadedKey,
-            NSMetadataUbiquitousItemIsDownloadingKey,
-            NSMetadataUbiquitousItemIsUploadedKey,
-            NSMetadataUbiquitousItemIsUploadingKey,
+            NSMetadataUbiquitousItemIsDownloadingKey
         ]
-
-        // 设置通知监听
-        var cancellables = Set<AnyCancellable>()
-
-        let notificationCenter = NotificationCenter.default
-
-        // 监听查询更新通知
-        notificationCenter.publisher(for: .NSMetadataQueryDidUpdate)
-            .sink { [weak query] notification in
-                guard let query = query else { return }
-
-                // 只处理增量更新
-                if let changedItems = notification.userInfo?[NSMetadataQueryUpdateChangedItemsKey] as? [NSMetadataItem] {
-                    if verbose {
-                        logger.info("\(self.t)📢 [\(caller)] Processing \(changedItems.count) changed items")
-                    }
-
-                    // 只处理发生变化的项目的下载进度
-                    for item in changedItems {
-                        guard let url = item.value(forAttribute: NSMetadataItemURLKey) as? URL else { continue }
-
-                        if let isDownloading = item.value(forAttribute: NSMetadataUbiquitousItemIsDownloadingKey) as? Bool,
-                           isDownloading,
-                           let percentDownloaded = item.value(forAttribute: NSMetadataUbiquitousItemPercentDownloadedKey) as? Double {
-                            let progress = max(0.0, min(1.0, percentDownloaded / 100))
-                            if verbose {
-                                logger.info("\(self.t)📥 [\(caller)] Downloading: \(url.lastPathComponent) - \(Int(progress * 100))%")
-                            }
-                            DispatchQueue.main.async {
-                                onProgress(url, progress)
-                            }
-                        }
-                    }
-                }
-            }
-            .store(in: &cancellables)
-
-        // 监听查询完成通知（只在初始化时触发一次）
-        notificationCenter.publisher(for: .NSMetadataQueryDidFinishGathering)
-            .sink { [weak query] _ in
+        
+        if verbose {
+            logger.info("\(self.t)🔍 [\(caller)] Monitoring iCloud path: \(self.path)")
+        }
+        
+        // 处理文件下载进度
+        func handleDownloadProgress(_ items: [NSMetadataItem]) {
+            for item in items {
+                guard let url = item.value(forAttribute: NSMetadataItemURLKey) as? URL,
+                      let isDownloading = item.value(forAttribute: NSMetadataUbiquitousItemIsDownloadingKey) as? Bool,
+                      isDownloading,
+                      let percentDownloaded = item.value(forAttribute: NSMetadataUbiquitousItemPercentDownloadedKey) as? Double
+                else { continue }
+                
+                let progress = max(0.0, min(1.0, percentDownloaded / 100))
                 if verbose {
-                    logger.info("\(self.t)📢 [\(caller)] Received didFinishGathering notification")
+                    logger.info("\(self.t)📥 [\(caller)] \(url.lastPathComponent): \(Int(progress * 100))%")
                 }
-                guard let query = query else { return }
-                processQueryResults(query: query, isInitial: true)
-            }
-            .store(in: &cancellables)
-
-        // 添加查询启动失败的监听
-        notificationCenter.publisher(for: .NSMetadataQueryDidStartGathering)
-            .sink { [weak query] _ in
-                if verbose {
-                    logger.info("\(self.t)🚀 [\(caller)] Query did start gathering")
+                DispatchQueue.main.async {
+                    onProgress(url, progress)
                 }
             }
-            .store(in: &cancellables)
-
-        func processQueryResults(query: NSMetadataQuery, isInitial: Bool) {
-            if verbose {
-                logger.info("\(self.t)🔄 [\(caller)] Processing \(isInitial ? "initial" : "update") query results")
-            }
-
+        }
+        
+        // 处理查询结果
+        func processResults(isInitial: Bool = false, changedItems: [NSMetadataItem]? = nil) {
             query.disableUpdates()
             defer { query.enableUpdates() }
-
-            let results = query.results as? [NSMetadataItem] ?? []
-
+            
+            let urls: [URL]
+            if isInitial {
+                // 初始化时返回所有文件
+                urls = (query.results as? [NSMetadataItem] ?? [])
+                    .compactMap { $0.value(forAttribute: NSMetadataItemURLKey) as? URL }
+            } else {
+                // 更新时只返回变化的文件
+                urls = (changedItems ?? [])
+                    .compactMap { $0.value(forAttribute: NSMetadataItemURLKey) as? URL }
+            }
+            
             if verbose {
-                logger.info("\(self.t)📊 [\(caller)] Raw results count: \(results.count)")
+                logger.info("\(self.t)📦 [\(caller)] Found \(urls.count) \(isInitial ? "total" : "changed") files")
             }
-
-            let urls = results.compactMap { item -> URL? in
-                guard let url = item.value(forAttribute: NSMetadataItemURLKey) as? URL else {
-                    return nil
-                }
-                return url
-            }
-
-            if verbose {
-                logger.info("\(self.t)📦 [\(caller)] Processed \(urls.count) valid URLs")
-            }
-
+            
             onChange(urls, isInitial, nil)
         }
-
+        
+        // 设置通知监听
+        NotificationCenter.default.publisher(for: .NSMetadataQueryDidUpdate)
+            .sink { [weak query] notification in
+                guard let query = query,
+                      let items = notification.userInfo?[NSMetadataQueryUpdateChangedItemsKey] as? [NSMetadataItem]
+                else { return }
+                
+                handleDownloadProgress(items)
+                processResults(isInitial: false, changedItems: items)
+            }
+            .store(in: &cancellables)
+        
+        NotificationCenter.default.publisher(for: .NSMetadataQueryDidFinishGathering)
+            .sink { [weak query] _ in
+                guard let query = query else { return }
+                processResults(isInitial: true)
+            }
+            .store(in: &cancellables)
+        
         // 启动查询
-        if verbose {
-            logger.info("\(self.t)🚀 [\(caller)] Starting iCloud query")
-        }
-
         DispatchQueue.main.async {
             query.start()
-            if verbose {
-                logger.info("\(self.t)✅ [\(caller)] Query started successfully")
-            }
         }
-
+        
         return AnyCancellable {
             if verbose {
-                logger.info("[\(caller)] Stop monitoring iCloud directory: \(self.lastPathComponent)")
+                logger.info("[\(caller)] Stop monitoring: \(self.lastPathComponent)")
             }
             query.stop()
             cancellables.removeAll()
         }
     }
 }
-
-#if DEBUG
-
-    // MARK: - Previews
-
-    struct DirectoryMonitorPreview: View {
-        @State private var files: [URL] = []
-        @State private var downloadProgress: [URL: Double] = [:]
-        @State private var isMonitoring = false
-        @State private var selectedDirectory: URL?
-        @State private var monitor: AnyCancellable?
-
-        var body: some View {
-            VStack {
-                // 监控状态和目录选择
-                HStack {
-                    Button(isMonitoring ? "Stop Monitoring" : "Start Monitoring") {
-                        if isMonitoring {
-                            stopMonitoring()
-                        } else {
-                            selectDirectory()
-                        }
-                    }
-                    .buttonStyle(.borderedProminent)
-
-                    if let dir = selectedDirectory {
-                        Text(dir.lastPathComponent)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                .padding()
-
-                // 文件列表
-                List {
-                    ForEach(files, id: \.absoluteString) { url in
-                        VStack(alignment: .leading) {
-                            Text(url.lastPathComponent)
-
-                            // 如果有下载进度，显示进度条
-                            if let progress = downloadProgress[url] {
-                                ProgressView(value: progress) {
-                                    Text("\(Int(progress * 100))%")
-                                        .font(.caption)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            .frame(width: 400, height: 600)
-        }
-
-        private func selectDirectory() {
-            let panel = NSOpenPanel()
-            panel.canChooseFiles = false
-            panel.canChooseDirectories = true
-            panel.allowsMultipleSelection = false
-
-            if panel.runModal() == .OK, let url = panel.url {
-                DispatchQueue.main.async {
-                    selectedDirectory = url
-                    startMonitoring(url: url)
-                }
-            }
-        }
-
-        private func startMonitoring(url: URL) {
-            let newMonitor = url.onDirChange(
-                caller: "Preview",
-                { files, _, error in
-                    if let error = error {
-                        print("Error: \(error.localizedDescription)")
-                        return
-                    }
-                    DispatchQueue.main.async {
-                        self.files = files
-                    }
-                },
-                onProgress: { url, progress in
-                    DispatchQueue.main.async {
-                        self.downloadProgress[url] = progress
-                    }
-                }
-            )
-
-            DispatchQueue.main.async {
-                self.monitor = newMonitor
-                self.isMonitoring = true
-            }
-        }
-
-        private func stopMonitoring() {
-            DispatchQueue.main.async {
-                self.monitor?.cancel()
-                self.monitor = nil
-                self.isMonitoring = false
-                self.files = []
-                self.downloadProgress = [:]
-            }
-        }
-    }
-
-    #Preview {
-        DirectoryMonitorPreview().inMagicContainer()
-    }
-#endif
