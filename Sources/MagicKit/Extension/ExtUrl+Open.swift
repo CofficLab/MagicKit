@@ -58,42 +58,16 @@ public extension URL {
     ///   - size: 按钮大小，默认为 28x28
     ///   - showLabel: 是否显示文字标签，默认为 false
     /// - Returns: 打开按钮视图
-    func makeOpenButton(size: CGFloat = 28, showLabel: Bool = false) -> some View {
-        OpenButtonView(url: self, size: size, showLabel: showLabel)
-    }
-}
-
-// MARK: - Open Button View
-private struct OpenButtonView: View {
-    let url: URL
-    let size: CGFloat
-    let showLabel: Bool
-    @Environment(\.colorScheme) private var colorScheme
-    
-    public var isWebLink: Bool {
-        url.scheme == "http" || url.scheme == "https"
-    }
-    
-    private var iconName: String {
-        isWebLink ? .iconSafari : .iconShowInFinder
-    }
-    
-    private var buttonLabel: String {
-        isWebLink ? "在浏览器中打开" : "在访达中显示"
-    }
-    
-    var body: some View {
+    func makeOpenButton() -> MagicButton {
         MagicButton(
-            icon: iconName,
-            title: showLabel ? buttonLabel : nil,
+            icon: isNetworkURL ? .iconSafari : .iconShowInFinder,
+            title: isNetworkURL ? "在浏览器中打开" : "在访达中显示",
             style: .secondary,
-            size: size <= 32 ? .small : (size <= 40 ? .regular : .large),
             shape: .circle,
             action: {
-                url.open()
+                open()
             }
         )
-        .help(buttonLabel)
     }
 }
 
@@ -105,8 +79,8 @@ private struct OpenButtonView: View {
                 Text("网络链接").font(.headline)
                 
                 URL.sample_web_mp3_kennedy.makeOpenButton()
-                URL.sample_web_mp3_kennedy.makeOpenButton(showLabel: true)
-                URL.sample_web_mp3_kennedy.makeOpenButton(size: 40)
+                URL.sample_web_mp3_kennedy.makeOpenButton()
+                URL.sample_web_mp3_kennedy.makeOpenButton()
             }
             
             Divider()
@@ -116,8 +90,8 @@ private struct OpenButtonView: View {
                 Text("本地文件").font(.headline)
                 
                 URL.sample_temp_txt.makeOpenButton()
-                URL.sample_temp_txt.makeOpenButton(showLabel: true)
-                URL.sample_temp_txt.makeOpenButton(size: 40)
+                URL.sample_temp_txt.makeOpenButton()
+                URL.sample_temp_txt.makeOpenButton()
             }
         }
         .padding()

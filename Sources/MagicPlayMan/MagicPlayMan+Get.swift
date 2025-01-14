@@ -51,6 +51,7 @@ public extension MagicPlayMan {
     public var playlist: Playlist { _playlist }
     public var currentAsset: URL? { currentURL }
     public var asset: URL? { currentURL }
+    public var isLoading: Bool { if case .loading = self.state { return true } else { return false } }
 
     /// 当前资源是否被喜欢
     public var isCurrentAssetLiked: Bool {

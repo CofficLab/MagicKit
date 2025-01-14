@@ -129,9 +129,12 @@ public extension MagicPlayMan {
         }
 
         _player.play()
-        state = .playing
         log("▶️ Started playback: \(currentURL?.title ?? "Unknown")")
         updateNowPlayingInfo()
+        
+        Task {
+            await self.setState(.playing)
+        }
     }
 
     /// 暂停播放

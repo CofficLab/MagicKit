@@ -286,7 +286,7 @@ public struct AvatarDemoView: View {
                                         .foregroundStyle(.secondary)
 
                                     URL.thumbnailCacheDirectory()
-                                        .makeOpenButton(size: 24)
+                                        .makeOpenButton()
                                 }
 
                                 if cacheFiles.isEmpty {

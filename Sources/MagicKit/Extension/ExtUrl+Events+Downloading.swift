@@ -48,10 +48,7 @@ public extension URL {
                     if currentTime - lastUpdateTime >= updateInterval {
                         let progress = item.downloadProgress
                         lastUpdateTime = currentTime
-                        
-                        await MainActor.run {
-                            onProgress(progress)
-                        }
+                        onProgress(progress)
                     }
                     
                     if item.isDownloaded {

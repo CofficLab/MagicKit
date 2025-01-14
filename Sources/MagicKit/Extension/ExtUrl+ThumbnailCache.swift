@@ -133,7 +133,7 @@ public class ThumbnailCache: SuperLog {
             return nil
         }
         
-        if verbose { os_log("\(self.t) 💾💾💾 Found in disk cache: \(url.shortPath())") }
+        if verbose { os_log("\(self.t) 💾 Found in disk cache: \(url.shortPath())") }
         memoryCache.setObject(image, forKey: memKey as NSString)
         return image
     }

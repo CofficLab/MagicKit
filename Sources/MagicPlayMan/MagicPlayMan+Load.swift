@@ -36,9 +36,7 @@ extension MagicPlayMan {
             switch item.status {
             case .readyToPlay:
                 self.setDuration(item.duration.seconds)
-                os_log("%{public}@Asset ready to play, duration: %{public}f", log: .default, type: .debug, self.t, self.duration)
-
-                if case .loading = self.state {
+                if self.isLoading {
                     self.setState(autoPlay ? .playing : .paused)
                     if autoPlay {
                         self.play()
@@ -48,7 +46,6 @@ extension MagicPlayMan {
             case .failed:
                 let message = item.error?.localizedDescription ?? "Unknown error"
                 self.setState(.failed(.playbackError(message)))
-                os_log("%{public}@Playback failed: %{public}@", log: .default, type: .error, self.t, message)
             default:
                 break
             }
@@ -77,7 +74,10 @@ extension MagicPlayMan {
         let progressSubject = CurrentValueSubject<Double, Never>(0)
         var progressObserver: AnyCancellable?
         progressObserver = url.onDownloading(caller: "MagicPlayMan") { [weak self] progress in
-            progressSubject.send(progress)
+            // 这里接收进度更新，应该在后台线程处理
+            DispatchQueue.global().async {
+                progressSubject.send(progress)
+            }
         }
 
         // 使用 Combine 的 throttle 操作符限制更新频率
@@ -85,8 +85,9 @@ extension MagicPlayMan {
             .throttle(for: .milliseconds(3000), scheduler: DispatchQueue.main, latest: true)
             .sink { [weak self] progress in
                 guard let self = self else { return }
-                self.state = .loading(.downloading(progress))
-                os_log("\(self.t)Download progress: \(Int(progress * 100))%")
+                Task {
+                    await self.setState(.loading(.downloading(progress)))
+                }
             }
 
         cancellables.insert(progressUpdateObserver)
