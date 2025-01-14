@@ -4,6 +4,7 @@ import Foundation
 import SwiftUI
 import MagicKit
 import MediaPlayer
+import OSLog
 
 public extension MagicPlayMan {
     /// 初始化播放器
@@ -22,6 +23,7 @@ public extension MagicPlayMan {
         self.verbose = verbose
         if verbose {
             log("Verbose mode enabled")
+            os_log("\(self.t)Verbose mode enabled")
         }
         
         // 初始化缓存，如果失败则禁用缓存功能
@@ -149,8 +151,8 @@ internal extension MagicPlayMan {
                     } else if let nextAsset = self._playlist.playNext(mode: self.playMode) {
                         // 如果播放列表启用，播放下一首
                         self.log("播放列表已启用，即将播放下一首：\(nextAsset.title)")
-                        Task { @MainActor in
-                            self.loadFromURL(nextAsset)
+                        Task {
+                            await self.loadFromURL(nextAsset)
                         }
                     } else {
                         self.log("播放列表已到末尾", level: .warning)

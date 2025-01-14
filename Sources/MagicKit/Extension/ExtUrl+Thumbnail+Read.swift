@@ -30,7 +30,7 @@ extension URL {
     /// - Returns: 如果找到封面则返回平台原生图片格式，否则返回 nil
     public func getPlatformCoverFromMetadata(verbose: Bool = false) async throws -> Image.PlatformImage? {
         if verbose {
-            os_log("\(self.t)🍽️🍽️🍽️ 从音频文件的元数据中获取封面图片: \(self.title)")
+            os_log("\(self.t)🍽️ 从音频文件的元数据中获取封面图片: \(self.title)")
         }
 
         let asset = AVURLAsset(url: self)
@@ -45,7 +45,7 @@ extension URL {
         
         for key in artworkKeys {
             if verbose {
-                os_log("\(self.t)🍽️🍽️🍽️ 尝试从音频文件的元数据中获取封面图片: \(key.rawValue)")
+                os_log("\(self.t)🍽️ 尝试从音频文件的元数据中获取封面图片: \(key.rawValue)")
             }
 
             let artworkItems = AVMetadataItem.metadataItems(
@@ -83,7 +83,7 @@ extension URL {
     ) async throws -> Image? {
         // 检查缓存
         if let cachedImage = ThumbnailCache.shared.fetch(for: self, size: size) {
-            if verbose { os_log("\(self.t)🍽️🍽️🍽️ 从缓存中获取缩略图: \(self.title)") }
+            if verbose { os_log("\(self.t)🍽️ 从缓存中获取缩略图: \(self.title)") }
             return cachedImage.toSwiftUIImage()
         }
         
@@ -92,7 +92,7 @@ extension URL {
            let image = result.image {
             // 只缓存非系统图标的缩略图
             if !result.isSystemIcon {
-                if verbose { os_log("\(self.t)🍽️🍽️🍽️ 缓存缩略图: \(self.title)") }
+                if verbose { os_log("\(self.t)🍽️ 缓存缩略图: \(self.title)") }
                 var cache = ThumbnailCache.shared
                 cache.verbose = verbose
                 cache.save(image, for: self, size: size)

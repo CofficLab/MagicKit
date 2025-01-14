@@ -122,7 +122,11 @@ public extension MagicPlayMan {
             style: isCurrentAssetLiked ? .primary : .secondary,
             shape: .roundedSquare,
             disabledReason: !hasAsset ? "No media loaded" : nil,
-            action: toggleLike
+            action: {
+                Task {
+                    await self.toggleLike()
+                }
+            }
         )
     }
 
