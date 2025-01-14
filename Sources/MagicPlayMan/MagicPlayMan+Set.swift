@@ -1,16 +1,16 @@
 import Foundation
-import SwiftUI
 import OSLog
+import SwiftUI
 
 extension MagicPlayMan {
     @MainActor
     func setCurrentThumbnail(_ thumbnail: Image?) {
-        if verbose {
-            os_log("%{public}@🖥️ Setting current thumbnail", log: .default, type: .debug, t)
-        }
+//        if verbose {
+//            os_log("%{public}@🖥️ Setting current thumbnail", log: .default, type: .debug, t)
+//        }
         currentThumbnail = thumbnail
     }
-    
+
     @MainActor
     func setCurrentTime(_ time: TimeInterval) {
         if verbose {
@@ -18,15 +18,15 @@ extension MagicPlayMan {
         }
         currentTime = time
     }
-    
+
     @MainActor
     func setDuration(_ value: TimeInterval) {
-        if verbose {
-            os_log("%{public}@⌛️ Setting duration: %{public}f", log: .default, type: .debug, t, value)
-        }
+//        if verbose {
+//            os_log("%{public}@⌛️ Setting duration: %{public}f", log: .default, type: .debug, t, value)
+//        }
         duration = value
     }
-    
+
     @MainActor
     func setBuffering(_ value: Bool) {
         if verbose {
@@ -34,7 +34,7 @@ extension MagicPlayMan {
         }
         isBuffering = value
     }
-    
+
     @MainActor
     func setProgress(_ value: Double) {
         if verbose {
@@ -42,7 +42,7 @@ extension MagicPlayMan {
         }
         progress = value
     }
-    
+
     @MainActor
     func setPlaylistEnabled(_ value: Bool) {
         if verbose {
@@ -50,7 +50,7 @@ extension MagicPlayMan {
         }
         isPlaylistEnabled = value
     }
-    
+
     @MainActor
     func setLikedAssets(_ assets: Set<URL>) {
         if verbose {
@@ -58,5 +58,17 @@ extension MagicPlayMan {
         }
         likedAssets = assets
     }
-}
 
+    @MainActor
+    func setState(_ state: PlaybackState) {
+        self.state = state
+
+        log("播放状态变更：\(state.stateText)")
+        events.onStateChanged.send(state)
+    }
+
+    @MainActor
+    func setCurrentURL(_ url: URL?) {
+        currentURL = url
+    }
+}

@@ -32,21 +32,14 @@ public class MagicPlayMan: ObservableObject, SuperLog {
             }
         }
     }
-    @Published public var currentURL: URL? {
+    @Published public internal(set) var currentURL: URL? {
         didSet {
             if let url = currentURL, oldValue != currentURL {
                 events.onCurrentURLChanged.send(url)
             }
         }
     }
-    @Published public var state: PlaybackState = .idle {
-        didSet {
-            if oldValue != state {
-                log("播放状态变更：\(oldValue) -> \(state)")
-                events.onStateChanged.send(state)
-            }
-        }
-    }
+    @Published public internal(set) var state: PlaybackState = .idle
     @Published public internal(set) var currentTime: TimeInterval = 0
     @Published public internal(set) var duration: TimeInterval = 0
     @Published public internal(set) var isBuffering = false

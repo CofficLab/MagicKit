@@ -11,7 +11,7 @@ public extension MagicPlayMan {
     ///   - autoPlay: 是否自动开始播放，默认为 true
     /// - Returns: 如果成功加载返回 true，否则返回 false
     @MainActor @discardableResult
-    func play(url: URL, autoPlay: Bool = true) -> Bool {
+    func play(url: URL, autoPlay: Bool = true) async -> Bool {
         // 检查 URL 是否有效
         guard url.isFileURL || url.isNetworkURL else {
             log("Invalid URL scheme: \(url.scheme ?? "nil")", level: .error)
@@ -27,7 +27,7 @@ public extension MagicPlayMan {
         self.currentURL = url
 
         // 加载资源
-        loadFromURL(url, autoPlay: autoPlay)
+        await loadFromURL(url, autoPlay: autoPlay)
 
         if isPlaylistEnabled {
             append(url)
@@ -37,34 +37,6 @@ public extension MagicPlayMan {
         }
 
         return true
-    }
-
-    /// 加载并播放多个 URL
-    /// - Parameters:
-    ///   - urls: 要播放的媒体 URL 数组
-    ///   - playFirst: 是否立即播放第一个资源，默认为 true
-    /// - Returns: 成功加载的 URL 数量
-    @MainActor @discardableResult
-    func play(
-        urls: [URL],
-        playFirst: Bool = true
-    ) -> Int {
-        guard isPlaylistEnabled || urls.count == 1 else {
-            log("Cannot play multiple URLs: playlist is disabled", level: .warning)
-            return 0
-        }
-
-        var successCount = 0
-
-        for (index, url) in urls.enumerated() {
-            let shouldAutoPlay = playFirst && index == 0
-            if play(url: url, autoPlay: shouldAutoPlay) {
-                successCount += 1
-            }
-        }
-
-        log("Added \(successCount) of \(urls.count) URLs to playlist")
-        return successCount
     }
 
     /// 手动刷新当前资源的缩略图
@@ -95,14 +67,16 @@ public extension MagicPlayMan {
     func next() {
         guard hasAsset else { return }
 
-        if isPlaylistEnabled {
-            if let nextAsset = _playlist.playNext(mode: playMode) {
-                loadFromURL(nextAsset)
-            }
-        } else if events.hasNavigationSubscribers {
-            // 如果播放列表被禁用但有订阅者，发送请求下一首事件
-            if let currentAsset = currentAsset {
-                events.onNextRequested.send(currentAsset)
+        Task {
+            if isPlaylistEnabled {
+                if let nextAsset = _playlist.playNext(mode: playMode) {
+                    await loadFromURL(nextAsset)
+                }
+            } else if events.hasNavigationSubscribers {
+                // 如果播放列表被禁用但有订阅者，发送请求下一首事件
+                if let currentAsset = currentAsset {
+                    events.onNextRequested.send(currentAsset)
+                }
             }
         }
     }
@@ -111,14 +85,16 @@ public extension MagicPlayMan {
     func previous() {
         guard hasAsset else { return }
 
-        if isPlaylistEnabled {
-            if let previousAsset = _playlist.playPrevious(mode: playMode) {
-                loadFromURL(previousAsset)
-            }
-        } else if events.hasNavigationSubscribers {
-            // 如果播放列表被禁用但有订阅者，发送请求上一首事件
-            if let currentAsset = currentURL {
-                events.onPreviousRequested.send(currentAsset)
+        Task {
+            if isPlaylistEnabled {
+                if let previousAsset = _playlist.playPrevious(mode: playMode) {
+                    await loadFromURL(previousAsset)
+                }
+            } else if events.hasNavigationSubscribers {
+                // 如果播放列表被禁用但有订阅者，发送请求上一首事件
+                if let currentAsset = currentURL {
+                    events.onPreviousRequested.send(currentAsset)
+                }
             }
         }
     }
@@ -172,9 +148,13 @@ public extension MagicPlayMan {
     func stop() {
         _player.pause()
         _player.seek(to: .zero)
-        state = .stopped
+        
         log("⏹️ Stopped playback")
         updateNowPlayingInfo()
+        
+        Task {
+            await self.setState(.stopped)
+        }
     }
 
     /// 切换播放状态
@@ -205,7 +185,7 @@ public extension MagicPlayMan {
         _player.seek(to: targetTime) { [weak self] finished in
             guard let self = self, finished else { return }
             Task { @MainActor in
-                self.currentTime = time
+                self.setCurrentTime(time)
                 self.updateNowPlayingInfo()
             }
         }
@@ -245,17 +225,11 @@ public extension MagicPlayMan {
         }
     }
 
-    internal func updateCurrentTime(_ time: TimeInterval) {
-        Task { @MainActor in
-            currentTime = time
-        }
-    }
-
     /// 启用播放列表功能
-    func enablePlaylist() {
+    func enablePlaylist() async {
         guard !isPlaylistEnabled else { return }
 
-        isPlaylistEnabled = true
+        await setPlaylistEnabled(true)
         log("📑 Playlist enabled")
         showToast(
             "Playlist enabled",
@@ -266,10 +240,10 @@ public extension MagicPlayMan {
 
     /// 禁用播放列表功能
     /// 禁用时会保留当前播放的资源（如果有），清除其他资源
-    func disablePlaylist() {
+    func disablePlaylist() async {
         guard isPlaylistEnabled else { return }
 
-        isPlaylistEnabled = false
+        await setPlaylistEnabled(false)
         log("📑 Playlist disabled")
 
         // 如果禁用播放列表，保留当前播放的资源
@@ -291,7 +265,9 @@ public extension MagicPlayMan {
     /// 切换当前资源的喜欢状态
     func toggleLike() {
         guard let asset = currentURL else { return }
-        setLike(!likedAssets.contains(asset))
+        Task {
+            await setLike(!likedAssets.contains(asset))
+        }
     }
 
     func showToast(_ message: String, icon: String, style: MagicToast.Style) {
@@ -332,16 +308,20 @@ public extension MagicPlayMan {
             return
         }
 
+        var newLikedAssets = likedAssets
         if isLiked {
-            likedAssets.insert(asset)
+            newLikedAssets.insert(asset)
             log("❤️ Added to liked: \(asset.title)")
             showToast("Added to liked", icon: .iconHeartFill, style: .info)
         } else {
-            likedAssets.remove(asset)
+            newLikedAssets.remove(asset)
             log("💔 Removed from liked: \(asset.title)")
             showToast("Removed from liked", icon: .iconHeart, style: .info)
         }
 
+        Task {
+            await setLikedAssets(newLikedAssets)
+        }
         // 通知订阅者喜欢状态变化
         events.onLikeStatusChanged.send((asset: asset, isLiked: isLiked))
         updateNowPlayingInfo()
@@ -361,6 +341,5 @@ public extension MagicPlayMan {
 }
 
 #Preview("MagicPlayMan") {
-        MagicPlayMan.PreviewView().inMagicContainer()
-    
+    MagicPlayMan.PreviewView().inMagicContainer()
 }
