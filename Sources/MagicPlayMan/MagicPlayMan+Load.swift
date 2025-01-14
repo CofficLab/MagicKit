@@ -22,9 +22,6 @@ extension MagicPlayMan {
             return
         }
 
-        // 异步加载缩略图
-        loadThumbnail(for: url)
-
         self.downloadAndCache(url)
 
         let item = AVPlayerItem(url: url)
@@ -104,6 +101,8 @@ extension MagicPlayMan {
                     self.showToast("Download completed", icon: "checkmark.circle", style: .info)
                 }
             }
+
+            loadThumbnail(for: url, reason: "onDownloadFinished")
         }
 
         // 开始下载
@@ -120,11 +119,11 @@ extension MagicPlayMan {
     }
 
     /// 加载资源的缩略图
-    func loadThumbnail(for url: URL) {
+    func loadThumbnail(for url: URL, reason: String) {
         Task.detached(priority: .background) {
             do {
                 if self.verbose {
-                    os_log("%{public}@🖥️ Loading thumbnail for %{public}@", log: .default, type: .debug, self.t, url.shortPath())
+                    os_log("%{public}@🖥️ Loading thumbnail for %{public}@ with reason: %{public}@", log: .default, type: .debug, self.t, url.shortPath(), reason)
                 }
                 let thumbnail = try await url.thumbnail(size: CGSize(width: 600, height: 600), verbose: self.verbose)
 

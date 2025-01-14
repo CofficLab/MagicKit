@@ -42,7 +42,7 @@ public extension MagicPlayMan {
     /// 手动刷新当前资源的缩略图
     func reloadThumbnail() {
         guard let url = currentURL else { return }
-        loadThumbnail(for: url)
+        loadThumbnail(for: url, reason: "reloadThumbnail")
     }
 
     /// 添加资源到播放列表

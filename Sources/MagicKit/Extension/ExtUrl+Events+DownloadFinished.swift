@@ -25,7 +25,7 @@ public extension URL {
         query.operationQueue = queue
         
         if verbose {
-            os_log("\(self.t)👂👂👂 [\(caller)] 开始监听下载完成 -> \(self.title)")
+            os_log("\(self.t)👂 [\(caller)] 开始监听下载完成 -> \(self.title)")
         }
         
         let task = Task {

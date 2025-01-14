@@ -58,13 +58,19 @@ extension String {
         // 初始化和配置
         if lowercased.contains("init") || lowercased.contains("setup") || lowercased.contains("config") ||
             lowercased.contains("初始化") || lowercased.contains("设置") || lowercased.contains("配置") {
-            return "🔧"
+            return "🚩"
         }
 
-        // 更新和变化
+        // 同步相关
+        if lowercased.contains("sync") || lowercased.contains("synchronize") || 
+            lowercased.contains("同步") || lowercased.contains("同步中") {
+            return "🔄"
+        }
+
+        // 更新和变化 (修改emoji避免重复)
         if lowercased.contains("update") || lowercased.contains("change") || lowercased.contains("modify") ||
             lowercased.contains("更新") || lowercased.contains("变化") || lowercased.contains("修改") {
-            return "🔄"
+            return "🍋"
         }
 
         // 调试和测试
