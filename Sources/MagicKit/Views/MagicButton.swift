@@ -31,6 +31,8 @@ public struct MagicButton: View {
     
     /// 按钮大小
     public enum Size: Equatable {
+        /// 迷你尺寸，适用于极度紧凑的布局
+        case mini
         /// 自动模式，占据尽可能多的空间
         case auto
         /// 小尺寸，适用于紧凑布局
@@ -49,6 +51,8 @@ public struct MagicButton: View {
         /// 获取固定尺寸的按钮大小
         var fixedSize: CGFloat {
             switch self {
+            case .mini:
+                return 24
             case .auto:
                 return 0 // 自动模式不使用固定值
             case .small:
@@ -69,6 +73,8 @@ public struct MagicButton: View {
         /// 获取图标大小
         func iconSize(containerSize: CGFloat) -> CGFloat {
             switch self {
+            case .mini:
+                return 10
             case .auto:
                 return 20  // 自动模式下使用默认大小
             case .small:
@@ -89,6 +95,8 @@ public struct MagicButton: View {
         /// 获取字体大小
         var font: Font {
             switch self {
+            case .mini:
+                return .caption2
             case .auto:
                 return .body
             case .small:
@@ -109,6 +117,8 @@ public struct MagicButton: View {
         /// 获取水平内边距
         var horizontalPadding: CGFloat {
             switch self {
+            case .mini:
+                return 6
             case .auto:
                 return 16
             case .small:
@@ -129,6 +139,8 @@ public struct MagicButton: View {
         /// 获取垂直内边距
         var verticalPadding: CGFloat {
             switch self {
+            case .mini:
+                return 2
             case .auto:
                 return 12
             case .small:
