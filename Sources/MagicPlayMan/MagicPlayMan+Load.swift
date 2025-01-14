@@ -2,6 +2,7 @@ import AVFoundation
 import Combine
 import Foundation
 import MagicKit
+import os.log
 import SwiftUI
 
 extension MagicPlayMan {
@@ -10,20 +11,18 @@ extension MagicPlayMan {
     ///   - url: 媒体文件的 URL
     ///   - autoPlay: 是否自动开始播放，默认为 true
     func loadFromURL(_ url: URL, autoPlay: Bool = true) {
-        log("Loading asset from URL: \(url.absoluteString)")
-        
+        os_log("\(self.t)Loading asset from URL: \(url.shortPath())")
+
         stop()
         currentURL = url
         state = .loading(.preparing)
+        os_log("\(self.t)State changed to loading.preparing")
 
-        // 预检查文件是否可访问
-        #if os(macOS)
-            if url.isNotFileExist {
-                state = .failed(.invalidAsset)
-                log("File not found: \(url.path)", level: .error)
-                return
-            }
-        #endif
+        if url.isNotFileExist {
+            state = .failed(.invalidAsset)
+            os_log(.error, "\(self.t)File not found:\(url.shortPath())")
+            return
+        }
 
         self.loadThumbnail(for: url)
 
@@ -35,6 +34,7 @@ extension MagicPlayMan {
             switch item.status {
             case .readyToPlay:
                 self.duration = item.duration.seconds
+                os_log("\(self.t)Asset ready to play, duration: \(self.duration)")
                 if case .loading = self.state {
                     self.state = autoPlay ? .playing : .paused
                     if autoPlay {
@@ -61,18 +61,20 @@ extension MagicPlayMan {
     /// 下载并缓存资源
     private func downloadAndCache(_ asset: MagicAsset) {
         guard let cache = cache else {
-            log("Cache is disabled, loading directly", level: .warning)
+            os_log("\(self.t)Cache is disabled, loading directly")
             loadFromURL(asset.url)
             return
         }
 
         state = .loading(.connecting)
+        os_log("\(self.t)Starting download for asset: \(asset.url.shortPath())")
 
         // 创建下载任务
         let task = URLSession.shared.dataTask(with: asset.url) { [weak self] data, response, error in
             guard let self = self else { return }
 
             if let error = error {
+                os_log("\(self.t)Download failed: \(error.localizedDescription)")
                 DispatchQueue.main.async {
                     self.state = .failed(.networkError(error.localizedDescription))
                     self.log("Download failed: \(error.localizedDescription)", level: .error)
@@ -95,17 +97,21 @@ extension MagicPlayMan {
             let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
             do {
                 try data.write(to: tempURL)
+                os_log("\(self.t)Temporary file written to: \(tempURL.path)")
+
                 let tempAsset = AVAsset(url: tempURL)
 
                 Task {
+                    os_log("\(self.t)Validating downloaded asset")
                     let isPlayable = try await tempAsset.load(.isPlayable)
                     if !isPlayable {
+                        os_log("\(self.t)Downloaded asset is not playable")
                         throw NSError(domain: "MagicPlayMan", code: -1,
                                       userInfo: [NSLocalizedDescriptionKey: "Downloaded data is not a valid media file"])
                     }
 
                     try self.cache?.cache(data, for: asset.url)
-                    self.log("Asset cached successfully")
+                    os_log("\(self.t)Asset cached successfully")
 
                     if let cachedURL = self.cache?.cachedURL(for: asset.url) {
                         self.loadFromURL(cachedURL)
@@ -113,6 +119,7 @@ extension MagicPlayMan {
                     }
                 }
             } catch {
+                os_log("\(self.t)Failed to cache asset: \(error.localizedDescription)")
                 self.log("Failed to cache asset: \(error.localizedDescription)", level: .error)
                 self.loadFromURL(asset.url)
             }
@@ -152,7 +159,6 @@ extension MagicPlayMan {
 // MARK: - Preview
 
 #Preview("MagicPlayMan") {
-   
-        MagicPlayMan.PreviewView()
+    MagicPlayMan.PreviewView()
         .inMagicContainer()
 }
