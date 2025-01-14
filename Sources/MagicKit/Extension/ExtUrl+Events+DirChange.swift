@@ -221,9 +221,19 @@ public extension URL {
         
         // 配置查询参数
         query.searchScopes = [NSMetadataQueryUbiquitousDocumentsScope]
-        query.predicate = NSPredicate(format: "(%K BEGINSWITH %@) AND (%K != %@)", 
-            NSMetadataItemPathKey, self.path,
-            NSMetadataItemPathKey, self.path)
+        
+        let predicates = [
+            // 匹配指定目录下的文件
+            NSPredicate(format: "%K BEGINSWITH %@", NSMetadataItemPathKey, self.path + "/"),
+            
+            // 排除目录本身
+            NSPredicate(format: "%K != %@", NSMetadataItemPathKey, self.path),
+            
+            // 排除系统文件和临时文件
+            NSPredicate(format: "NOT %K ENDSWITH %@", NSMetadataItemFSNameKey, ".DS_Store")
+        ]
+        
+        query.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
         query.valueListAttributes = [
             NSMetadataItemURLKey,
             NSMetadataUbiquitousItemPercentDownloadedKey,
