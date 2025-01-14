@@ -1,21 +1,20 @@
-import SwiftUI
 import MagicKit
-
+import SwiftUI
 
 struct AudioContentView: View, SuperLog {
     static var emoji = "🎧"
     let asset: MagicAsset
-    let artwork: Image?  // 允许外部传入缩略图
-    @State private var localArtwork: Image?  // 本地加载的缩略图
+    let artwork: Image? // 允许外部传入缩略图
+    @State private var localArtwork: Image? // 本地加载的缩略图
     @State private var errorMessage: String?
     let verbose: Bool
-    
+
     init(asset: MagicAsset, artwork: Image? = nil, verbose: Bool = true) {
         self.asset = asset
         self.artwork = artwork
         self.verbose = verbose
     }
-    
+
     var body: some View {
         VStack(spacing: 30) {
             // 专辑封面
@@ -33,12 +32,12 @@ struct AudioContentView: View, SuperLog {
                         Image(systemName: "music.note.list")
                             .font(.system(size: 60))
                             .foregroundStyle(.secondary)
-                        
+
                         Text(error)
                             .font(.caption)
                             .foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
-                        
+
                         // 重试按钮
                         Button {
                             loadArtwork()
@@ -57,19 +56,19 @@ struct AudioContentView: View, SuperLog {
                 }
             }
             .padding()
-            
+
             // 音频信息
             VStack(spacing: 8) {
                 Text(asset.metadata.title)
                     .font(.title2)
                     .bold()
-                
+
                 if let artist = asset.metadata.artist {
                     Text(artist)
                         .font(.title3)
                         .foregroundStyle(.secondary)
                 }
-                
+
                 if let album = asset.metadata.album {
                     Text(album)
                         .font(.subheadline)
@@ -85,15 +84,15 @@ struct AudioContentView: View, SuperLog {
             }
         }
     }
-    
+
     private func loadArtwork() {
         // 重置状态
         localArtwork = nil
         errorMessage = nil
-        
+
         Task {
             do {
-                if let image = try await asset.url.thumbnail(size: CGSize(width: 600, height: 600), verbose: self.verbose) {
+                if let image = try await asset.url.thumbnail(size: CGSize(width: 600, height: 600), verbose: self.verbose, reason: "MagicPlayMan." + self.className + ".loadArtwork") {
                     localArtwork = image
                 } else {
                     errorMessage = "No artwork available"
@@ -118,7 +117,7 @@ struct AudioContentView: View, SuperLog {
             ),
             verbose: true
         )
-        
+
         AudioContentView(
             asset: .init(
                 url: .documentsDirectory,
@@ -144,8 +143,8 @@ struct AudioContentView: View, SuperLog {
             album: "Error Album"
         )
     )
-    
+
     return AudioContentView(asset: errorAsset)
         .frame(width: 400, height: 500)
         .background(.ultraThinMaterial)
-} 
+}

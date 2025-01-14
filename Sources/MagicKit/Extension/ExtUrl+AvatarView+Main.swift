@@ -283,7 +283,7 @@ public struct AvatarView: View, SuperLog {
             do {
                 addLog("🛫 正在生成缩略图，目标尺寸: \(size.width)x\(size.height)")
                 // 在后台线程中处理图片生成
-                let image = try await url.thumbnail(size: size, verbose: verbose)
+                let image = try await url.thumbnail(size: size, verbose: verbose, reason: self.className + ".loadThumbnail")
 
                 if let image = image {
                     addLog("缩略图生成成功")

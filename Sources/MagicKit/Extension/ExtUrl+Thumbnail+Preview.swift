@@ -122,7 +122,7 @@ struct ThumbnailPreview: View {
 
         Task {
             do {
-                if let thumbnail = try await url.thumbnail(size: CGSize(width: 200, height: 200), verbose: true) {
+                if let thumbnail = try await url.thumbnail(size: CGSize(width: 200, height: 200), verbose: true, reason: "loadVideoThumbnail") {
                     await MainActor.run {
                         videoThumbnail = thumbnail
                     }

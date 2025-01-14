@@ -29,6 +29,8 @@ extension URL {
     /// - Parameter verbose: 是否输出详细日志
     /// - Returns: 如果找到封面则返回平台原生图片格式，否则返回 nil
     public func getPlatformCoverFromMetadata(verbose: Bool = false) async throws -> Image.PlatformImage? {
+        let printArtworkKeys = false
+        
         if verbose {
             os_log("\(self.t)🍽️ 从音频文件的元数据中获取封面图片: \(self.title)")
         }
@@ -44,7 +46,7 @@ extension URL {
         let commonMetadata = try await asset.load(.commonMetadata)
         
         for key in artworkKeys {
-            if verbose {
+            if verbose && printArtworkKeys {
                 os_log("\(self.t)🍽️ 尝试从音频文件的元数据中获取封面图片: \(key.rawValue)")
             }
 
@@ -79,20 +81,21 @@ extension URL {
     /// - Returns: 生成的缩略图，如果无法生成则返回 nil
     public func thumbnail(
         size: CGSize = CGSize(width: 120, height: 120),
-        verbose: Bool
+        verbose: Bool,
+        reason: String
     ) async throws -> Image? {
         // 检查缓存
         if let cachedImage = ThumbnailCache.shared.fetch(for: self, size: size) {
-            if verbose { os_log("\(self.t)🍽️ 从缓存中获取缩略图: \(self.title)") }
+            if verbose { os_log("\(self.t)🍽️ 从缓存中获取缩略图: \(self.title) 🐛 \(reason)") }
             return cachedImage.toSwiftUIImage()
         }
         
         // 生成缩略图
-        if let result = try await platformThumbnail(size: size, verbose: verbose),
+        if let result = try await platformThumbnail(size: size, verbose: verbose, reason: reason),
            let image = result.image {
             // 只缓存非系统图标的缩略图
             if !result.isSystemIcon {
-                if verbose { os_log("\(self.t)🍽️ 缓存缩略图: \(self.title)") }
+                if verbose { os_log("\(self.t)🍽️ 缓存缩略图: \(self.title) 🐛 \(reason)") }
                 var cache = ThumbnailCache.shared
                 cache.verbose = verbose
                 cache.save(image, for: self, size: size)
@@ -109,8 +112,13 @@ extension URL {
     /// - Returns: 生成的缩略图，如果无法生成则返回 nil
     public func platformThumbnail(
         size: CGSize = CGSize(width: 120, height: 120),
-        verbose: Bool
+        verbose: Bool,
+        reason: String
     ) async throws -> ThumbnailResult? {
+        if verbose {
+            os_log("\(self.t)🍽️ 获取缩略图: \(self.title) 🐛 \(reason)")
+        }
+
         // 如果是网络 URL，根据文件类型返回对应图标
         if isNetworkURL {
             return (Image.PlatformImage.fromSystemIcon(.iconICloudDownload), true)
