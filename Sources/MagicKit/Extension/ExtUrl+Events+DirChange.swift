@@ -230,10 +230,6 @@ public extension URL {
             NSMetadataUbiquitousItemIsDownloadingKey,
         ]
 
-        if verbose {
-            logger.info("\(self.t)🔍 [\(caller)] Monitoring iCloud path: \(self.path)")
-        }
-
         // 处理文件下载进度
         func handleDownloadProgress(_ items: [NSMetadataItem]) {
             Task.detached {
