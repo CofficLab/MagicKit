@@ -170,86 +170,90 @@ public extension URL {
         let logger = Logger(subsystem: "MagicKit", category: "iCloudMonitor")
         let query = NSMetadataQuery()
         var cancellables = Set<AnyCancellable>()
-        
+
         // 配置查询参数
         query.searchScopes = [NSMetadataQueryUbiquitousDocumentsScope]
         query.predicate = NSPredicate(format: "(%K BEGINSWITH %@)", NSMetadataItemPathKey, self.path)
         query.valueListAttributes = [
             NSMetadataItemURLKey,
             NSMetadataUbiquitousItemPercentDownloadedKey,
-            NSMetadataUbiquitousItemIsDownloadingKey
+            NSMetadataUbiquitousItemIsDownloadingKey,
         ]
-        
+
         if verbose {
             logger.info("\(self.t)🔍 [\(caller)] Monitoring iCloud path: \(self.path)")
         }
-        
+
         // 处理文件下载进度
         func handleDownloadProgress(_ items: [NSMetadataItem]) {
-            for item in items {
-                guard let url = item.value(forAttribute: NSMetadataItemURLKey) as? URL,
-                      let isDownloading = item.value(forAttribute: NSMetadataUbiquitousItemIsDownloadingKey) as? Bool,
-                      isDownloading,
-                      let percentDownloaded = item.value(forAttribute: NSMetadataUbiquitousItemPercentDownloadedKey) as? Double
-                else { continue }
-                
-                let progress = max(0.0, min(1.0, percentDownloaded / 100))
-                if verbose {
-                    logger.info("\(self.t)📥 [\(caller)] \(url.lastPathComponent): \(Int(progress * 100))%")
-                }
-                DispatchQueue.main.async {
-                    onProgress(url, progress)
+            DispatchQueue.global(qos: .utility).async {
+                for item in items {
+                    guard let url = item.value(forAttribute: NSMetadataItemURLKey) as? URL,
+                          let isDownloading = item.value(forAttribute: NSMetadataUbiquitousItemIsDownloadingKey) as? Bool,
+                          isDownloading,
+                          let percentDownloaded = item.value(forAttribute: NSMetadataUbiquitousItemPercentDownloadedKey) as? Double
+                    else { continue }
+
+                    let progress = max(0.0, min(1.0, percentDownloaded / 100))
+                    if verbose {
+                        logger.info("\(self.t)📥 [\(caller)] \(url.lastPathComponent): \(Int(progress * 100))%")
+                    }
+                    // 只有回调需要在主线程执行
+                    DispatchQueue.main.async {
+                        onProgress(url, progress)
+                    }
                 }
             }
         }
-        
+
         // 处理查询结果
         func processResults(isInitial: Bool = false, changedItems: [NSMetadataItem]? = nil) {
-            query.disableUpdates()
-            defer { query.enableUpdates() }
-            
-            let urls: [URL]
-            if isInitial {
-                // 初始化时返回所有文件
-                urls = (query.results as? [NSMetadataItem] ?? [])
-                    .compactMap { $0.value(forAttribute: NSMetadataItemURLKey) as? URL }
-            } else {
-                // 更新时只返回变化的文件
-                urls = (changedItems ?? [])
-                    .compactMap { $0.value(forAttribute: NSMetadataItemURLKey) as? URL }
+            DispatchQueue.global(qos: .utility).async {
+                query.disableUpdates()
+                defer { query.enableUpdates() }
+
+                let urls: [URL]
+                if isInitial {
+                    urls = (query.results as? [NSMetadataItem] ?? [])
+                        .compactMap { $0.value(forAttribute: NSMetadataItemURLKey) as? URL }
+                } else {
+                    urls = (changedItems ?? [])
+                        .compactMap { $0.value(forAttribute: NSMetadataItemURLKey) as? URL }
+                }
+
+                if verbose {
+                    logger.info("\(self.t)📦 [\(caller)] Found \(urls.count) \(isInitial ? "total" : "changed") files")
+                }
+
+                // 如果 onChange 需要更新 UI，让调用者自己决定在哪个线程执行
+                onChange(urls, isInitial, nil)
             }
-            
-            if verbose {
-                logger.info("\(self.t)📦 [\(caller)] Found \(urls.count) \(isInitial ? "total" : "changed") files")
-            }
-            
-            onChange(urls, isInitial, nil)
         }
-        
+
         // 设置通知监听
         NotificationCenter.default.publisher(for: .NSMetadataQueryDidUpdate)
             .sink { [weak query] notification in
                 guard let query = query,
                       let items = notification.userInfo?[NSMetadataQueryUpdateChangedItemsKey] as? [NSMetadataItem]
                 else { return }
-                
+
                 handleDownloadProgress(items)
                 processResults(isInitial: false, changedItems: items)
             }
             .store(in: &cancellables)
-        
+
         NotificationCenter.default.publisher(for: .NSMetadataQueryDidFinishGathering)
             .sink { [weak query] _ in
                 guard let query = query else { return }
                 processResults(isInitial: true)
             }
             .store(in: &cancellables)
-        
-        // 启动查询
+
+        // 启动查询仍需要在主线程，因为 NSMetadataQuery 要求在主线程启动
         DispatchQueue.main.async {
             query.start()
         }
-        
+
         return AnyCancellable {
             if verbose {
                 logger.info("[\(caller)] Stop monitoring: \(self.lastPathComponent)")
