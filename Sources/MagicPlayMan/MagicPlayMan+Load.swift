@@ -74,13 +74,23 @@ extension MagicPlayMan {
             return
         }
         
-        // 监听下载进度
+        // 添加节流控制
+        let progressSubject = CurrentValueSubject<Double, Never>(0)
         var progressObserver: AnyCancellable?
         progressObserver = url.onDownloading(caller: "MagicPlayMan") { [weak self] progress in
-            guard let self = self else { return }
-            self.state = .loading(.downloading(progress))
-            os_log("\(self.t)Download progress: \(Int(progress * 100))%")
+            progressSubject.send(progress)
         }
+        
+        // 使用 Combine 的 throttle 操作符限制更新频率
+        let progressUpdateObserver = progressSubject
+            .throttle(for: .milliseconds(3000), scheduler: DispatchQueue.main, latest: true)
+            .sink { [weak self] progress in
+                guard let self = self else { return }
+                self.state = .loading(.downloading(progress))
+                os_log("\(self.t)Download progress: \(Int(progress * 100))%")
+            }
+        
+        cancellables.insert(progressUpdateObserver)
         
         // 监听下载完成
         var finishObserver: AnyCancellable?
