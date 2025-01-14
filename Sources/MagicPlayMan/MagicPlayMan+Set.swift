@@ -13,9 +13,9 @@ extension MagicPlayMan {
 
     @MainActor
     func setCurrentTime(_ time: TimeInterval) {
-        if verbose {
-            os_log("%{public}@⏱️ Setting current time: %{public}f", log: .default, type: .debug, t, time)
-        }
+//        if verbose {
+//            os_log("%{public}@⏱️ Setting current time: %{public}f", log: .default, type: .debug, t, time)
+//        }
         currentTime = time
     }
 
@@ -53,9 +53,9 @@ extension MagicPlayMan {
 
     @MainActor
     func setLikedAssets(_ assets: Set<URL>) {
-        if verbose {
-            os_log("%{public}@❤️ Setting liked assets: %{public}d items", log: .default, type: .debug, t, assets.count)
-        }
+//        if verbose {
+//            os_log("%{public}@❤️ Setting liked assets: %{public}d items", log: .default, type: .debug, t, assets.count)
+//        }
         likedAssets = assets
     }
 
@@ -70,5 +70,17 @@ extension MagicPlayMan {
     @MainActor
     func setCurrentURL(_ url: URL?) {
         currentURL = url
+
+        if let url = currentURL {
+                events.onCurrentURLChanged.send(url)
+            }
+    }
+
+    @MainActor
+    func setPlayMode(_ mode: MagicPlayMode) {
+        playMode = mode
+
+        log("播放模式变更：\(playMode)")
+                events.onPlayModeChanged.send(playMode)
     }
 }

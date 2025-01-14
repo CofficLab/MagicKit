@@ -338,6 +338,18 @@ public extension MagicPlayMan {
             style: .info
         )
     }
+
+
+    
+    /// 设置播放模式
+    /// - Parameter mode: 要设置的播放模式
+    func changePlayMode(_ mode: MagicPlayMode) {
+        Task {
+            await setPlayMode(mode)
+        }
+        log("Playback mode set to: \(mode.displayName)")
+        showToast("Playback mode: \(mode.displayName)", icon: mode.icon, style: .info)
+    }
 }
 
 #Preview("MagicPlayMan") {
