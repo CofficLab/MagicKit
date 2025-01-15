@@ -5,9 +5,6 @@ import SwiftUI
 import OSLog
 
 public extension URL {
-
-
-    
     /// 监听文件的状态变化
     /// - Parameters:
     ///   - verbose: 是否打印详细日志

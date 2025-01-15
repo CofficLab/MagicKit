@@ -123,9 +123,9 @@ extension MagicPlayMan {
         Task.detached(priority: .background) {
             do {
                 if self.verbose {
-                    os_log("%{public}@🖥️ Loading thumbnail for %{public}@ with reason: %{public}@", log: .default, type: .debug, self.t, url.shortPath(), reason)
+                    os_log("%{public}@🖥️ Loading thumbnail for %{public}@ 🐛 %{public}@", log: .default, type: .debug, self.t, url.shortPath(), reason)
                 }
-                let thumbnail = try await url.thumbnail(size: CGSize(width: 600, height: 600), verbose: self.verbose)
+                let thumbnail = try await url.thumbnail(size: CGSize(width: 600, height: 600), verbose: self.verbose, reason: self.className + ".loadThumbnai")
 
                 await self.setCurrentThumbnail(thumbnail)
             } catch {

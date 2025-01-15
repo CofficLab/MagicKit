@@ -56,7 +56,7 @@ struct ThumbnailView: View, SuperLog {
                                 width: preferredThumbnailSize,
                                 height: preferredThumbnailSize
                             ),
-                            verbose: true
+                            verbose: true, reason: "MagicPlayMan." + self.className + ".task"
                         )
                     } catch {
                         print("Failed to load thumbnail: \(error.localizedDescription)")

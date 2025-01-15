@@ -45,6 +45,38 @@ private struct SizeButtonsPreview: View {
             Text("尺寸变体")
                 .font(.headline)
             
+            // Mini Size
+            VStack(spacing: 16) {
+                Text("迷你尺寸").font(.subheadline)
+                HStack(spacing: 16) {
+                    MagicButton(icon: "star")
+                        .magicTitle("Mini")
+                        .magicSize(.mini)
+                        .magicShape(.roundedRectangle)
+                        .magicDebugBorder()
+                    
+                    MagicButton(icon: "star")
+                        .magicSize(.mini)
+                        .magicShape(.circle)
+                        .magicDebugBorder()
+                    
+                    MagicButton(icon: "star")
+                        .magicTitle("Mini")
+                        .magicSize(.mini)
+                        .magicShape(.capsule)
+                        .magicDebugBorder()
+                    
+                    MagicButton(icon: "star")
+                        .magicSize(.mini)
+                        .magicShape(.roundedSquare)
+                        .magicDebugBorder()
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .padding()
+            .background(Color.blue.opacity(0.1))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            
             // Small Size
             VStack(spacing: 16) {
                 Text("小尺寸").font(.subheadline)

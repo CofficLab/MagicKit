@@ -13,6 +13,8 @@ public extension URL {
     ///     - files: 文件列表，包含文件夹下所有文件的 URL
     ///     - isInitialFetch: 是否是初始的全量数据。首次获取数据时为 true，后续更新为 false
     ///     - error: 可能发生的错误。如果操作成功，则为 nil
+    ///   - onDeleted: 文件被删除的回调
+    ///     - urls: 被删除的文件 URL 列表
     ///   - onProgress: iCloud 文件下载进度回调
     ///     - url: 正在下载的文件 URL
     ///     - progress: 下载进度，范围 0.0-1.0
@@ -22,13 +24,18 @@ public extension URL {
     func onDirChange(
         verbose: Bool = true,
         caller: String,
-        _ onChange: @escaping (_ files: [URL], _ isInitialFetch: Bool, _ error: Error?) async -> Void,
+        onChange: @escaping (_ files: [URL], _ isInitialFetch: Bool, _ error: Error?) async -> Void,
+        onDeleted: @escaping (_ urls: [URL]) -> Void = { _ in },
         onProgress: @escaping (_ url: URL, _ progress: Double) -> Void = { _, _ in }
     ) -> AnyCancellable {
         if isiCloud {
             os_log("\(self.t)👀 [\(caller)] Start monitoring iCloud directory: \(self.shortPath())")
-            return onICloudDirectoryChanged(verbose: verbose, caller: caller,
-                                            onProgress: onProgress) { files, isInitial, error in
+            return onICloudDirectoryChanged(
+                verbose: verbose,
+                caller: caller,
+                onProgress: onProgress,
+                onDeleted: onDeleted
+            ) { files, isInitial, error in
                 Task {
                     await onChange(files, isInitial, error)
                 }
@@ -155,6 +162,8 @@ public extension URL {
     ///     - files: 文件列表，包含文件夹下所有文件的 URL
     ///     - isInitialFetch: 是否是初始的全量数据。首次查询完成时为 true，后续更新为 false
     ///     - error: 可能发生的错误。如果查询成功，则为 nil
+    ///   - onDeleted: 文件被删除的回调
+    ///     - urls: 被删除的文件 URL 列表
     ///   - onProgress: iCloud 文件下载进度回调
     ///     - url: 正在下载的文件 URL
     ///     - progress: 下载进度，范围 0.0-1.0
@@ -165,6 +174,7 @@ public extension URL {
         verbose: Bool = true,
         caller: String,
         onProgress: @escaping (_ url: URL, _ progress: Double) -> Void,
+        onDeleted: @escaping (_ urls: [URL]) -> Void = { _ in },
         _ onChange: @escaping (_ files: [URL], _ isInitialFetch: Bool, _ error: Error?) -> Void
     ) -> AnyCancellable {
         let logger = Logger(subsystem: "MagicKit", category: "iCloudMonitor")
@@ -211,20 +221,24 @@ public extension URL {
         
         // 配置查询参数
         query.searchScopes = [NSMetadataQueryUbiquitousDocumentsScope]
-        // 使用 BEGINSWITH 和 ENDSWITH 组合来确保路径匹配
-        query.predicate = NSPredicate(format: "(%K BEGINSWITH %@) AND (%K LIKE %@)", 
-            NSMetadataItemPathKey, self.path,
-            NSMetadataItemPathKey, "\(self.path)/*"
-        )
+        
+        let predicates = [
+            // 匹配指定目录下的文件
+            NSPredicate(format: "%K BEGINSWITH %@", NSMetadataItemPathKey, self.path + "/"),
+            
+            // 排除目录本身
+            NSPredicate(format: "%K != %@", NSMetadataItemPathKey, self.path),
+            
+            // 排除系统文件和临时文件
+            NSPredicate(format: "NOT %K ENDSWITH %@", NSMetadataItemFSNameKey, ".DS_Store")
+        ]
+        
+        query.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
         query.valueListAttributes = [
             NSMetadataItemURLKey,
             NSMetadataUbiquitousItemPercentDownloadedKey,
             NSMetadataUbiquitousItemIsDownloadingKey,
         ]
-
-        if verbose {
-            logger.info("\(self.t)🔍 [\(caller)] Monitoring iCloud path: \(self.path)")
-        }
 
         // 处理文件下载进度
         func handleDownloadProgress(_ items: [NSMetadataItem]) {
@@ -262,11 +276,12 @@ public extension URL {
         }
 
         // 处理查询结果
-        func processResults(isInitial: Bool = false, changedItems: [NSMetadataItem]? = nil) {
+        func processResults(isInitial: Bool = false, changedItems: [NSMetadataItem]? = nil, deletedItems: [NSMetadataItem]? = nil) {
             DispatchQueue.global(qos: .utility).async {
                 query.disableUpdates()
                 defer { query.enableUpdates() }
 
+                // 处理常规文件变化
                 let urls: [URL]
                 if isInitial {
                     urls = (query.results as? [NSMetadataItem] ?? [])
@@ -280,7 +295,17 @@ public extension URL {
                     logger.info("\(self.t)📦 [\(caller)] Found \(urls.count) \(isInitial ? "total" : "changed") files")
                 }
 
-                // 如果 onChange 需要更新 UI，让调用者自己决定在哪个线程执行
+                // 处理删除的文件
+                if let deletedItems = deletedItems {
+                    let deletedUrls = deletedItems.compactMap { $0.value(forAttribute: NSMetadataItemURLKey) as? URL }
+                    if !deletedUrls.isEmpty {
+                        if verbose {
+                            logger.info("\(self.t)🗑️ [\(caller)] Deleted \(deletedUrls.count) files")
+                        }
+                        onDeleted(deletedUrls)
+                    }
+                }
+
                 onChange(urls, isInitial, nil)
             }
         }
@@ -288,12 +313,13 @@ public extension URL {
         // 设置通知监听
         NotificationCenter.default.publisher(for: .NSMetadataQueryDidUpdate)
             .sink { [weak query] notification in
-                guard let query = query,
-                      let items = notification.userInfo?[NSMetadataQueryUpdateChangedItemsKey] as? [NSMetadataItem]
-                else { return }
+                guard let query = query else { return }
+                
+                let changedItems = notification.userInfo?[NSMetadataQueryUpdateChangedItemsKey] as? [NSMetadataItem]
+                let deletedItems = notification.userInfo?[NSMetadataQueryUpdateRemovedItemsKey] as? [NSMetadataItem]
 
-                handleDownloadProgress(items)
-                processResults(isInitial: false, changedItems: items)
+                handleDownloadProgress(changedItems ?? [])
+                processResults(isInitial: false, changedItems: changedItems, deletedItems: deletedItems)
             }
             .store(in: &cancellables)
 
