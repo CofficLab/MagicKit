@@ -652,7 +652,6 @@ private struct InteractiveButtonsPreview: View {
                 MagicButton(
                     icon: "star",
                     disabledReason: "This button is disabled"
-            
                 )
                 .magicTitle("Disabled Button")
                 .magicDebugBorder()
@@ -663,15 +662,26 @@ private struct InteractiveButtonsPreview: View {
             
             VStack(spacing: 16) {
                 Text("弹出内容").font(.subheadline)
-                MagicButton(
-                    icon: "star",
-                    popoverContent: AnyView(
-                        Text("Popover Content")
-                            .padding()
-                    )
-                )
-                .magicTitle("With Popover")
-                .magicDebugBorder()
+                HStack(spacing: 16) {
+                    // 点击显示的弹出内容
+                    MagicButton(icon: "star")
+                        .magicTitle("Click to Show")
+                        .magicPopover {
+                            Text("Click Triggered Popover")
+                                .padding()
+                        }
+                        .magicDebugBorder()
+                    
+                    // 默认显示的弹出内容
+                    MagicButton(icon: "bell")
+                        .magicTitle("Default Shown")
+                        .magicPopover {
+                            Text("Default Shown Popover")
+                                .padding()
+                        }
+                        .magicPopoverPresented(true)
+                        .magicDebugBorder()
+                }
             }
             .padding()
             .background(Color.blue.opacity(0.1))

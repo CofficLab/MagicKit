@@ -274,6 +274,25 @@ public extension MagicButton {
                 .foregroundStyle(color.opacity(0.5))
         )
     }
+    
+    func magicPopoverPresented(_ isPresented: Bool) -> MagicButton {
+        MagicButton(
+            icon: self.icon,
+            title: self.title,
+            style: self.style,
+            size: self.size,
+            shape: self.shape,
+            shapeVisibility: self.shapeVisibility,
+            disabledReason: self.disabledReason,
+            popoverContent: self.popoverContent,
+            action: self.action,
+            customBackgroundColor: self.customBackgroundColor,
+            showingPopover: .init(
+                get: { isPresented },
+                set: { _ in }
+            )
+        )
+    }
 }
 
 #Preview("MagicButton") {
