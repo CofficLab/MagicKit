@@ -2,7 +2,7 @@ import SwiftUI
 
 
 struct DownloadButtonView: View, SuperLog {
-    static var emoji: String = "🐯"
+    nonisolated static let emoji: String = "🐯"
     
     let url: URL
     let size: CGFloat

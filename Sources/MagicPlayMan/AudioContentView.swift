@@ -2,7 +2,7 @@ import MagicKit
 import SwiftUI
 
 struct AudioContentView: View, SuperLog {
-    static var emoji = "🎧"
+    nonisolated static let emoji = "🎧"
     let asset: MagicAsset
     let artwork: Image? // 允许外部传入缩略图
     @State private var localArtwork: Image? // 本地加载的缩略图

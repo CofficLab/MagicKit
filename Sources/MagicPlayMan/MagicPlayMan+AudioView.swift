@@ -5,7 +5,7 @@ import SwiftUI
 // MARK: - Audio Player View
 
 struct AudioPlayerView: View, SuperLog {
-    static var emoji = "🖥️"
+    nonisolated static let emoji = "🖥️"
 
     let title: String
     let artist: String?

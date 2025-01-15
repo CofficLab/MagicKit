@@ -109,7 +109,7 @@ private struct ProgressIndicatorView: View {
 // MARK: - Main View
 /// 文件复制进度视图
 private struct FileCopyProgressView: View, SuperLog {
-    static var emoji: String = "🍆"
+    nonisolated static let emoji: String = "🍆"
     
     let source: URL
     let destination: URL

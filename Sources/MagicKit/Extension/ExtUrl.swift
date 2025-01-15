@@ -5,7 +5,7 @@ import SwiftUI
 
 /// URL 类型的扩展，提供常用的工具方法
 extension URL: SuperLog {
-    public static var emoji = "🌉"
+    public nonisolated static let emoji = "🌉"
 }
 
 /// URL 类型的扩展，提供文件操作和路径处理功能

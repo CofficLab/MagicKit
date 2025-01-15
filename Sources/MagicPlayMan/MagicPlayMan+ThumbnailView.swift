@@ -5,7 +5,7 @@ import SwiftUI
 // MARK: - Thumbnail View
 
 struct ThumbnailView: View, SuperLog {
-    static var emoji = "🖥️"
+    nonisolated static let emoji = "🖥️"
 
     let url: URL?
     let verbose: Bool

@@ -85,6 +85,12 @@ extension String {
             return "📊"
         }
 
+        // 插件相关
+        if lowercased.contains("plugin") || lowercased.contains("extension") || lowercased.contains("addon") ||
+            lowercased.contains("插件") || lowercased.contains("扩展") || lowercased.contains("组件") {
+            return "🔌"
+        }
+
         // 用户交互
         if lowercased.contains("click") || lowercased.contains("tap") || lowercased.contains("touch") ||
             lowercased.contains("点击") || lowercased.contains("触摸") || lowercased.contains("手势") {

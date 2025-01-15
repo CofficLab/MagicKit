@@ -3,7 +3,7 @@ import OSLog
 
 // MARK: - Media File View
 public struct MediaFileView: View, SuperLog {
-    public static var emoji = "🖥️"
+    public nonisolated static let emoji = "🖥️"
     
     @State private var isHovering = false
     @State private var showLogSheet = false

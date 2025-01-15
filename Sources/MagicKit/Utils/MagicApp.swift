@@ -496,6 +496,24 @@ public class MagicApp {
             return false
             #endif
         }
+
+        /// 判断当前是否为调试环境
+        /// - Returns: 如果是调试环境返回 true，发布环境返回 false
+        public static var isDebug: Bool {
+            #if DEBUG
+            return true
+            #else
+            return false
+            #endif
+        }
+        
+        /// 判断当前是否为发布环境
+        /// - Returns: 如果是发布环境返回 true，调试环境返回 false
+        public static var isRelease: Bool {
+            !isDebug
+        }
+
+        
 }
 
 #Preview {

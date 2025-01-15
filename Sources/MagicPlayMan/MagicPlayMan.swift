@@ -6,7 +6,7 @@ import MediaPlayer
 import MagicKit
 
 public class MagicPlayMan: ObservableObject, SuperLog {
-    public static var emoji = "🎧"
+    public nonisolated static let emoji = "🎧"
     
     internal let _player = AVPlayer()
     internal var timeObserver: Any?

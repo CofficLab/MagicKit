@@ -5,7 +5,7 @@ import Foundation
 
 /// Represent the state of the cloud database
 public struct CloudState: Decodable, Encodable, SuperLog, SuperThread {
-    public static var emoji = "🍽️"
+    public nonisolated static let emoji = "🍽️"
     
     var url: URL
     
