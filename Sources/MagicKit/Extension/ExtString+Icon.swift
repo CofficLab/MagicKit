@@ -681,6 +681,9 @@ public extension String {
         
     /// 图表图标名称 (chart.bar)
     static let iconChart = "chart.bar"
+    
+    /// AI大脑图标名称 (brain.head.profile)
+    static let iconBrain = "brain.head.profile"
 } 
 
 #Preview("图标演示") {

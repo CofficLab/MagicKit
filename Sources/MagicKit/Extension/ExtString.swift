@@ -1,15 +1,8 @@
 import Foundation
-import SwiftUI
 import OSLog
+import SwiftUI
 
 extension String {
-
-    
-
-    
-
-
-    
     public func toData() -> Data? {
         self.data(using: .utf8)
     }
@@ -19,7 +12,7 @@ extension String {
     public func toBase64() -> String {
         if let data = self.data(using: .utf8) {
             let base64String = data.base64EncodedString()
-            
+
             return base64String
         } else {
             return ""
@@ -91,44 +84,44 @@ extension String {
     public func getArrayFromJSON(for keyPath: String) -> [String: Any]? {
         self.getValueFromJSON(for: keyPath) as? [String: Any]
     }
-    
-    /*
-    示例使用
-    let jsonString = """
-    {
-        "ref": "refs/heads/master",
-        "node_id": "MDM6UmVmMjgyOTA1MjA2OnJlZnMvaGVhZHMvbWFzdGVy",
-        "url": "https://api.github.com/repos/nookery/nookery.github.io/git/refs/heads/master",
-        "object": {
-            "sha": "f14ed6bd9bb8e0f1ea5e384ff57ee7e1e11dcc59",
-            "type": "commit",
-            "url": "https://api.github.com/repos/nookery/nookery.github.io/git/commits/f14ed6bd9bb8e0f1ea5e384ff57ee7e1e11dcc59"
-        }
-    }
-    """
 
-    if let shaValue = getValue(from: jsonString, for: "object.sha") {
-        print("SHA: \(shaValue)") // 输出: SHA: f14ed6bd9bb8e0f1ea5e384ff57ee7e1e11dcc59
-    } else {
-        print("Key not found.")
-    }
-    */
+    /*
+     示例使用
+     let jsonString = """
+     {
+         "ref": "refs/heads/master",
+         "node_id": "MDM6UmVmMjgyOTA1MjA2OnJlZnMvaGVhZHMvbWFzdGVy",
+         "url": "https://api.github.com/repos/nookery/nookery.github.io/git/refs/heads/master",
+         "object": {
+             "sha": "f14ed6bd9bb8e0f1ea5e384ff57ee7e1e11dcc59",
+             "type": "commit",
+             "url": "https://api.github.com/repos/nookery/nookery.github.io/git/commits/f14ed6bd9bb8e0f1ea5e384ff57ee7e1e11dcc59"
+         }
+     }
+     """
+
+     if let shaValue = getValue(from: jsonString, for: "object.sha") {
+         print("SHA: \(shaValue)") // 输出: SHA: f14ed6bd9bb8e0f1ea5e384ff57ee7e1e11dcc59
+     } else {
+         print("Key not found.")
+     }
+     */
     public func getValueFromJSON(for keyPath: String) -> Any? {
         let jsonString = self
-        
+
         // 将 JSON 字符串转换为 Data
         guard let jsonData = jsonString.data(using: .utf8) else {
             print("Invalid JSON string.")
             return nil
         }
-        
+
         do {
             // 解析 JSON
             if let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] {
                 // 分割键路径
                 let keys = keyPath.split(separator: ".").map(String.init)
                 var currentObject: Any = jsonObject
-                
+
                 // 遍历键路径，逐层获取值
                 for key in keys {
                     if let dict = currentObject as? [String: Any], let value = dict[key] {
@@ -144,91 +137,21 @@ extension String {
         } catch {
             print("Error parsing JSON: \(error)")
         }
-        
+
         return nil
-    }
-}
-extension String {
-    public func saveMarkdown(_ url: URL) {
-        self.replaceImageSrcWithRelativePath(url).toMarkdown().saveToFile(url)
-    }
-    
-    public func toMarkdown() -> String {
-        var markdown = self
-        
-        // 替换标题（h1-h6）
-        for i in 1...6 {
-            let tag = "h\(i)"
-            let markdownHeader = String(repeating: "#", count: i) + " "
-            let pattern = "<\(tag)(?:\\s+[^>]*?)?>(.*?)</\(tag)>"
-            let regex = try! NSRegularExpression(pattern: pattern, options: [])
-            let matches = regex.matches(in: markdown, options: [], range: NSRange(location: 0, length: markdown.utf16.count))
-            
-            for match in matches.reversed() {
-                let range = match.range(at: 1)
-                let headerContent = (markdown as NSString).substring(with: range)
-                
-                // 清理内容中的<strong>标签
-                let cleanedHeaderContent = headerContent
-                    .replacingOccurrences(of: "<strong[^>]*?>", with: "", options: .regularExpression)
-                    .replacingOccurrences(of: "</strong>", with: "")
-                    .trimmingCharacters(in: .whitespacesAndNewlines)
-                
-                markdown = markdown.replacingOccurrences(
-                    of: "<\(tag)(?:\\s+[^>]*?)?>\(headerContent)</\(tag)>",
-                    with: "\(markdownHeader)\(cleanedHeaderContent)\n\n",
-                    options: .regularExpression
-                )
-            }
-        }
-        
-        // 替换段落
-        markdown = markdown.replacingOccurrences(of: "<p>", with: "")
-        markdown = markdown.replacingOccurrences(of: "</p>", with: "\n\n")
-        
-        // 替换链接
-        let linkPattern = "<a href=\"(.*?)\">(.*?)</a>"
-        let linkRegex = try! NSRegularExpression(pattern: linkPattern, options: [])
-        let linkRange = NSRange(location: 0, length: markdown.utf16.count)
-        markdown = linkRegex.stringByReplacingMatches(in: markdown, options: [], range: linkRange, withTemplate: "[$2]($1)")
-        
-        // 替换 img 标签
-        let imgPattern = "<img[^>]*?src=\"(.*?)\"(?:\\s+alt=\"(.*?)\")?[^>]*?/?>"
-        let imgRegex = try! NSRegularExpression(pattern: imgPattern, options: [])
-        let imgRange = NSRange(location: 0, length: markdown.utf16.count)
-        markdown = imgRegex.stringByReplacingMatches(in: markdown, options: [], range: imgRange, withTemplate: "![$2]($1)\n\n")
-        
-        // 替换其他标签
-        markdown = markdown.replacingOccurrences(of: "<strong[^>]*?>", with: "**", options: .regularExpression)
-        markdown = markdown.replacingOccurrences(of: "</strong>", with: "**")
-        markdown = markdown.replacingOccurrences(of: "<em>", with: "*")
-        markdown = markdown.replacingOccurrences(of: "</em>", with: "*")
-        markdown = markdown.replacingOccurrences(of: "<ul>", with: "")
-        markdown = markdown.replacingOccurrences(of: "</ul>", with: "")
-        markdown = markdown.replacingOccurrences(of: "<ol>", with: "")
-        markdown = markdown.replacingOccurrences(of: "</ol>", with: "")
-        markdown = markdown.replacingOccurrences(of: "<li>", with: "- ")
-        markdown = markdown.replacingOccurrences(of: "</li>", with: "\n")
-        
-        // 移除剩余的 HTML 标签
-        markdown = markdown.replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression)
-        
-        // 去除多余的空行
-        markdown = markdown.replacingOccurrences(of: "\n\n\n", with: "\n\n")
-        
-        return markdown.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 }
 
 // MARK: - Clipboard Extension
+
 extension String {
     /// 将字符串复制到剪贴板
     public func copy() {
         #if os(macOS)
-        NSPasteboard.general.clearContents()
-        NSPasteboard.general.setString(self, forType: .string)
+            NSPasteboard.general.clearContents()
+            NSPasteboard.general.setString(self, forType: .string)
         #elseif os(iOS) || os(tvOS)
-        UIPasteboard.general.string = self
+            UIPasteboard.general.string = self
         #endif
     }
 }
@@ -246,7 +169,7 @@ extension String {
             print(markdown)
         })
         Spacer()
-        
+
         Button("2", action: {
             let htmlContent = """
             <img src="./images/Cloud Server_1.png">
@@ -258,8 +181,6 @@ extension String {
             print("===========")
         })
         Spacer()
-        
-        
     }
     .frame(width: 100)
 }
@@ -269,9 +190,9 @@ public extension String {
     func toURL() -> URL {
         URL(string: self)!
     }
-    
+
     // MARK: - 基础工具方法
-    
+
     /// 检查字符串是否非空
     /// ```swift
     /// let text = "Hello"
@@ -282,7 +203,7 @@ public extension String {
     var isNotEmpty: Bool {
         !isEmpty
     }
-    
+
     /// 移除字符串两端的空格
     /// ```swift
     /// let text = "  Hello World  "
@@ -291,7 +212,7 @@ public extension String {
     func noSpaces() -> String {
         self.trimmingCharacters(in: .whitespaces)
     }
-    
+
     /// 移除字符串开头的斜杠
     /// ```swift
     /// let path = "/user/home/"
@@ -300,7 +221,7 @@ public extension String {
     func removingLeadingSlashes() -> String {
         return self.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
     }
-    
+
     /// 将字符串截断为最多30个字符，超出部分用...替代
     /// ```swift
     /// let text = "这是一个很长的字符串，需要被截断"
@@ -309,7 +230,7 @@ public extension String {
     func mini() -> String {
         self.count <= 30 ? self : String(self.prefix(30)) + "..."
     }
-    
+
     /// 将字符串截断为指定长度，超出部分用...替代
     /// - Parameter max: 最大长度
     /// - Returns: 截断后的字符串
@@ -320,9 +241,9 @@ public extension String {
     func max(_ max: Int) -> String {
         self.count <= max ? self : String(self.prefix(max)) + "..."
     }
-    
+
     // MARK: - 数字相关
-    
+
     /// 检查字符串是否为偶数（假设字符串可以转换为整数）
     /// ```swift
     /// let number = "42"
@@ -334,7 +255,7 @@ public extension String {
         guard let number = Int(self) else { return false }
         return number % 2 == 0
     }
-    
+
     /// 检查字符串是否为奇数（假设字符串可以转换为整数）
     /// ```swift
     /// let number = "7"
@@ -345,7 +266,7 @@ public extension String {
     var isOdd: Bool {
         !isEven
     }
-    
+
     /// 创建一个带有图标预览的按钮
     /// ```swift
     /// let button = "star".previewIconButton()
@@ -363,31 +284,14 @@ public extension String {
             )
         )
     }
-    
-    func saveToFile(_ url: URL) {
-            let verbose = false
-            
-            if verbose {
-                os_log("保存到 -> \(url.relativePath)")
-            }
-            
-            let f = FileManager.default
-            let folder = url.deletingLastPathComponent()
-            
-            if !f.fileExists(atPath: folder.path) {
-                do {
-                    try f.createDirectory(at: folder, withIntermediateDirectories: true, attributes: nil)
-                } catch {
-                    print("创建文件夹时发生错误: \(error)")
-                }
-            }
 
-            do {
-                try self.write(to: url, atomically: true, encoding: .utf8)
-            } catch {
-                os_log(.error, "保存失败 -> \(error)")
-            }
+    func saveToFile(_ url: URL, verbose: Bool = true) throws {
+        if verbose {
+            os_log("保存到 -> \(url.relativePath)")
         }
+
+        try self.write(to: url, atomically: true, encoding: .utf8)
+    }
 }
 
 /// String 扩展功能演示视图
@@ -402,7 +306,7 @@ struct StringExtensionDemoView: View {
                         Text("字符串处理")
                             .font(.headline)
                             .foregroundStyle(.secondary)
-                        
+
                         VStack(spacing: 8) {
                             MagicKeyValue(key: "  Hello  .noSpaces()", value: "  Hello  ".noSpaces())
                             MagicKeyValue(key: "/path/to/file/.removingLeadingSlashes()", value: "/path/to/file/".removingLeadingSlashes())
@@ -413,13 +317,13 @@ struct StringExtensionDemoView: View {
                         .background(.background.secondary)
                         .clipShape(RoundedRectangle(cornerRadius: 8))
                     }
-                    
+
                     // 数字判断
                     VStack(alignment: .leading, spacing: 12) {
                         Text("数字判断")
                             .font(.headline)
                             .foregroundStyle(.secondary)
-                        
+
                         VStack(spacing: 8) {
                             MagicKeyValue(key: "42.isEven", value: "true") {
                                 Image(systemName: "42".isEven ? .iconCheckmark : .iconClose)
@@ -434,18 +338,18 @@ struct StringExtensionDemoView: View {
                         .background(.background.secondary)
                         .clipShape(RoundedRectangle(cornerRadius: 8))
                     }
-                    
+
                     // 图标预览按钮
                     VStack(alignment: .leading, spacing: 12) {
                         Text("图标预览按钮")
                             .font(.headline)
                             .foregroundStyle(.secondary)
-                        
+
                         VStack(spacing: 8) {
                             MagicKeyValue(key: "\"star\".previewIconButton()", value: "") {
                                 "star".previewIconButton()
                             }
-                            
+
                             MagicKeyValue(key: "组合使用", value: "") {
                                 HStack(spacing: 12) {
                                     "heart".previewIconButton()
@@ -465,7 +369,7 @@ struct StringExtensionDemoView: View {
                 Image(systemName: "1.circle.fill")
                 Text("基础")
             }
-            
+
             // 其他功能演示标签页...
         }
     }
