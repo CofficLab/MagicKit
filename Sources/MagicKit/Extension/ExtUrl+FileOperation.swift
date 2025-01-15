@@ -199,13 +199,13 @@ public extension URL {
     /// - Returns: The current URL (self)
     /// - Throws: An error if the creation fails
     func createIfNotExist() throws -> URL {
-        // 首先确保父目录存在
+        // 处理父目录
         let parentDir = deletingLastPathComponent()
         if parentDir.isNotDirExist {
             try FileManager.default.createDirectory(at: parentDir, withIntermediateDirectories: true)
         }
         
-        // 然后处理当前路径
+        // 处理当前路径
         if hasDirectoryPath {
             if isNotDirExist {
                 try FileManager.default.createDirectory(at: self, withIntermediateDirectories: true)
@@ -215,11 +215,11 @@ public extension URL {
                 do {
                     try Data().write(to: self)
                 } catch {
-                    os_log(.error, "\(self.t)无法创建文件 \(self.path): \(error.localizedDescription)")
                     throw error
                 }
             }
         }
+        
         return self
     }
 }

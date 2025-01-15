@@ -308,62 +308,43 @@ public class MagicApp {
         /// 获取应用的 Application Support 目录
         /// - Returns: Application Support 目录的 URL
         public static func getAppSupportDirectory() -> URL {
-            let paths = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
-            return paths[0]
+            try! URL.applicationSupport
         }
         
         /// 获取应用专属的 Application Support 目录
         /// - Returns: 应用专属的 Application Support 目录 URL
         public static func getAppSpecificSupportDirectory() -> URL {
-            let appSupport = getAppSupportDirectory()
-            let bundleId = getBundleIdentifier()
-            return appSupport.appendingPathComponent(bundleId)
+            try! URL.appSpecificSupport
         }
 
         /// 获取应用的 Documents 目录
         /// - Returns: Documents 目录的 URL
         public static func getDocumentsDirectory() -> URL {
-            let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-            return paths[0]
+            try! URL.documents
         }
 
         /// 获取应用的沙盒容器目录
         /// - Returns: 容器目录的 URL
         public static func getContainerDirectory() -> URL {
-            // 通过 Documents 目录的父目录来获取容器目录
-            return getDocumentsDirectory().deletingLastPathComponent()
+            try! URL.container
         }
 
         /// 获取应用的 iCloud 容器目录
         /// - Returns: iCloud 容器目录的 URL，如果 iCloud 不可用则返回 nil
         public static func getCloudContainerDirectory() -> URL? {
-            guard isICloudAvailable() else { return nil }
-            
-            // 获取 iCloud 容器 URL
-            guard let containerURL = FileManager.default.url(
-                forUbiquityContainerIdentifier: nil
-            ) else {
-                return nil
-            }
-            
-            return containerURL
+            URL.cloudContainer
         }
         
         /// 获取应用在 iCloud 中的 Documents 目录
         /// - Returns: iCloud Documents 目录的 URL，如果 iCloud 不可用则返回 nil
         public static func getCloudDocumentsDirectory() -> URL? {
-            guard let containerURL = getCloudContainerDirectory() else {
-                return nil
-            }
-            
-            return containerURL.appendingPathComponent("Documents")
+            URL.cloudDocuments
         }
 
         /// 获取应用的缓存目录
         /// - Returns: 缓存目录的 URL
         public static func getCacheDirectory() -> URL {
-            let paths = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)
-            return paths[0]
+            try! URL.caches
         }
 
         /// 返回调试命令菜单
@@ -391,10 +372,27 @@ public class MagicApp {
                     Button("打开 iCloud Documents") {
                         self.getCloudDocumentsDirectory()?.open()
                     }
-                    
+
                     Button("打开缓存目录") {
                         self.getCacheDirectory().open()
                     }
+                    
+                    Button("打开下载目录") {
+                        try? URL.downloads.open()
+                    }
+                    
+                    Button("打开临时目录") {
+                        URL.temp.open()
+                    }
+                    
+                    Button("打开 iCloud 容器") {
+                        self.getCloudContainerDirectory()?.open()
+                    }
+                    
+                    Button("打开系统 App Support") {
+                        try? URL.applicationSupport.open()
+                    }
+                
                 }
             }
         }
@@ -402,24 +400,14 @@ public class MagicApp {
         /// 获取应用的数据库目录
         /// - Returns: 数据库目录的 URL
         public static func getDatabaseDirectory() -> URL {
-            let appSupport = getAppSpecificSupportDirectory()
-            let dbDirectory = appSupport.appendingPathComponent("Database", isDirectory: true)
-            
-            // 确保目录存在
-            try? FileManager.default.createDirectory(
-                at: dbDirectory,
-                withIntermediateDirectories: true,
-                attributes: nil
-            )
-            
-            return dbDirectory
+            try! URL.database
         }
         
         /// 获取特定数据库文件的路径
         /// - Parameter filename: 数据库文件名（例如："app.db"）
         /// - Returns: 数据库文件的完整 URL
         public static func getDatabasePath(filename: String) -> URL {
-            return getDatabaseDirectory().appendingPathComponent(filename)
+            try! URL.databasePath(filename: filename)
         }
 
         /// 判断当前设备是否为桌面设备

@@ -257,6 +257,36 @@ public extension URL {
         let cleanFileName = fileName.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
         return self.appendingPathComponent(cleanFileName, isDirectory: false)
     }
+
+    /// 打开系统目录选择器，让用户选择一个目录
+    /// 
+    /// ```swift
+    /// do {
+    ///     let fileUrl = try URL.selectDirectory.appendingPathComponent("example.txt")
+    ///     // 使用选中的目录...
+    /// } catch {
+    ///     // 处理错误...
+    /// }
+    /// ```
+    /// - Returns: 用户选择的目录 URL
+    /// - Throws: 如果用户取消选择，抛出 URLError.userCancelledAuthentication
+    static var selectDirectory: URL {
+        get throws {
+            let panel = NSOpenPanel()
+            panel.canChooseFiles = false
+            panel.canChooseDirectories = true
+            panel.allowsMultipleSelection = false
+            panel.canCreateDirectories = true
+            panel.prompt = "选择保存目录"
+            
+            guard panel.runModal() == .OK,
+                  let directoryUrl = panel.url else {
+                throw URLError(.userCancelledAuthentication)
+            }
+            
+            return directoryUrl
+        }
+    }
 }
 
 /// URL 扩展功能演示视图
