@@ -49,6 +49,12 @@ extension String {
             return "🌐"
         }
 
+        // 同步相关
+        if lowercased.contains("sync") || lowercased.contains("synchronize") || 
+            lowercased.contains("同步") || lowercased.contains("同步中") || lowercased.contains("刷新") {
+            return "🔄"
+        }
+
         // 数据相关
         if lowercased.contains("data") || lowercased.contains("save") || lowercased.contains("load") ||
             lowercased.contains("数据") || lowercased.contains("保存") || lowercased.contains("加载") {
@@ -59,12 +65,6 @@ extension String {
         if lowercased.contains("init") || lowercased.contains("setup") || lowercased.contains("config") ||
             lowercased.contains("初始化") || lowercased.contains("设置") || lowercased.contains("配置") {
             return "🚩"
-        }
-
-        // 同步相关
-        if lowercased.contains("sync") || lowercased.contains("synchronize") || 
-            lowercased.contains("同步") || lowercased.contains("同步中") {
-            return "🔄"
         }
 
         // 更新和变化 (修改emoji避免重复)

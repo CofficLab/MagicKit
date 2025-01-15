@@ -211,7 +211,11 @@ public extension URL {
         
         // 配置查询参数
         query.searchScopes = [NSMetadataQueryUbiquitousDocumentsScope]
-        query.predicate = NSPredicate(format: "(%K BEGINSWITH %@)", NSMetadataItemPathKey, self.path)
+        // 使用 BEGINSWITH 和 ENDSWITH 组合来确保路径匹配
+        query.predicate = NSPredicate(format: "(%K BEGINSWITH %@) AND (%K LIKE %@)", 
+            NSMetadataItemPathKey, self.path,
+            NSMetadataItemPathKey, "\(self.path)/*"
+        )
         query.valueListAttributes = [
             NSMetadataItemURLKey,
             NSMetadataUbiquitousItemPercentDownloadedKey,
