@@ -6,10 +6,12 @@ public struct MagicLogEntry: Identifiable {
     public let message: String
     public let level: Level
     public let timestamp: Date
+    public let caller: String
     
-    public init(message: String, level: Level, timestamp: Date = Date()) {
+    public init(message: String, level: Level, caller: String = "", timestamp: Date = Date()) {
         self.message = Thread.currentQosDescription + " | " + message.withContextEmoji
         self.level = level
+        self.caller = caller
         self.timestamp = timestamp
     }
     

@@ -20,8 +20,9 @@ public class MagicLogger: ObservableObject {
     /// - Parameters:
     ///   - message: 日志消息
     ///   - level: 日志级别
-    public static func log(_ message: String, level: MagicLogEntry.Level) {
-        shared.log(message, level: level)
+    ///   - caller: 日志发生的位置
+    public static func log(_ message: String, level: MagicLogEntry.Level, caller: String = "") {
+        shared.log(message, level: level, caller: caller)
     }
 
     // ... existing static methods ...
@@ -32,32 +33,41 @@ public class MagicLogger: ObservableObject {
     /// - Parameters:
     ///   - message: 日志消息
     ///   - level: 日志级别
-    public func log(_ message: String, level: MagicLogEntry.Level) {
-        addLog(.init(message: message, level: level))
+    ///   - caller: 日志发生的位置
+    public func log(_ message: String, level: MagicLogEntry.Level, caller: String = "") {
+        addLog(.init(message: message, level: level, caller: caller))
     }
 
     /// 添加一条信息日志
-    /// - Parameter message: 日志消息
-    public static func info(_ message: String) {
-        shared.info(message)
+    /// - Parameters:
+    ///   - message: 日志消息
+    ///   - caller: 日志发生的位置
+    public static func info(_ message: String, caller: String = "") {
+        shared.info(message, caller: caller)
     }
 
     /// 添加一条警告日志
-    /// - Parameter message: 日志消息
-    public static func warning(_ message: String) {
-        shared.warning(message)
+    /// - Parameters:
+    ///   - message: 日志消息
+    ///   - caller: 日志发生的位置
+    public static func warning(_ message: String, caller: String = "") {
+        shared.warning(message, caller: caller)
     }
 
     /// 添加一条错误日志
-    /// - Parameter message: 日志消息
-    public static func error(_ message: String) {
-        shared.error(message)
+    /// - Parameters:
+    ///   - message: 日志消息
+    ///   - caller: 日志发生的位置
+    public static func error(_ message: String, caller: String = "") {
+        shared.error(message, caller: caller)
     }
 
     /// 添加一条调试日志
-    /// - Parameter message: 日志消息
-    public static func debug(_ message: String) {
-        shared.debug(message)
+    /// - Parameters:
+    ///   - message: 日志消息
+    ///   - caller: 日志发生的位置
+    public static func debug(_ message: String, caller: String = "") {
+        shared.debug(message, caller: caller)
     }
 
     /// 清空所有日志
@@ -104,27 +114,35 @@ public class MagicLogger: ObservableObject {
     // MARK: - Public Methods
 
     /// 添加一条信息日志
-    /// - Parameter message: 日志消息
-    public func info(_ message: String) {
-        addLog(.init(message: message, level: .info))
+    /// - Parameters:
+    ///   - message: 日志消息
+    ///   - caller: 日志发生的位置
+    public func info(_ message: String, caller: String = "") {
+        addLog(.init(message: message, level: .info, caller: caller))
     }
 
     /// 添加一条警告日志
-    /// - Parameter message: 日志消息
-    public func warning(_ message: String) {
-        addLog(.init(message: message, level: .warning))
+    /// - Parameters:
+    ///   - message: 日志消息
+    ///   - caller: 日志发生的位置
+    public func warning(_ message: String, caller: String = "") {
+        addLog(.init(message: message, level: .warning, caller: caller))
     }
 
     /// 添加一条错误日志
-    /// - Parameter message: 日志消息
-    public func error(_ message: String) {
-        addLog(.init(message: message, level: .error))
+    /// - Parameters:
+    ///   - message: 日志消息
+    ///   - caller: 日志发生的位置
+    public func error(_ message: String, caller: String = "") {
+        addLog(.init(message: message, level: .error, caller: caller))
     }
 
     /// 添加一条调试日志
-    /// - Parameter message: 日志消息
-    public func debug(_ message: String) {
-        addLog(.init(message: message, level: .debug))
+    /// - Parameters:
+    ///   - message: 日志消息
+    ///   - caller: 日志发生的位置
+    public func debug(_ message: String, caller: String = "") {
+        addLog(.init(message: message, level: .debug, caller: caller))
     }
 
     /// 清空所有日志
