@@ -24,28 +24,10 @@ public struct MagicWebViewDemo: View {
                 }
             }
             .tabItem {
-                Label("基本功能", systemImage: "globe")
+                Label("基本", systemImage: "globe")
             }
 
             // 2. 日志视图控制演示
-            NavigationStack {
-                VStack {
-                    Group {
-                        Text("带日志的WebView").font(.headline)
-                        URL(string: "https://www.example.com")!
-                            .makeWebView()
-                            .showLogView(true)
-
-                        Text("不带日志的WebView").font(.headline)
-                        URL(string: "https://www.example.com")!
-                            .makeWebView()
-                            .showLogView(false)
-                    }
-                }
-            }
-            .tabItem {
-                Label("日志控制", systemImage: "doc.text.magnifyingglass")
-            }
 
             // 3. 错误处理演示
             NavigationStack {
@@ -61,44 +43,12 @@ public struct MagicWebViewDemo: View {
                             .showLogView(true)
                             .frame(height: 200)
                     }
-                }
-                .navigationTitle("错误处理")
-            }
+                }            }
             .tabItem {
-                Label("错误处理", systemImage: "exclamationmark.triangle")
+                Label("错误", systemImage: "exclamationmark.triangle")
             }
 
             // 4. 多WebView演示
-            NavigationStack {
-                VStack {
-                    Section("多WebView") {
-                        VStack(spacing: 20) {
-                            Group {
-                                Text("WebView 1 (带日志)").font(.headline)
-                                URL(string: "https://www.apple.com")!
-                                    .makeWebView()
-                                    .showLogView(true)
-                                    .frame(height: 300)
-                            }
-
-                            Divider()
-
-                            Group {
-                                Text("WebView 2 (不带日志)").font(.headline)
-                                URL(string: "https://www.example.com")!
-                                    .makeWebView()
-                                    .showLogView(false)
-                                    .frame(height: 200)
-                            }
-                        }
-                        .padding(.vertical)
-                    }
-                }
-                .navigationTitle("多WebView")
-            }
-            .tabItem {
-                Label("多WebView", systemImage: "square.grid.2x2")
-            }
 
             // 5. JavaScript错误演示
             NavigationStack {
@@ -164,6 +114,64 @@ public struct MagicWebViewDemo: View {
             }
             .tabItem {
                 Label("URL跳转", systemImage: "arrow.right.circle")
+            }
+
+            // 7. 控制台日志演示
+            NavigationStack {
+                VStack {
+                    Group {
+                        Text("控制台日志演示").font(.headline)
+                        
+                        // 包含console.log的HTML
+                        let htmlWithConsoleLog = """
+                            <html>
+                            <head>
+                                <meta charset="utf-8">
+                            </head>
+                            <body>
+                                <h1>控制台日志演示</h1>
+                                <script>
+                                    // 输出不同类型的日志
+                                    console.log('普通日志');
+                                    console.info('信息日志');
+                                    console.warn('警告日志');
+                                    console.error('错误日志');
+                                    
+                                    // 定时输出日志
+                                    setInterval(() => {
+                                        console.log('每3秒输出一次：' + new Date().toLocaleTimeString());
+                                    }, 3000);
+                                    
+                                    // 输出复杂对象
+                                    console.log('对象:', { 
+                                        name: 'test',
+                                        value: 123,
+                                        nested: {
+                                            array: [1, 2, 3]
+                                        }
+                                    });
+                                </script>
+                            </body>
+                            </html>
+                            """
+                        
+                        let url = URL(string: "data:text/html;base64," + Data(htmlWithConsoleLog.utf8).base64EncodedString())!
+                        
+                        url.makeWebView(
+                            onJavaScriptError: { message, line, source in
+                                MagicLogger.shared.error("JavaScript错误：")
+                                MagicLogger.shared.error("- 消息: \(message)")
+                                MagicLogger.shared.error("- 行号: \(line)")
+                                MagicLogger.shared.error("- 来源: \(source)")
+                            }
+                        )
+                        .showLogView(true)
+                    }
+                }
+                .navigationTitle("控制台日志")
+            }
+            .tabItem {
+                Label("控制台日志", systemImage: "terminal")
             }
         }
     }

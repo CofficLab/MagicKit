@@ -90,10 +90,10 @@ public struct MagicWebView: View {
             let configuration = WKWebViewConfiguration()
             let userContentController = WKUserContentController()
             
-            // 注入错误捕获脚本，使用更强的错误捕获方式
+            // 注入错误捕获和日志捕获脚本
             let script = """
                 (function() {
-                    console.log('初始化错误捕获');
+                    console.log('初始化错误和日志捕获');
                     
                     // 全局错误处理
                     window.onerror = function(msg, url, line, col, error) {
@@ -127,26 +127,38 @@ public struct MagicWebView: View {
                         });
                     });
                     
-                    // 重写 console.error
-                    const originalError = console.error;
-                    console.error = function() {
-                        const args = Array.from(arguments).join(' ');
-                        window.webkit.messageHandlers.jsError.postMessage({
-                            message: args,
-                            sourceURL: 'console',
-                            lineNumber: 0
-                        });
-                        originalError.apply(console, arguments);
+                    // 重写所有控制台方法
+                    const originalConsole = {
+                        log: console.log,
+                        info: console.info,
+                        warn: console.warn,
+                        error: console.error,
+                        debug: console.debug
                     };
                     
-                    // 主动触发一个测试错误
-                    setTimeout(function() {
-                        try {
-                            throw new Error('测试错误');
-                        } catch(e) {
-                            console.error('测试错误:', e.message);
+                    function stringifyArg(arg) {
+                        if (typeof arg === 'undefined') return 'undefined';
+                        if (arg === null) return 'null';
+                        if (typeof arg === 'object') {
+                            try {
+                                return JSON.stringify(arg);
+                            } catch (e) {
+                                return arg.toString();
+                            }
                         }
-                    }, 500);
+                        return String(arg);
+                    }
+                    
+                    ['log', 'info', 'warn', 'error', 'debug'].forEach(function(level) {
+                        console[level] = function() {
+                            const args = Array.from(arguments).map(stringifyArg).join(' ');
+                            window.webkit.messageHandlers.consoleLog.postMessage({
+                                level: level,
+                                message: args
+                            });
+                            originalConsole[level].apply(console, arguments);
+                        };
+                    });
                 })();
             """
             
@@ -158,6 +170,7 @@ public struct MagicWebView: View {
             
             userContentController.addUserScript(userScript)
             userContentController.add(context.coordinator, name: "jsError")
+            userContentController.add(context.coordinator, name: "consoleLog")
             
             configuration.userContentController = userContentController
             configuration.preferences.javaScriptCanOpenWindowsAutomatically = true
@@ -218,30 +231,6 @@ public struct MagicWebView: View {
             logger.info("网页加载完成: \(url.absoluteString)")
             onLoadComplete?(nil)
             logger.debug("页面加载完成")
-            
-            // 注入额外的测试脚本
-            let testScript = """
-                console.log('测试 JS 错误捕获');
-                setTimeout(() => {
-                    try {
-                        throw new Error('测试错误');
-                    } catch (e) {
-                        window.webkit.messageHandlers.jsError.postMessage({
-                            message: e.message,
-                            lineNumber: 1,
-                            sourceURL: 'test.js'
-                        });
-                    }
-                }, 1000);
-            """
-            
-            webView.evaluateJavaScript(testScript) { _, error in
-                if let error = error {
-                    self.logger.error("测试脚本执行失败: \(error.localizedDescription)")
-                } else {
-                    self.logger.debug("测试脚本注入成功")
-                }
-            }
         }
 
         func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
@@ -267,25 +256,55 @@ public struct MagicWebView: View {
         }
 
         func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-            logger.debug("收到 WebView 消息: \(message.name)")
+            switch message.name {
+            case "jsError":
+                handleJSError(message)
+            case "consoleLog":
+                handleConsoleLog(message)
+            default:
+                logger.debug("收到未知消息: \(message.name)")
+            }
+        }
+        
+        private func handleJSError(_ message: WKScriptMessage) {
+            logger.debug("收到 JS 错误消息: \(message.body)")
             
-            if message.name == "jsError" {
-                logger.debug("收到 JS 错误消息: \(message.body)")
+            if let body = message.body as? [String: Any] {
+                logger.debug("JS 错误详情: \(body)")
                 
-                if let body = message.body as? [String: Any] {
-                    logger.debug("JS 错误详情: \(body)")
-                    
-                    let errorMessage = (body["message"] as? String) ?? "未知错误"
-                    let lineNumber = (body["lineNumber"] as? Int) ?? 0
-                    let sourceURL = (body["sourceURL"] as? String) ?? "未知来源"
-                    
-                    logger.error("JavaScript错误:")
-                    logger.error("- 消息: \(errorMessage)")
-                    logger.error("- 行号: \(lineNumber)")
-                    logger.error("- 来源: \(sourceURL)")
-                    
-                    onJavaScriptError?(errorMessage, lineNumber, sourceURL)
-                }
+                let errorMessage = (body["message"] as? String) ?? "未知错误"
+                let lineNumber = (body["lineNumber"] as? Int) ?? 0
+                let sourceURL = (body["sourceURL"] as? String) ?? "未知来源"
+                
+                logger.error("JavaScript错误:")
+                logger.error("- 消息: \(errorMessage)")
+                logger.error("- 行号: \(lineNumber)")
+                logger.error("- 来源: \(sourceURL)")
+                
+                onJavaScriptError?(errorMessage, lineNumber, sourceURL)
+            }
+        }
+        
+        private func handleConsoleLog(_ message: WKScriptMessage) {
+            guard let body = message.body as? [String: Any],
+                  let level = body["level"] as? String,
+                  let logMessage = body["message"] as? String else {
+                return
+            }
+            
+            switch level {
+            case "log":
+                logger.info("📱 Console: \(logMessage)")
+            case "info":
+                logger.info("ℹ️ Console: \(logMessage)")
+            case "warn":
+                logger.warning("⚠️ Console: \(logMessage)")
+            case "error":
+                logger.error("❌ Console: \(logMessage)")
+            case "debug":
+                logger.debug("🔍 Console: \(logMessage)")
+            default:
+                logger.info("📱 Console: \(logMessage)")
             }
         }
     }
@@ -312,38 +331,53 @@ public struct MagicWebView: View {
             let configuration = WKWebViewConfiguration()
             let userContentController = WKUserContentController()
             
-            // 注入错误捕获脚本
+            // 注入错误捕获和日志捕获脚本
             let script = """
                 (function() {
-                    console.log('安装错误处理器');
+                    console.log('安装错误和日志处理器');
                     
-                    function sendError(message, source, line) {
-                        console.log('发送错误:', message);
-                        if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.jsError) {
-                            window.webkit.messageHandlers.jsError.postMessage({
-                                message: message,
-                                sourceURL: source || 'unknown',
-                                lineNumber: line || 0
-                            });
-                        } else {
-                            console.log('错误：jsError handler 不可用');
+                    function stringifyArg(arg) {
+                        if (typeof arg === 'undefined') return 'undefined';
+                        if (arg === null) return 'null';
+                        if (typeof arg === 'object') {
+                            try {
+                                return JSON.stringify(arg);
+                            } catch (e) {
+                                return arg.toString();
+                            }
                         }
+                        return String(arg);
                     }
                     
-                    // 全局错误处理
+                    // 错误处理
                     window.onerror = function(msg, url, line) {
-                        console.log('全局错误:', msg);
-                        sendError(msg, url, line);
+                        window.webkit.messageHandlers.jsError.postMessage({
+                            message: msg,
+                            sourceURL: url,
+                            lineNumber: line
+                        });
                         return true;
                     };
                     
-                    // 语法错误处理
-                    window.addEventListener('error', function(event) {
-                        console.log('错误事件:', event.message);
-                        sendError(event.message, event.filename, event.lineno);
-                    });
+                    // 控制台日志处理
+                    const originalConsole = {
+                        log: console.log,
+                        info: console.info,
+                        warn: console.warn,
+                        error: console.error,
+                        debug: console.debug
+                    };
                     
-                    console.log('错误处理器安装完成');
+                    ['log', 'info', 'warn', 'error', 'debug'].forEach(function(level) {
+                        console[level] = function() {
+                            const args = Array.from(arguments).map(stringifyArg).join(' ');
+                            window.webkit.messageHandlers.consoleLog.postMessage({
+                                level: level,
+                                message: args
+                            });
+                            originalConsole[level].apply(console, arguments);
+                        };
+                    });
                 })();
             """
             
@@ -355,6 +389,7 @@ public struct MagicWebView: View {
             
             userContentController.addUserScript(userScript)
             userContentController.add(context.coordinator, name: "jsError")
+            userContentController.add(context.coordinator, name: "consoleLog")
             configuration.userContentController = userContentController
             
             let webView = WKWebView(frame: .zero, configuration: configuration)
@@ -387,30 +422,11 @@ public struct MagicWebView: View {
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
             logger.info("网页加载完成: \(url.absoluteString)")
             onLoadComplete?(nil)
-            
-            // 注入测试脚本
-            let testScript = """
-                console.log('开始执行错误检测');
-                try {
-                    throw new Error('测试错误');
-                } catch (e) {
-                    console.log('捕获到测试错误:', e);
-                }
-            """
-            
-            webView.evaluateJavaScript(testScript) { _, error in
-                if let error = error {
-                    self.logger.error("测试脚本执行失败: \(error.localizedDescription)")
-                } else {
-                    self.logger.debug("测试脚本执行成功")
-                }
-            }
         }
-
+        
         func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-            logger.debug("收到 WebView 消息: \(message.name)")
-            
-            if message.name == "jsError" {
+            switch message.name {
+            case "jsError":
                 if let body = message.body as? [String: Any],
                    let errorMessage = body["message"] as? String,
                    let lineNumber = body["lineNumber"] as? Int,
@@ -422,10 +438,29 @@ public struct MagicWebView: View {
                     
                     onJavaScriptError?(errorMessage, lineNumber, sourceURL)
                 }
+            case "consoleLog":
+                if let body = message.body as? [String: Any],
+                   let level = body["level"] as? String,
+                   let logMessage = body["message"] as? String {
+                    switch level {
+                    case "log":
+                        logger.info("💻 Console: \(logMessage)")
+                    case "info":
+                        logger.info("ℹ️ Console: \(logMessage)")
+                    case "warn":
+                        logger.warning("⚠️ Console: \(logMessage)")
+                    case "error":
+                        logger.error("❌ Console: \(logMessage)")
+                    case "debug":
+                        logger.debug("🔍 Console: \(logMessage)")
+                    default:
+                        logger.info("💻 Console: \(logMessage)")
+                    }
+                }
+            default:
+                logger.debug("收到未知消息: \(message.name)")
             }
         }
-
-        // 其他现有的导航代理方法...
     }
 #endif
 
