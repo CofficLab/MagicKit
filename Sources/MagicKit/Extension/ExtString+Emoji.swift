@@ -14,6 +14,12 @@ extension String {
     private func generateContextEmoji() -> String {
         let lowercased = self.lowercased()
 
+        // 显示和可见性相关
+        if lowercased.contains("appear") || lowercased.contains("show") || lowercased.contains("visible") ||
+            lowercased.contains("display") || lowercased.contains("显示") || lowercased.contains("出现") {
+            return "👀"
+        }
+
         // 跳过相关
         if lowercased.contains("skip") || lowercased.contains("ignore") || lowercased.contains("bypass") ||
             lowercased.contains("跳过") || lowercased.contains("忽略") || lowercased.contains("略过") {

@@ -4,8 +4,6 @@ import WebKit
 
 /// 负责渲染 Web 内容，与 JS 交互等
 public class WebContent: WKWebView {
-    let emoji = "🛜"
-
     // MARK: 执行JS代码
 
     @discardableResult

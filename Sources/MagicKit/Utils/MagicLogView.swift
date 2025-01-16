@@ -8,6 +8,7 @@ public struct MagicLogView: View {
     @State private var copiedLogId: UUID?
     @State private var showToast = false
     @State private var toastMessage = ""
+    @State private var selectedCaller: String?
 
     public init(
         title: String = "Logs",
@@ -37,8 +38,36 @@ public struct MagicLogView: View {
                 Text(title)
                     .font(.headline)
                     .foregroundStyle(.secondary)
+                
+                Text("(\(logger.app))")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
 
                 Spacer()
+
+                Menu {
+                    Button("全部") {
+                        selectedCaller = nil
+                    }
+                    
+                    Divider()
+                    
+                    ForEach(Array(Set(logger.logs.map(\.caller))).sorted(), id: \.self) { caller in
+                        Button(caller) {
+                            selectedCaller = caller
+                        }
+                    }
+                } label: {
+                    HStack {
+                        Image(systemName: "line.3.horizontal.decrease.circle")
+                        if let selectedCaller {
+                            Text(selectedCaller)
+                                .lineLimit(1)
+                        }
+                    }
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.small)
 
                 MagicButton(
                     icon: "doc.on.doc",
@@ -70,14 +99,25 @@ public struct MagicLogView: View {
                 }
             }
 
-            Table(logger.logs.reversed()) {
+            Table(logger.logs.filter { log in
+                selectedCaller == nil || log.caller == selectedCaller
+            }.reversed()) {
                 TableColumn("Time") { log in
                     Text(log.timestamp.logTime)
                         .font(.caption.monospaced())
                         .foregroundStyle(.secondary)
                 }
                 .width(50)
-
+                
+                TableColumn("Line") { log in
+                    if let line = log.line {
+                        Text("\(line)")
+                            .font(.caption.monospaced())
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .width(50)
+                
                 TableColumn("Caller") { log in
                     Text(log.caller)
                         .font(.caption.monospaced())
@@ -86,12 +126,11 @@ public struct MagicLogView: View {
                 .width(100)
 
                 TableColumn("Message") { log in
-
-
-                        Text(log.message)
-                            .font(.caption)
-                            .foregroundStyle(logColor(for: log.level))
-
+                    Text(log.message)
+                        .font(.caption)
+                        .foregroundStyle(logColor(for: log.level))
+                        .lineLimit(nil)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
 
                 TableColumn("") { log in
@@ -151,7 +190,7 @@ public struct MagicLogView: View {
     private func logColor(for level: MagicLogEntry.Level) -> Color {
         switch level {
         case .info:
-            return .green
+            return .primary
         case .warning:
             return .orange
         case .error:

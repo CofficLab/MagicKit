@@ -2,17 +2,25 @@ import Combine
 import SwiftUI
 
 /// 日志管理器，用于收集和展示日志
-public class MagicLogger: ObservableObject {
+public class MagicLogger: ObservableObject, @unchecked Sendable {
     /// 单例模式
     public static let shared = MagicLogger()
 
     /// 存储的日志条目
     @Published private(set) var logs: [MagicLogEntry] = []
 
+    /// 应用名称
+    @Published public var app: String
+
     /// 最大日志数量
     private let maxLogCount = 1000
 
-    public init() {}
+    /// 用于同步访问的锁
+    private let lock = NSLock()
+
+    public init(app: String = "Default") {
+        self.app = app
+    }
 
     // MARK: - Static Methods
 
@@ -21,8 +29,8 @@ public class MagicLogger: ObservableObject {
     ///   - message: 日志消息
     ///   - level: 日志级别
     ///   - caller: 日志发生的位置
-    public static func log(_ message: String, level: MagicLogEntry.Level, caller: String = "") {
-        shared.log(message, level: level, caller: caller)
+    public static func log(_ message: String, level: MagicLogEntry.Level, caller: String = "", line: Int? = nil) {
+        shared.log(message, level: level, caller: caller, line: line)
     }
 
     // ... existing static methods ...
@@ -34,40 +42,40 @@ public class MagicLogger: ObservableObject {
     ///   - message: 日志消息
     ///   - level: 日志级别
     ///   - caller: 日志发生的位置
-    public func log(_ message: String, level: MagicLogEntry.Level, caller: String = "") {
-        addLog(.init(message: message, level: level, caller: caller))
+    public func log(_ message: String, level: MagicLogEntry.Level, caller: String = "", line: Int? = nil) {
+        addLog(.init(message: message, level: level, caller: caller, line: line))
     }
 
     /// 添加一条信息日志
     /// - Parameters:
     ///   - message: 日志消息
     ///   - caller: 日志发生的位置
-    public static func info(_ message: String, caller: String = "") {
-        shared.info(message, caller: caller)
+    public static func info(_ message: String, caller: String = "", line: Int? = nil) {
+        shared.info(message, caller: caller, line: line)
     }
 
     /// 添加一条警告日志
     /// - Parameters:
     ///   - message: 日志消息
     ///   - caller: 日志发生的位置
-    public static func warning(_ message: String, caller: String = "") {
-        shared.warning(message, caller: caller)
+    public static func warning(_ message: String, caller: String = "", line: Int? = nil) {
+        shared.warning(message, caller: caller, line: line)
     }
 
     /// 添加一条错误日志
     /// - Parameters:
     ///   - message: 日志消息
     ///   - caller: 日志发生的位置
-    public static func error(_ message: String, caller: String = "") {
-        shared.error(message, caller: caller)
+    public static func error(_ message: String, caller: String = "", line: Int? = nil) {
+        shared.error(message, caller: caller, line: line)
     }
 
     /// 添加一条调试日志
     /// - Parameters:
     ///   - message: 日志消息
     ///   - caller: 日志发生的位置
-    public static func debug(_ message: String, caller: String = "") {
-        shared.debug(message, caller: caller)
+    public static func debug(_ message: String, caller: String = "", line: Int? = nil) {
+        shared.debug(message, caller: caller, line: line)
     }
 
     /// 清空所有日志
@@ -117,32 +125,32 @@ public class MagicLogger: ObservableObject {
     /// - Parameters:
     ///   - message: 日志消息
     ///   - caller: 日志发生的位置
-    public func info(_ message: String, caller: String = "") {
-        addLog(.init(message: message, level: .info, caller: caller))
+    public func info(_ message: String, caller: String = "", line: Int? = nil) {
+        addLog(.init(message: message, level: .info, caller: caller, line: line))
     }
 
     /// 添加一条警告日志
     /// - Parameters:
     ///   - message: 日志消息
     ///   - caller: 日志发生的位置
-    public func warning(_ message: String, caller: String = "") {
-        addLog(.init(message: message, level: .warning, caller: caller))
+    public func warning(_ message: String, caller: String = "", line: Int? = nil) {
+        addLog(.init(message: message, level: .warning, caller: caller, line: line))
     }
 
     /// 添加一条错误日志
     /// - Parameters:
     ///   - message: 日志消息
     ///   - caller: 日志发生的位置
-    public func error(_ message: String, caller: String = "") {
-        addLog(.init(message: message, level: .error, caller: caller))
+    public func error(_ message: String, caller: String = "", line: Int? = nil) {
+        addLog(.init(message: message, level: .error, caller: caller, line: line))
     }
 
     /// 添加一条调试日志
     /// - Parameters:
     ///   - message: 日志消息
     ///   - caller: 日志发生的位置
-    public func debug(_ message: String, caller: String = "") {
-        addLog(.init(message: message, level: .debug, caller: caller))
+    public func debug(_ message: String, caller: String = "", line: Int? = nil) {
+        addLog(.init(message: message, level: .debug, caller: caller, line: line))
     }
 
     /// 清空所有日志
@@ -197,6 +205,9 @@ public class MagicLogger: ObservableObject {
     // MARK: - Private Methods
 
     private func addLog(_ entry: MagicLogEntry) {
+        lock.lock()
+        defer { lock.unlock() }
+        
         DispatchQueue.main.async {
             self.logs.append(entry)
             // 限制日志数量

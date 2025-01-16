@@ -7,11 +7,19 @@ public struct MagicLogEntry: Identifiable {
     public let level: Level
     public let timestamp: Date
     public let caller: String
+    public let line: Int?
     
-    public init(message: String, level: Level, caller: String = "", timestamp: Date = Date()) {
+    public init(
+        message: String, 
+        level: Level, 
+        caller: String = "", 
+        line: Int? = nil,
+        timestamp: Date = Date()
+    ) {
         self.message = Thread.currentQosDescription + " | " + message.withContextEmoji
         self.level = level
         self.caller = caller
+        self.line = line
         self.timestamp = timestamp
     }
     
