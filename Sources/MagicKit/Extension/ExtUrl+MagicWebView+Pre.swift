@@ -12,9 +12,9 @@ public struct MagicWebViewDemo: View {
                     Group {
                         let webView = URL(string: "https://www.apple.com")!.makeWebView { error in
                             if let error = error {
-                                MagicLogger.shared.error("Apple.com加载失败: \(error.localizedDescription)")
+                                MagicLogger.error("Apple.com加载失败: \(error.localizedDescription)")
                             } else {
-                                MagicLogger.shared.info("Apple.com加载完成")
+                                MagicLogger.info("Apple.com加载完成")
                             }
                         }
 
@@ -98,6 +98,53 @@ public struct MagicWebViewDemo: View {
             }
             .tabItem {
                 Label("多WebView", systemImage: "square.grid.2x2")
+            }
+
+            // 5. JavaScript错误演示
+            NavigationStack {
+                VStack {
+                    Group {
+                        Text("JavaScript错误演示").font(.headline)
+                        
+                        // 包含JS错误的HTML
+                        let htmlWithError = """
+                            <html>
+                            <head>
+                                <meta charset="utf-8">
+                            </head>
+                            <body>
+                                <h1>JavaScript错误演示</h1>
+                                <script>
+                                    // 立即执行一个错误
+                                    undefinedFunction();  // 这会立即触发一个错误
+                                    
+                                    // 语法错误
+                                    const obj = {
+                                        name: "test",,  // 多余的逗号会导致语法错误
+                                    };
+                                </script>
+                            </body>
+                            </html>
+                            """
+                        
+                        let url = URL(string: "data:text/html;base64," + Data(htmlWithError.utf8).base64EncodedString())!
+                        
+                        url.makeWebView(
+                            onJavaScriptError: { message, line, source in
+                                print("检测到 JS 错误！") // 添加调试输出
+                                MagicLogger.shared.error("JavaScript错误检测到：")
+                                MagicLogger.shared.error("- 消息: \(message)")
+                                MagicLogger.shared.error("- 行号: \(line)")
+                                MagicLogger.shared.error("- 来源: \(source)")
+                            }
+                        )
+                        .showLogView(true)
+                    }
+                }
+                .navigationTitle("JS错误")
+            }
+            .tabItem {
+                Label("JS错误", systemImage: "exclamationmark.bubble")
             }
         }
     }

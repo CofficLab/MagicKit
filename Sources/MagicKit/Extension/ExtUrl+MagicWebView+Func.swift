@@ -4,20 +4,23 @@ public extension URL {
     /// 创建用于展示该URL的WebView
     /// - Parameters:
     ///   - onLoadComplete: 网页加载完成时的回调
+    ///   - onJavaScriptError: JS错误时的回调
     /// - Returns: 包含该URL内容的WebView
     func makeWebView(
-        onLoadComplete: ((Error?) -> Void)? = nil
+        onLoadComplete: ((Error?) -> Void)? = nil,
+        onJavaScriptError: ((String, Int, String) -> Void)? = nil
     ) -> MagicWebView {
         MagicWebView(
             url: self,
             showLogView: true,
-            onLoadComplete: onLoadComplete
+            onLoadComplete: onLoadComplete,
+            onJavaScriptError: onJavaScriptError
         )
     }
     
     /// 判断URL是否可以在WebView中展示
     var canOpenInWebView: Bool {
-        let webSchemes = ["http", "https"]
+        let webSchemes = ["http", "https", "data"]
         return scheme.map { webSchemes.contains($0.lowercased()) } ?? false
     }
 }
