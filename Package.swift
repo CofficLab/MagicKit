@@ -17,9 +17,6 @@ let package = Package(
             name: "MagicPlayMan",
             targets: ["MagicPlayMan"]),
         .library(
-            name: "MagicWeb",
-            targets: ["MagicWeb"]),
-        .library(
             name: "MagicSync",
             targets: ["MagicSync"]),
         .library(
@@ -40,10 +37,6 @@ let package = Package(
         ),
         .target(
             name: "MagicPlayMan",
-            dependencies: ["MagicKit"]
-        ),
-        .target(
-            name: "MagicWeb",
             dependencies: ["MagicKit"]
         ),
         .target(
