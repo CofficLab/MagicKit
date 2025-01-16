@@ -146,6 +146,25 @@ public struct MagicWebViewDemo: View {
             .tabItem {
                 Label("JS错误", systemImage: "exclamationmark.bubble")
             }
+            
+            // 6. URL跳转演示
+            NavigationStack {
+                VStack {
+                    Group {
+                        Text("URL跳转演示").font(.headline)
+                        
+                        let webView = URL(string: "https://www.apple.com")!.makeWebView()
+                        let newWebView = webView.goto(URL(string: "https://www.example.com")!)
+                        
+                        newWebView
+                            .showLogView(true)
+                    }
+                }
+                .navigationTitle("URL跳转")
+            }
+            .tabItem {
+                Label("URL跳转", systemImage: "arrow.right.circle")
+            }
         }
     }
 }

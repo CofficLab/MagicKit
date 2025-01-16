@@ -11,6 +11,17 @@ public extension MagicWebView {
             onLoadComplete: onLoadComplete
         )
     }
+    
+    /// 跳转到新的URL
+    /// - Parameter url: 目标URL
+    /// - Returns: 修改后的视图
+    func goto(_ url: URL) -> MagicWebView {
+        MagicWebView(
+            url: url,
+            showLogView: true,
+            onLoadComplete: onLoadComplete
+        )
+    }
 }
 
 #Preview("WebView Demo") {
