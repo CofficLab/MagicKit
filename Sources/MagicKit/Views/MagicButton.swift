@@ -238,9 +238,9 @@ public struct MagicButton: View {
     
     @State private var isHovering = false
     @State private var containerSize: CGFloat = 0
-    @Environment(\.colorScheme) private var colorScheme
     @State private var showingDisabledPopover = false
-    @Binding private var showingPopover: Bool
+    @State private var showingPopover = false
+    @Environment(\.colorScheme) private var colorScheme
     
     // MARK: - Initialization
     
@@ -256,7 +256,6 @@ public struct MagicButton: View {
     ///   - popoverContent: 弹出内容（可选）
     ///   - action: 点击动作
     ///   - customBackgroundColor: 自定义背景色
-    ///   - showingPopover: 弹出内容是否默认显示
     public init(
         icon: String? = nil,
         title: String? = nil,
@@ -267,8 +266,7 @@ public struct MagicButton: View {
         disabledReason: String? = nil,
         popoverContent: AnyView? = nil,
         action: (() -> Void)? = nil,
-        customBackgroundColor: Color? = nil,
-        showingPopover: Binding<Bool> = .constant(false)
+        customBackgroundColor: Color? = nil
     ) {
         self.icon = icon
         self.title = title
@@ -280,7 +278,6 @@ public struct MagicButton: View {
         self.popoverContent = popoverContent
         self.action = action
         self.customBackgroundColor = customBackgroundColor
-        self._showingPopover = showingPopover
     }
     
     public var body: some View {
@@ -317,10 +314,10 @@ public struct MagicButton: View {
             .onTapGesture {
                 if let reason = disabledReason {
                     showingDisabledPopover.toggle()
-                } else if popoverContent != nil {
-                    showingPopover.toggle()
-                    action?()
                 } else {
+                    if popoverContent != nil {
+                        showingPopover.toggle()
+                    }
                     action?()
                 }
             }

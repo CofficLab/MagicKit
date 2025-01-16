@@ -679,7 +679,6 @@ private struct InteractiveButtonsPreview: View {
                             Text("Default Shown Popover")
                                 .padding()
                         }
-                        .magicPopoverPresented(true)
                         .magicDebugBorder()
                 }
             }

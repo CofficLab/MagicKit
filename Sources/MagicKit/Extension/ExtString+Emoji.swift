@@ -43,6 +43,12 @@ extension String {
             return "✅"
         }
 
+        // 通知相关
+        if lowercased.contains("notification") || lowercased.contains("notify") || lowercased.contains("notice") ||
+            lowercased.contains("通知") || lowercased.contains("提示") || lowercased.contains("消息") {
+            return "🔔"
+        }
+
         // 网络相关
         if lowercased.contains("network") || lowercased.contains("http") || lowercased.contains("request") ||
             lowercased.contains("网络") || lowercased.contains("请求") || lowercased.contains("响应") {
