@@ -78,6 +78,13 @@ public struct MagicLogView: View {
                 }
                 .width(50)
 
+                TableColumn("Caller") { log in
+                    Text(log.caller)
+                        .font(.caption.monospaced())
+                        .foregroundStyle(.secondary)
+                }
+                .width(100)
+
                 TableColumn("Message") { log in
                     HStack {
                         Circle()
@@ -86,7 +93,7 @@ public struct MagicLogView: View {
 
                         Text(log.message)
                             .font(.caption)
-                            .foregroundStyle(log.level == .error ? .red : .primary)
+                            .foregroundStyle(logColor(for: log.level))
                     }
                 }
 
@@ -141,7 +148,7 @@ public struct MagicLogView: View {
     }
 
     private func formatLogEntry(_ log: MagicLogEntry) -> String {
-        "\(log.timestamp.logTime) [\(log.level)] \(log.message)"
+        "\(log.timestamp.logTime) [\(log.level)] [\(log.caller)] \(log.message)"
     }
 
     private func logColor(for level: MagicLogEntry.Level) -> Color {
