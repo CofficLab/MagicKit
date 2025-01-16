@@ -86,15 +86,12 @@ public struct MagicLogView: View {
                 .width(100)
 
                 TableColumn("Message") { log in
-                    HStack {
-                        Circle()
-                            .fill(logColor(for: log.level))
-                            .frame(width: 8, height: 8)
+
 
                         Text(log.message)
                             .font(.caption)
                             .foregroundStyle(logColor(for: log.level))
-                    }
+
                 }
 
                 TableColumn("") { log in
