@@ -9,6 +9,8 @@ internal struct WebViewWrapper: UIViewRepresentable {
     let onJavaScriptError: ((String, Int, String) -> Void)?
     let onCustomMessage: ((Any) -> Void)?
 
+    @Environment(WebViewStore.self) private var webViewStore
+
     func makeCoordinator() -> WebViewCoordinator {
         logger.debug("创建 WebView Coordinator")
         return WebViewCoordinator(
@@ -36,6 +38,7 @@ internal struct WebViewWrapper: UIViewRepresentable {
         logger.debug("WebView 配置完成，准备加载内容")
         webView.load(URLRequest(url: url))
         
+        webViewStore.webView = webView
         return webView
     }
 

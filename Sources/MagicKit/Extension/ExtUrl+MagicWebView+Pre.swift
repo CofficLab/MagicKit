@@ -91,57 +91,6 @@ public struct MagicWebViewDemo: View {
                 Label("URL跳转", systemImage: "arrow.right.circle")
             }
 
-            // 控制台日志演示
-            VStack {
-                // 包含console.log的HTML
-                let htmlWithConsoleLog = """
-                <html>
-                <head>
-                    <meta charset="utf-8">
-                </head>
-                <body>
-                    <h1>控制台日志演示</h1>
-                    <script>
-                        // 输出不同类型的日志
-                        console.log('普通日志');
-                        console.info('信息日志');
-                        console.warn('警告日志');
-                        console.error('错误日志');
-
-                        // 定时输出日志
-                        setInterval(() => {
-                            console.log('每3秒输出一次：' + new Date().toLocaleTimeString());
-                        }, 3000);
-
-                        // 输出复杂对象
-                        console.log('对象:', { 
-                            name: 'test',
-                            value: 123,
-                            nested: {
-                                array: [1, 2, 3]
-                            }
-                        });
-                    </script>
-                </body>
-                </html>
-                """
-
-                let url = URL(string: "data:text/html;base64," + Data(htmlWithConsoleLog.utf8).base64EncodedString())!
-
-                url.makeWebView(
-                    onJavaScriptError: { message, line, source in
-                        MagicLogger.shared.error("JavaScript错误：")
-                        MagicLogger.shared.error("- 消息: \(message)")
-                        MagicLogger.shared.error("- 行号: \(line)")
-                        MagicLogger.shared.error("- 来源: \(source)")
-                    }
-                )
-                .showLogView(true)
-            }
-            .tabItem {
-                Label("控制台日志", systemImage: "terminal")
-            }
-
             // JavaScript通信演示
             VStack {
                 // 包含JavaScript通信示例的HTML
@@ -252,6 +201,84 @@ public struct MagicWebViewDemo: View {
             .tabItem {
                 Label("JS通信", systemImage: "message")
             }
+
+            // JavaScript执行演示
+            VStack {
+                // 包含可执行函数的HTML
+                let htmlWithFunctions = """
+                <html>
+                <head>
+                    <meta charset="utf-8">
+                    <style>
+                        body { font-family: -apple-system, sans-serif; padding: 20px; }
+                        .result { 
+                            margin: 10px 0;
+                            padding: 10px;
+                            background: #f0f0f0;
+                            border-radius: 8px;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <h2>JavaScript 函数执行演示</h2>
+                    <div id="result" class="result">结果将显示在这里</div>
+                    
+                    <script>
+                        // 示例函数1：简单计算
+                        function calculate(a, b) {
+                            const result = a + b;
+                            document.getElementById('result').textContent = `计算结果: ${a} + ${b} = ${result}`;
+                            return result;
+                        }
+                        
+                        // 示例函数2：修改DOM
+                        function updateDOM(text) {
+                            document.getElementById('result').textContent = text;
+                            return '更新成功';
+                        }
+                        
+                        // 示例函数3：返回复杂数据
+                        function getComplexData() {
+                            return {
+                                timestamp: new Date().toISOString(),
+                                numbers: [1, 2, 3],
+                                text: "这是一些数据"
+                            };
+                        }
+                    </script>
+                </body>
+                </html>
+                """
+
+                let url = URL(string: "data:text/html;base64," + Data(htmlWithFunctions.utf8).base64EncodedString())!
+                
+                VStack(spacing: 10) {
+                    let webView = url.makeWebView()
+                        .showLogView(true)
+                    
+                    webView
+                    
+                    HStack(spacing: 10) {
+                        Button("执行计算") {
+                            webView.evaluateJavaScript("calculate(10, 20)")
+                        }
+                        
+                        Button("更新DOM") {
+                            webView.evaluateJavaScript("""
+                                updateDOM('DOM已更新：' + new Date().toLocaleTimeString())
+                            """)
+                        }
+                        
+                        Button("获取数据") {
+                            webView.evaluateJavaScript("getComplexData()")
+                        }
+                    }
+                    .padding()
+                }
+            }
+            .tabItem {
+                Label("执行JS", systemImage: "command")
+            }
         }
     }
 }
@@ -261,4 +288,5 @@ public struct MagicWebViewDemo: View {
 #Preview("WebView Demo") {
     MagicWebViewDemo()
         .frame(height: 800)
+        .frame(width: 1000)
 }

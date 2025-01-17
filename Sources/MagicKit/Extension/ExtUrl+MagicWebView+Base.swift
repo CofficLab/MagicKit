@@ -9,6 +9,9 @@ public struct MagicWebView: View {
     private var logger = MagicLogger.shared
     private let showLogView: Bool
 
+    // 添加一个引用来存储 WKWebView
+    @State private var webViewStore: WebViewStore = WebViewStore()
+
     public init(
         url: URL,
         showLogView: Bool = false,
@@ -37,10 +40,15 @@ public struct MagicWebView: View {
                     )
                     .onAppear {
                         logger.debug("WebView 视图显示")
+                        // 在视图出现时获取 WKWebView 实例
+                        if let webView = webViewStore.webView {
+                            logger.debug("WebView 实例已就绪")
+                        }
                     }
                     .onDisappear {
                         logger.debug("WebView 视图消失")
                     }
+                    .environment(webViewStore)
                 #elseif os(macOS)
                     MacWebViewWrapper(
                         url: url, 
@@ -51,10 +59,15 @@ public struct MagicWebView: View {
                     )
                     .onAppear {
                         logger.debug("WebView 视图显示")
+                        // 在视图出现时获取 WKWebView 实例
+                        if let webView = webViewStore.webView {
+                            logger.debug("WebView 实例已就绪")
+                        }
                     }
                     .onDisappear {
                         logger.debug("WebView 视图消失")
                     }
+                    .environment(webViewStore)
                 #else
                     Text("WebView仅支持iOS和macOS平台")
                 #endif
@@ -74,6 +87,27 @@ public struct MagicWebView: View {
                     .frame(maxHeight: .infinity)
             }
         }
+    }
+
+    /// 执行 JavaScript 代码并返回结果
+    /// - Parameter script: JavaScript 代码
+    /// - Returns: 返回一个包含执行结果的 MagicWebView
+    public func evaluateJavaScript(_ script: String) -> Self {
+        #if os(iOS) || os(macOS)
+        if let webView = webViewStore.webView {
+            DispatchQueue.main.async {
+                logger.debug("执行 JavaScript: \(script)")
+                webView.evaluateJavaScript(script) { result, error in
+                    if let error = error {
+                        logger.error("JavaScript 执行失败: \(error.localizedDescription)")
+                    } else if let result = result {
+                        logger.info("JavaScript 执行结果: \(result)")
+                    }
+                }
+            }
+        }
+        #endif
+        return self
     }
 }
 
@@ -254,4 +288,9 @@ internal func configureWebView(coordinator: WebViewCoordinator, logger: MagicLog
     
     logger.debug("WebView 配置完成")
     return configuration
+} 
+
+// 修改 WebViewStore 类来遵循 Observable 协议
+@Observable class WebViewStore {
+    weak var webView: WKWebView?
 } 
