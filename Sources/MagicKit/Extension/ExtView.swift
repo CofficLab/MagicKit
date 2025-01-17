@@ -58,6 +58,17 @@ struct HoverModifier: ViewModifier {
     }
 }
 
+// MARK: - View Extension
+extension View {
+    func onNotification(_ name: Notification.Name, perform action: @escaping (Notification) -> Void) -> some View {
+        self.onReceive(NotificationCenter.default.publisher(for: name), perform: action)
+    }
+    
+    func onNotification(_ name: Notification.Name, _ action: @escaping (Notification) -> Void) -> some View {
+        self.onReceive(NotificationCenter.default.publisher(for: name), perform: action)
+    }
+}
+
 #Preview {
     VStack(spacing: 20) {
         // 默认样式
