@@ -3,6 +3,7 @@ import SwiftUI
 /// WebView功能演示视图
 public struct MagicWebViewDemo: View {
     @State private var receivedMessages: [String] = []
+    @State private var showLog = true  // 添加状态变量控制日志显示
 
     public init() {}
 
@@ -278,6 +279,31 @@ public struct MagicWebViewDemo: View {
             }
             .tabItem {
                 Label("执行JS", systemImage: "command")
+            }
+
+            // 日志显示控制演示
+            VStack {
+                Toggle("显示日志", isOn: $showLog)
+                    .padding()
+                
+                let webView = URL(string: "https://www.apple.com")!.makeWebView { error in
+                    if let error = error {
+                        MagicLogger.shared.error("加载失败: \(error.localizedDescription)")
+                    } else {
+                        MagicLogger.shared.info("加载完成")
+                        // 输出一些测试日志
+                        MagicLogger.shared.debug("这是一条调试日志")
+                        MagicLogger.shared.info("这是一条信息日志")
+                        MagicLogger.shared.warning("这是一条警告日志")
+                        MagicLogger.shared.error("这是一条错误日志")
+                    }
+                }
+                
+                webView
+                    .showLogView(showLog)
+            }
+            .tabItem {
+                Label("日志控制", systemImage: "text.bubble")
             }
         }
     }
