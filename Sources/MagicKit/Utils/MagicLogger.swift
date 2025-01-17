@@ -29,7 +29,7 @@ public class MagicLogger: ObservableObject, @unchecked Sendable {
     ///   - message: 日志消息
     ///   - level: 日志级别
     ///   - caller: 日志发生的位置
-    public static func log(_ message: String, level: MagicLogEntry.Level, caller: String = #function, line: Int = #line) {
+    public static func log(_ message: String, level: MagicLogEntry.Level, caller: String = #fileID, line: Int = #line) {
         shared.log(message, level: level, caller: caller, line: line)
     }
 
@@ -42,7 +42,7 @@ public class MagicLogger: ObservableObject, @unchecked Sendable {
     ///   - message: 日志消息
     ///   - level: 日志级别
     ///   - caller: 日志发生的位置
-    public func log(_ message: String, level: MagicLogEntry.Level, caller: String = #function, line: Int = #line) {
+    public func log(_ message: String, level: MagicLogEntry.Level, caller: String = #fileID, line: Int = #line) {
         addLog(.init(message: message, level: level, caller: caller, line: line))
     }
 
@@ -50,7 +50,7 @@ public class MagicLogger: ObservableObject, @unchecked Sendable {
     /// - Parameters:
     ///   - message: 日志消息
     ///   - caller: 日志发生的位置
-    public static func info(_ message: String, caller: String = #function, line: Int = #line) {
+    public static func info(_ message: String, caller: String = #fileID, line: Int = #line) {
         shared.info(message, caller: caller, line: line)
     }
 
@@ -58,7 +58,7 @@ public class MagicLogger: ObservableObject, @unchecked Sendable {
     /// - Parameters:
     ///   - message: 日志消息
     ///   - caller: 日志发生的位置
-    public static func warning(_ message: String, caller: String = #function, line: Int = #line) {
+    public static func warning(_ message: String, caller: String = #fileID, line: Int = #line) {
         shared.warning(message, caller: caller, line: line)
     }
 
@@ -66,7 +66,7 @@ public class MagicLogger: ObservableObject, @unchecked Sendable {
     /// - Parameters:
     ///   - message: 日志消息
     ///   - caller: 日志发生的位置
-    public static func error(_ message: String, caller: String = #function, line: Int = #line) {
+    public static func error(_ message: String, caller: String = #fileID, line: Int = #line) {
         shared.error(message, caller: caller, line: line)
     }
 
@@ -74,7 +74,7 @@ public class MagicLogger: ObservableObject, @unchecked Sendable {
     /// - Parameters:
     ///   - message: 日志消息
     ///   - caller: 日志发生的位置
-    public static func debug(_ message: String, caller: String = #function, line: Int = #line) {
+    public static func debug(_ message: String, caller: String = #fileID, line: Int = #line) {
         shared.debug(message, caller: caller, line: line)
     }
 
@@ -125,7 +125,7 @@ public class MagicLogger: ObservableObject, @unchecked Sendable {
     /// - Parameters:
     ///   - message: 日志消息
     ///   - caller: 日志发生的位置
-    public func info(_ message: String, caller: String = #function, line: Int = #line) {
+    public func info(_ message: String, caller: String = #fileID, line: Int = #line) {
         addLog(.init(message: message, level: .info, caller: caller, line: line))
     }
 
@@ -133,7 +133,7 @@ public class MagicLogger: ObservableObject, @unchecked Sendable {
     /// - Parameters:
     ///   - message: 日志消息
     ///   - caller: 日志发生的位置
-    public func warning(_ message: String, caller: String = #function, line: Int = #line) {
+    public func warning(_ message: String, caller: String = #fileID, line: Int = #line) {
         addLog(.init(message: message, level: .warning, caller: caller, line: line))
     }
 
@@ -141,7 +141,7 @@ public class MagicLogger: ObservableObject, @unchecked Sendable {
     /// - Parameters:
     ///   - message: 日志消息
     ///   - caller: 日志发生的位置
-    public func error(_ message: String, caller: String = #function, line: Int = #line) {
+    public func error(_ message: String, caller: String = #fileID, line: Int = #line) {
         addLog(.init(message: message, level: .error, caller: caller, line: line))
     }
 
@@ -149,7 +149,7 @@ public class MagicLogger: ObservableObject, @unchecked Sendable {
     /// - Parameters:
     ///   - message: 日志消息
     ///   - caller: 日志发生的位置
-    public func debug(_ message: String, caller: String = #function, line: Int = #line) {
+    public func debug(_ message: String, caller: String = #fileID, line: Int = #line) {
         addLog(.init(message: message, level: .debug, caller: caller, line: line))
     }
 
