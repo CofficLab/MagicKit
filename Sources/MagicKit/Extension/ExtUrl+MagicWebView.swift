@@ -294,17 +294,17 @@ public struct MagicWebView: View {
             
             switch level {
             case "log":
-                logger.info("📱 Console: \(logMessage)")
+                logger.info("Console: \(logMessage)")
             case "info":
-                logger.info("ℹ️ Console: \(logMessage)")
+                logger.info("Console: \(logMessage)")
             case "warn":
-                logger.warning("⚠️ Console: \(logMessage)")
+                logger.warning("Console: \(logMessage)" )
             case "error":
-                logger.error("❌ Console: \(logMessage)")
+                logger.error("Console: \(logMessage)")
             case "debug":
-                logger.debug("🔍 Console: \(logMessage)")
+                logger.debug("Console: \(logMessage)")
             default:
-                logger.info("📱 Console: \(logMessage)")
+                logger.info("Console: \(logMessage)"    )
             }
         }
     }
@@ -444,17 +444,17 @@ public struct MagicWebView: View {
                    let logMessage = body["message"] as? String {
                     switch level {
                     case "log":
-                        logger.info("💻 Console: \(logMessage)")
+                        logger.info("Console: \(logMessage)")
                     case "info":
-                        logger.info("ℹ️ Console: \(logMessage)")
+                        logger.info("Console: \(logMessage)")
                     case "warn":
-                        logger.warning("⚠️ Console: \(logMessage)")
+                        logger.warning("Console: \(logMessage)")
                     case "error":
-                        logger.error("❌ Console: \(logMessage)")
+                        logger.error("Console: \(logMessage)")
                     case "debug":
-                        logger.debug("🔍 Console: \(logMessage)")
+                        logger.debug("Console: \(logMessage)")
                     default:
-                        logger.info("💻 Console: \(logMessage)")
+                        logger.info("Console: \(logMessage)")
                     }
                 }
             default:

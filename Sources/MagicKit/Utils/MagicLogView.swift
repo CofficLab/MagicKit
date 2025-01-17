@@ -116,7 +116,7 @@ public struct MagicLogView: View {
                             .foregroundStyle(.secondary)
                     }
                 }
-                .width(50)
+                .width(28)
                 
                 TableColumn("Caller") { log in
                     Text(log.caller)
