@@ -8,7 +8,9 @@ public extension MagicWebView {
         MagicWebView(
             url: url,
             showLogView: show,
-            onLoadComplete: onLoadComplete
+            onLoadComplete: onLoadComplete,
+            onJavaScriptError: onJavaScriptError,
+            onCustomMessage: onCustomMessage
         )
     }
     
@@ -19,7 +21,9 @@ public extension MagicWebView {
         MagicWebView(
             url: url,
             showLogView: true,
-            onLoadComplete: onLoadComplete
+            onLoadComplete: onLoadComplete,
+            onJavaScriptError: onJavaScriptError,
+            onCustomMessage: onCustomMessage
         )
     }
     
