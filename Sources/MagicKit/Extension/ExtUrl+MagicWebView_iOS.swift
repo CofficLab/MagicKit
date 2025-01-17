@@ -8,22 +8,28 @@ internal struct WebViewWrapper: UIViewRepresentable {
     let onLoadComplete: ((Error?) -> Void)?
     let onJavaScriptError: ((String, Int, String) -> Void)?
     let onCustomMessage: ((Any) -> Void)?
+    let isVerboseMode: Bool
 
     @Environment(WebViewStore.self) private var webViewStore
 
     func makeCoordinator() -> WebViewCoordinator {
-        logger.debug("创建 WebView Coordinator")
+        if isVerboseMode {
+            logger.debug("创建 WebView Coordinator")
+        }
         return WebViewCoordinator(
             url: url, 
             logger: logger, 
             onLoadComplete: onLoadComplete,
             onJavaScriptError: onJavaScriptError,
-            onCustomMessage: onCustomMessage
+            onCustomMessage: onCustomMessage,
+            isVerboseMode: isVerboseMode
         )
     }
 
     func makeUIView(context: Context) -> WKWebView {
-        logger.info("准备加载网页: \(url.absoluteString)")
+        if isVerboseMode {
+            logger.info("准备加载网页: \(url.absoluteString)")
+        }
         
         let configuration = configureWebView(coordinator: context.coordinator, logger: logger)
         let webView = WKWebView(frame: .zero, configuration: configuration)
@@ -35,7 +41,9 @@ internal struct WebViewWrapper: UIViewRepresentable {
         }
         #endif
         
-        logger.debug("WebView 配置完成，准备加载内容")
+        if isVerboseMode {
+            logger.debug("WebView 配置完成，准备加载内容")
+        }
         webView.load(URLRequest(url: url))
         
         webViewStore.webView = webView
@@ -43,7 +51,9 @@ internal struct WebViewWrapper: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: WKWebView, context: Context) {
-        logger.debug("WebView 更新")
+        if isVerboseMode {
+            logger.debug("WebView 更新")
+        }
     }
 }
 #endif 

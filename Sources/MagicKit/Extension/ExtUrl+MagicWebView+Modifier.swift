@@ -27,12 +27,9 @@ public extension MagicWebView {
     /// - Parameter enabled: 是否启用详细日志
     /// - Returns: 修改后的视图
     func verboseMode(_ enabled: Bool = true) -> MagicWebView {
-        MagicWebView(
-            url: url,
-            showLogView: showLogView,
-            verboseMode: enabled,
-            onLoadComplete: onLoadComplete
-        )
+        var view = self
+        view.isVerboseMode = enabled
+        return view
     }
 }
 

@@ -8,6 +8,7 @@ public struct MagicWebView: View {
     internal let onCustomMessage: ((Any) -> Void)?
     private var logger = MagicLogger.shared
     private let showLogView: Bool
+    internal var isVerboseMode: Bool
 
     // 添加一个引用来存储 WKWebView
     @State private var webViewStore: WebViewStore = WebViewStore()
@@ -15,16 +16,20 @@ public struct MagicWebView: View {
     public init(
         url: URL,
         showLogView: Bool = false,
+        isVerboseMode: Bool = false,
         onLoadComplete: ((Error?) -> Void)? = nil,
         onJavaScriptError: ((String, Int, String) -> Void)? = nil,
         onCustomMessage: ((Any) -> Void)? = nil
     ) {
         self.url = url
         self.showLogView = showLogView
+        self.isVerboseMode = isVerboseMode
         self.onLoadComplete = onLoadComplete
         self.onJavaScriptError = onJavaScriptError
         self.onCustomMessage = onCustomMessage
-        logger.info("创建 WebView: \(url.absoluteString)")
+        if isVerboseMode {
+            logger.info("创建 WebView: \(url.absoluteString)")
+        }
     }
 
     public var body: some View {
@@ -36,17 +41,24 @@ public struct MagicWebView: View {
                         logger: logger, 
                         onLoadComplete: onLoadComplete,
                         onJavaScriptError: onJavaScriptError,
-                        onCustomMessage: onCustomMessage
+                        onCustomMessage: onCustomMessage,
+                        isVerboseMode: isVerboseMode
                     )
                     .onAppear {
-                        logger.debug("WebView 视图显示")
+                        if isVerboseMode {
+                            logger.debug("WebView 视图显示")
+                        }
                         // 在视图出现时获取 WKWebView 实例
                         if let webView = webViewStore.webView {
-                            logger.debug("WebView 实例已就绪")
+                            if isVerboseMode {
+                                logger.debug("WebView 实例已就绪")
+                            }
                         }
                     }
                     .onDisappear {
-                        logger.debug("WebView 视图消失")
+                        if isVerboseMode {
+                            logger.debug("WebView 视图消失")
+                        }
                     }
                     .environment(webViewStore)
                 #elseif os(macOS)
@@ -55,17 +67,24 @@ public struct MagicWebView: View {
                         logger: logger, 
                         onLoadComplete: onLoadComplete,
                         onJavaScriptError: onJavaScriptError,
-                        onCustomMessage: onCustomMessage
+                        onCustomMessage: onCustomMessage,
+                        isVerboseMode: isVerboseMode
                     )
                     .onAppear {
-                        logger.debug("WebView 视图显示")
+                        if isVerboseMode {
+                            logger.debug("WebView 视图显示")
+                        }
                         // 在视图出现时获取 WKWebView 实例
                         if let webView = webViewStore.webView {
-                            logger.debug("WebView 实例已就绪")
+                            if isVerboseMode {
+                                logger.debug("WebView 实例已就绪")
+                            }
                         }
                     }
                     .onDisappear {
-                        logger.debug("WebView 视图消失")
+                        if isVerboseMode {
+                            logger.debug("WebView 视图消失")
+                        }
                     }
                     .environment(webViewStore)
                 #else
@@ -117,33 +136,44 @@ internal class WebViewCoordinator: NSObject, WKNavigationDelegate, WKScriptMessa
     let onLoadComplete: ((Error?) -> Void)?
     let onJavaScriptError: ((String, Int, String) -> Void)?
     let onCustomMessage: ((Any) -> Void)?
+    let isVerboseMode: Bool
     
     init(
         url: URL,
         logger: MagicLogger,
         onLoadComplete: ((Error?) -> Void)?,
         onJavaScriptError: ((String, Int, String) -> Void)?,
-        onCustomMessage: ((Any) -> Void)?
+        onCustomMessage: ((Any) -> Void)?,
+        isVerboseMode: Bool
     ) {
         self.url = url
         self.logger = logger
         self.onLoadComplete = onLoadComplete
         self.onJavaScriptError = onJavaScriptError
         self.onCustomMessage = onCustomMessage
+        self.isVerboseMode = isVerboseMode
         super.init()
-        logger.debug("Coordinator 初始化完成")
+        if isVerboseMode {
+            logger.debug("Coordinator 初始化完成")
+        }
     }
 
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
-        logger.info("开始加载网页: \(url.absoluteString)")
+        if isVerboseMode {
+            logger.info("开始加载网页: \(url.absoluteString)")
+        }
     }
 
     func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {
-        logger.info("网页内容开始传输")
+        if isVerboseMode {
+            logger.info("网页内容开始传输")
+        }
     }
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        logger.info("网页加载完成")
+        if isVerboseMode {
+            logger.info("网页加载完成")
+        }
         onLoadComplete?(nil)
     }
 
@@ -171,22 +201,28 @@ internal class WebViewCoordinator: NSObject, WKNavigationDelegate, WKScriptMessa
             if let body = message.body as? [String: Any],
                let level = body["level"] as? String,
                let logMessage = body["message"] as? String {
-                switch level {
-                case "error":
-                    logger.error("JS Console: \(logMessage)")
-                case "warn":
-                    logger.warning("JS Console: \(logMessage)")
-                case "info":
-                    logger.info("JS Console: \(logMessage)")
-                default:
-                    logger.debug("JS Console: \(logMessage)")
+                if isVerboseMode || level == "error" {
+                    switch level {
+                    case "error":
+                        logger.error("JS Console: \(logMessage)")
+                    case "warn":
+                        logger.warning("JS Console: \(logMessage)")
+                    case "info":
+                        logger.info("JS Console: \(logMessage)")
+                    default:
+                        logger.debug("JS Console: \(logMessage)")
+                    }
                 }
             }
         case "customMessage":
-            logger.debug("收到自定义消息: \(message.body)")
+            if isVerboseMode {
+                logger.debug("收到自定义消息: \(message.body)")
+            }
             onCustomMessage?(message.body)
         default:
-            logger.warning("未知的消息类型: \(message.name)")
+            if isVerboseMode {
+                logger.warning("未知的消息类型: \(message.name)")
+            }
         }
     }
 }
