@@ -60,11 +60,11 @@ struct HoverModifier: ViewModifier {
 
 // MARK: - View Extension
 extension View {
-    func onNotification(_ name: Notification.Name, perform action: @escaping (Notification) -> Void) -> some View {
+    public func onNotification(_ name: Notification.Name, perform action: @escaping (Notification) -> Void) -> some View {
         self.onReceive(NotificationCenter.default.publisher(for: name), perform: action)
     }
     
-    func onNotification(_ name: Notification.Name, _ action: @escaping (Notification) -> Void) -> some View {
+    public func onNotification(_ name: Notification.Name, _ action: @escaping (Notification) -> Void) -> some View {
         self.onReceive(NotificationCenter.default.publisher(for: name), perform: action)
     }
 }
