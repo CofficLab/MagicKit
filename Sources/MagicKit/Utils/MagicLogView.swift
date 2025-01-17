@@ -123,7 +123,7 @@ public struct MagicLogView: View {
                         .font(.caption.monospaced())
                         .foregroundStyle(.secondary)
                 }
-                .width(100)
+                .width(150)
 
                 TableColumn("Message") { log in
                     Text(log.message)
