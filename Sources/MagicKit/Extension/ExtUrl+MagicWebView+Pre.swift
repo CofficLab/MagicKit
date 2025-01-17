@@ -2,169 +2,282 @@ import SwiftUI
 
 /// WebView功能演示视图
 public struct MagicWebViewDemo: View {
+    @State private var receivedMessages: [String] = []
+
     public init() {}
 
     public var body: some View {
         TabView {
             // 基本功能演示
-            NavigationStack {
-                VStack {
-                    Group {
-                        let webView = URL(string: "https://www.apple.com")!.makeWebView { error in
-                            if let error = error {
-                                MagicLogger.error("Apple.com加载失败: \(error.localizedDescription)")
-                            } else {
-                                MagicLogger.info("Apple.com加载完成")
-                            }
-                        }
-
-                        webView
-                            .showLogView(true)
+            VStack {
+                let webView = URL(string: "https://www.apple.com")!.makeWebView { error in
+                    if let error = error {
+                        MagicLogger.error("Apple.com加载失败: \(error.localizedDescription)")
+                    } else {
+                        MagicLogger.info("Apple.com加载完成")
                     }
                 }
+
+                webView
+                    .showLogView(true)
             }
             .tabItem {
                 Label("基本", systemImage: "globe")
             }
 
             // 错误处理演示
-            NavigationStack {
-                VStack {
-                    Group {
-                        let invalidWebView = URL(string: "file:///invalid")!.makeWebView { error in
-                            if let error = error {
-                                MagicLogger.shared.error("无效URL加载失败: \(error.localizedDescription)")
-                            }
-                        }
-
-                        invalidWebView
-                            .showLogView(true)
-                            .frame(height: 200)
+            VStack {
+                let invalidWebView = URL(string: "file:///invalid")!.makeWebView { error in
+                    if let error = error {
+                        MagicLogger.shared.error("无效URL加载失败: \(error.localizedDescription)")
                     }
                 }
+
+                invalidWebView
             }
             .tabItem {
                 Label("错误", systemImage: "exclamationmark.triangle")
             }
 
-            // 多WebView演示
-
             // JavaScript错误演示
-            NavigationStack {
-                VStack {
-                    Group {
-                        // 包含JS错误的HTML
-                        let htmlWithError = """
-                        <html>
-                        <head>
-                            <meta charset="utf-8">
-                        </head>
-                        <body>
-                            <h1>JavaScript错误演示</h1>
-                            <script>
-                                // 立即执行一个错误
-                                undefinedFunction();  // 这会立即触发一个错误
+            VStack {
+                // 包含JS错误的HTML
+                let htmlWithError = """
+                <html>
+                <head>
+                    <meta charset="utf-8">
+                </head>
+                <body>
+                    <h1>JavaScript错误演示</h1>
+                    <script>
+                        // 立即执行一个错误
+                        undefinedFunction();  // 这会立即触发一个错误
 
-                                // 语法错误
-                                const obj = {
-                                    name: "test",,  // 多余的逗号会导致语法错误
-                                };
-                            </script>
-                        </body>
-                        </html>
-                        """
+                        // 语法错误
+                        const obj = {
+                            name: "test",,  // 多余的逗号会导致语法错误
+                        };
+                    </script>
+                </body>
+                </html>
+                """
 
-                        let url = URL(string: "data:text/html;base64," + Data(htmlWithError.utf8).base64EncodedString())!
+                let url = URL(string: "data:text/html;base64," + Data(htmlWithError.utf8).base64EncodedString())!
 
-                        url.makeWebView(
-                            onJavaScriptError: { message, line, source in
-                                print("检测到 JS 错误！") // 添加调试输出
-                                MagicLogger.shared.error("JavaScript错误检测到：")
-                                MagicLogger.shared.error("- 消息: \(message)")
-                                MagicLogger.shared.error("- 行号: \(line)")
-                                MagicLogger.shared.error("- 来源: \(source)")
-                            }
-                        )
-                        .showLogView(true)
+                url.makeWebView(
+                    onJavaScriptError: { message, line, source in
+                        print("检测到 JS 错误！") // 添加调试输出
+                        MagicLogger.shared.error("JavaScript错误检测到：")
+                        MagicLogger.shared.error("- 消息: \(message)")
+                        MagicLogger.shared.error("- 行号: \(line)")
+                        MagicLogger.shared.error("- 来源: \(source)")
                     }
-                }
-                .navigationTitle("JS错误")
+                )
+                .showLogView(true)
             }
             .tabItem {
                 Label("JS错误", systemImage: "exclamationmark.bubble")
             }
 
             // URL跳转演示
-            NavigationStack {
-                VStack {
-                    Group {
-                        let webView = URL(string: "https://www.apple.com")!.makeWebView()
-                        let newWebView = webView.goto(URL(string: "https://www.example.com")!)
+            VStack {
+                let webView = URL(string: "https://www.apple.com")!.makeWebView()
+                let newWebView = webView.goto(URL(string: "https://www.example.com")!)
 
-                        newWebView
-                            .showLogView(true)
-                    }
-                }
-                .navigationTitle("URL跳转")
+                newWebView
+                    .showLogView(true)
             }
             .tabItem {
                 Label("URL跳转", systemImage: "arrow.right.circle")
             }
 
-            // 控制台日志演示
-            NavigationStack {
-                VStack {
-                    Group {
-                        // 包含console.log的HTML
-                        let htmlWithConsoleLog = """
-                        <html>
-                        <head>
-                            <meta charset="utf-8">
-                        </head>
-                        <body>
-                            <h1>控制台日志演示</h1>
-                            <script>
-                                // 输出不同类型的日志
-                                console.log('普通日志');
-                                console.info('信息日志');
-                                console.warn('警告日志');
-                                console.error('错误日志');
+            // JavaScript通信演示
+            VStack {
+                // 包含JavaScript通信示例的HTML
+                let htmlWithJSCommunication = """
+                <html>
+                <head>
+                    <meta charset="utf-8">
+                    <style>
+                        body { font-family: -apple-system, sans-serif; padding: 20px; }
+                        button { 
+                            padding: 10px 20px;
+                            margin: 5px;
+                            font-size: 16px;
+                            border-radius: 8px;
+                            border: none;
+                            background-color: #007AFF;
+                            color: white;
+                            cursor: pointer;
+                        }
+                        button:active {
+                            background-color: #0051A8;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <h2>JavaScript 与 Swift 通信演示</h2>
 
-                                // 定时输出日志
-                                setInterval(() => {
-                                    console.log('每3秒输出一次：' + new Date().toLocaleTimeString());
-                                }, 3000);
+                    <button onclick="sendSimpleMessage()">发送简单消息</button>
+                    <button onclick="sendJsonMessage()">发送JSON消息</button>
+                    <button onclick="sendComplexData()">发送复杂数据</button>
 
-                                // 输出复杂对象
-                                console.log('对象:', { 
-                                    name: 'test',
-                                    value: 123,
-                                    nested: {
-                                        array: [1, 2, 3]
+                    <script>
+                        // 发送简单消息
+                        function sendSimpleMessage() {
+                            window.webkit.messageHandlers.customMessage.postMessage("你好，Swift！");
+                        }
+
+                        // 发送JSON消息
+                        function sendJsonMessage() {
+                            window.webkit.messageHandlers.customMessage.postMessage({
+                                type: "json",
+                                data: {
+                                    message: "这是一个JSON消息",
+                                    timestamp: new Date().toISOString()
+                                }
+                            });
+                        }
+
+                        // 发送复杂数据
+                        function sendComplexData() {
+                            try {
+                                const complexData = {
+                                    type: "complexData",
+                                    data: {
+                                        numbers: [1, 2, 3, 4, 5],
+                                        text: "复杂数据示例",
+                                        nested: {
+                                            bool: true,
+                                            date: new Date().toISOString()
+                                        }
                                     }
+                                };
+                                console.log("准备发送复杂数据:", JSON.stringify(complexData));
+                                window.webkit.messageHandlers.customMessage.postMessage(complexData);
+                                console.log("复杂数据发送完成");
+                            } catch (error) {
+                                console.error("发送复杂数据时出错:", error);
+                                window.webkit.messageHandlers.jsError.postMessage({
+                                    message: error.message,
+                                    sourceURL: "sendComplexData",
+                                    lineNumber: 0
                                 });
-                            </script>
-                        </body>
-                        </html>
-                        """
-
-                        let url = URL(string: "data:text/html;base64," + Data(htmlWithConsoleLog.utf8).base64EncodedString())!
-
-                        url.makeWebView(
-                            onJavaScriptError: { message, line, source in
-                                MagicLogger.shared.error("JavaScript错误：")
-                                MagicLogger.shared.error("- 消息: \(message)")
-                                MagicLogger.shared.error("- 行号: \(line)")
-                                MagicLogger.shared.error("- 来源: \(source)")
                             }
-                        )
-                        .showLogView(true)
+                        }
+
+                        // 页面加载完成后自动发送一条消息
+                        window.onload = function() {
+                            window.webkit.messageHandlers.customMessage.postMessage({
+                                type: "pageLoad",
+                                data: "页面加载完成！"
+                            });
+                        };
+                    </script>
+                </body>
+                </html>
+                """
+
+                let url = URL(string: "data:text/html;base64," + Data(htmlWithJSCommunication.utf8).base64EncodedString())!
+
+                let webView = url.makeWebView { error in
+                    if let error = error {
+                        MagicLogger.shared.error("演示页面加载失败: \(error.localizedDescription)")
+                    } else {
+                        MagicLogger.shared.info("演示页面加载成功")
                     }
+                } onJavaScriptError: { message, line, source in
+                    MagicLogger.shared.error("JavaScript错误:")
+                    MagicLogger.shared.error("- 消息: \(message)")
+                    MagicLogger.shared.error("- 行号: \(line)")
+                    MagicLogger.shared.error("- 来源: \(source)")
+                } onCustomMessage: { message in
+                    MagicLogger.shared.debug("收到消息: \(String(describing: message))")
                 }
-                .navigationTitle("控制台日志")
+
+                webView
+                    .showLogView(true)
             }
             .tabItem {
-                Label("控制台日志", systemImage: "terminal")
+                Label("JS通信", systemImage: "message")
+            }
+
+            // JavaScript执行演示
+            VStack {
+                // 包含可执行函数的HTML
+                let htmlWithFunctions = """
+                <html>
+                <head>
+                    <meta charset="utf-8">
+                    <style>
+                        body { font-family: -apple-system, sans-serif; padding: 20px; }
+                        .result { 
+                            margin: 10px 0;
+                            padding: 10px;
+                            background: #f0f0f0;
+                            border-radius: 8px;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <h2>JavaScript 函数执行演示</h2>
+                    <div id="result" class="result">结果将显示在这里</div>
+                    
+                    <script>
+                        // 示例函数1：简单计算
+                        function calculate(a, b) {
+                            const result = a + b;
+                            document.getElementById('result').textContent = `计算结果: ${a} + ${b} = ${result}`;
+                            return result;
+                        }
+                        
+                        // 示例函数2：修改DOM
+                        function updateDOM(text) {
+                            document.getElementById('result').textContent = text;
+                            return '更新成功';
+                        }
+                        
+                        // 示例函数3：返回复杂数据
+                        function getComplexData() {
+                            return {
+                                timestamp: new Date().toISOString(),
+                                numbers: [1, 2, 3],
+                                text: "这是一些数据"
+                            };
+                        }
+                    </script>
+                </body>
+                </html>
+                """
+
+                let url = URL(string: "data:text/html;base64," + Data(htmlWithFunctions.utf8).base64EncodedString())!
+                
+                VStack(spacing: 10) {
+                    let webView = url.makeWebView()
+                        .showLogView(true)
+                    
+                    webView
+                    
+                    HStack(spacing: 10) {
+                        Button("执行计算") {
+                            webView.evaluateJavaScript("calculate(10, 20)")
+                        }
+                        
+                        Button("更新DOM") {
+                            webView.evaluateJavaScript("""
+                                updateDOM('DOM已更新：' + new Date().toLocaleTimeString())
+                            """)
+                        }
+                        
+                        Button("获取数据") {
+                            webView.evaluateJavaScript("getComplexData()")
+                        }
+                    }
+                    .padding()
+                }
+            }
+            .tabItem {
+                Label("执行JS", systemImage: "command")
             }
         }
     }
@@ -175,4 +288,5 @@ public struct MagicWebViewDemo: View {
 #Preview("WebView Demo") {
     MagicWebViewDemo()
         .frame(height: 800)
+        .frame(width: 1000)
 }

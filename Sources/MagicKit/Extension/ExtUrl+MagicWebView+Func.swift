@@ -5,16 +5,19 @@ public extension URL {
     /// - Parameters:
     ///   - onLoadComplete: 网页加载完成时的回调
     ///   - onJavaScriptError: JS错误时的回调
+    ///   - onCustomMessage: 自定义消息回调
     /// - Returns: 包含该URL内容的WebView
     func makeWebView(
         onLoadComplete: ((Error?) -> Void)? = nil,
-        onJavaScriptError: ((String, Int, String) -> Void)? = nil
+        onJavaScriptError: ((String, Int, String) -> Void)? = nil,
+        onCustomMessage: ((Any) -> Void)? = nil
     ) -> MagicWebView {
         MagicWebView(
             url: self,
             showLogView: true,
             onLoadComplete: onLoadComplete,
-            onJavaScriptError: onJavaScriptError
+            onJavaScriptError: onJavaScriptError,
+            onCustomMessage: onCustomMessage
         )
     }
     

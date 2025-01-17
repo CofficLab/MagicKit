@@ -22,6 +22,15 @@ public extension MagicWebView {
             onLoadComplete: onLoadComplete
         )
     }
+    
+    /// 设置是否启用详细日志模式
+    /// - Parameter enabled: 是否启用详细日志
+    /// - Returns: 修改后的视图
+    func verboseMode(_ enabled: Bool = true) -> MagicWebView {
+        var view = self
+        view.isVerboseMode = enabled
+        return view
+    }
 }
 
 #Preview("WebView Demo") {
