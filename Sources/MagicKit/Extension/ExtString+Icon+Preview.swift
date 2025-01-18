@@ -296,6 +296,33 @@ struct StringIconExtensionDemoView: View {
                     ("TextEdit", .iconTextEdit),
                     ("TextEdit填充", .iconTextEditFill)
                 ])
+                
+                // 富文本编辑
+                IconSection(title: "富文本编辑", icons: [
+                    ("表格", .iconTable),
+                    ("表格填充", .iconTableFill),
+                    ("表格合并", .iconTableMerge),
+                    ("表格分割", .iconTableSplit),
+                    ("加粗", .iconBold),
+                    ("斜体", .iconItalic),
+                    ("下划线", .iconUnderline),
+                    ("删除线", .iconStrikethrough),
+                    ("左对齐", .iconAlignLeft),
+                    ("居中对齐", .iconAlignCenter),
+                    ("右对齐", .iconAlignRight),
+                    ("两端对齐", .iconAlignJustify),
+                    ("项目符号", .iconBulletList),
+                    ("编号列表", .iconNumberList),
+                    ("增加缩进", .iconIndentIncrease),
+                    ("减少缩进", .iconIndentDecrease),
+                    ("字体", .iconFont),
+                    ("字号", .iconFontSize),
+                    ("字体颜色", .iconFontColor),
+                    ("背景色", .iconBackgroundColor),
+                    ("超链接", .iconHyperlink),
+                    ("插入图片", .iconInsertImage),
+                    ("清除格式", .iconClearFormat)
+                ])
             }
             .padding()
         }

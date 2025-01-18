@@ -684,6 +684,76 @@ public extension String {
     
     /// AI大脑图标名称 (brain.head.profile)
     static let iconBrain = "brain.head.profile"
+    
+    // MARK: - 富文本编辑
+    /// 表格图标名称 (tablecells)
+    static let iconTable = "tablecells"
+    
+    /// 表格填充图标名称 (tablecells.fill)
+    static let iconTableFill = "tablecells.fill"
+    
+    /// 表格合并图标名称 (tablecells.badge.ellipsis)
+    static let iconTableMerge = "tablecells.badge.ellipsis"
+    
+    /// 表格分割图标名称 (tablecells.split.horizontal)
+    static let iconTableSplit = "tablecells.split.horizontal"
+    
+    /// 加粗图标名称 (bold)
+    static let iconBold = "bold"
+    
+    /// 斜体图标名称 (italic)
+    static let iconItalic = "italic"
+    
+    /// 下划线图标名称 (underline)
+    static let iconUnderline = "underline"
+    
+    /// 删除线图标名称 (strikethrough)
+    static let iconStrikethrough = "strikethrough"
+    
+    /// 左对齐图标名称 (text.alignleft)
+    static let iconAlignLeft = "text.alignleft"
+    
+    /// 居中对齐图标名称 (text.aligncenter)
+    static let iconAlignCenter = "text.aligncenter"
+    
+    /// 右对齐图标名称 (text.alignright)
+    static let iconAlignRight = "text.alignright"
+    
+    /// 两端对齐图标名称 (text.justify)
+    static let iconAlignJustify = "text.justify"
+    
+    /// 项目符号列表图标名称 (list.bullet)
+    static let iconBulletList = "list.bullet"
+    
+    /// 编号列表图标名称 (list.number)
+    static let iconNumberList = "list.number"
+    
+    /// 缩进增加图标名称 (increase.indent)
+    static let iconIndentIncrease = "increase.indent"
+    
+    /// 缩进减少图标名称 (decrease.indent)
+    static let iconIndentDecrease = "decrease.indent"
+    
+    /// 字体图标名称 (textformat)
+    static let iconFont = "textformat"
+    
+    /// 字体大小图标名称 (textformat.size)
+    static let iconFontSize = "textformat.size"
+    
+    /// 字体颜色图标名称 (textformat.alt)
+    static let iconFontColor = "textformat.alt"
+    
+    /// 背景色图标名称 (paintbrush)
+    static let iconBackgroundColor = "paintbrush"
+    
+    /// 超链接图标名称 (link.badge.plus)
+    static let iconHyperlink = "link.badge.plus"
+    
+    /// 图片插入图标名称 (photo.on.rectangle.angled)
+    static let iconInsertImage = "photo.on.rectangle.angled"
+    
+    /// 清除格式图标名称 (clear)
+    static let iconClearFormat = "clear"
 } 
 
 #Preview("图标演示") {
