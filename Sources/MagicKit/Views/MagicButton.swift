@@ -346,7 +346,7 @@ public struct MagicButton: View {
     private var containerContent: some View {
         GeometryReader { geometry in
             let minSize = min(geometry.size.width, geometry.size.height)
-            let shouldShowTitle = geometry.size.width > geometry.size.height
+            let shouldShowTitle = geometry.size.width > geometry.size.height || icon == nil
             
             HStack(spacing: 4) {
                 if let icon = icon {
