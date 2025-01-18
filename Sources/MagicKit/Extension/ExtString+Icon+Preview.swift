@@ -18,7 +18,9 @@ struct StringIconExtensionDemoView: View {
                     ("音频", .iconAudioDocument),
                     ("压缩", .iconZipDocument),
                     ("只读", .iconReadOnly),
-                    ("只读填充", .iconReadOnlyFill)
+                    ("只读填充", .iconReadOnlyFill),
+                    ("填充内容", .iconDocumentFill),
+                    ("填充内容备选", .iconDocumentFillAlt)
                 ])
                 
                 // 操作相关

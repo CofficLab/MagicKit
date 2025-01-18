@@ -48,6 +48,12 @@ public extension String {
     /// 只读模式填充图标名称 (lock.fill)
     static let iconReadOnlyFill = "lock.fill"
     
+    /// 文档填充内容图标 (text.badge.plus)
+    static let iconDocumentFill = "text.badge.plus"
+    
+    /// 文档填充内容填充样式图标 (doc.text.fill)
+    static let iconDocumentFillAlt = "doc.text.fill"
+    
     // MARK: - 操作相关
     /// 清除图标名称 (trash)
     static let iconTrash = "trash"
