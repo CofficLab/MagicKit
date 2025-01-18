@@ -766,6 +766,19 @@ public extension String {
     
     /// 清除格式图标名称 (clear)
     static let iconClearFormat = "clear"
+    
+    // MARK: - 界面控制
+    /// 工具栏图标 (sidebar.left)
+    static let iconToolbar = "sidebar.left"
+    
+    /// 工具栏填充图标 (sidebar.left.fill)
+    static let iconToolbarFill = "sidebar.left.fill"
+    
+    /// 顶部工具栏图标 (menubar.rectangle)
+    static let iconTopToolbar = "menubar.rectangle"
+    
+    /// 顶部工具栏填充图标 (menubar.dock.rectangle)
+    static let iconTopToolbarFill = "menubar.dock.rectangle"
 } 
 
 #Preview("图标演示") {

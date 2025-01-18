@@ -39,7 +39,11 @@ struct StringIconExtensionDemoView: View {
                     ("搜索", .iconSearch),
                     ("重置", .iconReset),
                     ("刷新", .iconRefresh),
-                    ("设置", .iconSettings)
+                    ("设置", .iconSettings),
+                    ("工具栏", .iconToolbar),
+                    ("工具栏填充", .iconToolbarFill),
+                    ("顶部工具栏", .iconTopToolbar),
+                    ("顶部工具栏填充", .iconTopToolbarFill)
                 ])
                 
                 // 媒体控制
