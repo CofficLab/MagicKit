@@ -16,7 +16,9 @@ struct StringIconExtensionDemoView: View {
                     ("图片", .iconImageDocument),
                     ("视频", .iconVideoDocument),
                     ("音频", .iconAudioDocument),
-                    ("压缩", .iconZipDocument)
+                    ("压缩", .iconZipDocument),
+                    ("只读", .iconReadOnly),
+                    ("只读填充", .iconReadOnlyFill)
                 ])
                 
                 // 操作相关

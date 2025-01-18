@@ -42,6 +42,12 @@ public extension String {
     /// 压缩文档图标名称 (doc.zipper)
     static let iconZipDocument = "doc.zipper"
     
+    /// 只读模式图标名称 (lock)
+    static let iconReadOnly = "lock"
+    
+    /// 只读模式填充图标名称 (lock.fill)
+    static let iconReadOnlyFill = "lock.fill"
+    
     // MARK: - 操作相关
     /// 清除图标名称 (trash)
     static let iconTrash = "trash"
