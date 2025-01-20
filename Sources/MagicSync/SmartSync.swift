@@ -59,7 +59,7 @@ extension SmartSync: CKSyncEngineDelegate {
                 try self.cloudState.updateState(event.stateSerialization)
             } catch let error as CloudState.Error {
                 os_log(.error, "\(self.t)Failed to save cloud state: \(error)")
-                self.delegate.onCloudStateSaveFailed(error: error)
+                await self.delegate.onCloudStateSaveFailed(error: error)
             } catch {
                 os_log(.error, "\(self.t)Failed to save cloud state with unexpected error: \(error)")
                 // Handle generic error case if needed
@@ -85,19 +85,19 @@ extension SmartSync: CKSyncEngineDelegate {
         case .sentDatabaseChanges:
             break
         case .willSendChanges:
-            self.handleWillSendChanges()
+            await self.handleWillSendChanges()
             break
 
         case .didSendChanges:
-            self.handleDidSendChanges()
+            await self.handleDidSendChanges()
             break
 
         case .willFetchChanges:
-            self.handleWillFetchChanges()
+            await self.handleWillFetchChanges()
             break
 
         case .didFetchChanges:
-            self.handleDidFetchChanges()
+            await self.handleDidFetchChanges()
             break
 
         case .willFetchRecordZoneChanges:
@@ -233,20 +233,20 @@ extension SmartSync: CKSyncEngineDelegate {
 // MARK: Event Handler
 
 extension SmartSync {
-    func handleDidFetchChanges() {
+    func handleDidFetchChanges() async {
         let verbose = false
         if verbose {
             os_log("\(self.t)DidFetchChanges 🎉🎉🎉")
         }
-        self.delegate.onDidFetchChanges()
+        await self.delegate.onDidFetchChanges()
     }
 
-    func handleWillFetchChanges() {
+    func handleWillFetchChanges() async {
         let verbose = false
         if verbose {
             os_log("\(self.t)WillFetchChanges ⏬⏬⏬")
         }
-        self.delegate.onWillFetchChanges()
+        await self.delegate.onWillFetchChanges()
     }
 
     // MARK: Fetched Record Zone Changes
@@ -370,7 +370,7 @@ extension SmartSync {
 
         // Update the last known server record for each of the saved records.
         for savedRecord in event.savedRecords {
-            self.delegate.onSaved(record: savedRecord)
+            await self.delegate.onSaved(record: savedRecord)
         }
 
         for failedRecordSave in event.failedRecordSaves {
@@ -458,7 +458,7 @@ extension SmartSync {
             }
 
             if shouldClearServerRecord {
-                self.delegate.onClearLastKnownRecord(failedRecord)
+                await self.delegate.onClearLastKnownRecord(failedRecord)
             }
         }
 
@@ -479,23 +479,23 @@ extension SmartSync {
         }
     }
 
-    func handleWillSendChanges() {
+    func handleWillSendChanges() async {
         let verbose = false
 
         if verbose {
             os_log("\(self.t)WillSendChanges 🛫🛫🛫")
         }
 
-        self.delegate.onWillSendChanges()
+        await self.delegate.onWillSendChanges()
     }
 
-    func handleDidSendChanges() {
+    func handleDidSendChanges() async {
         let verbose = false
 
         if verbose {
             os_log("\(self.t)DidSendChanges 🎉🎉🎉")
         }
 
-        self.delegate.onDidSendChanges()
+        await self.delegate.onDidSendChanges()
     }
 }

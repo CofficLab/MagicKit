@@ -6,7 +6,7 @@ import SwiftData
 import MagicKit
 
 /// 可以与 CloudKit 同步
-public protocol SuperCloudModel: Hashable, Equatable, Identifiable, SuperLog, SuperThread {
+public protocol SuperCloudModel: Hashable, Equatable {
     var uuid: String { get }
     var privateRecordID: CKRecord.ID { get }
     var zone: CKRecordZone { get }

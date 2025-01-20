@@ -1,7 +1,7 @@
 import Foundation
 import CloudKit
 
-public protocol SuperSyncDelegate {
+public protocol SuperSyncDelegate: Actor {
     func onGetModel(recordID: CKRecord.ID) async throws -> CKRecord?
     func onMerge(record: CKRecord) async
     func onDelete(deletion: CKDatabase.RecordZoneChange.Deletion) async
