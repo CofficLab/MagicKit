@@ -37,8 +37,8 @@ public struct MagicWebView: View {
             if url.canOpenInWebView {
                 #if os(iOS)
                     WebViewWrapper(
-                        url: url, 
-                        logger: logger, 
+                        url: url,
+                        logger: logger,
                         onLoadComplete: onLoadComplete,
                         onJavaScriptError: onJavaScriptError,
                         onCustomMessage: onCustomMessage,
@@ -63,8 +63,8 @@ public struct MagicWebView: View {
                     .environment(webViewStore)
                 #elseif os(macOS)
                     MacWebViewWrapper(
-                        url: url, 
-                        logger: logger, 
+                        url: url,
+                        logger: logger,
                         onLoadComplete: onLoadComplete,
                         onJavaScriptError: onJavaScriptError,
                         onCustomMessage: onCustomMessage,
@@ -113,18 +113,20 @@ public struct MagicWebView: View {
     /// - Returns: 返回一个包含执行结果的 MagicWebView
     public func evaluateJavaScript(_ script: String) -> Self {
         #if os(iOS) || os(macOS)
-        if let webView = webViewStore.webView {
-            DispatchQueue.main.async {
-                logger.debug("执行 JavaScript: \(script)")
-                webView.evaluateJavaScript(script) { result, error in
-                    if let error = error {
-                        logger.error("JavaScript 执行失败: \(error.localizedDescription)")
-                    } else if let result = result {
-                        logger.info("JavaScript 执行结果: \(result)")
+            if let webView = webViewStore.webView {
+                DispatchQueue.main.async {
+                    if isVerboseMode {
+                        logger.debug("执行 JavaScript: \(script)")
+                    }
+                    webView.evaluateJavaScript(script) { result, error in
+                        if let error = error {
+                            logger.error("JavaScript 执行失败: \(error.localizedDescription)")
+                        } else if let result = result {
+                            logger.info("JavaScript 执行结果: \(result)")
+                        }
                     }
                 }
             }
-        }
         #endif
         return self
     }
@@ -137,7 +139,7 @@ internal class WebViewCoordinator: NSObject, WKNavigationDelegate, WKScriptMessa
     let onJavaScriptError: ((String, Int, String) -> Void)?
     let onCustomMessage: ((Any) -> Void)?
     let isVerboseMode: Bool
-    
+
     init(
         url: URL,
         logger: MagicLogger,
@@ -230,12 +232,12 @@ internal class WebViewCoordinator: NSObject, WKNavigationDelegate, WKScriptMessa
 internal func configureWebView(coordinator: WebViewCoordinator, logger: MagicLogger) -> WKWebViewConfiguration {
     let configuration = WKWebViewConfiguration()
     let userContentController = WKUserContentController()
-    
+
     // 注入错误捕获和日志捕获脚本
     let script = """
         (function() {
             console.log('初始化错误和日志捕获');
-            
+
             // 全局错误处理
             window.onerror = function(msg, url, line, col, error) {
                 console.log('捕获到全局错误:', msg);
@@ -246,7 +248,7 @@ internal func configureWebView(coordinator: WebViewCoordinator, logger: MagicLog
                 });
                 return true;
             };
-            
+
             // 语法错误和运行时错误处理
             window.addEventListener('error', function(event) {
                 console.log('捕获到错误事件:', event.message);
@@ -257,7 +259,7 @@ internal func configureWebView(coordinator: WebViewCoordinator, logger: MagicLog
                 });
                 return true;
             });
-            
+
             // Promise 错误处理
             window.addEventListener('unhandledrejection', function(event) {
                 console.log('捕获到 Promise 错误:', event.reason);
@@ -267,7 +269,7 @@ internal func configureWebView(coordinator: WebViewCoordinator, logger: MagicLog
                     lineNumber: 0
                 });
             });
-            
+
             // 重写所有控制台方法
             const originalConsole = {
                 log: console.log,
@@ -276,7 +278,7 @@ internal func configureWebView(coordinator: WebViewCoordinator, logger: MagicLog
                 error: console.error,
                 debug: console.debug
             };
-            
+
             function stringifyArg(arg) {
                 if (typeof arg === 'undefined') return 'undefined';
                 if (arg === null) return 'null';
@@ -289,7 +291,7 @@ internal func configureWebView(coordinator: WebViewCoordinator, logger: MagicLog
                 }
                 return String(arg);
             }
-            
+
             ['log', 'info', 'warn', 'error', 'debug'].forEach(function(level) {
                 console[level] = function() {
                     const args = Array.from(arguments).map(stringifyArg).join(' ');
@@ -302,31 +304,30 @@ internal func configureWebView(coordinator: WebViewCoordinator, logger: MagicLog
             });
         })();
     """
-    
+
     let userScript = WKUserScript(
         source: script,
         injectionTime: .atDocumentStart,
         forMainFrameOnly: false
     )
-    
+
     userContentController.addUserScript(userScript)
     userContentController.add(coordinator, name: "jsError")
     userContentController.add(coordinator, name: "consoleLog")
     userContentController.add(coordinator, name: "customMessage")
-    
+
     configuration.userContentController = userContentController
     configuration.preferences.javaScriptCanOpenWindowsAutomatically = true
     configuration.preferences.javaScriptEnabled = true
-    
+
     if #available(iOS 14.0, macOS 11.0, *) {
         configuration.defaultWebpagePreferences.allowsContentJavaScript = true
     }
-    
-    logger.debug("WebView 配置完成")
+
     return configuration
-} 
+}
 
 // 修改 WebViewStore 类来遵循 Observable 协议
 @Observable class WebViewStore {
     weak var webView: WKWebView?
-} 
+}
