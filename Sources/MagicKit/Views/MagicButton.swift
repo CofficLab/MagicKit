@@ -240,6 +240,7 @@ public struct MagicButton: View {
     @State private var containerSize: CGFloat = 0
     @State private var showingDisabledPopover = false
     @State private var showingPopover = false
+    @State private var showingTooltip = false
     @Environment(\.colorScheme) private var colorScheme
     
     // MARK: - Initialization
@@ -284,11 +285,9 @@ public struct MagicButton: View {
         // 外层容器
         let container = Group {
             if size == .auto {
-                // 自动模式：容器尺寸由父视图决定
                 containerContent
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
-                // 固定模式：容器尺寸由 size 决定
                 containerContent
                     .frame(
                         width: isCircularShape ? size.fixedSize : size.fixedSize,
@@ -302,17 +301,27 @@ public struct MagicButton: View {
             .onHover { hovering in
                 withAnimation(.easeInOut(duration: 0.2)) {
                     isHovering = hovering
+                    // 只有当按钮是纯图标模式且有标题时才显示tooltip
+                    if shouldShowTooltip {
+                        showingTooltip = hovering
+                    }
+                }
+            }
+            .popover(isPresented: $showingTooltip, arrowEdge: .top) {
+                if let tooltipText = title {
+                    Text(tooltipText)
+                        .font(.caption)
+                        .padding(8)
                 }
             }
             .scaleEffect(isHovering ? 1.05 : 1.0)
             .shadow(
-                color: isHovering ? Color.accentColor.opacity(0.2) : 
-                    .clear,
+                color: isHovering ? Color.accentColor.opacity(0.2) : .clear,
                 radius: isHovering ? 8 : 0,
                 y: isHovering ? 2 : 0
             )
             .onTapGesture {
-                if disabledReason != nil {
+                if let reason = disabledReason {
                     showingDisabledPopover.toggle()
                 } else {
                     if popoverContent != nil {
@@ -564,6 +573,10 @@ public struct MagicButton: View {
         case .onHover:
             return isHovering
         }
+    }
+    
+    private var shouldShowTooltip: Bool {
+        return title != nil && !title!.isEmpty && icon != nil
     }
 }
 

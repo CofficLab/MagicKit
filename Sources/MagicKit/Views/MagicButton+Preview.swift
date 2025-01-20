@@ -685,6 +685,36 @@ private struct InteractiveButtonsPreview: View {
             .padding()
             .background(Color.blue.opacity(0.1))
             .clipShape(RoundedRectangle(cornerRadius: 8))
+            
+            VStack(spacing: 16) {
+                Text("悬停提示").font(.subheadline)
+                HStack(spacing: 16) {
+                    // 只显示图标，标题作为 tooltip
+                    MagicButton(icon: "star")
+                        .magicTitle("收藏")  // 设置标题但不显示
+                        .magicShape(.circle)
+                        .magicDebugBorder()
+                    
+                    MagicButton(icon: "heart")
+                        .magicTitle("喜欢")  // 设置标题但不显示
+                        .magicShape(.roundedSquare)
+                        .magicStyle(.primary)
+                        .magicDebugBorder()
+                    
+                    MagicButton(icon: "bell")
+                        .magicTitle("通知")  // 设置标题但不显示
+                        .magicShape(.circle)
+                        .magicBackgroundColor(.orange)
+                        .magicDebugBorder()
+                }
+                .padding(.vertical)
+                Text("提示：将鼠标悬停在按钮上查看提示文本")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            .padding()
+            .background(Color.blue.opacity(0.1))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
         }
         .padding()
     }
