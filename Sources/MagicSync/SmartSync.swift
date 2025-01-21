@@ -25,6 +25,7 @@ public final actor SmartSync: SuperThread, SuperLog {
     }
 
     public init(delegate: SuperSyncDelegate, db: CKDatabase, stateURL: URL, verbose: Bool) throws {
+        MagicLogger.debug("初始化 SmartSync")
         self.cloudState = try CloudState(reason: "SyncAgent", url: stateURL)
         self.delegate = delegate
         self.verbose = verbose
@@ -36,6 +37,7 @@ public final actor SmartSync: SuperThread, SuperLog {
     }
 
     private func initEngine() {
+        MagicLogger.debug("初始化 SyncEngine")
         var config = CKSyncEngine.Configuration(
             database: cloudDB,
             stateSerialization: self.cloudState.getState(),
@@ -176,10 +178,10 @@ extension SmartSync: CKSyncEngineDelegate {
 
     public func delete(_ id: CKRecord.ID, reason: String, verbose: Bool) throws {
         if verbose {
-            os_log("\(self.t)iCloud Delete(\(id.recordName))")
-            os_log("  🗑️ Zone: \(id.zoneID.zoneName)")
-            os_log("  🗑️ Name: \(id.recordName)")
-            os_log("  🗑️ Reason: \(reason)")
+            MagicLogger.debug("iCloud Delete(\(id.recordName))")
+            MagicLogger.info("  🗑️ Zone: \(id.zoneID.zoneName)")
+            MagicLogger.info("  🗑️ Name: \(id.recordName)")
+            MagicLogger.info("  🗑️ Reason: \(reason)")
         }
 
         try delete([id])

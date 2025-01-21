@@ -1,5 +1,6 @@
 import Combine
 import SwiftUI
+import OSLog
 
 /// 日志管理器，用于收集和展示日志
 public class MagicLogger: ObservableObject, @unchecked Sendable {
@@ -219,6 +220,8 @@ public class MagicLogger: ObservableObject, @unchecked Sendable {
                 self.logs.removeFirst(self.logs.count - self.maxLogCount)
             }
         }
+        
+        os_log("\(Thread.currentQosDescription) | \(entry.caller.withContextEmoji):\(entry.line ?? 0) | \(entry.originalMessage.withContextEmoji)")
     }
 }
 

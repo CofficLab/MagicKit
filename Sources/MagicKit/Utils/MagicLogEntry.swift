@@ -4,6 +4,7 @@ import SwiftUI
 public struct MagicLogEntry: Identifiable {
     public let id = UUID()
     public let message: String
+    public let originalMessage: String
     public let level: Level
     public let timestamp: Date
     public let caller: String
@@ -16,6 +17,7 @@ public struct MagicLogEntry: Identifiable {
         line: Int? = nil,
         timestamp: Date = Date()
     ) {
+        self.originalMessage = message
         self.message = Thread.currentQosDescription + " | " + message.withContextEmoji
         self.level = level
         self.caller = caller
