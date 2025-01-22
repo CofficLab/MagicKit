@@ -3,7 +3,6 @@ import SwiftUI
 import OSLog
 
 extension String {
-    
     /// 将字符串保存为 Markdown 文件
     /// - Parameter url: Markdown 文件的保存路径
     /// - Throws: 文件操作过程中可能发生的错误
