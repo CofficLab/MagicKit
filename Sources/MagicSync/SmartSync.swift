@@ -160,7 +160,7 @@ extension SmartSync: CKSyncEngineDelegate {
     
     public func uploadOne(_ model: any SuperCloudModel, verbose: Bool) throws {
         if verbose {
-            os_log("\(self.t) ⏫ UploadOne(\(model.debugTitle))")
+            MagicLogger.info("UploadOne(\(model.debugTitle))")
         }
 
         try self.upload([model])
