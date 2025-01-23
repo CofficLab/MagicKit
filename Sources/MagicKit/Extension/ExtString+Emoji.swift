@@ -20,6 +20,12 @@ extension String {
             return "⬆️"
         }
 
+        // 备份相关
+        if lowercased.contains("backup") || lowercased.contains("archive") || 
+            lowercased.contains("备份") || lowercased.contains("存档") {
+            return "💼"
+        }
+
         // 显示和可见性相关
         if lowercased.contains("appear") || lowercased.contains("show") || lowercased.contains("visible") ||
             lowercased.contains("display") || lowercased.contains("显示") || lowercased.contains("出现") {
@@ -179,4 +185,4 @@ extension String {
 
     #Preview {
         StringEmojiPreview().inMagicContainer()
-    }   
+    }
