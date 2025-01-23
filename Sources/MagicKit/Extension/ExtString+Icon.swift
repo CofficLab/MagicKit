@@ -530,6 +530,22 @@ public extension String {
     /// TextEdit填充图标名称 (doc.text.below.ecg.fill)
     static let iconTextEditFill = "doc.text.below.ecg.fill"
     
+    // MARK: - 备份相关
+    /// 备份图标名称 (arrow.clockwise.icloud)
+    static let iconBackup = "arrow.clockwise.icloud"
+    
+    /// 备份填充图标名称 (arrow.clockwise.icloud.fill)
+    static let iconBackupFill = "arrow.clockwise.icloud.fill"
+    
+    /// 备份历史图标名称 (clock.arrow.circlepath)
+    static let iconBackupHistory = "clock.arrow.circlepath"
+    
+    /// 备份恢复图标名称 (arrow.counterclockwise.icloud)
+    static let iconBackupRestore = "arrow.counterclockwise.icloud"
+    
+    /// 备份恢复填充图标名称 (arrow.counterclockwise.icloud.fill)
+    static let iconBackupRestoreFill = "arrow.counterclockwise.icloud.fill"
+
     // MARK: - 形状和边框
     /// 正方形图标名称 (square)
     static let iconSquare = "square"

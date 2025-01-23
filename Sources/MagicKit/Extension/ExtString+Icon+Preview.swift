@@ -179,7 +179,12 @@ struct StringIconExtensionDemoView: View {
                     ("云禁用", .iconCloudSlash),
                     ("iCloud下载", .iconICloudDownload),
                     ("下载", .iconDownload),
-                    ("上传", .iconUpload)
+                    ("上传", .iconUpload),
+                    ("备份", .iconBackup),
+                    ("备份填充", .iconBackupFill),
+                    ("备份历史", .iconBackupHistory),
+                    ("恢复", .iconBackupRestore),
+                    ("恢复填充", .iconBackupRestoreFill)
                 ])
                 
                 // 设置和性能
