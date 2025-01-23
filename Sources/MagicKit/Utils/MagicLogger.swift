@@ -1,6 +1,6 @@
 import Combine
-import SwiftUI
 import OSLog
+import SwiftUI
 
 /// 日志管理器，用于收集和展示日志
 public class MagicLogger: ObservableObject, @unchecked Sendable {
@@ -212,7 +212,7 @@ public class MagicLogger: ObservableObject, @unchecked Sendable {
     private func addLog(_ entry: MagicLogEntry) {
         lock.lock()
         defer { lock.unlock() }
-        
+
         DispatchQueue.main.async {
             self.logs.append(entry)
             // 限制日志数量
@@ -220,8 +220,21 @@ public class MagicLogger: ObservableObject, @unchecked Sendable {
                 self.logs.removeFirst(self.logs.count - self.maxLogCount)
             }
         }
-        
-        os_log("\(Thread.currentQosDescription) | \(entry.caller.withContextEmoji):\(entry.line ?? 0) | \(entry.originalMessage.withContextEmoji)")
+
+        var level = OSLogType.debug
+
+        switch entry.level {
+        case .info:
+            level = .info
+        case .warning:
+            level = .info
+        case .error:
+            level = .error
+        case .debug:
+            level = .debug
+        }
+
+        os_log(level, "\(Thread.currentQosDescription) | \(entry.caller.withContextEmoji):\(entry.line ?? 0) | \(entry.originalMessage.withContextEmoji)")
     }
 }
 
