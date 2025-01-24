@@ -68,6 +68,25 @@ struct HoverModifier: ViewModifier {
 
 // MARK: - View Extension
 extension View {
+    /// 添加错误提示功能
+    /// - Parameter error: 错误信息的绑定，当错误不为空时显示错误视图
+    /// - Returns: 修改后的视图
+    public func error(_ error: Binding<Error?>) -> some View {
+        self.overlay(
+            Group {
+                if let err = error.wrappedValue {
+                    MagicErrorView(error: err)
+                        .frame(minWidth: 300)
+                        .onTapGesture {
+                            error.wrappedValue = nil
+                        }
+                }
+            },
+            alignment: .center
+        )
+        .animation(.easeInOut, value: error.wrappedValue != nil)
+    }
+    
     /// 添加Toast提示功能
     /// - Parameter message: 提示消息的绑定，当消息不为空时显示Toast
     /// - Returns: 修改后的视图
@@ -130,6 +149,40 @@ extension View {
 
 #Preview("Toast") {
     ToastPreviewView()
+}
+
+#Preview("Error") {
+    ErrorPreviewView()
+}
+
+struct ErrorPreviewView: View {
+    @State private var basicError: Error? = nil
+    @State private var networkError: Error? = nil
+    @State private var customError: Error? = nil
+    
+    var body: some View {
+        VStack(spacing: 20) {
+            Button("显示基本错误") {
+                basicError = NSError(domain: "com.magickit.demo", code: 1001, userInfo: [NSLocalizedDescriptionKey: "这是一个基本错误示例"])
+            }
+            .error($basicError)
+            
+            Button("显示网络错误") {
+                networkError = NSError(domain: "com.magickit.network", code: 404, userInfo: [NSLocalizedDescriptionKey: "网络连接失败"])
+            }
+            .error($networkError)
+            
+            Button("显示自定义错误") {
+                struct CustomError: LocalizedError {
+                    var errorDescription: String? { "这是一个自定义错误类型" }
+                }
+                customError = CustomError()
+            }
+            .error($customError)
+        }
+        .padding()
+        .inMagicContainer()
+    }
 }
 
 struct ToastPreviewView: View {
