@@ -42,6 +42,14 @@ extension View {
     ) -> some View {
         modifier(HoverModifier(isEnabled: isEnabled, onHover: onHover))
     }
+
+public func onNotification(_ name: Notification.Name, perform action: @escaping (Notification) -> Void) -> some View {
+        self.onReceive(NotificationCenter.default.publisher(for: name), perform: action)
+    }
+    
+    public func onNotification(_ name: Notification.Name, _ action: @escaping (Notification) -> Void) -> some View {
+        self.onReceive(NotificationCenter.default.publisher(for: name), perform: action)
+    }
 }
 
 /// 用于条件性地添加 hover 监听的修饰器
@@ -60,16 +68,29 @@ struct HoverModifier: ViewModifier {
 
 // MARK: - View Extension
 extension View {
-    public func onNotification(_ name: Notification.Name, perform action: @escaping (Notification) -> Void) -> some View {
-        self.onReceive(NotificationCenter.default.publisher(for: name), perform: action)
-    }
-    
-    public func onNotification(_ name: Notification.Name, _ action: @escaping (Notification) -> Void) -> some View {
-        self.onReceive(NotificationCenter.default.publisher(for: name), perform: action)
+    /// 添加Toast提示功能
+    /// - Parameter message: 提示消息的绑定，当消息不为空时显示Toast
+    /// - Returns: 修改后的视图
+    public func toast(_ message: Binding<String?>) -> some View {
+        self.overlay(
+            Group {
+                if let msg = message.wrappedValue {
+                    MagicToast(message: msg, icon: .iconMessage)
+                        .frame(minWidth: 300)
+                        .onAppear {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                                message.wrappedValue = nil
+                            }
+                        }
+                }
+            },
+            alignment: .bottom
+        )
+        .animation(.easeInOut, value: message.wrappedValue)
     }
 }
 
-#Preview {
+#Preview("Dashed Border") {
     VStack(spacing: 20) {
         // 默认样式
         Text("Default Style")
@@ -105,4 +126,35 @@ extension View {
     }
     .padding()
     .inMagicContainer()
+}
+
+#Preview("Toast") {
+    ToastPreviewView()
+}
+
+struct ToastPreviewView: View {
+    @State private var infoMessage: String? = nil
+    @State private var warningMessage: String? = nil
+    @State private var errorMessage: String? = nil
+    
+    var body: some View {
+        VStack(spacing: 20) {
+            Button("显示信息提示") {
+                infoMessage = "这是一条信息提示"
+            }
+            .toast($infoMessage)
+            
+            Button("显示警告提示") {
+                warningMessage = "这是一条警告提示"
+            }
+            .toast($warningMessage)
+            
+            Button("显示错误提示") {
+                errorMessage = "这是一条错误提示"
+            }
+            .toast($errorMessage)
+        }
+        .padding()
+        .inMagicContainer()
+    }
 }
