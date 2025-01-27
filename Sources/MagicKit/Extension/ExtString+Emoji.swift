@@ -11,7 +11,7 @@ extension String {
 
     /// 根据字符串内容分析并生成相关的 emoji
     /// - Returns: 相关的 emoji
-    private func generateContextEmoji() -> String {
+    public func generateContextEmoji() -> String {
         let lowercased = self.lowercased()
 
         // 上传相关
