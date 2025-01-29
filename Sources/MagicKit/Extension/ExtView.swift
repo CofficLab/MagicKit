@@ -103,7 +103,7 @@ extension View {
                         }
                 }
             },
-            alignment: .bottom
+            alignment: .center
         )
         .animation(.easeInOut, value: message.wrappedValue)
     }

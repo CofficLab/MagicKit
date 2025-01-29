@@ -23,6 +23,29 @@ public struct MagicToast: View {
             }
         }
         
+        var gradientColors: [Color] {
+            switch self {
+            case .info:
+                return [Color.blue.opacity(0.8), Color.blue.opacity(0.7)]
+            case .warning:
+                return [Color.orange.opacity(0.8), Color.orange.opacity(0.7)]
+            case .error:
+                return [Color.red.opacity(0.8), Color.red.opacity(0.7)]
+            }
+        }
+        
+        var font: Font {
+            return .largeTitle
+        }
+        
+        var cornerRadius: CGFloat {
+            return 12
+        }
+        
+        var iconColor: Color {
+            return .white
+        }
+        
         var animation: Animation {
             switch self {
             case .info:
@@ -31,17 +54,6 @@ public struct MagicToast: View {
                 return .spring(response: 0.35, dampingFraction: 0.5)
             case .error:
                 return .spring(response: 0.4, dampingFraction: 0.4)
-            }
-        }
-        
-        var iconAnimation: Animation {
-            switch self {
-            case .info:
-                return .smooth
-            case .warning:
-                return .bouncy
-            case .error:
-                return .snappy
             }
         }
     }
@@ -53,42 +65,36 @@ public struct MagicToast: View {
     }
     
     public var body: some View {
-        HStack(spacing: 8) {
+        VStack(spacing: 8) {
             Image(systemName: icon)
-                .font(.system(size: isHovering ? 16 : 14))
-                .foregroundStyle(style.color)
-                .symbolEffect(.bounce, options: .repeat(2), value: isPresented)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 96, height: 96)
+                .foregroundColor(style.iconColor)
+                .padding(.top, 16)
             
             Text(message)
-                .font(.callout)
+                .font(style.font)
+                .foregroundColor(.white)
+                .padding(.vertical, 10)
         }
         .padding(.horizontal, 16)
-        .padding(.vertical, 12)
-        .background {
-            Capsule()
-                .fill(.ultraThinMaterial)
-                .shadow(
-                    color: style.color.opacity(0.2),
-                    radius: isHovering ? 8 : 5,
-                    y: isHovering ? 3 : 2
-                )
-        }
-        .scaleEffect(isHovering ? 1.02 : 1.0)
+        .background(
+            RoundedRectangle(cornerRadius: style.cornerRadius)
+                .fill(LinearGradient(gradient: Gradient(colors: style.gradientColors), startPoint: .leading, endPoint: .trailing))
+                .shadow(color: Color.black.opacity(0.3), radius: 10, x: 0, y: 5)
+        )
+        .scaleEffect(isHovering ? 1.05 : 1.0)
         .animation(style.animation, value: isHovering)
         .onHover { hovering in
             isHovering = hovering
         }
         .onAppear {
-            withAnimation(style.iconAnimation.delay(0.2)) {
+            withAnimation(style.animation.delay(0.2)) {
                 isPresented = true
             }
         }
-        .transition(
-            .asymmetric(
-                insertion: .move(edge: .top).combined(with: .opacity),
-                removal: .move(edge: .bottom).combined(with: .opacity)
-            )
-        )
+        .transition(.move(edge: .bottom).combined(with: .opacity))
     }
 }
 

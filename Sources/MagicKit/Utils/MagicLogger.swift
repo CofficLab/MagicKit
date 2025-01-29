@@ -234,7 +234,10 @@ public class MagicLogger: ObservableObject, @unchecked Sendable {
             level = .debug
         }
 
-        os_log(level, "\(Thread.currentQosDescription) | \(entry.caller.withContextEmoji):\(entry.line ?? 0) | \(entry.originalMessage.withContextEmoji)")
+        var title = "\(entry.caller.withContextEmoji):\(entry.line ?? 0)"
+        title = title.padding(toLength: 23, withPad: " ", startingAt: 0)
+        
+        os_log(level, "\(Thread.currentQosDescription) | \(title) | \(entry.originalMessage.withContextEmoji)")
     }
 }
 

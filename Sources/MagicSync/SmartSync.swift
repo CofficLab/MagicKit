@@ -6,9 +6,6 @@ import SwiftData
 
 /// For syncing the local database with the iCloud database
 public final actor SmartSync: SuperThread, SuperLog {
-    public static let emoji = "⛅️"
-
-    let emoji = SmartSync.emoji
     let nc = NotificationCenter.default
     var verbose: Bool = false
     let cloudState: CloudState
@@ -25,7 +22,9 @@ public final actor SmartSync: SuperThread, SuperLog {
     }
 
     public init(delegate: SuperSyncDelegate, db: CKDatabase, stateURL: URL, verbose: Bool) throws {
-        MagicLogger.debug("初始化 SmartSync")
+        if verbose {
+            os_log("\(Self.i)")
+        }
         self.cloudState = try CloudState(reason: "SyncAgent", url: stateURL)
         self.delegate = delegate
         self.verbose = verbose
@@ -37,7 +36,9 @@ public final actor SmartSync: SuperThread, SuperLog {
     }
 
     private func initEngine() {
-        MagicLogger.debug("初始化 SyncEngine")
+        if verbose {
+            os_log("\(self.i)SyncEngine")
+        }
         var config = CKSyncEngine.Configuration(
             database: cloudDB,
             stateSerialization: self.cloudState.getState(),
@@ -160,7 +161,7 @@ extension SmartSync: CKSyncEngineDelegate {
     
     public func uploadOne(_ model: any SuperCloudModel, verbose: Bool) throws {
         if verbose {
-            MagicLogger.info("UploadOne(\(model.debugTitle))")
+            os_log("\(self.t)✅ UploadOne: \(model.debugTitle)")
         }
 
         try self.upload([model])
@@ -176,12 +177,14 @@ extension SmartSync: CKSyncEngineDelegate {
         })
     }
 
-    public func delete(_ id: CKRecord.ID, reason: String, verbose: Bool) throws {
+    public func delete(_ id: CKRecord.ID, reason: String) throws {
         if verbose {
-            MagicLogger.debug("iCloud Delete(\(id.recordName))")
-            MagicLogger.info("  🗑️ Zone: \(id.zoneID.zoneName)")
-            MagicLogger.info("  🗑️ Name: \(id.recordName)")
-            MagicLogger.info("  🗑️ Reason: \(reason)")
+            os_log("""
+            \(self.t)🗑️ iCloud Delete(\(id.recordName))
+            - Zone: \(id.zoneID.zoneName)
+            - Name: \(id.recordName)
+            - Reason: \(reason)
+            """)
         }
 
         try delete([id])
@@ -216,7 +219,7 @@ extension SmartSync: CKSyncEngineDelegate {
         let verbose = true
 
         if verbose {
-            os_log("\(self.t)Delete Zone -> \(zone.zoneID.zoneName)")
+            os_log("\(self.t)🗑️ Delete Zone -> \(zone.zoneID.zoneName)")
             os_log("  ➡️ PendingRecordZoneChanges(\(self.engine.state.pendingRecordZoneChanges.count))")
         }
 
@@ -228,6 +231,7 @@ extension SmartSync: CKSyncEngineDelegate {
 
         // 添加删除区域的操作
         engine.state.add(pendingDatabaseChanges: [.deleteZone(zone.zoneID)])
+        
         try await engine.sendChanges()
     }
 }
@@ -293,21 +297,20 @@ extension SmartSync {
         //
         // Since we're in a sample app, we're going to take a relatively simple approach.
 
-        let verbose = true
         let shouldDeleteLocalData: Bool
         let shouldReUploadLocalData: Bool
 
         switch event.changeType {
         case .signIn:
             if verbose {
-                os_log("\(self.t)iCloud 登录事件 👤👤👤")
+                os_log("\(self.t)🍋 iCloud 登录事件")
             }
             shouldDeleteLocalData = false
             shouldReUploadLocalData = true
 
         case .switchAccounts:
             if verbose {
-                os_log("\(self.t)iCloud 切换账号")
+                os_log("\(self.t)🚉 iCloud 切换账号")
             }
             shouldDeleteLocalData = true
             shouldReUploadLocalData = false
@@ -333,7 +336,7 @@ extension SmartSync {
 
         if shouldReUploadLocalData {
             if verbose {
-                os_log("\(self.t)ShouldReUploadLocalData ⏫⏫⏫")
+                os_log("\(self.t)⏫ ShouldReUploadLocalData")
             }
 
             let items: [any SuperCloudModel] = await self.delegate.onGetAll()
@@ -382,6 +385,7 @@ extension SmartSync {
             var shouldClearServerRecord = false
 
             switch failedRecordSave.error.code {
+                
             // MARK: ServerRecordChanged
 
             /*
@@ -394,15 +398,14 @@ extension SmartSync {
                     从服务器 fetch 最新的 Record，merge，并保存
              */
             case .serverRecordChanged:
-                os_log(.error, "  ⚠️ 保存失败：serverRecordChanged ➡️ Record: \(recordType)(\(recordName))")
-
                 // Let's merge the record from the server into our own local copy.
                 // The `mergeFromServerRecord` function takes care of the conflict resolution.
                 guard let serverRecord = failedRecordSave.error.serverRecord else {
                     os_log(.error, "  ❌ No server record for conflict \(failedRecordSave.error)")
                     continue
                 }
-
+                
+                os_log(.error, "⚠️ HandleSentRecordZoneChanges 保存失败，尝试 Merge：serverRecordChanged ➡️ Record: \(recordType)(\(recordName))")
                 await self.delegate.onMerge(record: serverRecord)
 
                 newPendingRecordZoneChanges.append(.saveRecord(failedRecord.recordID))
@@ -474,10 +477,7 @@ extension SmartSync {
         let verbose = true
 
         for deletion in event.deletions {
-            switch deletion.zoneID.zoneName {
-            default:
-                os_log(.error, "Received deletion for unknown zone: \(deletion.zoneID)")
-            }
+            os_log(.error, "Received deletion for zone: \(deletion.zoneID.zoneName)")
         }
     }
 

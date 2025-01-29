@@ -13,112 +13,58 @@ extension String {
     /// - Returns: 相关的 emoji
     public func generateContextEmoji() -> String {
         let lowercased = self.lowercased()
+        
+        // 定义一个包含所有匹配的元组，按优先级排序
+        let emojiMappings: [(String, String)] = [
+            ("archive", "💼"), ("归档", "💼"),
+            ("appear", "👀"), ("出现", "👀"),
+            ("backup", "💼"), ("备份", "💼"),
+            ("bypass", "⏭️"), ("绕过", "⏭️"),
+            ("click", "👆"), ("点击", "👆"),
+            ("complete", "✅"), ("完成", "✅"),
+            ("config", "🚩"), ("配置", "🚩"),
+            ("crash", "❌"), ("崩溃", "❌"),
+            ("data", "💾"), ("数据", "💾"),
+            ("debug", "🔍"), ("调试", "🔍"),
+            ("display", "👀"), ("展示", "👀"),
+            ("done", "✅"), ("完成", "✅"),
+            ("error", "❌"), ("错误", "❌"),
+            ("fail", "❌"), ("失败", "❌"),
+            ("finish", "✅"), ("结束", "✅"),
+            ("http", "🌐"), ("HTTP", "🌐"),
+            ("ignore", "⏭️"), ("忽略", "⏭️"),
+            ("init", "🚩"), ("初始化", "🚩"),
+            ("load", "💾"), ("加载", "💾"),
+            ("manager", "👔"), ("经理", "👔"),
+            ("merge", "🔗"), ("合并", "🔗"),
+            ("memory", "📊"), ("内存", "📊"),
+            ("modify", "🍋"), ("修改", "🍋"),
+            ("network", "🌐"), ("网络", "🌐"),
+            ("notification", "🔔"), ("通知", "🔔"),
+            ("ok", "✅"), ("好的", "✅"),
+            ("performance", "📊"), ("性能", "📊"),
+            ("plugin", "🔌"), ("插件", "🔌"),
+            ("push", "⬆️"), ("推送", "⬆️"),
+            ("ready", "✅"), ("准备好", "✅"),
+            ("save", "💾"), ("保存", "💾"),
+            ("set", "⚙️"), ("设置", "⚙️"),
+            ("show", "👀"), ("显示", "👀"),
+            ("skip", "⏭️"), ("跳过", "⏭️"),
+            ("synchronize", "🔄"), ("同步", "🔄"),
+            ("tap", "👆"), ("轻触", "👆"),
+            ("test", "🔍"), ("测试", "🔍"),
+            ("update", "🍋"), ("更新", "🍋"),
+            ("uuid", "🆔"), ("唯一标识符", "🆔"),
+            ("visible", "👀"), ("可见", "👀"),
+            ("warn", "⚠️"), ("警告", "⚠️"),
+            ("warning", "⚠️"), ("警告", "⚠️"),
+        ]
 
-        // 上传相关
-        if lowercased.contains("upload") || lowercased.contains("push") || 
-            lowercased.contains("上传") || lowercased.contains("推送") || lowercased.contains("发送") {
-            return "⬆️"
-        }
-
-        // 备份相关
-        if lowercased.contains("backup") || lowercased.contains("archive") || 
-            lowercased.contains("备份") || lowercased.contains("存档") {
-            return "💼"
-        }
-
-        // 显示和可见性相关
-        if lowercased.contains("appear") || lowercased.contains("show") || lowercased.contains("visible") ||
-            lowercased.contains("display") || lowercased.contains("显示") || lowercased.contains("出现") {
-            return "👀"
-        }
-
-        // 跳过相关
-        if lowercased.contains("skip") || lowercased.contains("ignore") || lowercased.contains("bypass") ||
-            lowercased.contains("跳过") || lowercased.contains("忽略") || lowercased.contains("略过") {
-            return "⏭️"
-        }
-
-        // 错误和警告
-        if lowercased.contains("error") || lowercased.contains("fail") || lowercased.contains("crash") ||
-            lowercased.contains("错误") || lowercased.contains("失败") || lowercased.contains("崩溃") {
-            return "❌"
-        }
-        if lowercased.contains("warning") || lowercased.contains("warn") ||
-            lowercased.contains("警告") || lowercased.contains("提醒") {
-            return "⚠️"
-        }
-
-        // 成功和完成
-        if lowercased.contains("success") 
-        || lowercased.contains("complete") 
-        || lowercased.contains("finish") 
-        || lowercased.contains("ok") 
-        || lowercased.contains("ready") 
-        || lowercased.contains("done") 
-        || lowercased.contains("成功") 
-        || lowercased.contains("完成") 
-        || lowercased.contains("结束") {
-            return "✅"
-        }
-
-        // 通知相关
-        if lowercased.contains("notification") || lowercased.contains("notify") || lowercased.contains("notice") ||
-            lowercased.contains("通知") || lowercased.contains("提示") || lowercased.contains("消息") {
-            return "🔔"
-        }
-
-        // 网络相关
-        if lowercased.contains("network") || lowercased.contains("http") || lowercased.contains("request") ||
-            lowercased.contains("网络") || lowercased.contains("请求") || lowercased.contains("响应") {
-            return "🌐"
-        }
-
-        // 同步相关
-        if lowercased.contains("sync") || lowercased.contains("synchronize") || 
-            lowercased.contains("同步") || lowercased.contains("同步中") || lowercased.contains("刷新") {
-            return "🔄"
-        }
-
-        // 数据相关
-        if lowercased.contains("data") || lowercased.contains("save") || lowercased.contains("load") ||
-            lowercased.contains("数据") || lowercased.contains("保存") || lowercased.contains("加载") {
-            return "💾"
-        }
-
-        // 初始化和配置
-        if lowercased.contains("init") || lowercased.contains("setup") || lowercased.contains("config") ||
-            lowercased.contains("初始化") || lowercased.contains("设置") || lowercased.contains("配置") {
-            return "🚩"
-        }
-
-        // 更新和变化 (修改emoji避免重复)
-        if lowercased.contains("update") || lowercased.contains("change") || lowercased.contains("modify") ||
-            lowercased.contains("更新") || lowercased.contains("变化") || lowercased.contains("修改") {
-            return "🍋"
-        }
-
-        // 调试和测试
-        if lowercased.contains("debug") || lowercased.contains("test") || lowercased.contains("log") ||
-            lowercased.contains("调试") || lowercased.contains("测试") || lowercased.contains("日志") {
-            return "🔍"
-        }
-
-        // 性能相关
-        if lowercased.contains("performance") || lowercased.contains("memory") || lowercased.contains("cpu") ||
-            lowercased.contains("性能") || lowercased.contains("内存") || lowercased.contains("耗时") {
-            return "📊"
-        }
-
-        // 插件相关
-        if lowercased.contains("plugin") || lowercased.contains("extension") || lowercased.contains("addon") ||
-            lowercased.contains("插件") || lowercased.contains("扩展") || lowercased.contains("组件") {
-            return "🔌"
-        }
-
-        // 用户交互
-        if lowercased.contains("click") || lowercased.contains("tap") || lowercased.contains("touch") ||
-            lowercased.contains("点击") || lowercased.contains("触摸") || lowercased.contains("手势") {
-            return "👆"
+        // 遍历所有映射，优先返回匹配的 emoji
+        for (keyword, emoji) in emojiMappings {
+            if lowercased.hasPrefix(keyword) || lowercased.contains(keyword) {
+                return emoji
+            }
         }
 
         // 默认返回一个通用的 emoji

@@ -241,6 +241,7 @@ public struct MagicButton: View {
     @State private var showingDisabledPopover = false
     @State private var showingPopover = false
     @State private var showingTooltip = false
+    @State private var shouldShowTitle = false
     @Environment(\.colorScheme) private var colorScheme
     
     // MARK: - Initialization
@@ -355,7 +356,6 @@ public struct MagicButton: View {
     private var containerContent: some View {
         GeometryReader { geometry in
             let minSize = min(geometry.size.width, geometry.size.height)
-            let shouldShowTitle = geometry.size.width > geometry.size.height || icon == nil
             
             HStack(spacing: 4) {
                 if let icon = icon {
@@ -373,6 +373,9 @@ public struct MagicButton: View {
                 x: geometry.size.width / 2,
                 y: geometry.size.height / 2
             )
+            .onAppear {
+                shouldShowTitle = geometry.size.width > geometry.size.height || icon == nil
+            }
         }
         .buttonStyle(MagicButtonStyle())
     }
@@ -576,7 +579,7 @@ public struct MagicButton: View {
     }
     
     private var shouldShowTooltip: Bool {
-        return title != nil && !title!.isEmpty && icon != nil
+        return title != nil && !title!.isEmpty && icon != nil && !shouldShowTitle
     }
 }
 

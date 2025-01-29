@@ -59,10 +59,10 @@ extension SuperLog {
     // MARK: - Static Methods
 
     /// 获取实现者的 onAppear 字符串
-    public static var onAppear: String { "\(t)📺📺📺 OnAppear " }
+    public static var onAppear: String { "\(t)📺 OnAppear " }
 
     /// 获取实现者的 onInit 字符串
-    public static var onInit: String { "\(t)🚩🚩🚩 Init " }
+    public static var onInit: String { "\(t)🚩 Init " }
 
     // MARK: - Static Properties for Instance Methods
 
