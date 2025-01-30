@@ -223,34 +223,6 @@ public extension URL {
         
         return self
     }
-
-    /// Compresses the current file or directory into a zip file using the Compression framework.
-    ///
-    /// - Returns: The URL of the created zip file.
-    /// - Throws: An error if the compression fails.
-    func compress() throws -> URL {
-        let zipFileURL = self.deletingPathExtension().appendingPathExtension("zip")
-        let fileCoordinator = NSFileCoordinator()
-        
-        var coordinationError: NSError?
-        var writeError: Error?
-        
-        // 使用系统自带的压缩功能（macOS 10.15+/iOS 13+）
-        fileCoordinator.coordinate(readingItemAt: self, options: [.forUploading], error: &coordinationError) { zipTempURL in
-            do {
-                try FileManager.default.copyItem(at: zipTempURL, to: zipFileURL)
-            } catch {
-                writeError = error
-            }
-        }
-        
-        // 合并错误处理
-        if let error = coordinationError ?? writeError {
-            throw error ?? NSError(domain: NSCocoaErrorDomain, code: NSFileWriteUnknownError, userInfo: nil)
-        }
-        
-        return zipFileURL
-    }
 }
 
 // MARK: - Preview

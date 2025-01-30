@@ -25,14 +25,16 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-async-algorithms", from: "0.1.0"),
-        .package(url: "https://github.com/chicio/ID3TagEditor", from: "4.5.0")
+        .package(url: "https://github.com/chicio/ID3TagEditor", from: "4.5.0"),
+        .package(url: "https://github.com/weichsel/ZIPFoundation.git", from: "0.9.19")
     ],
     targets: [
         .target(
             name: "MagicKit",
             dependencies: [
                 .product(name: "AsyncAlgorithms", package: "swift-async-algorithms"),
-                "ID3TagEditor"
+                "ID3TagEditor",
+                "ZIPFoundation"
             ]
         ),
         .target(
