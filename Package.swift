@@ -18,7 +18,6 @@ let package = Package(
             "MagicAsset",
             "MagicWeb"
         ]),
-        .library(name: "MagicKit", targets: ["MagicCore"]),         // 核心库（别名）
         .library(name: "MagicCore", targets: ["MagicCore"]),        // 核心库
         .library(name: "MagicPlayMan", targets: ["MagicPlayMan"]),  // 播放管理模块
         .library(name: "MagicSync", targets: ["MagicSync"]),        // 同步模块

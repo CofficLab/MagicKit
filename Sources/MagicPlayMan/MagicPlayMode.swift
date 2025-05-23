@@ -1,6 +1,6 @@
 import SwiftUI
 
-import MagicKit
+import MagicCore
 
 public enum MagicPlayMode: String, CaseIterable {
     case sequence

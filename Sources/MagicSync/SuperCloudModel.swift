@@ -3,7 +3,7 @@ import Foundation
 import OSLog
 import SwiftUI
 import SwiftData
-import MagicKit
+import MagicCore
 
 /// 可以与 CloudKit 同步
 public protocol SuperCloudModel: Hashable, Equatable {

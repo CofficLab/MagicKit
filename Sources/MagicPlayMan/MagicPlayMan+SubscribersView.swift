@@ -1,6 +1,6 @@
 import SwiftUI
 
-import MagicKit
+import MagicCore
 
 public extension MagicPlayMan {
     /// 订阅者列表视图

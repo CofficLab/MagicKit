@@ -93,7 +93,7 @@ extension SuperLog {
     /// 获取实现者的 onAppear 字符串
     public static var onAppear: String { "\(t)📺 OnAppear " }
 
-    /// 获取实现者的 onInit 字符串
+    /// 适用于表示初始化的场景，如 View 的 init 方法
     public static var onInit: String { "\(t)🚩 Init " }
 
     // MARK: - Static Properties for Instance Methods

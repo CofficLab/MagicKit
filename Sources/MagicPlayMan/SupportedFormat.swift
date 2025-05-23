@@ -1,6 +1,6 @@
 import Foundation
 
-import MagicKit
+import MagicCore
 import SwiftUI
 
 /// 支持的媒体格式
