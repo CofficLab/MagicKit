@@ -53,10 +53,10 @@ let package = Package(
            dependencies: ["Core"],
            path: "Sources/Sync"
        ),
-    //    .testTarget(
-    //        name: "Tests",
-    //        dependencies: ["Core"]
-    //    ),
+       .testTarget(
+           name: "Tests",
+           dependencies: ["Core"]
+       ),
        .target(
            name: "Web",
            dependencies: ["Core"],
