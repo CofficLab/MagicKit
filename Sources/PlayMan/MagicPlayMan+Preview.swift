@@ -1,5 +1,4 @@
-import Core
-
+import MagicCore
 import SwiftUI
 
 // MARK: - PreviewView

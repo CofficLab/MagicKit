@@ -1,4 +1,4 @@
-import Core
+import MagicCore
 import SwiftUI
 
 struct ErrorOverlay: View {

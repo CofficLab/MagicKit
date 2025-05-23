@@ -1,6 +1,6 @@
 /// 包含 SwiftUI Image 相关的书本图标扩展和实现的文件。
 /// 该文件提供了创建可自定义样式和形状的书本图标的功能。
-import Core
+import MagicCore
 import SwiftUI
 
 public extension Image {

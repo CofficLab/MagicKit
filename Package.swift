@@ -12,16 +12,17 @@ let package = Package(
     // 定义对外提供的库（可被其他项目导入）
     products: [
         .library(name: "MagicAll", targets: [
-            "Core",
+            "MagicCore",
            "Sync",
            "Asset",
-           "Web",
+           "MagicWeb",
         ]),
-        .library(name: "MagicCore", targets: ["Core"]),        // 核心库
+        .library(name: "MagicKit", targets: ["MagicCore"]),        // 核心库
+        .library(name: "MagicCore", targets: ["MagicCore"]),        // 核心库
        .library(name: "MagicPlayMan", targets: ["PlayMan"]),  // 播放管理模块
        .library(name: "MagicSync", targets: ["Sync"]),        // 同步模块
        .library(name: "CosyAsset", targets: ["Asset"]),        
-       .library(name: "MagicWeb", targets: ["Web"]),          // Web 模块
+       .library(name: "MagicWeb", targets: ["MagicWeb"]),          // Web 模块
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-async-algorithms", from: "0.1.0"),  // Apple 的异步算法库
@@ -32,34 +33,35 @@ let package = Package(
     targets: [
        .target(
            name: "Asset",
-           dependencies: ["Core"],
+           dependencies: ["MagicCore"],
            path: "Sources/Asset"
        ),
        .target(
-           name: "Core",
+           name: "MagicCore",
            dependencies: [
                .product(name: "AsyncAlgorithms", package: "swift-async-algorithms"), 
                "ID3TagEditor", 
                "ZIPFoundation",
-           ]
+           ],
+           path: "Sources/Core"
        ),
        .target(
            name: "PlayMan", 
-           dependencies: ["Core"],
+           dependencies: ["MagicCore"],
            path: "Sources/PlayMan"
        ),
        .target(
            name: "Sync", 
-           dependencies: ["Core"],
+           dependencies: ["MagicCore"],
            path: "Sources/Sync"
        ),
        .testTarget(
            name: "Tests",
-           dependencies: ["Core"]
+           dependencies: ["MagicCore"]
        ),
        .target(
-           name: "Web",
-           dependencies: ["Core"],
+           name: "MagicWeb",
+           dependencies: ["MagicCore"],
            path: "Sources/Web"
        ),
     ]

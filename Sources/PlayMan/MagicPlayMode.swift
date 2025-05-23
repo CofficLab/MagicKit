@@ -1,6 +1,5 @@
 import SwiftUI
-
-import Core
+import MagicCore
 
 /// 音频播放模式枚举
 ///

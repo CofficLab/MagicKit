@@ -1,4 +1,4 @@
-import Core
+import MagicCore
 import SwiftUI
 
 public struct IconContainer<Content: View>: View {

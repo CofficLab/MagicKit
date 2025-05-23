@@ -3,7 +3,7 @@ import Combine
 import Foundation
 import SwiftUI
 import MediaPlayer
-import Core
+import MagicCore
 
 public class MagicPlayMan: ObservableObject, SuperLog {
     public nonisolated static let emoji = "🎧"

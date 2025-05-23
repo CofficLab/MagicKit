@@ -1,4 +1,4 @@
-import Core
+import MagicCore
 import SwiftUI
 
 public extension Image {

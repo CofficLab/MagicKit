@@ -1,4 +1,4 @@
-import Core
+import MagicCore
 import SwiftUI
 
 struct AudioContentView: View, SuperLog {

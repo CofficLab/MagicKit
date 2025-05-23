@@ -1,4 +1,4 @@
-import Core
+import MagicCore
 import SwiftUI
 
 /// 提供创建相机图标的扩展方法

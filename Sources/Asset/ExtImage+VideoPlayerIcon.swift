@@ -1,4 +1,4 @@
-import Core
+import MagicCore
 import SwiftUI
 
 /// Image 扩展，提供创建视频播放器图标的功能
