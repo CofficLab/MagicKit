@@ -13,13 +13,13 @@ let package = Package(
     products: [
         .library(name: "MagicAll", targets: [
             "Core",
-        //    "Sync",
+           "Sync",
            "Asset",
            "Web",
         ]),
         .library(name: "MagicCore", targets: ["Core"]),        // 核心库
     //    .library(name: "MagicPlayMan", targets: ["PlayMan"]),  // 播放管理模块
-    //    .library(name: "MagicSync", targets: ["Sync"]),        // 同步模块
+       .library(name: "MagicSync", targets: ["Sync"]),        // 同步模块
        .library(name: "CosyAsset", targets: ["Asset"]),        
        .library(name: "MagicWeb", targets: ["Web"]),          // Web 模块
     ],
@@ -48,11 +48,11 @@ let package = Package(
     //        dependencies: ["Core"],
     //        path: "Sources/PlayMan"
     //    ),
-    //    .target(
-    //        name: "Sync", 
-    //        dependencies: ["Core"],
-    //        path: "Sources/Sync"
-    //    ),
+       .target(
+           name: "Sync", 
+           dependencies: ["Core"],
+           path: "Sources/Sync"
+       ),
     //    .testTarget(
     //        name: "Tests",
     //        dependencies: ["Core"]
