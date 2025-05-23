@@ -3,6 +3,16 @@ import OSLog
 import SwiftUI
 
 extension String {
+    /// 将字符串转换为UTF-8编码的Data对象
+    /// - Returns: 转换后的Data对象，如果转换失败则返回nil
+    /// 
+    /// ## 使用示例:
+    /// ```swift
+    /// let str = "Hello"
+    /// if let data = str.toData() {
+    ///     print("转换成功，数据长度: \(data.count)")
+    /// }
+    /// ```
     public func toData() -> Data? {
         self.data(using: .utf8)
     }
