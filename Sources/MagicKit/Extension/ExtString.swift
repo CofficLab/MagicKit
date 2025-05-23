@@ -19,6 +19,14 @@ extension String {
 }
 
 extension String {
+    /// 将字符串转换为Base64编码
+    /// - Returns: Base64编码后的字符串，如果转换失败则返回空字符串
+    /// 
+    /// ## 使用示例:
+    /// ```swift
+    /// let str = "Hello World"
+    /// let base64 = str.toBase64() // "SGVsbG8gV29ybGQ="
+    /// ```
     public func toBase64() -> String {
         if let data = self.data(using: .utf8) {
             let base64String = data.base64EncodedString()
@@ -31,7 +39,26 @@ extension String {
 }
 
 extension String {
-    /// 将HTML代码中的base64图片存储到磁盘，并替换HTML代码中的图片路径，然后返回
+    /// 将HTML代码中的base64图片存储到磁盘，并替换HTML代码中的图片路径
+    /// - Parameter url: 基准URL，用于确定图片保存位置和生成相对路径
+    /// - Returns: 替换后的HTML字符串，其中base64图片已被替换为相对路径引用
+    /// 
+    /// ## 功能说明:
+    /// 1. 从HTML中提取所有base64编码的图片
+    /// 2. 将图片保存到指定目录的images文件夹中
+    /// 3. 替换HTML中的base64图片为相对路径引用
+    /// 
+    /// ## 使用示例:
+    /// ```swift
+    /// let html = """
+    ///     <div>
+    ///         <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...">
+    ///     </div>
+    /// """
+    /// let baseUrl = URL(fileURLWithPath: "/path/to/document")
+    /// let result = html.replaceImageSrcWithRelativePath(baseUrl)
+    /// // 结果将包含: <img src="./images/document_1.png">
+    /// ```
     public func replaceImageSrcWithRelativePath(_ url: URL) -> String {
         let htmlContent = self
         let imagePrefix = url.deletingPathExtension().lastPathComponent.replacingOccurrences(of: " ", with: "_")
@@ -83,39 +110,98 @@ extension String {
 }
 
 extension String {
+    /// 从JSON字符串中获取指定路径的整数值
+    /// - Parameter keyPath: 以点号分隔的键路径，如 "user.id"
+    /// - Returns: 找到的整数值，如果未找到或类型不匹配则返回nil
+    /// 
+    /// ## 使用示例:
+    /// ```swift
+    /// let json = """
+    /// {
+    ///     "user": {
+    ///         "id": 123,
+    ///         "name": "John"
+    ///     }
+    /// }
+    /// """
+    /// if let userId = json.getIntFromJSON(for: "user.id") {
+    ///     print("用户ID: \(userId)") // 输出: 用户ID: 123
+    /// }
+    /// ```
     public func getIntFromJSON(for keyPath: String) -> Int? {
         self.getValueFromJSON(for: keyPath) as? Int
     }
 
+    /// 从JSON字符串中获取指定路径的字符串值
+    /// - Parameter keyPath: 以点号分隔的键路径，如 "user.name"
+    /// - Returns: 找到的字符串值，如果未找到或类型不匹配则返回nil
+    /// 
+    /// ## 使用示例:
+    /// ```swift
+    /// let json = """
+    /// {
+    ///     "user": {
+    ///         "id": 123,
+    ///         "name": "John"
+    ///     }
+    /// }
+    /// """
+    /// if let userName = json.getStringFromJSON(for: "user.name") {
+    ///     print("用户名: \(userName)") // 输出: 用户名: John
+    /// }
+    /// ```
     public func getStringFromJSON(for keyPath: String) -> String? {
         self.getValueFromJSON(for: keyPath) as? String
     }
 
+    /// 从JSON字符串中获取指定路径的字典值
+    /// - Parameter keyPath: 以点号分隔的键路径，如 "user.settings"
+    /// - Returns: 找到的字典值，如果未找到或类型不匹配则返回nil
+    /// 
+    /// ## 使用示例:
+    /// ```swift
+    /// let json = """
+    /// {
+    ///     "user": {
+    ///         "settings": {
+    ///             "theme": "dark",
+    ///             "notifications": true
+    ///         }
+    ///     }
+    /// }
+    /// """
+    /// if let settings = json.getArrayFromJSON(for: "user.settings") {
+    ///     print("用户设置: \(settings)")
+    /// }
+    /// ```
     public func getArrayFromJSON(for keyPath: String) -> [String: Any]? {
         self.getValueFromJSON(for: keyPath) as? [String: Any]
     }
 
-    /*
-     示例使用
-     let jsonString = """
-     {
-         "ref": "refs/heads/master",
-         "node_id": "MDM6UmVmMjgyOTA1MjA2OnJlZnMvaGVhZHMvbWFzdGVy",
-         "url": "https://api.github.com/repos/nookery/nookery.github.io/git/refs/heads/master",
-         "object": {
-             "sha": "f14ed6bd9bb8e0f1ea5e384ff57ee7e1e11dcc59",
-             "type": "commit",
-             "url": "https://api.github.com/repos/nookery/nookery.github.io/git/commits/f14ed6bd9bb8e0f1ea5e384ff57ee7e1e11dcc59"
-         }
-     }
-     """
-
-     if let shaValue = getValue(from: jsonString, for: "object.sha") {
-         print("SHA: \(shaValue)") // 输出: SHA: f14ed6bd9bb8e0f1ea5e384ff57ee7e1e11dcc59
-     } else {
-         print("Key not found.")
-     }
-     */
+    /// 从JSON字符串中获取指定路径的任意类型值
+    /// - Parameter keyPath: 以点号分隔的键路径，用于访问嵌套的JSON属性
+    /// - Returns: 找到的值，如果路径无效则返回nil
+    /// 
+    /// ## 功能说明:
+    /// 此方法支持通过点号分隔的路径访问嵌套的JSON属性。例如，路径 "a.b.c" 将依次访问
+    /// 对象a中的b属性，然后访问b中的c属性。
+    /// 
+    /// ## 使用示例:
+    /// ```swift
+    /// let json = """
+    /// {
+    ///     "ref": "refs/heads/master",
+    ///     "object": {
+    ///         "sha": "f14ed6bd9bb8e0f1ea5e384ff57ee7e1e11dcc59",
+    ///         "type": "commit"
+    ///     }
+    /// }
+    /// """
+    /// 
+    /// if let sha = json.getValueFromJSON(for: "object.sha") as? String {
+    ///     print("SHA: \(sha)")
+    /// }
+    /// ```
     public func getValueFromJSON(for keyPath: String) -> Any? {
         let jsonString = self
 
@@ -155,7 +241,19 @@ extension String {
 // MARK: - Clipboard Extension
 
 extension String {
-    /// 将字符串复制到剪贴板
+    /// 将字符串复制到系统剪贴板
+    /// 
+    /// 根据不同的操作系统平台（macOS/iOS/tvOS），使用相应的API将字符串内容复制到系统剪贴板
+    /// 
+    /// ## 使用示例:
+    /// ```swift
+    /// let text = "Hello, World!"
+    /// text.copy()
+    /// print("文本已复制到剪贴板")
+    /// 
+    /// // 在macOS上，会先清除剪贴板内容再复制
+    /// // 在iOS/tvOS上，直接设置剪贴板内容
+    /// ```
     public func copy() {
         #if os(macOS)
             NSPasteboard.general.clearContents()
@@ -197,6 +295,16 @@ extension String {
 
 /// String 类型的扩展，提供常用的工具方法
 public extension String {
+    /// 将字符串转换为URL对象
+    /// - Returns: 转换后的URL对象
+    /// - Warning: 此方法使用强制解包，如果字符串不是有效的URL格式，将导致运行时崩溃
+    /// 
+    /// ## 使用示例:
+    /// ```swift
+    /// let urlString = "https://example.com"
+    /// let url = urlString.toURL()
+    /// // 现在可以使用url进行网络请求或其他操作
+    /// ```
     func toURL() -> URL {
         URL(string: self)!
     }
