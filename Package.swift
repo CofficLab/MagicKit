@@ -15,14 +15,13 @@ let package = Package(
             "Core",
         //    "Sync",
            "Asset",
-        //    "Web",
-           "Asset"
+           "Web",
         ]),
         .library(name: "MagicCore", targets: ["Core"]),        // 核心库
     //    .library(name: "MagicPlayMan", targets: ["PlayMan"]),  // 播放管理模块
     //    .library(name: "MagicSync", targets: ["Sync"]),        // 同步模块
-    //    .library(name: "CosyAsset", targets: ["Asset"]),        
-    //    .library(name: "MagicWeb", targets: ["Web"]),          // Web 模块
+       .library(name: "CosyAsset", targets: ["Asset"]),        
+       .library(name: "MagicWeb", targets: ["Web"]),          // Web 模块
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-async-algorithms", from: "0.1.0"),  // Apple 的异步算法库
@@ -58,10 +57,10 @@ let package = Package(
     //        name: "Tests",
     //        dependencies: ["Core"]
     //    ),
-    //    .target(
-    //        name: "Web",
-    //        dependencies: ["Core"],
-    //        path: "Sources/Web"
-    //    ),
+       .target(
+           name: "Web",
+           dependencies: ["Core"],
+           path: "Sources/Web"
+       ),
     ]
 )
