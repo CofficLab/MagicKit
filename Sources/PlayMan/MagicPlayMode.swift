@@ -24,6 +24,7 @@ public enum MagicPlayMode: String, CaseIterable {
     /// 随机播放模式 - 随机顺序播放所有曲目
     case shuffle
     /// 全部循环模式 - 按顺序播放所有曲目，播放完毕后从头开始
+    case repeatAll
     
     // MARK: - Display Properties
     

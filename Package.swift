@@ -18,7 +18,7 @@ let package = Package(
            "Web",
         ]),
         .library(name: "MagicCore", targets: ["Core"]),        // 核心库
-    //    .library(name: "MagicPlayMan", targets: ["PlayMan"]),  // 播放管理模块
+       .library(name: "MagicPlayMan", targets: ["PlayMan"]),  // 播放管理模块
        .library(name: "MagicSync", targets: ["Sync"]),        // 同步模块
        .library(name: "CosyAsset", targets: ["Asset"]),        
        .library(name: "MagicWeb", targets: ["Web"]),          // Web 模块
@@ -43,11 +43,11 @@ let package = Package(
                "ZIPFoundation",
            ]
        ),
-    //    .target(
-    //        name: "PlayMan", 
-    //        dependencies: ["Core"],
-    //        path: "Sources/PlayMan"
-    //    ),
+       .target(
+           name: "PlayMan", 
+           dependencies: ["Core"],
+           path: "Sources/PlayMan"
+       ),
        .target(
            name: "Sync", 
            dependencies: ["Core"],
