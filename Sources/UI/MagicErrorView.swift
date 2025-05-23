@@ -111,7 +111,7 @@ private struct ErrorSection: View {
         MagicErrorView(error: NSError(domain: "PlaybackError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Connection timeout"]))
         
         // HttpError 预览
-        MagicErrorView(error: HttpError.HttpStatusError(404))
+        // MagicErrorView(error: HttpError.HttpStatusError(404))
     }
     .padding()
     .background(.background)

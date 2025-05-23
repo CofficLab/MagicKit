@@ -12,14 +12,16 @@ let package = Package(
     // 定义对外提供的库（可被其他项目导入）
     products: [
         .library(name: "MagicAll", targets: [
-            "Core",
             "PlayMan",
             "Sync",
             "Asset",
             "Web",
             "Asset"
         ]),
-        .library(name: "MagicCore", targets: ["Core"]),        // 核心库
+        .library(name: "MagicCore", targets: [
+            "Extension", 
+            "Protocols"
+        ]),        // 核心库
         .library(name: "MagicPlayMan", targets: ["PlayMan"]),  // 播放管理模块
         .library(name: "MagicSync", targets: ["Sync"]),        // 同步模块
         .library(name: "CosyAsset", targets: ["Asset"]),        // 资源管理模块
@@ -33,37 +35,58 @@ let package = Package(
     // 编译目标（模块）
     targets: [
         .target(
-            name: "Core",
+            name: "Asset",
+            // dependencies: ["Core"],
+            path: "Sources/Asset"
+        ),
+        // .target(
+        //     name: "Core",
+        //     dependencies: [
+        //         .product(name: "AsyncAlgorithms", package: "swift-async-algorithms"), 
+        //         "ID3TagEditor", 
+        //         "ZIPFoundation" 
+        //     ],
+        //     path: "Sources/Core"
+        // ),
+        .target(
+            name: "Extension",
             dependencies: [
                 .product(name: "AsyncAlgorithms", package: "swift-async-algorithms"), 
                 "ID3TagEditor", 
-                "ZIPFoundation" 
-            ],
-            path: "Sources/Core"
+                "ZIPFoundation",
+            ]
+        ),
+        .target(
+            name: "HTTP",
+            dependencies: ["Protocols"],
+            path: "Sources/HTTP"
         ),
         .target(
             name: "PlayMan", 
-            dependencies: ["Core"],
+            // dependencies: ["Core"],
             path: "Sources/PlayMan"
         ),
         .target(
+            name: "Protocols", 
+            dependencies: ["Extension"],
+        ),
+        .target(
             name: "Sync", 
-            dependencies: ["Core"],
+            // dependencies: ["Core"],
             path: "Sources/Sync"
-        ),
-        .target(
-            name: "Asset",
-            dependencies: ["Core"],
-            path: "Sources/Asset"
-        ),
-        .target(
-            name: "Web",
-            dependencies: ["Core"],
-            path: "Sources/Web"
         ),
         .testTarget(
             name: "Tests",
-            dependencies: ["Core"]
+            // dependencies: ["Core"]
+        ),
+        .target(
+            name: "Utils",
+            dependencies: ["Extension"],
+        ),
+        .target(
+            name: "Web",
+            // dependencies: ["Core"],
+            path: "Sources/Web"
         ),
     ]
 )
