@@ -12,17 +12,18 @@ let package = Package(
     // 定义对外提供的库（可被其他项目导入）
     products: [
         .library(name: "MagicAll", targets: [
-            "MagicCore", 
-            "MagicPlayMan", 
-            "MagicSync", 
-            "MagicAsset",
-            "MagicWeb"
+            "Core",
+            "PlayMan",
+            "Sync",
+            "Asset",
+            "Web",
+            "Asset"
         ]),
-        .library(name: "MagicCore", targets: ["MagicCore"]),        // 核心库
-        .library(name: "MagicPlayMan", targets: ["MagicPlayMan"]),  // 播放管理模块
-        .library(name: "MagicSync", targets: ["MagicSync"]),        // 同步模块
-        .library(name: "MagicAsset", targets: ["MagicAsset"]),      // 资源管理模块
-        .library(name: "MagicWeb", targets: ["MagicWeb"]),          // Web 模块
+        .library(name: "MagicCore", targets: ["Core"]),        // 核心库
+        .library(name: "MagicPlayMan", targets: ["PlayMan"]),  // 播放管理模块
+        .library(name: "MagicSync", targets: ["Sync"]),        // 同步模块
+        .library(name: "CosyAsset", targets: ["Asset"]),        // 资源管理模块
+        .library(name: "MagicWeb", targets: ["Web"]),          // Web 模块
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-async-algorithms", from: "0.1.0"),  // Apple 的异步算法库
@@ -32,32 +33,37 @@ let package = Package(
     // 编译目标（模块）
     targets: [
         .target(
-            name: "MagicCore",
+            name: "Core",
             dependencies: [
                 .product(name: "AsyncAlgorithms", package: "swift-async-algorithms"), 
                 "ID3TagEditor", 
                 "ZIPFoundation" 
-            ]
+            ],
+            path: "Sources/Core"
         ),
         .target(
-            name: "MagicPlayMan", 
-            dependencies: ["MagicCore"]
+            name: "PlayMan", 
+            dependencies: ["Core"],
+            path: "Sources/PlayMan"
         ),
         .target(
-            name: "MagicSync", 
-            dependencies: ["MagicCore"]
+            name: "Sync", 
+            dependencies: ["Core"],
+            path: "Sources/Sync"
         ),
         .target(
-            name: "MagicAsset", 
-            dependencies: ["MagicCore"]
+            name: "Asset",
+            dependencies: ["Core"],
+            path: "Sources/Asset"
         ),
         .target(
-            name: "MagicWeb",
-            dependencies: ["MagicCore"]
+            name: "Web",
+            dependencies: ["Core"],
+            path: "Sources/Web"
         ),
         .testTarget(
-            name: "MagicKitTests",
-            dependencies: ["MagicCore"]
+            name: "Tests",
+            dependencies: ["Core"]
         ),
     ]
 )
