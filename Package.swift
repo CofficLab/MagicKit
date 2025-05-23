@@ -12,13 +12,13 @@ let package = Package(
     // 定义对外提供的库（可被其他项目导入）
     products: [
         .library(name: "MagicAll", targets: [
-            "Protocols",
+            "Core",
 //            "Sync",
 //            "Asset",
 //            "Web",
 //            "Asset"
         ]),
-        .library(name: "MagicProtocols", targets: ["Protocols"]),        // 核心库
+        .library(name: "MagicCore", targets: ["Core"]),        // 核心库
 //        .library(name: "MagicPlayMan", targets: ["PlayMan"]),  // 播放管理模块
 //        .library(name: "MagicSync", targets: ["Sync"]),        // 同步模块
 //        .library(name: "CosyAsset", targets: ["Asset"]),        // 资源管理模块
@@ -36,6 +36,14 @@ let package = Package(
 //            // dependencies: ["Core"],
 //            path: "Sources/Asset"
 //        ),
+       .target(
+           name: "Core",
+           dependencies: [
+               .product(name: "AsyncAlgorithms", package: "swift-async-algorithms"), 
+               "ID3TagEditor", 
+               "ZIPFoundation",
+           ]
+       ),
 //        .target(
 //            name: "Extension",
 //            dependencies: [
@@ -54,10 +62,10 @@ let package = Package(
 //            // dependencies: ["Core"],
 //            path: "Sources/PlayMan"
 //        ),
-        .target(
-            name: "Protocols", 
-            // dependencies: ["Extension"],
-        ),
+        // .target(
+        //     name: "Protocols", 
+        //     dependencies: ["Thread", "String"],
+        // ),
 //        .target(
 //            name: "Sync", 
 //            // dependencies: ["Core"],
