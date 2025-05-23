@@ -13,16 +13,16 @@ let package = Package(
     products: [
         .library(name: "MagicAll", targets: [
             "Core",
-//            "Sync",
-//            "Asset",
-//            "Web",
-//            "Asset"
+        //    "Sync",
+           "Asset",
+        //    "Web",
+           "Asset"
         ]),
         .library(name: "MagicCore", targets: ["Core"]),        // 核心库
-//        .library(name: "MagicPlayMan", targets: ["PlayMan"]),  // 播放管理模块
-//        .library(name: "MagicSync", targets: ["Sync"]),        // 同步模块
-//        .library(name: "CosyAsset", targets: ["Asset"]),        // 资源管理模块
-//        .library(name: "MagicWeb", targets: ["Web"]),          // Web 模块
+    //    .library(name: "MagicPlayMan", targets: ["PlayMan"]),  // 播放管理模块
+    //    .library(name: "MagicSync", targets: ["Sync"]),        // 同步模块
+    //    .library(name: "CosyAsset", targets: ["Asset"]),        
+    //    .library(name: "MagicWeb", targets: ["Web"]),          // Web 模块
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-async-algorithms", from: "0.1.0"),  // Apple 的异步算法库
@@ -31,11 +31,11 @@ let package = Package(
     ],
     // 编译目标（模块）
     targets: [
-//        .target(
-//            name: "Asset",
-//            // dependencies: ["Core"],
-//            path: "Sources/Asset"
-//        ),
+       .target(
+           name: "Asset",
+           dependencies: ["Core"],
+           path: "Sources/Asset"
+       ),
        .target(
            name: "Core",
            dependencies: [
@@ -44,45 +44,24 @@ let package = Package(
                "ZIPFoundation",
            ]
        ),
-//        .target(
-//            name: "Extension",
-//            dependencies: [
-//                .product(name: "AsyncAlgorithms", package: "swift-async-algorithms"), 
-//                "ID3TagEditor", 
-//                "ZIPFoundation",
-//            ]
-//        ),
-//        .target(
-//            name: "HTTP",
-//            dependencies: ["Protocols"],
-//            path: "Sources/HTTP"
-//        ),
-//        .target(
-//            name: "PlayMan", 
-//            // dependencies: ["Core"],
-//            path: "Sources/PlayMan"
-//        ),
-        // .target(
-        //     name: "Protocols", 
-        //     dependencies: ["Thread", "String"],
-        // ),
-//        .target(
-//            name: "Sync", 
-//            // dependencies: ["Core"],
-//            path: "Sources/Sync"
-//        ),
-//        .testTarget(
-//            name: "Tests",
-//            // dependencies: ["Core"]
-//        ),
-//        .target(
-//            name: "Utils",
-//            dependencies: ["Extension"],
-//        ),
-//        .target(
-//            name: "Web",
-//            // dependencies: ["Core"],
-//            path: "Sources/Web"
-//        ),
+    //    .target(
+    //        name: "PlayMan", 
+    //        dependencies: ["Core"],
+    //        path: "Sources/PlayMan"
+    //    ),
+    //    .target(
+    //        name: "Sync", 
+    //        dependencies: ["Core"],
+    //        path: "Sources/Sync"
+    //    ),
+    //    .testTarget(
+    //        name: "Tests",
+    //        dependencies: ["Core"]
+    //    ),
+    //    .target(
+    //        name: "Web",
+    //        dependencies: ["Core"],
+    //        path: "Sources/Web"
+    //    ),
     ]
 )
