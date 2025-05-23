@@ -1,7 +1,30 @@
 import Core
 import SwiftUI
 
+/// Image 扩展，提供创建地球图标的功能
 public extension Image {
+    /// 创建一个自定义的地球图标
+    ///
+    /// 此方法创建一个可自定义的地球图标，可用于应用中表示全球化、互联网或地理位置等概念。
+    ///
+    /// - Parameters:
+    ///   - useDefaultBackground: 是否使用默认的太空背景，默认为 true
+    ///   - borderColor: 图标边框的颜色，默认为蓝色
+    ///   - size: 图标的大小，如果为 nil 则使用容器默认大小
+    /// - Returns: 一个可以在 SwiftUI 视图中使用的地球图标视图
+    ///
+    /// ## 使用示例:
+    /// ```swift
+    /// // 创建默认地球图标
+    /// Image.makeGlobeIcon()
+    ///
+    /// // 创建自定义地球图标
+    /// Image.makeGlobeIcon(
+    ///     useDefaultBackground: false,
+    ///     borderColor: .green,
+    ///     size: 100
+    /// )
+    /// ```
     static func makeGlobeIcon(
         useDefaultBackground: Bool = true,
         borderColor: Color = .blue,
@@ -16,8 +39,14 @@ public extension Image {
     }
 }
 
+/// 地球图标的内部实现
+///
+/// 这个结构体定义了地球图标的视觉表现，包括背景、地球轮廓和大陆等元素。
+/// 它被 `Image.makeGlobeIcon` 方法使用，通常不需要直接使用此结构体。
 struct GlobeIcon: View {
+    /// 是否使用默认的太空背景
     let useDefaultBackground: Bool
+    /// 地球轮廓的边框颜色
     let borderColor: Color
 
     var body: some View {

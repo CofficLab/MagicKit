@@ -1,7 +1,30 @@
 import Core
 import SwiftUI
 
+/// Image 扩展，提供创建视频播放器图标的功能
 public extension Image {
+    /// 创建一个自定义的视频播放器图标
+    ///
+    /// 此方法创建一个可自定义的视频播放器图标，可用于应用中表示视频播放、媒体内容或影院等概念。
+    ///
+    /// - Parameters:
+    ///   - useDefaultBackground: 是否使用默认的深色渐变背景，默认为 true
+    ///   - borderColor: 图标边框的颜色，默认为蓝色
+    ///   - size: 图标的大小，如果为 nil 则使用容器默认大小
+    /// - Returns: 一个可以在 SwiftUI 视图中使用的视频播放器图标视图
+    ///
+    /// ## 使用示例:
+    /// ```swift
+    /// // 创建默认视频播放器图标
+    /// Image.makeVideoPlayerIcon()
+    ///
+    /// // 创建自定义视频播放器图标
+    /// Image.makeVideoPlayerIcon(
+    ///     useDefaultBackground: false,
+    ///     borderColor: .red,
+    ///     size: 80
+    /// )
+    /// ```
     static func makeVideoPlayerIcon(
         useDefaultBackground: Bool = true,
         borderColor: Color = .blue,
@@ -16,8 +39,14 @@ public extension Image {
     }
 }
 
+/// 视频播放器图标的内部实现
+///
+/// 这个结构体定义了视频播放器图标的视觉表现，包括背景、边框和播放控件等元素。
+/// 它被 `Image.makeVideoPlayerIcon` 方法使用，通常不需要直接使用此结构体。
 struct VideoPlayerIcon: View {
+    /// 是否使用默认的深色渐变背景
     let useDefaultBackground: Bool
+    /// 播放器边框的颜色
     let borderColor: Color
 
     var body: some View {
