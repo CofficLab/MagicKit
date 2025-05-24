@@ -4,13 +4,13 @@ import SwiftUI
 import Compression
 
 public extension URL {
-    /// Deletes the file or directory at the specified URL.
+    /// 删除指定 URL 对应的文件或目录。
     ///
-    /// This method removes the file or directory from the file system. If the URL points to a directory,
-    /// all of its contents will also be deleted.
+    /// 此方法从文件系统中删除文件或目录。如果 URL 指向一个目录，
+    /// 其所有内容也将被删除。
     ///
-    /// - Throws: An error if the deletion fails or if the file doesn't have sufficient permissions.
-    /// - Note: This operation cannot be undone.
+    /// - Throws: 如果删除失败或文件没有足够的权限时抛出错误。
+    /// - Note: 此操作无法撤消。
     func delete() throws {
         guard FileManager.default.fileExists(atPath: self.path) else {
             return
@@ -18,19 +18,19 @@ public extension URL {
         try FileManager.default.removeItem(at: self)
     }
 
-    /// Returns all files in the directory and its subdirectories recursively.
+    /// 递归返回目录及其子目录中的所有文件。
     ///
-    /// - Returns: An array of URLs representing all files found in the directory tree.
-    /// - Note: This method filters out .DS_Store files automatically.
+    /// - Returns: 包含目录树中所有文件 URL 的数组。
+    /// - Note: 此方法会自动过滤掉 .DS_Store 文件。
     func flatten() -> [URL] {
         getAllFilesInDirectory()
     }
 
-    /// Returns all files in the directory and its subdirectories recursively.
+    /// 递归返回目录及其子目录中的所有文件。
     ///
-    /// - Returns: An array of URLs representing all files found in the directory tree.
-    /// - Note: This method filters out .DS_Store files automatically.
-    /// - Important: This method logs an error if the directory cannot be accessed.
+    /// - Returns: 包含目录树中所有文件 URL 的数组。
+    /// - Note: 此方法会自动过滤掉 .DS_Store 文件。
+    /// - Important: 如果无法访问目录，此方法会记录错误。
     func getAllFilesInDirectory() -> [URL] {
         let fileManager = FileManager.default
         var fileURLs: [URL] = []
@@ -52,10 +52,10 @@ public extension URL {
         return fileURLs.filter { $0.lastPathComponent != ".DS_Store" }
     }
 
-    /// Returns immediate children (files and directories) of the current directory.
+    /// 返回当前目录的直接子项（文件和目录）。
     ///
-    /// - Returns: An array of URLs representing immediate children, sorted by name.
-    /// - Note: This method filters out .DS_Store files automatically.
+    /// - Returns: 按名称排序的直接子项 URL 数组。
+    /// - Note: 此方法会自动过滤掉 .DS_Store 文件。
     func getChildren() -> [URL] {
         let fileManager = FileManager.default
         var fileURLs: [URL] = []
@@ -70,10 +70,10 @@ public extension URL {
         return fileURLs.filter { $0.lastPathComponent != ".DS_Store" }
     }
 
-    /// Returns immediate file children (excluding directories) of the current directory.
+    /// 返回当前目录的直接文件子项（不包括目录）。
     ///
-    /// - Returns: An array of URLs representing immediate file children, sorted by name.
-    /// - Note: This method filters out .DS_Store files automatically.
+    /// - Returns: 按名称排序的直接文件子项 URL 数组。
+    /// - Note: 此方法会自动过滤掉 .DS_Store 文件。
     func getFileChildren() -> [URL] {
         let fileManager = FileManager.default
         var fileURLs: [URL] = []
@@ -90,10 +90,10 @@ public extension URL {
             .sorted { $0.lastPathComponent < $1.lastPathComponent }
     }
 
-    /// Returns the next file in the parent directory.
+    /// 返回父目录中的下一个文件。
     ///
-    /// - Returns: The URL of the next file, or `nil` if this is the last file.
-    /// - Note: Files are ordered alphabetically by name.
+    /// - Returns: 下一个文件的 URL，如果是最后一个文件则返回 `nil`。
+    /// - Note: 文件按名称字母顺序排序。
     func getNextFile() -> URL? {
         let parent = deletingLastPathComponent()
         let files = parent.getChildren()
@@ -104,10 +104,10 @@ public extension URL {
         return index < files.count - 1 ? files[index + 1] : nil
     }
 
-    /// Returns the previous file in the parent directory.
+    /// 返回父目录中的上一个文件。
     ///
-    /// - Returns: The URL of the previous file, or `nil` if this is the first file.
-    /// - Note: Files are ordered alphabetically by name.
+    /// - Returns: 上一个文件的 URL，如果是第一个文件则返回 `nil`。
+    /// - Note: 文件按名称字母顺序排序。
     func getPrevFile() -> URL? {
         let parent = deletingLastPathComponent()
         let files = parent.getChildren()
@@ -118,12 +118,12 @@ public extension URL {
         return index > 0 ? files[index - 1] : nil
     }
 
-    /// Calculates the size of a file or directory in bytes.
+    /// 计算文件或目录的大小（以字节为单位）。
     ///
-    /// For directories, this method recursively calculates the total size of all contained files.
+    /// 对于目录，此方法会递归计算所有包含文件的总大小。
     ///
-    /// - Returns: The size in bytes as Int64.
-    /// - Note: Returns 0 if the size cannot be determined.
+    /// - Returns: 以 Int64 表示的字节大小。
+    /// - Note: 如果无法确定大小，则返回 0。
     func getSize() -> Int64 {
         // 如果是文件夹，计算所有子项的大小总和
         if hasDirectoryPath {
@@ -136,11 +136,11 @@ public extension URL {
         return Int64(attributes?.fileSize ?? 0)
     }
 
-    /// Returns the file or directory size in a human-readable format.
+    /// 返回文件或目录大小的人类可读格式。
     ///
-    /// The size is automatically converted to the most appropriate unit (B, KB, MB, GB, or TB).
+    /// 大小会自动转换为最适合的单位（B、KB、MB、GB 或 TB）。
     ///
-    /// - Returns: A formatted string representing the size (e.g., "1.5 MB").
+    /// - Returns: 表示大小的格式化字符串（例如："1.5 MB"）。
     func getSizeReadable() -> String {
         let size = Double(getSize())
         let units = ["B", "KB", "MB", "GB", "TB"]
@@ -155,13 +155,13 @@ public extension URL {
         return String(format: "%.1f %@", convertedSize, units[index])
     }
 
-    /// Checks if the URL points to an existing directory.
+    /// 检查 URL 是否指向现有目录。
     var isDirExist: Bool {
         var isDir: ObjCBool = true
         return FileManager.default.fileExists(atPath: path, isDirectory: &isDir)
     }
 
-    /// Checks if the URL points to an existing file.
+    /// 检查 URL 是否指向现有文件。
     var isFileExist: Bool {
         FileManager.default.fileExists(atPath: path)
     }
@@ -174,31 +174,31 @@ public extension URL {
         !isDirExist
     }
 
-    /// Removes the parent folder of the current file or directory.
+    /// 删除当前文件或目录的父文件夹。
     ///
-    /// - Throws: An error if the deletion fails or if the folder doesn't have sufficient permissions.
-    /// - Important: This operation cannot be undone and will delete all contents of the parent folder.
+    /// - Throws: 如果删除失败或文件夹没有足够的权限时抛出错误。
+    /// - Important: 此操作无法撤消，并且会删除父文件夹的所有内容。
     func removeParentFolder() throws {
         try FileManager.default.removeItem(at: deletingLastPathComponent())
     }
 
-    /// Conditionally removes the parent folder of the current file or directory.
+    /// 根据条件删除当前文件或目录的父文件夹。
     ///
-    /// - Parameter condition: A Boolean value that determines whether the parent folder should be removed.
-    /// - Note: This method silently ignores any errors that occur during deletion.
+    /// - Parameter condition: 决定是否应删除父文件夹的布尔值。
+    /// - Note: 此方法会静默忽略删除过程中发生的任何错误。
     func removeParentFolderWhen(_ condition: Bool) {
         if condition {
             try? removeParentFolder()
         }
     }
 
-    /// Creates the directory or file at the URL if it doesn't exist and returns the URL.
+    /// 如果 URL 对应的目录或文件不存在则创建它，并返回 URL。
     ///
-    /// - For directories: Creates the directory and any necessary intermediate directories.
-/// - For files: reates an empty file and any necessary parent directories.
+    /// - 对于目录：创建目录及任何必要的中间目录。
+    /// - 对于文件：创建空文件及任何必要的父目录。
     ///
-    /// - Returns: The current URL (self)
-    /// - Throws: An error if the creation fails
+    /// - Returns: 当前 URL（self）
+    /// - Throws: 如果创建失败则抛出错误
     func createIfNotExist() throws -> URL {
         // 处理父目录
         let parentDir = deletingLastPathComponent()
@@ -225,7 +225,7 @@ public extension URL {
     }
 }
 
-// MARK: - Preview
+// MARK: - 预览
 
 #Preview("File Operations") {
     FileOperationTestView()
