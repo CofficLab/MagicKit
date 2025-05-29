@@ -1,6 +1,12 @@
 import SwiftUI
 
 extension MagicBackground {
+    /// 霜花背景效果
+    /// 
+    /// 创建一个具有毛玻璃效果和霜花图案的背景视图。
+    /// 使用超薄材质作为基础，并在其上绘制随机分布的霜花线条图案。
+    /// 
+    /// - Returns: 包含霜花效果的背景视图
     static public var frost: some View {
         ZStack {
             // 基础毛玻璃效果
@@ -33,6 +39,12 @@ extension MagicBackground {
         .ignoresSafeArea()
     }
     
+    /// 渐变背景效果
+    /// 
+    /// 创建一个从浅蓝到深紫的线性渐变背景。
+    /// 渐变方向从顶部到底部，使用超薄材质作为背景层。
+    /// 
+    /// - Returns: 蓝紫色渐变背景视图
     static public var gradient: some View {
         LinearGradient(
             gradient: Gradient(colors: [
@@ -46,6 +58,13 @@ extension MagicBackground {
         .ignoresSafeArea()
     }
     
+    /// 极光背景效果
+    /// 
+    /// 创建一个模拟北极光的动态背景效果。
+    /// 使用曲线路径和渐变色彩模拟极光的流动效果，
+    /// 包含绿色到青色的渐变和模糊效果。
+    /// 
+    /// - Returns: 极光效果背景视图
     static public var aurora: some View {
         ZStack {
             Color.black.opacity(0.8)
@@ -81,6 +100,12 @@ extension MagicBackground {
         .ignoresSafeArea()
     }
     
+    /// 海洋背景效果
+    /// 
+    /// 创建一个模拟海洋深度的渐变背景。
+    /// 从浅蓝色渐变到深蓝色，营造海洋的深邃感。
+    /// 
+    /// - Returns: 海洋色调渐变背景视图
     static public var ocean: some View {
         LinearGradient(
             gradient: Gradient(colors: [
@@ -94,6 +119,12 @@ extension MagicBackground {
         .ignoresSafeArea()
     }
     
+    /// 日落背景效果
+    /// 
+    /// 创建一个温暖的日落色调渐变背景。
+    /// 从橙红色渐变到金黄色，模拟夕阳西下的美景。
+    /// 
+    /// - Returns: 日落色调渐变背景视图
     static public var sunset: some View {
         LinearGradient(
             gradient: Gradient(colors: [
@@ -107,6 +138,12 @@ extension MagicBackground {
         .ignoresSafeArea()
     }
     
+    /// 森林背景效果
+    /// 
+    /// 创建一个自然森林色调的对角渐变背景。
+    /// 从深绿色渐变到浅绿色，营造森林的清新感。
+    /// 
+    /// - Returns: 森林色调渐变背景视图
     static public var forest: some View {
         LinearGradient(
             gradient: Gradient(colors: [
@@ -120,6 +157,12 @@ extension MagicBackground {
         .ignoresSafeArea()
     }
     
+    /// 薰衣草背景效果
+    /// 
+    /// 创建一个柔和的薰衣草色调渐变背景。
+    /// 从浅紫色渐变到深紫色，营造优雅宁静的氛围。
+    /// 
+    /// - Returns: 薰衣草色调渐变背景视图
     static public var lavender: some View {
         LinearGradient(
             gradient: Gradient(colors: [
@@ -133,6 +176,12 @@ extension MagicBackground {
         .ignoresSafeArea()
     }
     
+    /// 沙漠背景效果
+    /// 
+    /// 创建一个温暖的沙漠色调水平渐变背景。
+    /// 从金黄色渐变到橙色，模拟沙漠的炽热感。
+    /// 
+    /// - Returns: 沙漠色调渐变背景视图
     static public var desert: some View {
         LinearGradient(
             gradient: Gradient(colors: [
@@ -146,6 +195,12 @@ extension MagicBackground {
         .ignoresSafeArea()
     }
     
+    /// 午夜背景效果
+    /// 
+    /// 创建一个深沉的午夜色调渐变背景。
+    /// 从深灰色渐变到更深的灰色，营造神秘的夜晚氛围。
+    /// 
+    /// - Returns: 午夜色调渐变背景视图
     static public var midnight: some View {
         LinearGradient(
             gradient: Gradient(colors: [
@@ -159,6 +214,12 @@ extension MagicBackground {
         .ignoresSafeArea()
     }
     
+    /// 樱桃背景效果
+    /// 
+    /// 创建一个鲜艳的樱桃色调对角渐变背景。
+    /// 从深红色渐变到橙红色，营造活力四射的感觉。
+    /// 
+    /// - Returns: 樱桃色调渐变背景视图
     static public var cherry: some View {
         LinearGradient(
             gradient: Gradient(colors: [
@@ -172,6 +233,12 @@ extension MagicBackground {
         .ignoresSafeArea()
     }
     
+    /// 薄荷背景效果
+    /// 
+    /// 创建一个清新的薄荷色调水平渐变背景。
+    /// 从青绿色渐变到浅绿色，营造清新凉爽的感觉。
+    /// 
+    /// - Returns: 薄荷色调渐变背景视图
     static public var mint: some View {
         LinearGradient(
             gradient: Gradient(colors: [
@@ -185,6 +252,12 @@ extension MagicBackground {
         .ignoresSafeArea()
     }
     
+    /// 黄昏背景效果
+    /// 
+    /// 创建一个黄昏时分的色调渐变背景。
+    /// 从深蓝灰色渐变到亮蓝色，模拟黄昏天空的变化。
+    /// 
+    /// - Returns: 黄昏色调渐变背景视图
     static public var twilight: some View {
         LinearGradient(
             gradient: Gradient(colors: [
@@ -198,6 +271,12 @@ extension MagicBackground {
         .ignoresSafeArea()
     }
     
+    /// 玫瑰背景效果
+    /// 
+    /// 创建一个柔美的玫瑰色调渐变背景。
+    /// 从粉红色渐变到浅粉色，营造浪漫温柔的氛围。
+    /// 
+    /// - Returns: 玫瑰色调渐变背景视图
     static public var rose: some View {
         LinearGradient(
             gradient: Gradient(colors: [
@@ -211,6 +290,12 @@ extension MagicBackground {
         .ignoresSafeArea()
     }
     
+    /// 翡翠背景效果
+    /// 
+    /// 创建一个优雅的翡翠色调对角渐变背景。
+    /// 从深绿色渐变到蓝绿色，营造宝石般的质感。
+    /// 
+    /// - Returns: 翡翠色调渐变背景视图
     static public var emerald: some View {
         LinearGradient(
             gradient: Gradient(colors: [
@@ -224,6 +309,12 @@ extension MagicBackground {
         .ignoresSafeArea()
     }
     
+    /// 紫水晶背景效果
+    /// 
+    /// 创建一个神秘的紫水晶色调渐变背景。
+    /// 从亮紫色渐变到深紫色，营造神秘高贵的感觉。
+    /// 
+    /// - Returns: 紫水晶色调渐变背景视图
     static public var amethyst: some View {
         LinearGradient(
             gradient: Gradient(colors: [
@@ -237,6 +328,12 @@ extension MagicBackground {
         .ignoresSafeArea()
     }
     
+    /// 珊瑚背景效果
+    /// 
+    /// 创建一个温暖的珊瑚色调水平渐变背景。
+    /// 从橙红色渐变到浅橙色，营造温暖活泼的感觉。
+    /// 
+    /// - Returns: 珊瑚色调渐变背景视图
     static public var coral: some View {
         LinearGradient(
             gradient: Gradient(colors: [
@@ -250,6 +347,12 @@ extension MagicBackground {
         .ignoresSafeArea()
     }
     
+    /// 石板背景效果
+    /// 
+    /// 创建一个沉稳的石板色调渐变背景。
+    /// 从蓝灰色渐变到紫灰色，营造专业稳重的感觉。
+    /// 
+    /// - Returns: 石板色调渐变背景视图
     static public var slate: some View {
         LinearGradient(
             gradient: Gradient(colors: [
@@ -263,6 +366,12 @@ extension MagicBackground {
         .ignoresSafeArea()
     }
     
+    /// 鼠尾草背景效果
+    /// 
+    /// 创建一个自然的鼠尾草色调对角渐变背景。
+    /// 从蓝灰色渐变到绿灰色，营造自然平和的感觉。
+    /// 
+    /// - Returns: 鼠尾草色调渐变背景视图
     static public var sage: some View {
         LinearGradient(
             gradient: Gradient(colors: [
@@ -276,6 +385,12 @@ extension MagicBackground {
         .ignoresSafeArea()
     }
     
+    /// 黄昏背景效果
+    /// 
+    /// 创建一个戏剧性的黄昏色调渐变背景。
+    /// 从深蓝灰色渐变到珊瑚红色，营造黄昏的对比美感。
+    /// 
+    /// - Returns: 黄昏色调渐变背景视图
     static public var dusk: some View {
         LinearGradient(
             gradient: Gradient(colors: [
@@ -289,6 +404,12 @@ extension MagicBackground {
         .ignoresSafeArea()
     }
     
+    /// 宁静背景效果
+    /// 
+    /// 创建一个平静的宁静色调渐变背景。
+    /// 从浅蓝色渐变到更浅的蓝色，营造宁静祥和的氛围。
+    /// 
+    /// - Returns: 宁静色调渐变背景视图
     static public var serenity: some View {
         LinearGradient(
             gradient: Gradient(colors: [
@@ -362,4 +483,4 @@ extension MagicBackground {
             Text("自然")
         }
     }
-} 
+}
