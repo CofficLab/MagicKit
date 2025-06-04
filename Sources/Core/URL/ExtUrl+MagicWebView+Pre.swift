@@ -23,7 +23,24 @@ public struct MagicWebViewDemo: View {
                     .showLogView(true)
             }
             .tabItem {
-                Label("基本", systemImage: "globe")
+                Label("在线网页", systemImage: "globe")
+            }
+            
+            // 磁盘文件
+            VStack {
+                let webView = URL.sample_temp_html.makeWebView { error in
+                    if let error = error {
+                        MagicLogger.error("\(URL.sample_temp_txt)加载失败: \(error.localizedDescription)")
+                    } else {
+                        MagicLogger.info("\(URL.sample_temp_txt)加载完成")
+                    }
+                }
+
+                webView
+                    .showLogView(true)
+            }
+            .tabItem {
+                Label("磁盘文件", systemImage: "globe")
             }
 
             // 错误处理演示

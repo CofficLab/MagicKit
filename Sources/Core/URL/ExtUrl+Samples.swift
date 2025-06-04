@@ -194,6 +194,29 @@ public extension URL {
     /// 示例文本 - 宋词
     static let sample_web_txt_songci = URL(string: "https://fastly.jsdelivr.net/gh/chinese-poetry/chinese-poetry@master/json/poet.song.json")!
     
+    // MARK: - HTML示例
+    /// HTML示例 - 基础模板
+    static let sample_web_html_basic = URL(string: "https://raw.githubusercontent.com/mdn/learning-area/main/html/introduction-to-html/getting-started/index.html")!
+    /// HTML示例 - CSS样式
+    static let sample_web_html_css = URL(string: "https://raw.githubusercontent.com/mdn/learning-area/main/css/introduction-to-css/simple-css-examples/stylesheet-examples.html")!
+    /// HTML示例 - JavaScript交互
+    static let sample_web_html_js = URL(string: "https://raw.githubusercontent.com/mdn/learning-area/main/javascript/introduction-to-js-1/what-is-js/javascript-label.html")!
+    /// HTML示例 - 响应式设计
+    static let sample_web_html_responsive = URL(string: "https://raw.githubusercontent.com/mdn/learning-area/main/css/introduction-to-css/fundamental-css-comprehension/index.html")!
+    /// HTML示例 - 表单
+    static let sample_web_html_form = URL(string: "https://raw.githubusercontent.com/mdn/learning-area/main/html/forms/your-first-HTML-form/first-form.html")!
+    
+    /// HTML示例 - 中文网页模板
+    static let sample_web_html_cn_basic = URL(string: "https://fastly.jsdelivr.net/gh/web-samples/html-examples@main/chinese/basic.html")!
+    /// HTML示例 - 中文博客模板
+    static let sample_web_html_cn_blog = URL(string: "https://fastly.jsdelivr.net/gh/web-samples/html-examples@main/chinese/blog.html")!
+    /// HTML示例 - 中文产品页面
+    static let sample_web_html_cn_product = URL(string: "https://fastly.jsdelivr.net/gh/web-samples/html-examples@main/chinese/product.html")!
+    /// HTML示例 - 中文新闻页面
+    static let sample_web_html_cn_news = URL(string: "https://fastly.jsdelivr.net/gh/web-samples/html-examples@main/chinese/news.html")!
+    /// HTML示例 - 中文联系表单
+    static let sample_web_html_cn_contact = URL(string: "https://fastly.jsdelivr.net/gh/web-samples/html-examples@main/chinese/contact.html")!
+    
     // MARK: - 临时文件示例
     /// 临时目录中的文本文件
     static var sample_temp_txt: URL {
@@ -209,6 +232,99 @@ public extension URL {
             1. 测试文件操作
             2. 测试缩略图生成
             3. 测试文件属性读取
+            """
+            try? content.write(to: tempFile, atomically: true, encoding: .utf8)
+        }
+        
+        return tempFile
+    }
+    
+    /// 临时目录中的HTML文件
+    static var sample_temp_html: URL {
+        let tempFile = FileManager.default.temporaryDirectory
+            .appendingPathComponent("magic_kit_test.html")
+        
+        if !FileManager.default.fileExists(atPath: tempFile.path) {
+            let content = """
+            <!DOCTYPE html>
+            <html lang="zh-CN">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>MagicKit 测试页面</title>
+                <style>
+                    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; }
+                    .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+                    h1 { color: #333; }
+                    p { line-height: 1.6; }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <h1>MagicKit HTML 测试文件</h1>
+                    <p>这是一个由 MagicKit 创建的测试 HTML 文件。</p>
+                    <p>创建时间: \(Date())</p>
+                    <h2>用途：</h2>
+                    <ul>
+                        <li>测试 HTML 文件操作</li>
+                        <li>测试网页内容渲染</li>
+                        <li>测试文件属性读取</li>
+                    </ul>
+                </div>
+            </body>
+            </html>
+            """
+            try? content.write(to: tempFile, atomically: true, encoding: .utf8)
+        }
+        
+        return tempFile
+    }
+    
+    /// 临时目录中的HTML表单文件
+    static var sample_temp_html_form: URL {
+        let tempFile = FileManager.default.temporaryDirectory
+            .appendingPathComponent("magic_kit_test_form.html")
+        
+        if !FileManager.default.fileExists(atPath: tempFile.path) {
+            let content = """
+            <!DOCTYPE html>
+            <html lang="zh-CN">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>MagicKit 表单测试</title>
+                <style>
+                    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; }
+                    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                    form { background: #f9f9f9; padding: 20px; border-radius: 8px; }
+                    label { display: block; margin-bottom: 5px; font-weight: bold; }
+                    input, textarea { width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 4px; }
+                    button { background: #0066cc; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <h1>MagicKit 表单测试</h1>
+                    <p>这是一个由 MagicKit 创建的测试表单。</p>
+                    <p>创建时间: \(Date())</p>
+                    <form>
+                        <div>
+                            <label for="name">姓名：</label>
+                            <input type="text" id="name" name="name" placeholder="请输入您的姓名">
+                        </div>
+                        <div>
+                            <label for="email">邮箱：</label>
+                            <input type="email" id="email" name="email" placeholder="请输入您的邮箱">
+                        </div>
+                        <div>
+                            <label for="message">留言：</label>
+                            <textarea id="message" name="message" rows="4" placeholder="请输入您的留言"></textarea>
+                        </div>
+                        <button type="submit">提交</button>
+                    </form>
+                </div>
+            </body>
+            </html>
             """
             try? content.write(to: tempFile, atomically: true, encoding: .utf8)
         }
@@ -267,26 +383,61 @@ public extension URL {
     /// 临时目录中的测试文件夹
     static var sample_temp_folder: URL {
         let tempFolder = FileManager.default.temporaryDirectory
-            .appendingPathComponent("magic_kit_test_folder")
+            .appendingPathComponent("magic_kit_test_folder", isDirectory: true)
         
         if !FileManager.default.fileExists(atPath: tempFolder.path) {
             try? FileManager.default.createDirectory(at: tempFolder, withIntermediateDirectories: true)
             
-            // 创建一些测试文件
-            let testFiles = [
-                ("test1.txt", "这是测试文件1"),
-                ("test2.txt", "这是测试文件2"),
-                ("subfolder", nil)
-            ]
+            // 创建测试文件
+            let textFile = tempFolder.appendingPathComponent("test.txt")
+            try? "This is a test file.".write(to: textFile, atomically: true, encoding: .utf8)
             
-            for (name, content) in testFiles {
-                let fileURL = tempFolder.appendingPathComponent(name)
-                if let content = content {
-                    try? content.write(to: fileURL, atomically: true, encoding: .utf8)
-                } else {
-                    try? FileManager.default.createDirectory(at: fileURL, withIntermediateDirectories: true)
-                }
-            }
+            // 创建HTML测试文件
+            let htmlFile = tempFolder.appendingPathComponent("test.html")
+            let htmlContent = """
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>MagicKit Test</title>
+            </head>
+            <body>
+                <h1>MagicKit HTML Test</h1>
+                <p>This is a test HTML file in the test folder.</p>
+            </body>
+            </html>
+            """
+            try? htmlContent.write(to: htmlFile, atomically: true, encoding: .utf8)
+            
+            // 创建HTML表单测试文件
+            let htmlFormFile = tempFolder.appendingPathComponent("test_form.html")
+            let htmlFormContent = """
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>MagicKit Form Test</title>
+            </head>
+            <body>
+                <h1>MagicKit Form Test</h1>
+                <form>
+                    <input type="text" placeholder="Test input">
+                    <button>Submit</button>
+                </form>
+            </body>
+            </html>
+            """
+            try? htmlFormContent.write(to: htmlFormFile, atomically: true, encoding: .utf8)
+            
+            let imageFile = tempFolder.appendingPathComponent("test.jpg")
+            try? FileManager.default.copyRemoteFile(from: sample_web_jpg_earth, to: imageFile)
+            
+            let videoFile = tempFolder.appendingPathComponent("test.mp4")
+            try? FileManager.default.copyRemoteFile(from: sample_web_mp4_bunny, to: videoFile)
+            
+            let audioFile = tempFolder.appendingPathComponent("test.mp3")
+            try? FileManager.default.copyRemoteFile(from: sample_web_mp3_kennedy, to: audioFile)
+            
+            let pdfFile = tempFolder.appendingPathComponent("test.pdf")
+            try? FileManager.default.copyRemoteFile(from: sample_web_pdf_swift_guide, to: pdfFile)
         }
         
         return tempFolder
@@ -459,4 +610,4 @@ private extension FileManager {
             throw error
         }
     }
-} 
+}

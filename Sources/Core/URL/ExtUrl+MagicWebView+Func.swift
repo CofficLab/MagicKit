@@ -23,7 +23,7 @@ public extension URL {
     
     /// 判断URL是否可以在WebView中展示
     var canOpenInWebView: Bool {
-        let webSchemes = ["http", "https", "data"]
+        let webSchemes = ["http", "https", "data", "file"]
         return scheme.map { webSchemes.contains($0.lowercased()) } ?? false
     }
 }
