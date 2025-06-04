@@ -437,7 +437,7 @@ public extension URL {
             try? FileManager.default.copyRemoteFile(from: sample_web_mp3_kennedy, to: audioFile)
             
             let pdfFile = tempFolder.appendingPathComponent("test.pdf")
-            try? FileManager.default.copyRemoteFile(from: sample_web_pdf_swift_guide, to: pdfFile)
+             try? FileManager.default.copyRemoteFile(from: sample_web_pdf_swift_guide, to: pdfFile)
         }
         
         return tempFolder
@@ -466,6 +466,16 @@ public extension URL {
     /// iCloud 文档中的示例文本文件
     static var sample_icloud_text: URL? {
         sample_icloud_document("magic_kit_test.txt")
+    }
+    
+    /// iCloud 文档中的示例HTML文件
+    static var sample_icloud_html: URL? {
+        sample_icloud_document("magic_kit_test.html")
+    }
+    
+    /// iCloud 文档中的示例HTML表单文件
+    static var sample_icloud_html_form: URL? {
+        sample_icloud_document("magic_kit_test_form.html")
     }
     
     /// iCloud 文档中的示例图片文件
@@ -515,6 +525,79 @@ public extension URL {
         var createdFiles: [URL] = []
         var lastError: Error?
         let group = DispatchGroup()
+        
+        // 创建HTML示例文件
+        let htmlFile = documentsURL.appendingPathComponent("magic_kit_test.html")
+        let htmlContent = """
+        <!DOCTYPE html>
+        <html lang="zh-CN">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>MagicKit iCloud 测试页面</title>
+            <style>
+                body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; }
+                .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+                h1 { color: #333; }
+                p { line-height: 1.6; }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>MagicKit iCloud HTML 测试文件</h1>
+                <p>这是一个由 MagicKit 创建的 iCloud 测试 HTML 文件。</p>
+                <p>创建时间: \(Date())</p>
+            </div>
+        </body>
+        </html>
+        """
+        try? htmlContent.write(to: htmlFile, atomically: true, encoding: .utf8)
+        createdFiles.append(htmlFile)
+        
+        // 创建HTML表单示例文件
+        let htmlFormFile = documentsURL.appendingPathComponent("magic_kit_test_form.html")
+        let htmlFormContent = """
+        <!DOCTYPE html>
+        <html lang="zh-CN">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>MagicKit iCloud 表单测试</title>
+            <style>
+                body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; }
+                .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                form { background: #f9f9f9; padding: 20px; border-radius: 8px; }
+                label { display: block; margin-bottom: 5px; font-weight: bold; }
+                input, textarea { width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 4px; }
+                button { background: #0066cc; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>MagicKit iCloud 表单测试</h1>
+                <p>这是一个由 MagicKit 创建的 iCloud 测试表单。</p>
+                <p>创建时间: \(Date())</p>
+                <form>
+                    <div>
+                        <label for="name">姓名：</label>
+                        <input type="text" id="name" name="name" placeholder="请输入您的姓名">
+                    </div>
+                    <div>
+                        <label for="email">邮箱：</label>
+                        <input type="email" id="email" name="email" placeholder="请输入您的邮箱">
+                    </div>
+                    <div>
+                        <label for="message">留言：</label>
+                        <textarea id="message" name="message" rows="4" placeholder="请输入您的留言"></textarea>
+                    </div>
+                    <button type="submit">提交</button>
+                </form>
+            </div>
+        </body>
+        </html>
+        """
+        try? htmlFormContent.write(to: htmlFormFile, atomically: true, encoding: .utf8)
+        createdFiles.append(htmlFormFile)
         
         for (source, destination) in samples {
             group.enter()
