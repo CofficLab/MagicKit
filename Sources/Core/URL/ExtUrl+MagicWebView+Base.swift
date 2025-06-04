@@ -319,6 +319,7 @@ internal func configureWebView(coordinator: WebViewCoordinator, logger: MagicLog
     configuration.userContentController = userContentController
     configuration.preferences.javaScriptCanOpenWindowsAutomatically = true
     configuration.preferences.javaScriptEnabled = true
+    configuration.preferences.setValue(true, forKey: "allowFileAccessFromFileURLs")
 
     if #available(iOS 14.0, macOS 11.0, *) {
         configuration.defaultWebpagePreferences.allowsContentJavaScript = true
