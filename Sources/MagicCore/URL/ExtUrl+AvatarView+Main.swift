@@ -327,7 +327,9 @@ public struct AvatarView: View, SuperLog {
 
     @Sendable private func setupDownloadMonitor() async {
         guard monitorDownload && url.isiCloud && progressBinding == nil else {
+            if verbose {
             addLog("跳过下载监控设置：不需要监控或非 iCloud 文件")
+            }
             return
         }
 
