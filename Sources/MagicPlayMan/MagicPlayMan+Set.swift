@@ -72,8 +72,8 @@ extension MagicPlayMan {
         currentURL = url
 
         if let url = currentURL {
-                events.onCurrentURLChanged.send(url)
-            }
+            events.onCurrentURLChanged.send(url)
+        }
     }
 
     @MainActor
@@ -81,6 +81,6 @@ extension MagicPlayMan {
         playMode = mode
 
         log("播放模式变更：\(playMode)")
-                events.onPlayModeChanged.send(playMode)
+        events.onPlayModeChanged.send(playMode)
     }
 }

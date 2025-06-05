@@ -142,9 +142,12 @@ public extension MagicPlayMan {
         guard hasAsset else { return }
 
         _player.pause()
-        state = .paused
         log("⏸️ Paused playback")
         updateNowPlayingInfo()
+        
+        Task {
+            await self.setState(.playing)
+        }
     }
 
     /// 停止播放
