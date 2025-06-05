@@ -2,8 +2,8 @@ import SwiftUI
 import OSLog
 
 /// 用于展示当前应用所有 UserDefaults 键值对的视图
-struct MagicUserDefaultsView: View, SuperLog {
-    nonisolated static let emoji = "🔍"
+public struct MagicUserDefaultsView: View, SuperLog {
+    nonisolated public static let emoji = "🔍"
     
     @State private var keyValuePairs: [(key: String, value: String)] = []
     @State private var searchText: String
@@ -27,7 +27,7 @@ struct MagicUserDefaultsView: View, SuperLog {
         }
     }
     
-    var body: some View {
+    public var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("UserDefaults 调试视图").font(.headline)
             
