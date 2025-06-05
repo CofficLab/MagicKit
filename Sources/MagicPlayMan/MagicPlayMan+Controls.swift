@@ -345,8 +345,6 @@ public extension MagicPlayMan {
         )
     }
 
-
-    
     /// 设置播放模式
     /// - Parameter mode: 要设置的播放模式
     func changePlayMode(_ mode: MagicPlayMode) {

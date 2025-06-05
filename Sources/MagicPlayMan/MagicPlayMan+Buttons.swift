@@ -222,52 +222,51 @@ public extension MagicPlayMan {
 
 // MARK: - Preview
 
-#Preview("MagicPlayMan") {        MagicPlayMan.PreviewView().inMagicContainer()
-    
+#Preview("MagicPlayMan") {
+    MagicPlayMan.PreviewView().inMagicContainer()
 }
 
 #Preview("Buttons") {
-    
-        let man = MagicPlayMan()
-        
-        return VStack(spacing: 20) {
-            // 媒体选择按钮
-            man.makeMediaPickerButton()
-            
-            // 播放控制按钮组
+    let man = MagicPlayMan()
+
+    return VStack(spacing: 20) {
+        // 媒体选择按钮
+        man.makeMediaPickerButton()
+
+        // 播放控制按钮组
+        HStack(spacing: 16) {
+            man.makePreviousButton()
+            man.makeRewindButton()
+            man.makePlayPauseButton()
+            man.makeForwardButton()
+            man.makeNextButton()
+        }
+
+        // 功能按钮组
+        HStack(spacing: 16) {
+            man.makePlayModeButton()
+            man.makeLikeButton()
+            man.makePlaylistButton()
+            man.makePlaylistToggleButton()
+        }
+
+        // 工具按钮组
+        HStack(spacing: 16) {
+            man.makeSubscribersButton()
+            man.makeSupportedFormatsButton()
+            man.makeLogButton()
+        }
+
+        // 不同形状的按钮示例
+        VStack(spacing: 16) {
+            Text("Different Shapes").font(.caption)
             HStack(spacing: 16) {
-                man.makePreviousButton()
-                man.makeRewindButton()
-                man.makePlayPauseButton()
-                man.makeForwardButton()
-                man.makeNextButton()
-            }
-            
-            // 功能按钮组
-            HStack(spacing: 16) {
-                man.makePlayModeButton()
                 man.makeLikeButton()
-                man.makePlaylistButton()
-                man.makePlaylistToggleButton()
-            }
-            
-            // 工具按钮组
-            HStack(spacing: 16) {
-                man.makeSubscribersButton()
-                man.makeSupportedFormatsButton()
-                man.makeLogButton()
-            }
-            
-            // 不同形状的按钮示例
-            VStack(spacing: 16) {
-                Text("Different Shapes").font(.caption)
-                HStack(spacing: 16) {
-                    man.makeLikeButton()
-                    man.makeLikeButton().magicShape(.circle)
-                    man.makeLikeButton().magicShape(.roundedSquare)
-                }
+                man.makeLikeButton().magicShape(.circle)
+                man.makeLikeButton().magicShape(.roundedSquare)
             }
         }
-        .padding()
-        .inMagicContainer()
+    }
+    .padding()
+    .inMagicContainer()
 }

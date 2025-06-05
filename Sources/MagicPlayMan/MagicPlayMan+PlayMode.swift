@@ -10,11 +10,9 @@ public extension MagicPlayMan {
     /// 播放模式按以下顺序循环切换：
     /// sequence -> single -> random -> sequence
     func togglePlayMode() {
-        Task {
-            await setPlayMode(self.playMode.next)
-            log("Playback mode changed to: \(playMode.displayName)")
-            showToast("Playback mode: \(playMode.displayName)", icon: playMode.icon, style: .info)
-        }
+        changePlayMode(self.playMode.next)
+        log("Playback mode changed to: \(playMode.displayName)")
+        showToast("Playback mode: \(playMode.displayName)", icon: playMode.icon, style: .info)
     }
 
     /// 获取当前播放模式的显示名称
