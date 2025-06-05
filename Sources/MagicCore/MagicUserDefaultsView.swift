@@ -11,7 +11,7 @@ public struct MagicUserDefaultsView: View, SuperLog {
     
     /// 初始化方法
     /// - Parameter defaultSearchText: 默认的搜索文本，如果提供则在视图加载时自动填充到搜索框
-    init(defaultSearchText: String = "") {
+    public init(defaultSearchText: String = "") {
         // 使用 _searchText 初始化 @State 变量
         self._searchText = State(initialValue: defaultSearchText)
     }
