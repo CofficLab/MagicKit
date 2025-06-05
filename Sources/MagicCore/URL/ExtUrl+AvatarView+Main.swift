@@ -321,7 +321,9 @@ public struct AvatarView: View, SuperLog {
             }
 
             await state.setLoading(false)
+            if verbose {
             addLog("缩略图加载流程结束")
+        }
         }.value
     }
 
