@@ -69,10 +69,14 @@ public extension MagicPlayMan {
         guard hasAsset else { return }
 
         if isPlaylistEnabled {
+            log("下一首，播放列表已启用")
             if let nextAsset = _playlist.playNext(mode: playMode) {
+                log("下一首，播放列表已启用且下一个是：\(nextAsset.title)")
                 Task {
                     await loadFromURL(nextAsset)
                 }
+            } else {
+                log("下一首，播放列表已启用但没有 NextAsset")
             }
         } else if events.hasNavigationSubscribers {
             log("下一首，播放列表已禁用且有 NavigationSubscribers")
