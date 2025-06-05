@@ -65,19 +65,25 @@ public extension MagicPlayMan {
 
     /// 播放下一首
     func next() {
+        log("下一首，当前是否有Asset -> \(self.hasAsset)")
         guard hasAsset else { return }
 
-        Task {
-            if isPlaylistEnabled {
-                if let nextAsset = _playlist.playNext(mode: playMode) {
+        if isPlaylistEnabled {
+            if let nextAsset = _playlist.playNext(mode: playMode) {
+                Task {
                     await loadFromURL(nextAsset)
                 }
-            } else if events.hasNavigationSubscribers {
-                // 如果播放列表被禁用但有订阅者，发送请求下一首事件
-                if let currentAsset = currentAsset {
-                    events.onNextRequested.send(currentAsset)
-                }
             }
+        } else if events.hasNavigationSubscribers {
+            log("下一首，播放列表已禁用且有 NavigationSubscribers")
+
+            // 如果播放列表被禁用但有订阅者，发送请求下一首事件
+            if let currentAsset = currentAsset {
+                log("请求下一首")
+                events.onNextRequested.send(currentAsset)
+            }
+        } else {
+            log("下一首，播放列表已禁用且无 NavigationSubscribers")
         }
     }
 
@@ -85,16 +91,16 @@ public extension MagicPlayMan {
     func previous() {
         guard hasAsset else { return }
 
-        Task {
-            if isPlaylistEnabled {
-                if let previousAsset = _playlist.playPrevious(mode: playMode) {
+        if isPlaylistEnabled {
+            if let previousAsset = _playlist.playPrevious(mode: playMode) {
+                Task {
                     await loadFromURL(previousAsset)
                 }
-            } else if events.hasNavigationSubscribers {
-                // 如果播放列表被禁用但有订阅者，发送请求上一首事件
-                if let currentAsset = currentURL {
-                    events.onPreviousRequested.send(currentAsset)
-                }
+            }
+        } else if events.hasNavigationSubscribers {
+            // 如果播放列表被禁用但有订阅者，发送请求上一首事件
+            if let currentAsset = currentURL {
+                events.onPreviousRequested.send(currentAsset)
             }
         }
     }
@@ -131,7 +137,7 @@ public extension MagicPlayMan {
         _player.play()
         log("▶️ Started playback: \(currentURL?.title ?? "Unknown")")
         updateNowPlayingInfo()
-        
+
         Task {
             await self.setState(.playing)
         }
@@ -144,7 +150,7 @@ public extension MagicPlayMan {
         _player.pause()
         log("⏸️ Paused playback")
         updateNowPlayingInfo()
-        
+
         Task {
             await self.setState(.playing)
         }
@@ -154,10 +160,10 @@ public extension MagicPlayMan {
     func stop() {
         _player.pause()
         _player.seek(to: .zero)
-        
+
         log("⏹️ Stopped playback")
         updateNowPlayingInfo()
-        
+
         Task {
             await self.setState(.stopped)
         }
@@ -359,5 +365,5 @@ public extension MagicPlayMan {
 }
 
 #Preview("MagicPlayMan") {
-    MagicPlayMan.PreviewView().inMagicContainer()
+    MagicPlayMan.PreviewView()
 }

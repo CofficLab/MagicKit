@@ -1,5 +1,5 @@
-import SwiftUI
 import MagicCore
+import SwiftUI
 
 /// MagicPlayMan 的视图相关功能扩展
 /// 提供了一系列用于创建播放器界面组件的方法
@@ -12,7 +12,7 @@ public extension MagicPlayMan {
             url: url
         )
     }
-    
+
     /// 创建空状态视图
     /// - Returns: 空状态视图
     private func makeEmptyView() -> some View {
@@ -21,7 +21,7 @@ public extension MagicPlayMan {
             artist: "Select a media file to play"
         )
     }
-    
+
     /// 创建播放状态视图
     /// - Returns: 返回一个显示播放器当前状态的视图，包括：
     /// - 播放/暂停状态
@@ -67,7 +67,7 @@ public extension MagicPlayMan {
             }
         }
     }
-    
+
     /// 创建视频播放视图
     /// - Returns: 视频播放视图
     private func makeVideoView() -> some View {
@@ -101,7 +101,7 @@ public extension MagicPlayMan {
     func makeSupportedFormatsView() -> some View {
         FormatInfoView(formats: SupportedFormat.allFormats)
     }
-    
+
     /// 创建主要展示视图
     /// - Returns: 返回一个根据当前媒体资源类型自动适配的主要展示视图：
     /// - 当资源为音频时，显示音频缩略图，不包括音频的标题和艺术家
@@ -120,8 +120,7 @@ public extension MagicPlayMan {
 }
 
 // MARK: - Preview
+
 #Preview("MagicPlayMan") {
-  
-        MagicPlayMan.PreviewView()
-        .inMagicContainer()
+    MagicPlayMan.PreviewView()
 }

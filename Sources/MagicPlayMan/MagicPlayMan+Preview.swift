@@ -19,7 +19,7 @@ public extension MagicPlayMan {
             cacheDirectory: URL? = nil,
             showLogs: Bool = true
         ) {
-            _playMan = StateObject(wrappedValue: MagicPlayMan(cacheDirectory: cacheDirectory))
+            _playMan = StateObject(wrappedValue: MagicPlayMan(cacheDirectory: cacheDirectory, verbose: true))
             self.showLogs = showLogs
         }
 
@@ -40,12 +40,15 @@ public extension MagicPlayMan {
                 onStateChanged: { [weak playMan] state in
                     playMan?.log("观察到事件：播放状态变化 - \(state)")
                 },
+                onNextRequested: { [weak playMan] asset in
+                    playMan?.log("观察到事件：请求下一个 - \(asset.absoluteString)")
+                },
                 onLikeStatusChanged: { [weak playMan] asset, isLiked in
                     playMan?.log("观察到事件：喜欢状态变化 - \(asset.title) \(isLiked ? "被喜欢" : "取消喜欢")")
                 },
                 onPlayModeChanged: { [weak playMan] newMode in
                     playMan?.log("观察到事件：播放模式变化 - \(playMan?.playMode.rawValue ?? "未知") -> \(newMode.rawValue)")
-                }
+                },
             )
         }
 
@@ -66,7 +69,7 @@ public extension MagicPlayMan {
             .onAppear {
                 setupEventObservation()
             }
-            .frame(width: 750, height: 850)
+            .frame(width: 750, height: 1200)
             .background(.background)
             .clipShape(RoundedRectangle(cornerRadius: 16))
             .shadow(radius: 5)
@@ -199,7 +202,7 @@ public extension MagicPlayMan {
             GroupBox {
                 if showLogs {
                     playMan.makeLogView()
-                        .frame(height: 200)
+                        .frame(height: 500)
                         .padding()
                         .background(.ultraThinMaterial)
                 }

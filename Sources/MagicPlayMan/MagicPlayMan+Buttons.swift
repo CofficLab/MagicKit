@@ -223,7 +223,7 @@ public extension MagicPlayMan {
 // MARK: - Preview
 
 #Preview("MagicPlayMan") {
-    MagicPlayMan.PreviewView().inMagicContainer()
+    MagicPlayMan.PreviewView()
 }
 
 #Preview("Buttons") {
@@ -268,5 +268,4 @@ public extension MagicPlayMan {
         }
     }
     .padding()
-    .inMagicContainer()
 }
