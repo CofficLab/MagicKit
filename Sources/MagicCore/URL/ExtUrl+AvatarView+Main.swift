@@ -40,7 +40,7 @@ public struct AvatarView: View, SuperLog {
     @StateObject private var state = ViewState()
 
     /// 下载监控器
-    private let downloadMonitor = DownloadMonitor()
+    private let downloadMonitor: DownloadMonitor
 
     /// 文件的URL
     let url: URL
@@ -111,6 +111,7 @@ public struct AvatarView: View, SuperLog {
         self.url = url
         self.size = size
         self.verbose = verbose
+        self.downloadMonitor = DownloadMonitor(verbose: verbose)
 
         // 在初始化时进行基本的 URL 检查
         if url.isFileURL {
@@ -134,14 +135,16 @@ public struct AvatarView: View, SuperLog {
     // MARK: - Private Methods
 
     private func addLog(_ message: String, level: MagicLogEntry.Level = .info) {
-        logger.log(message, level: level)
+        if verbose {
+            logger.log(message, level: level)
+        }
     }
 
     // MARK: - Body
 
     public var body: some View {
         Group {
-            if isDownloading && downloadProgress < 1{
+            if isDownloading && downloadProgress < 1 {
                 DownloadProgressView(progress: downloadProgress)
             } else if let thumbnail = state.thumbnail {
                 ThumbnailImageView(image: thumbnail)
@@ -276,17 +279,23 @@ public struct AvatarView: View, SuperLog {
 
         // 使用后台任务队列
         await Task.detached(priority: .utility) {
-            addLog("开始加载缩略图: \(url.title)")
+            if verbose {
+                addLog("开始加载缩略图: \(url.title)")
+            }
             if verbose { os_log("\(self.t)开始加载缩略图: \(url.title)") }
             await state.setLoading(true)
 
             do {
-                addLog("🛫 正在生成缩略图，目标尺寸: \(size.width)x\(size.height)")
+                if verbose {
+                    addLog("🛫 正在生成缩略图，目标尺寸: \(size.width)x\(size.height)")
+                }
                 // 在后台线程中处理图片生成
                 let image = try await url.thumbnail(size: size, verbose: verbose, reason: self.className + ".loadThumbnail")
 
                 if let image = image {
-                    addLog("缩略图生成成功")
+                    if verbose {
+                        addLog("缩略图生成成功")
+                    }
                     await state.setThumbnail(image)
                     await state.setError(nil)
                 } else {
@@ -322,15 +331,15 @@ public struct AvatarView: View, SuperLog {
 
             await state.setLoading(false)
             if verbose {
-            addLog("缩略图加载流程结束")
-        }
+                addLog("缩略图加载流程结束")
+            }
         }.value
     }
 
     @Sendable private func setupDownloadMonitor() async {
         guard monitorDownload && url.isiCloud && progressBinding == nil else {
             if verbose {
-            addLog("跳过下载监控设置：不需要监控或非 iCloud 文件")
+                addLog("跳过下载监控设置：不需要监控或非 iCloud 文件")
             }
             return
         }

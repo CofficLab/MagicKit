@@ -91,7 +91,7 @@ extension MagicPlayMan {
 
         // 监听下载完成
         var finishObserver: AnyCancellable?
-        finishObserver = url.onDownloadFinished(caller: "MagicPlayMan") { [weak self] in
+        finishObserver = url.onDownloadFinished(verbose: self.verbose,caller: "MagicPlayMan") { [weak self] in
             guard let self = self else { return }
             progressObserver?.cancel()
             finishObserver?.cancel()

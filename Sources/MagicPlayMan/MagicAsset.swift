@@ -1,7 +1,7 @@
 import Foundation
 import SwiftUI
 
-public struct MagicAsset: Identifiable, Equatable {
+public struct MagicAsset: Identifiable, Equatable, Sendable {
     public let id = UUID()
     public let url: URL
     public let metadata: Metadata

@@ -291,7 +291,9 @@ public extension MagicPlayMan {
     }
 
     func log(_ message: String, level: MagicLogEntry.Level = .info) {
-        logger.log(message, level: level)
+        if self.verbose {
+            logger.log(message, level: level)
+        }
     }
 
     /// 清理所有缓存

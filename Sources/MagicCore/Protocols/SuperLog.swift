@@ -53,7 +53,7 @@ extension SuperLog {
     public static var t: String {
         let emoji = Self.emoji
         let qosDesc = Thread.currentQosDescription
-        return "\(qosDesc) | \(emoji) \(author.padding(toLength: 20, withPad: " ", startingAt: 0)) | "
+        return "\(qosDesc) | \(emoji) \(author.padding(toLength: 27, withPad: " ", startingAt: 0)) | "
     }
 
     /// 获取实现者的作者名称

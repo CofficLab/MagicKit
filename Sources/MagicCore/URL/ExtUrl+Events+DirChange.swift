@@ -29,7 +29,9 @@ public extension URL {
         onProgress: @escaping (_ url: URL, _ progress: Double) -> Void = { _, _ in }
     ) -> AnyCancellable {
         if isiCloud {
+            if verbose {
             os_log("\(self.t)👀 [\(caller)] Start monitoring iCloud directory: \(self.shortPath())")
+            }
             return onICloudDirectoryChanged(
                 verbose: verbose,
                 caller: caller,

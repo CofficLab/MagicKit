@@ -1,6 +1,5 @@
 import SwiftUI
 
-
 struct DownloadButtonPreview: View {
     var body: some View {
         TabView {
@@ -10,21 +9,21 @@ struct DownloadButtonPreview: View {
                     Image(systemName: "1.circle.fill")
                     Text("基本")
                 }
-            
+
             // 不同形状
             shapesPreview
                 .tabItem {
                     Image(systemName: "2.circle.fill")
                     Text("形状")
                 }
-            
+
             // 不同类型文件
             fileTypesPreview
                 .tabItem {
                     Image(systemName: "3.circle.fill")
                     Text("类型")
                 }
-            
+
             // 下载状态
             statesPreview
                 .tabItem {
@@ -33,7 +32,7 @@ struct DownloadButtonPreview: View {
                 }
         }
     }
-    
+
     private var basicPreview: some View {
         MagicThemePreview {
             VStack(spacing: 20) {
@@ -41,12 +40,12 @@ struct DownloadButtonPreview: View {
                     Text("基本按钮").font(.headline)
                     URL.sample_web_mp3_kennedy.makeDownloadButton()
                 }
-                
+
                 Group {
                     Text("带标签").font(.headline)
                     URL.sample_web_mp3_kennedy.makeDownloadButton(showLabel: true)
                 }
-                
+
                 Group {
                     Text("大尺寸").font(.headline)
                     URL.sample_web_mp3_kennedy.makeDownloadButton(size: 40)
@@ -55,7 +54,7 @@ struct DownloadButtonPreview: View {
             .padding()
         }
     }
-    
+
     private var shapesPreview: some View {
         MagicThemePreview {
             VStack(spacing: 20) {
@@ -64,25 +63,25 @@ struct DownloadButtonPreview: View {
                     URL.sample_web_mp3_kennedy.makeDownloadButton(shape: .circle)
                     URL.sample_web_mp3_kennedy.makeDownloadButton(showLabel: true, shape: .circle)
                 }
-                
+
                 Divider()
-                
+
                 Group {
                     Text("圆角正方形").font(.headline)
                     URL.sample_web_mp3_kennedy.makeDownloadButton(shape: .roundedSquare)
                     URL.sample_web_mp3_kennedy.makeDownloadButton(showLabel: true, shape: .roundedSquare)
                 }
-                
+
                 Divider()
-                
+
                 Group {
                     Text("胶囊形").font(.headline)
                     URL.sample_web_mp3_kennedy.makeDownloadButton(shape: .capsule)
                     URL.sample_web_mp3_kennedy.makeDownloadButton(showLabel: true, shape: .capsule)
                 }
-                
+
                 Divider()
-                
+
                 Group {
                     Text("圆角矩形").font(.headline)
                     URL.sample_web_mp3_kennedy.makeDownloadButton(shape: .roundedRectangle)
@@ -92,7 +91,7 @@ struct DownloadButtonPreview: View {
             .padding()
         }
     }
-    
+
     private var fileTypesPreview: some View {
         MagicThemePreview {
             VStack(spacing: 20) {
@@ -101,17 +100,17 @@ struct DownloadButtonPreview: View {
                     URL(string: "file:///iCloud/test.pdf")!.makeDownloadButton()
                     URL(string: "file:///iCloud/test.pdf")!.makeDownloadButton(showLabel: true)
                 }
-                
+
                 Divider()
-                
+
                 Group {
                     Text("网络文件").font(.headline)
                     URL.sample_web_mp3_kennedy.makeDownloadButton()
                     URL.sample_web_mp3_kennedy.makeDownloadButton(showLabel: true)
                 }
-                
+
                 Divider()
-                
+
                 Group {
                     Text("本地文件").font(.headline)
                     URL.documentsDirectory.appendingPathComponent("test.txt")
@@ -123,7 +122,7 @@ struct DownloadButtonPreview: View {
             .padding()
         }
     }
-    
+
     private var statesPreview: some View {
         MagicThemePreview {
             VStack(spacing: 20) {
@@ -139,4 +138,4 @@ struct DownloadButtonPreview: View {
 
 #Preview {
     DownloadButtonPreview()
-} 
+}

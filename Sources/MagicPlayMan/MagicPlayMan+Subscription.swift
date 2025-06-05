@@ -1,5 +1,5 @@
-import Foundation
 import Combine
+import Foundation
 
 extension MagicPlayMan {
     /// 播放事件发布者
@@ -10,7 +10,7 @@ extension MagicPlayMan {
             let name: String
             let date: Date
             let hasNavigationHandler: Bool
-            
+
             public init(
                 name: String,
                 hasNavigationHandler: Bool = false
@@ -21,9 +21,9 @@ extension MagicPlayMan {
                 self.hasNavigationHandler = hasNavigationHandler
             }
         }
-        
+
         @Published private(set) var subscribers: [Subscriber] = []
-        
+
         public let onTrackFinished = PassthroughSubject<URL, Never>()
         public let onPlaybackFailed = PassthroughSubject<PlaybackState.PlaybackError, Never>()
         public let onBufferingStateChanged = PassthroughSubject<Bool, Never>()
@@ -33,7 +33,7 @@ extension MagicPlayMan {
         public let onLikeStatusChanged = PassthroughSubject<(asset: URL, isLiked: Bool), Never>()
         public let onPlayModeChanged = PassthroughSubject<MagicPlayMode, Never>()
         public let onCurrentURLChanged = PassthroughSubject<URL, Never>()
-        
+
         func addSubscriber(
             name: String,
             hasNavigationHandler: Bool = false
@@ -45,22 +45,22 @@ extension MagicPlayMan {
             subscribers.append(subscriber)
             return subscriber.id
         }
-        
+
         func removeSubscriber(id: UUID) {
             subscribers.removeAll { $0.id == id }
         }
-        
+
         func getSubscriberInfo(id: UUID) -> Subscriber? {
             subscribers.first { $0.id == id }
         }
-        
+
         var hasNavigationSubscribers: Bool {
             subscribers.contains { $0.hasNavigationHandler }
         }
-        
+
         init() {}
     }
-    
+
     @discardableResult
     public func subscribe(
         name: String,
@@ -79,7 +79,7 @@ extension MagicPlayMan {
             name: name,
             hasNavigationHandler: hasNavigationHandler
         )
-        
+
         if let handler = onTrackFinished {
             events.onTrackFinished
                 .sink { [weak self] asset in
@@ -88,7 +88,7 @@ extension MagicPlayMan {
                 }
                 .store(in: &cancellables)
         }
-        
+
         if let handler = onPlaybackFailed {
             events.onPlaybackFailed
                 .sink { [weak self] error in
@@ -97,7 +97,7 @@ extension MagicPlayMan {
                 }
                 .store(in: &cancellables)
         }
-        
+
         if let handler = onBufferingStateChanged {
             events.onBufferingStateChanged
                 .sink { [weak self] isBuffering in
@@ -106,7 +106,7 @@ extension MagicPlayMan {
                 }
                 .store(in: &cancellables)
         }
-        
+
         if let handler = onStateChanged {
             events.onStateChanged
                 .sink { [weak self] state in
@@ -115,7 +115,7 @@ extension MagicPlayMan {
                 }
                 .store(in: &cancellables)
         }
-        
+
         if let handler = onPreviousRequested {
             events.onPreviousRequested
                 .sink { [weak self] asset in
@@ -124,16 +124,16 @@ extension MagicPlayMan {
                 }
                 .store(in: &cancellables)
         }
-        
+
         if let handler = onNextRequested {
             events.onNextRequested
                 .sink { [weak self] asset in
-                    self?.log("事件：请求下一首 - 将由 \(name) 处理")
+                    self?.log("事件：当前(\(asset.absoluteString)，请求下一首 - 将由 \(name) 处理")
                     handler(asset)
                 }
                 .store(in: &cancellables)
         }
-        
+
         if let handler = onLikeStatusChanged {
             events.onLikeStatusChanged
                 .sink { [weak self] event in
@@ -142,7 +142,7 @@ extension MagicPlayMan {
                 }
                 .store(in: &cancellables)
         }
-        
+
         if let handler = onPlayModeChanged {
             events.onPlayModeChanged
                 .sink { [weak self] mode in
@@ -151,7 +151,7 @@ extension MagicPlayMan {
                 }
                 .store(in: &cancellables)
         }
-        
+
         if let handler = onCurrentURLChanged {
             events.onCurrentURLChanged
                 .sink { [weak self] url in
@@ -160,10 +160,10 @@ extension MagicPlayMan {
                 }
                 .store(in: &cancellables)
         }
-        
+
         return subscriberId
     }
-    
+
     public func unsubscribe(_ subscriberId: UUID) {
         if let subscriber = events.getSubscriberInfo(id: subscriberId) {
             events.removeSubscriber(id: subscriberId)
