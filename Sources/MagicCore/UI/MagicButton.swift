@@ -322,7 +322,7 @@ public struct MagicButton: View {
                 y: isHovering ? 2 : 0
             )
             .onTapGesture {
-                if let reason = disabledReason {
+                if let _ = disabledReason {
                     showingDisabledPopover.toggle()
                 } else {
                     if popoverContent != nil {

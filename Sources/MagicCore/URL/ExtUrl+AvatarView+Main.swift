@@ -237,7 +237,7 @@ public struct AvatarView: View, SuperLog {
             #endif
         }
         .onChange(of: progressBinding?.wrappedValue) {
-            addLog("外部将下载进度设置为: \(progressBinding?.wrappedValue)")
+            addLog("外部将下载进度设置为: \(String(describing: progressBinding?.wrappedValue))")
 
             if let progress = progressBinding?.wrappedValue, progress >= 1.0 {
                 Task {

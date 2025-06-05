@@ -270,8 +270,10 @@ public extension URL {
     /// ```
     /// - Returns: 用户选择的目录 URL
     /// - Throws: 如果用户取消选择，抛出 URLError.userCancelledAuthentication
+    ///          如果平台不支持，抛出 URLError.unsupportedURL
     static var selectDirectory: URL {
         get throws {
+            #if os(macOS)
             let panel = NSOpenPanel()
             panel.canChooseFiles = false
             panel.canChooseDirectories = true
@@ -285,6 +287,11 @@ public extension URL {
             }
             
             return directoryUrl
+            #else
+            // iOS 平台不支持直接的目录选择器
+            // 建议使用 SwiftUI 的 .fileImporter 修饰符或 UIDocumentPickerViewController
+            throw URLError(.unsupportedURL)
+            #endif
         }
     }
 }

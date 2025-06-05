@@ -199,6 +199,7 @@ public extension URL {
     ///
     /// - Returns: 当前 URL（self）
     /// - Throws: 如果创建失败则抛出错误
+    @discardableResult
     func createIfNotExist() throws -> URL {
         // 处理父目录
         let parentDir = deletingLastPathComponent()
