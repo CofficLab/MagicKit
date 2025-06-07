@@ -2,7 +2,7 @@ import Foundation
 import SwiftUI
 
 /// Date 类型的扩展，提供常用的日期格式化和转换功能
-public extension Date {    
+public extension Date {
     /// 获取当前时间的标准格式字符串
     ///
     /// 返回格式为 "yyyy-MM-dd HH:mm:ss" 的当前时间字符串，使用系统当前时区
@@ -97,63 +97,87 @@ public extension Date {
         guard let date = date else { return "-" }
         return date.fullDateTime
     }
-}
-
-/// 日期格式化演示视图
-struct DateFormattingDemoView: View {
-    @State private var date = Date()
     
-    var body: some View {
-        MagicThemePreview {
-            VStack(spacing: 20) {
-                // 静态属性部分
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("静态属性")
-                        .font(.headline)
-                        .foregroundStyle(.secondary)
-                    
-                    VStack(spacing: 8) {
-                        MagicKeyValue(key: "now", value: Date.now)
-                        MagicKeyValue(key: "nowCompact", value: Date.nowCompact)
-                    }
-                    .padding()
-                    .background(.background.secondary)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                }
-                
-                // 实例属性部分
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("实例属性")
-                        .font(.headline)
-                        .foregroundStyle(.secondary)
-                    
-                    VStack(spacing: 8) {
-                        MagicKeyValue(key: "fullDateTime", value: date.fullDateTime)
-                        MagicKeyValue(key: "compactDateTime", value: date.compactDateTime)
-                        MagicKeyValue(key: "logTime", value: date.logTime)
-                    }
-                    .padding()
-                    .background(.background.secondary)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                }
-                
-                // 工具方法部分
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("工具方法")
-                        .font(.headline)
-                        .foregroundStyle(.secondary)
-                    
-                    VStack(spacing: 8) {
-                        MagicKeyValue(key: "toString(date)", value: Date.toString(date))
-                        MagicKeyValue(key: "toString(nil)", value: Date.toString(nil))
-                    }
-                    .padding()
-                    .background(.background.secondary)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                }
+    /// 相对时间字符串
+    ///
+    /// 将日期转换为相对于当前时间的描述，如"刚刚"、"5分钟前"、"2小时前"、"3天前"等
+    ///
+    /// # 示例
+    /// ```swift
+    /// let fiveMinutesAgo = Date().addingTimeInterval(-300)
+    /// print(fiveMinutesAgo.relativeTime) // 输出: "5分钟前"
+    /// 
+    /// let twoHoursAgo = Date().addingTimeInterval(-7200)
+    /// print(twoHoursAgo.relativeTime) // 输出: "2小时前"
+    /// ```
+    var relativeTime: String {
+        let now = Date()
+        let timeInterval = now.timeIntervalSince(self)
+        
+        // 如果是未来时间
+        if timeInterval < 0 {
+            let futureInterval = -timeInterval
+            if futureInterval < 60 {
+                return "即将"
+            } else if futureInterval < 3600 {
+                let minutes = Int(futureInterval / 60)
+                return "\(minutes)分钟后"
+            } else if futureInterval < 86400 {
+                let hours = Int(futureInterval / 3600)
+                return "\(hours)小时后"
+            } else {
+                let days = Int(futureInterval / 86400)
+                return "\(days)天后"
             }
-            .padding()
-            .navigationTitle("Date 扩展演示")
+        }
+        
+        // 过去时间
+        if timeInterval < 60 {
+            return "刚刚"
+        } else if timeInterval < 3600 {
+            let minutes = Int(timeInterval / 60)
+            return "\(minutes)分钟前"
+        } else if timeInterval < 86400 {
+            let hours = Int(timeInterval / 3600)
+            return "\(hours)小时前"
+        } else if timeInterval < 604800 {
+            let days = Int(timeInterval / 86400)
+            return "\(days)天前"
+        } else if timeInterval < 2592000 {
+            let weeks = Int(timeInterval / 604800)
+            return "\(weeks)周前"
+        } else if timeInterval < 31536000 {
+            let months = Int(timeInterval / 2592000)
+            return "\(months)个月前"
+        } else {
+            let years = Int(timeInterval / 31536000)
+            return "\(years)年前"
+        }
+    }
+    
+    /// 智能相对时间字符串
+    ///
+    /// 根据时间间隔智能选择最合适的显示格式：
+    /// - 1分钟内：显示"刚刚"
+    /// - 1小时内：显示分钟
+    /// - 1天内：显示小时
+    /// - 7天内：显示天数
+    /// - 超过7天：显示具体日期
+    ///
+    /// # 示例
+    /// ```swift
+    /// let date = Date().addingTimeInterval(-86400 * 10) // 10天前
+    /// print(date.smartRelativeTime) // 输出具体日期格式
+    /// ```
+    var smartRelativeTime: String {
+        let timeInterval = Date().timeIntervalSince(self)
+        
+        if timeInterval < 604800 { // 7天内使用相对时间
+            return relativeTime
+        } else { // 超过7天显示具体日期
+            let formatter = DateFormatter()
+            formatter.dateFormat = "MM-dd"
+            return formatter.string(from: self)
         }
     }
 }
