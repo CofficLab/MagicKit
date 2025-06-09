@@ -289,8 +289,15 @@ public struct MagicButton: View {
         preventDoubleClick: Bool = true,
         loadingStyle: LoadingStyle = .spinner
     ) {
-        self.icon = icon
-        self.title = title
+        // 确保至少有一个显示内容
+        if icon == nil && title == nil {
+            self.icon = "circle"
+            self.title = nil
+        } else {
+            self.icon = icon
+            self.title = title
+        }
+        
         self.style = style
         self.size = size
         self.shape = shape
@@ -332,8 +339,15 @@ public struct MagicButton: View {
         loadingStyle: LoadingStyle = .spinner,
         asyncAction: @escaping () async -> Void
     ) {
-        self.icon = icon
-        self.title = title
+        // 确保至少有一个显示内容
+        if icon == nil && title == nil {
+            self.icon = "circle"
+            self.title = nil
+        } else {
+            self.icon = icon
+            self.title = title
+        }
+        
         self.style = style
         self.size = size
         self.shape = shape
@@ -433,11 +447,12 @@ public struct MagicButton: View {
                 HStack(spacing: 4) {
                     if let icon = icon {
                         Image(systemName: icon)
-                            .font(.system(size: minSize * 0.4))
+                            .font(.system(size: size.iconSize(containerSize: minSize)))
                     }
                     if shouldShowTitle, let title = title {
                         Text(title)
                             .font(size.font)
+                            .lineLimit(1)
                     }
                 }
                 .foregroundStyle(foregroundColor)
@@ -447,7 +462,8 @@ public struct MagicButton: View {
                     y: geometry.size.height / 2
                 )
                 .onAppear {
-                    shouldShowTitle = geometry.size.width > geometry.size.height || icon == nil
+                    // 如果有标题且按钮宽度足够，或者没有图标，则显示标题
+                    shouldShowTitle = (title != nil) && (geometry.size.width > 80 || icon == nil)
                 }
             }
             .buttonStyle(MagicButtonStyle())
