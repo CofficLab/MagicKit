@@ -24,7 +24,7 @@ public struct MagicUserDefaultsView: View, SuperLog {
                 pair.key.localizedCaseInsensitiveContains(searchText) ||
                 pair.value.localizedCaseInsensitiveContains(searchText)
             }
-        }
+    }
     }
     
     public var body: some View {

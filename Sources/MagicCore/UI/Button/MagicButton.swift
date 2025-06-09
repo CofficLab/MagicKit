@@ -213,6 +213,14 @@ public struct MagicButton: View {
         case onHover
     }
     
+    /// 加载动画样式
+    public enum LoadingStyle {
+        case spinner
+        case dots
+        case pulse
+        case none
+    }
+    
     // MARK: - Properties
     
     /// SF Symbols 图标名称
@@ -233,8 +241,14 @@ public struct MagicButton: View {
     let popoverContent: AnyView?
     /// 点击动作
     let action: (() -> Void)?
+    /// 异步点击动作
+    let asyncAction: (() async -> Void)?
     /// 自定义背景色
     let customBackgroundColor: Color?
+    /// 是否启用防重复点击
+    let preventDoubleClick: Bool
+    /// 加载动画样式
+    let loadingStyle: LoadingStyle
     
     @State private var isHovering = false
     @State private var containerSize: CGFloat = 0
@@ -242,6 +256,7 @@ public struct MagicButton: View {
     @State private var showingPopover = false
     @State private var showingTooltip = false
     @State private var shouldShowTitle = false
+    @State private var isLoading = false
     @Environment(\.colorScheme) private var colorScheme
     
     // MARK: - Initialization
@@ -258,6 +273,8 @@ public struct MagicButton: View {
     ///   - popoverContent: 弹出内容（可选）
     ///   - action: 点击动作
     ///   - customBackgroundColor: 自定义背景色
+    ///   - preventDoubleClick: 是否启用防重复点击
+    ///   - loadingStyle: 加载动画样式
     public init(
         icon: String? = nil,
         title: String? = nil,
@@ -268,7 +285,9 @@ public struct MagicButton: View {
         disabledReason: String? = nil,
         popoverContent: AnyView? = nil,
         action: (() -> Void)? = nil,
-        customBackgroundColor: Color? = nil
+        customBackgroundColor: Color? = nil,
+        preventDoubleClick: Bool = true,
+        loadingStyle: LoadingStyle = .spinner
     ) {
         self.icon = icon
         self.title = title
@@ -280,6 +299,52 @@ public struct MagicButton: View {
         self.popoverContent = popoverContent
         self.action = action
         self.customBackgroundColor = customBackgroundColor
+        self.preventDoubleClick = preventDoubleClick
+        self.loadingStyle = loadingStyle
+        self.asyncAction = nil
+    }
+    
+    /// 创建一个支持异步操作的 MagicButton
+    /// - Parameters:
+    ///   - icon: SF Symbols 图标名称
+    ///   - title: 按钮标题（可选）
+    ///   - style: 按钮样式（默认为 .primary）
+    ///   - size: 按钮大小（默认为 .regular）
+    ///   - shape: 按钮形状（默认为 .circle）
+    ///   - shapeVisibility: 形状显示时机（默认为 .always）
+    ///   - disabledReason: 禁用状态的提示文本（如果为 nil 则按钮可用）
+    ///   - popoverContent: 弹出内容（可选）
+    ///   - customBackgroundColor: 自定义背景色
+    ///   - preventDoubleClick: 是否启用防重复点击
+    ///   - loadingStyle: 加载动画样式
+    ///   - asyncAction: 异步点击动作
+    public init(
+        icon: String? = nil,
+        title: String? = nil,
+        style: Style = .primary,
+        size: Size = .regular,
+        shape: Shape = .roundedRectangle,
+        shapeVisibility: ShapeVisibility = .always,
+        disabledReason: String? = nil,
+        popoverContent: AnyView? = nil,
+        customBackgroundColor: Color? = nil,
+        preventDoubleClick: Bool = true,
+        loadingStyle: LoadingStyle = .spinner,
+        asyncAction: @escaping () async -> Void
+    ) {
+        self.icon = icon
+        self.title = title
+        self.style = style
+        self.size = size
+        self.shape = shape
+        self.shapeVisibility = shapeVisibility
+        self.disabledReason = disabledReason
+        self.popoverContent = popoverContent
+        self.action = nil
+        self.customBackgroundColor = customBackgroundColor
+        self.preventDoubleClick = preventDoubleClick
+        self.loadingStyle = loadingStyle
+        self.asyncAction = asyncAction
     }
     
     public var body: some View {
@@ -324,11 +389,8 @@ public struct MagicButton: View {
             .onTapGesture {
                 if let _ = disabledReason {
                     showingDisabledPopover.toggle()
-                } else {
-                    if popoverContent != nil {
-                        showingPopover.toggle()
-                    }
-                    action?()
+                } else if !preventDoubleClick || !isLoading {
+                    handleTap()
                 }
             }
             .popover(isPresented: $showingPopover) {
@@ -353,31 +415,75 @@ public struct MagicButton: View {
     }
     
     // 内部按钮内容
+    @ViewBuilder
     private var containerContent: some View {
-        GeometryReader { geometry in
-            let minSize = min(geometry.size.width, geometry.size.height)
-            
-            HStack(spacing: 4) {
-                if let icon = icon {
-                    Image(systemName: icon)
-                        .font(.system(size: minSize * 0.4))
+        if isLoading && loadingStyle != .none {
+            loadingView
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .contentShape(Rectangle())
+        } else {
+            GeometryReader { geometry in
+                let minSize = min(geometry.size.width, geometry.size.height)
+                
+                HStack(spacing: 4) {
+                    if let icon = icon {
+                        Image(systemName: icon)
+                            .font(.system(size: minSize * 0.4))
+                    }
+                    if shouldShowTitle, let title = title {
+                        Text(title)
+                            .font(size.font)
+                    }
                 }
-                if shouldShowTitle, let title = title {
-                    Text(title)
-                        .font(size.font)
+                .foregroundStyle(foregroundColor)
+                .frame(width: geometry.size.width, height: geometry.size.height)
+                .position(
+                    x: geometry.size.width / 2,
+                    y: geometry.size.height / 2
+                )
+                .onAppear {
+                    shouldShowTitle = geometry.size.width > geometry.size.height || icon == nil
                 }
             }
-            .foregroundStyle(foregroundColor)
-            .frame(width: geometry.size.width, height: geometry.size.height)
-            .position(
-                x: geometry.size.width / 2,
-                y: geometry.size.height / 2
-            )
-            .onAppear {
-                shouldShowTitle = geometry.size.width > geometry.size.height || icon == nil
-            }
+            .buttonStyle(MagicButtonStyle())
         }
-        .buttonStyle(MagicButtonStyle())
+    }
+    
+    @ViewBuilder
+    private var loadingView: some View {
+        switch loadingStyle {
+        case .spinner:
+            ProgressView()
+                .scaleEffect(0.8)
+        case .dots:
+            HStack(spacing: 4) {
+                ForEach(0..<3, id: \.self) { index in
+                    Circle()
+                        .fill(foregroundColor)
+                        .frame(width: 6, height: 6)
+                        .scaleEffect(isLoading ? 1.0 : 0.5)
+                        .animation(
+                            Animation.easeInOut(duration: 0.6)
+                                .repeatForever(autoreverses: true)
+                                .delay(Double(index) * 0.2),
+                            value: isLoading
+                        )
+                }
+            }
+        case .pulse:
+            Circle()
+                .fill(foregroundColor)
+                .frame(width: 20, height: 20)
+                .scaleEffect(isLoading ? 1.2 : 0.8)
+                .opacity(isLoading ? 0.6 : 1.0)
+                .animation(
+                    Animation.easeInOut(duration: 1.0)
+                        .repeatForever(autoreverses: true),
+                    value: isLoading
+                )
+        case .none:
+            EmptyView()
+        }
     }
     
     private var isCircularShape: Bool {
@@ -522,7 +628,7 @@ public struct MagicButton: View {
     }
     
     private var foregroundColor: Color {
-        if disabledReason != nil {
+        if disabledReason != nil || (isLoading && preventDoubleClick) {
             return .gray
         }
         switch style {
@@ -538,7 +644,7 @@ public struct MagicButton: View {
     }
     
     private var backgroundColor: Color {
-        if disabledReason != nil {
+        if disabledReason != nil || (isLoading && preventDoubleClick) {
             return Color.gray.opacity(0.1)
         }
         
@@ -580,6 +686,36 @@ public struct MagicButton: View {
     
     private var shouldShowTooltip: Bool {
         return title != nil && !title!.isEmpty && icon != nil && !shouldShowTitle
+    }
+    
+    // MARK: - Action Handling
+    
+    private func handleTap() {
+        // 处理弹出内容
+        if popoverContent != nil {
+            showingPopover.toggle()
+        }
+        
+        // 执行动作
+        if let asyncAction = asyncAction {
+            Task {
+                if preventDoubleClick {
+                    isLoading = true
+                }
+                await asyncAction()
+                if preventDoubleClick {
+                    isLoading = false
+                }
+            }
+        } else {
+            if preventDoubleClick {
+                isLoading = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    isLoading = false
+                }
+            }
+            action?()
+        }
     }
 }
 
