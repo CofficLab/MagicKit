@@ -387,11 +387,16 @@ public struct MagicButton: View {
                 y: isHovering ? 2 : 0
             )
             .onTapGesture {
-                if let _ = disabledReason {
-                    showingDisabledPopover.toggle()
-                } else if !preventDoubleClick || !isLoading {
-                    handleTap()
+                guard disabledReason == nil else {
+                    showingDisabledPopover = true
+                    return
                 }
+                
+                guard !(preventDoubleClick && isLoading) else {
+                    return
+                }
+                
+                handleTap()
             }
             .popover(isPresented: $showingPopover) {
                 if let content = popoverContent {
@@ -454,7 +459,9 @@ public struct MagicButton: View {
         switch loadingStyle {
         case .spinner:
             ProgressView()
+                .progressViewStyle(CircularProgressViewStyle())
                 .scaleEffect(0.8)
+                .frame(width: 20, height: 20)
         case .dots:
             HStack(spacing: 4) {
                 ForEach(0..<3, id: \.self) { index in
@@ -700,11 +707,15 @@ public struct MagicButton: View {
         if let asyncAction = asyncAction {
             Task {
                 if preventDoubleClick {
-                    isLoading = true
+                    await MainActor.run {
+                        isLoading = true
+                    }
                 }
                 await asyncAction()
                 if preventDoubleClick {
-                    isLoading = false
+                    await MainActor.run {
+                        isLoading = false
+                    }
                 }
             }
         } else {
