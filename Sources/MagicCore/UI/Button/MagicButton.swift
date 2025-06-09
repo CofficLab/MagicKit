@@ -372,7 +372,15 @@ public struct MagicButton: View {
         }
 
         return container
-            .background(shouldShowShape ? buttonShape : nil)
+            .background(shouldShowShape ? Rectangle()
+                .fill(Color.clear)
+                .magicShape(
+                    shape,
+                    style: style,
+                    backgroundColor: backgroundColor,
+                    shadowColor: shadowColor,
+                    buttonSize: buttonSize
+                ) : nil)
             .onHover { hovering in
                 withAnimation(.easeInOut(duration: 0.2)) {
                     isHovering = hovering
@@ -435,18 +443,6 @@ public struct MagicButton: View {
         return false
     }
 
-    /// 按钮形状视图
-    @ViewBuilder
-    private var buttonShape: some View {
-        MagicShape(
-            shape: shape,
-            style: style,
-            backgroundColor: backgroundColor,
-            shadowColor: shadowColor,
-            buttonSize: buttonSize
-        )
-    }
-    
     /// 加载视图
     @ViewBuilder
     var loadingView: some View {

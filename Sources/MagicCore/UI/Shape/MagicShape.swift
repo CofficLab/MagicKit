@@ -1,5 +1,34 @@
 import SwiftUI
 
+/// View 扩展，提供 MagicShape 修饰符
+extension View {
+    /// 应用 MagicShape 样式到视图
+    /// - Parameters:
+    ///   - shape: 按钮形状
+    ///   - style: 按钮样式
+    ///   - backgroundColor: 背景颜色
+    ///   - shadowColor: 阴影颜色
+    ///   - buttonSize: 按钮尺寸（用于正方形按钮）
+    /// - Returns: 应用了 MagicShape 样式的视图
+    func magicShape(
+        _ shape: MagicButton.Shape,
+        style: MagicButton.Style = .primary,
+        backgroundColor: Color = .blue,
+        shadowColor: Color = .gray.opacity(0.3),
+        buttonSize: CGFloat = 50
+    ) -> some View {
+        self.background(
+            MagicShape(
+                shape: shape,
+                style: style,
+                backgroundColor: backgroundColor,
+                shadowColor: shadowColor,
+                buttonSize: buttonSize
+            )
+        )
+    }
+}
+
 /// MagicButton 的形状视图组件
 /// 负责渲染不同形状的按钮背景和阴影效果
 struct MagicShape: View {
@@ -222,37 +251,34 @@ struct MagicShape: View {
 
 // MARK: - Preview
 
-#Preview("MagicButtonShape") {
+#Preview("MagicShape Extension") {
     VStack(spacing: 20) {
-        // 圆形
-        MagicShape(
-            shape: .circle,
-            style: .primary,
-            backgroundColor: .blue,
-            shadowColor: .gray.opacity(0.3),
-            buttonSize: 50
-        )
-        .frame(width: 50, height: 50)
+        // 使用扩展方法 - 圆形
+        Text("Circle")
+            .foregroundColor(.white)
+            .frame(width: 50, height: 50)
+            .magicShape(.circle, backgroundColor: .blue)
         
-        // 胶囊形
-        MagicShape(
-            shape: .capsule,
-            style: .secondary,
-            backgroundColor: .green,
-            shadowColor: .gray.opacity(0.3),
-            buttonSize: 50
-        )
-        .frame(width: 100, height: 40)
+        // 使用扩展方法 - 胶囊形
+        Text("Capsule")
+            .foregroundColor(.white)
+            .frame(width: 100, height: 40)
+            .magicShape(.capsule, backgroundColor: .green)
         
-        // 圆角矩形
-        MagicShape(
-            shape: .roundedRectangle,
-            style: .secondary,
-            backgroundColor: .orange,
-            shadowColor: .gray.opacity(0.3),
-            buttonSize: 50
-        )
-        .frame(width: 120, height: 40)
+        // 使用扩展方法 - 圆角矩形
+        Text("Rounded")
+            .foregroundColor(.white)
+            .frame(width: 120, height: 40)
+            .magicShape(.roundedRectangle, backgroundColor: .orange)
+        
+        // 使用扩展方法 - 自定义圆角
+        Text("Custom")
+            .foregroundColor(.white)
+            .frame(width: 120, height: 40)
+            .magicShape(
+                .customRoundedRectangle(topLeft: 20, topRight: 5, bottomLeft: 5, bottomRight: 20),
+                backgroundColor: .purple
+            )
     }
     .padding()
     .inMagicContainer()
