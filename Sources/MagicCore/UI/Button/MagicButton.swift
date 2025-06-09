@@ -214,12 +214,7 @@ public struct MagicButton: View {
     }
 
     /// 加载动画样式
-    public enum LoadingStyle {
-        case spinner
-        case dots
-        case pulse
-        case none
-    }
+    public typealias LoadingStyle = MagicLoadingView.Style
 
     // MARK: - Properties
 
@@ -443,12 +438,22 @@ public struct MagicButton: View {
     /// 按钮形状视图
     @ViewBuilder
     private var buttonShape: some View {
-        MagicButtonShape(
+        MagicShape(
             shape: shape,
             style: style,
             backgroundColor: backgroundColor,
             shadowColor: shadowColor,
             buttonSize: buttonSize
+        )
+    }
+    
+    /// 加载视图
+    @ViewBuilder
+    var loadingView: some View {
+        MagicLoadingView(
+            style: loadingStyle,
+            isLoading: isLoading,
+            foregroundColor: foregroundColor
         )
     }
 
@@ -474,7 +479,7 @@ public struct MagicButton: View {
     }
 }
 
-#Preview("MagicButton") {
-    MagicButtonPreview()
-        .frame(height: 800)
+#Preview {
+    BasicButtonsPreview()
+        .inMagicContainer()
 }

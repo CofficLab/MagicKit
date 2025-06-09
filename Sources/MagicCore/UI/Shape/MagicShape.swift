@@ -1,15 +1,8 @@
-//
-//  MagicButtonShape.swift
-//  MagicKit
-//
-//  Created by Assistant
-//
-
 import SwiftUI
 
 /// MagicButton 的形状视图组件
 /// 负责渲染不同形状的按钮背景和阴影效果
-struct MagicButtonShape: View {
+struct MagicShape: View {
     let shape: MagicButton.Shape
     let style: MagicButton.Style
     let backgroundColor: Color
@@ -232,7 +225,7 @@ struct MagicButtonShape: View {
 #Preview("MagicButtonShape") {
     VStack(spacing: 20) {
         // 圆形
-        MagicButtonShape(
+        MagicShape(
             shape: .circle,
             style: .primary,
             backgroundColor: .blue,
@@ -242,7 +235,7 @@ struct MagicButtonShape: View {
         .frame(width: 50, height: 50)
         
         // 胶囊形
-        MagicButtonShape(
+        MagicShape(
             shape: .capsule,
             style: .secondary,
             backgroundColor: .green,
@@ -252,7 +245,7 @@ struct MagicButtonShape: View {
         .frame(width: 100, height: 40)
         
         // 圆角矩形
-        MagicButtonShape(
+        MagicShape(
             shape: .roundedRectangle,
             style: .secondary,
             backgroundColor: .orange,
@@ -262,4 +255,5 @@ struct MagicButtonShape: View {
         .frame(width: 120, height: 40)
     }
     .padding()
+    .inMagicContainer()
 }

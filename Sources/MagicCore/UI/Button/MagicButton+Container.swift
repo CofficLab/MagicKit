@@ -39,7 +39,7 @@ extension MagicButton {
     }
 }
 
-#Preview("MagicButton") {
-    MagicButtonPreview()
-        .frame(height: 800)
+#Preview {
+    BasicButtonsPreview()
+        .inMagicContainer()
 }
