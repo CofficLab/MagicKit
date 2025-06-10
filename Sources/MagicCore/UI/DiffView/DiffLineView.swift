@@ -5,6 +5,19 @@ struct DiffLineView: View {
     let line: DiffLine
     let showLineNumbers: Bool
     let font: Font
+    let codeLanguage: CodeLanguage
+    
+    init(
+        line: DiffLine,
+        showLineNumbers: Bool,
+        font: Font = .system(.body, design: .monospaced),
+        codeLanguage: CodeLanguage = .swift
+    ) {
+        self.line = line
+        self.showLineNumbers = showLineNumbers
+        self.font = font
+        self.codeLanguage = codeLanguage
+    }
     
     var body: some View {
         HStack(alignment: .top, spacing: 0) {
@@ -44,12 +57,15 @@ struct DiffLineView: View {
     }
     
     private var contentView: some View {
-        Text(line.content.isEmpty ? " " : line.content)
-            .font(font)
-            .foregroundColor(textColor)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 0)
+        SyntaxHighlighter.highlight(
+            text: line.content.isEmpty ? " " : line.content,
+            rules: codeLanguage.rules
+        )
+        .font(font)
+        .foregroundStyle(textColor)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 8)
+        .padding(.vertical, 0)
     }
     
     private var backgroundColor: Color {
