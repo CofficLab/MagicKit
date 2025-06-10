@@ -109,6 +109,68 @@ struct DiffAlgorithm {
         return result
     }
     
+    /// 将差异行组织成可折叠的项目
+    /// - Parameters:
+    ///   - diffLines: 原始差异行数组
+    ///   - minUnchangedLines: 最小未变动行数才会折叠，默认为3行
+    /// - Returns: 包含折叠块的差异项目数组
+    static func organizeDiffItems(from diffLines: [DiffLine], minUnchangedLines: Int = 3) -> [DiffItem] {
+        var result: [DiffItem] = []
+        var currentUnchangedLines: [DiffLine] = []
+        
+        for line in diffLines {
+            if line.type == .unchanged {
+                currentUnchangedLines.append(line)
+            } else {
+                // 遇到变动行，处理之前累积的未变动行
+                if !currentUnchangedLines.isEmpty {
+                    if currentUnchangedLines.count >= minUnchangedLines {
+                        // 创建折叠块
+                        let startLine = currentUnchangedLines.first?.oldLineNumber ?? 1
+                        let endLine = currentUnchangedLines.last?.oldLineNumber ?? 1
+                        let block = CollapsibleBlock(
+                            lines: currentUnchangedLines,
+                            isCollapsed: true,
+                            startLineNumber: startLine,
+                            endLineNumber: endLine
+                        )
+                        result.append(.collapsibleBlock(block))
+                    } else {
+                        // 行数不够，直接添加为普通行
+                        for unchangedLine in currentUnchangedLines {
+                            result.append(.line(unchangedLine))
+                        }
+                    }
+                    currentUnchangedLines.removeAll()
+                }
+                
+                // 添加当前变动行
+                result.append(.line(line))
+            }
+        }
+        
+        // 处理最后剩余的未变动行
+        if !currentUnchangedLines.isEmpty {
+            if currentUnchangedLines.count >= minUnchangedLines {
+                let startLine = currentUnchangedLines.first?.oldLineNumber ?? 1
+                let endLine = currentUnchangedLines.last?.oldLineNumber ?? 1
+                let block = CollapsibleBlock(
+                    lines: currentUnchangedLines,
+                    isCollapsed: true,
+                    startLineNumber: startLine,
+                    endLineNumber: endLine
+                )
+                result.append(.collapsibleBlock(block))
+            } else {
+                for unchangedLine in currentUnchangedLines {
+                    result.append(.line(unchangedLine))
+                }
+            }
+        }
+        
+        return result
+    }
+    
     /// 计算两个字符串的相似度
     private static func calculateSimilarity(_ str1: String, _ str2: String) -> Double {
         let longer = str1.count > str2.count ? str1 : str2
