@@ -139,12 +139,15 @@ struct DiffAlgorithm {
             dp[0][j] = j
         }
         
-        for i in 1...m {
-            for j in 1...n {
-                if arr1[i-1] == arr2[j-1] {
-                    dp[i][j] = dp[i-1][j-1]
-                } else {
-                    dp[i][j] = min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]) + 1
+        // 添加边界检查，避免空字符串导致的范围错误
+        if m > 0 && n > 0 {
+            for i in 1...m {
+                for j in 1...n {
+                    if arr1[i-1] == arr2[j-1] {
+                        dp[i][j] = dp[i-1][j-1]
+                    } else {
+                        dp[i][j] = min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]) + 1
+                    }
                 }
             }
         }
