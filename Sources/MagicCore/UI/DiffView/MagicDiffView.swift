@@ -55,9 +55,9 @@ public struct MagicDiffView: View {
             }
         }
         .background(Color(NSColor.controlBackgroundColor))
-        .cornerRadius(6)
+        .cornerRadius(0)
         .overlay(
-            RoundedRectangle(cornerRadius: 6)
+            RoundedRectangle(cornerRadius: 0)
                 .stroke(Color.secondary.opacity(0.3), lineWidth: 1)
         )
     }
