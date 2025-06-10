@@ -69,7 +69,9 @@ struct DiffAlgorithm {
                         newIndex += 1
                     } else {
                         // 相似度低，寻找最佳匹配
-                        if let matchIndex = findBestMatch(newLine, in: Array(oldLines[oldIndex...]), startIndex: oldIndex) {
+                        // 添加边界检查，避免数组越界导致的 Range 错误
+                        let remainingOldLines = oldIndex < oldLines.count ? Array(oldLines[oldIndex...]) : []
+                        if let matchIndex = findBestMatch(newLine, in: remainingOldLines, startIndex: oldIndex) {
                             // 在旧行中找到匹配，中间的行标记为删除
                             while oldIndex < matchIndex {
                                 result.append(DiffLine(
