@@ -1,7 +1,6 @@
 import Foundation
 import SwiftUI
 
-
 #if os(macOS)
     import AppKit
 #else
@@ -17,7 +16,7 @@ public extension URL {
             openInFinder()
         }
     }
-    
+
     /// 在浏览器中打开URL
     func openInBrowser() {
         #if os(iOS)
@@ -26,7 +25,7 @@ public extension URL {
             NSWorkspace.shared.open(self)
         #endif
     }
-    
+
     /// 在访达中显示文件或文件夹
     func openInFinder() {
         #if os(macOS)
@@ -35,14 +34,14 @@ public extension URL {
             openFolder()
         #endif
     }
-    
+
     #if os(macOS)
-    /// 在访达中显示并选中文件
-    func showInFinder() {
-        NSWorkspace.shared.selectFile(self.path, inFileViewerRootedAtPath: "")
-    }
+        /// 在访达中显示并选中文件
+        func showInFinder() {
+            NSWorkspace.shared.selectFile(self.path, inFileViewerRootedAtPath: "")
+        }
     #endif
-    
+
     /// 打开包含该文件的文件夹
     func openFolder() {
         let folderURL = self.hasDirectoryPath ? self : self.deletingLastPathComponent()
@@ -52,7 +51,7 @@ public extension URL {
             NSWorkspace.shared.selectFile(nil, inFileViewerRootedAtPath: folderURL.path)
         #endif
     }
-    
+
     /// 创建打开按钮
     /// - Parameters:
     ///   - size: 按钮大小，默认为 28x28
@@ -72,28 +71,5 @@ public extension URL {
 }
 
 #Preview("Open Buttons") {
-    MagicThemePreview {
-        VStack(spacing: 20) {
-            // 网络链接
-            Group {
-                Text("网络链接").font(.headline)
-                
-                URL.sample_web_mp3_kennedy.makeOpenButton()
-                URL.sample_web_mp3_kennedy.makeOpenButton()
-                URL.sample_web_mp3_kennedy.makeOpenButton()
-            }
-            
-            Divider()
-            
-            // 本地文件
-            Group {
-                Text("本地文件").font(.headline)
-                
-                URL.sample_temp_txt.makeOpenButton()
-                URL.sample_temp_txt.makeOpenButton()
-                URL.sample_temp_txt.makeOpenButton()
-            }
-        }
-        .padding()
-    }
+    OpenPreivewView()
 }
