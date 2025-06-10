@@ -19,15 +19,15 @@ struct DiffLineView: View {
     
     @ViewBuilder
     private var lineNumberView: some View {
-        HStack(spacing: 4) {
+        HStack(spacing: 0) {
             // 旧行号
             Text(line.oldLineNumber?.description ?? "")
-                .frame(width: 35, alignment: .trailing)
+                .frame(width: 16, alignment: .trailing)
                 .foregroundColor(.secondary.opacity(0.7))
             
             // 新行号
             Text(line.newLineNumber?.description ?? "")
-                .frame(width: 35, alignment: .trailing)
+                .frame(width: 16, alignment: .trailing)
                 .foregroundColor(.secondary.opacity(0.7))
             
             // 差异标识
@@ -49,7 +49,7 @@ struct DiffLineView: View {
             .foregroundColor(textColor)
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, 8)
-            .padding(.vertical, 1)
+            .padding(.vertical, 0)
     }
     
     private var backgroundColor: Color {
@@ -116,4 +116,10 @@ struct DiffLineView: View {
             return .orange
         }
     }
+}
+
+// MARK: - Preview
+#Preview("MagicDiffPreviewView") {
+    MagicDiffPreviewView()
+        .inMagicContainer()
 }

@@ -64,9 +64,16 @@ public struct MagicDiffView: View {
     
     /// 计算差异行
     private var diffLines: [DiffLine] {
-        let oldLines = oldText.components(separatedBy: .newlines)
-        let newLines = newText.components(separatedBy: .newlines)
+        // 处理空文本的情况，避免返回包含空字符串的数组
+        let oldLines = oldText.isEmpty ? [] : oldText.components(separatedBy: .newlines)
+        let newLines = newText.isEmpty ? [] : newText.components(separatedBy: .newlines)
         
         return DiffAlgorithm.computeDiff(oldLines: oldLines, newLines: newLines)
     }
+}
+
+// MARK: - Preview
+#Preview("MagicDiffPreviewView") {
+    MagicDiffPreviewView()
+        .inMagicContainer()
 }

@@ -9,6 +9,11 @@ struct DiffAlgorithm {
         var oldIndex = 0
         var newIndex = 0
         
+        // 处理两个数组都为空的情况
+        if oldLines.isEmpty && newLines.isEmpty {
+            return result
+        }
+        
         while oldIndex < oldLines.count || newIndex < newLines.count {
             if oldIndex >= oldLines.count {
                 // 只剩新行，全部标记为添加
