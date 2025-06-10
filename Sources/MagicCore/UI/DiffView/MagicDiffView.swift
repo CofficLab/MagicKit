@@ -82,21 +82,24 @@ public struct MagicDiffView: View {
                             diffItems: diffItems,
                             showLineNumbers: showLineNumbers,
                             font: font,
-                            selectedLanguage: selectedLanguage
+                            selectedLanguage: selectedLanguage,
+                            displayMode: .diff
                         )
                     case .original:
                         MagicDiffContentView(
                             diffItems: createDiffItemsFromText(oldText),
                             showLineNumbers: showLineNumbers,
                             font: font,
-                            selectedLanguage: selectedLanguage
+                            selectedLanguage: selectedLanguage,
+                            displayMode: .original
                         )
                     case .modified:
                         MagicDiffContentView(
                             diffItems: createDiffItemsFromText(newText),
                             showLineNumbers: showLineNumbers,
                             font: font,
-                            selectedLanguage: selectedLanguage
+                            selectedLanguage: selectedLanguage,
+                            displayMode: .modified
                         )
                     }
                 }

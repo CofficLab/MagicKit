@@ -6,6 +6,7 @@ struct MagicDiffContentView: View {
     let showLineNumbers: Bool
     let font: Font
     let selectedLanguage: CodeLanguage
+    let displayMode: MagicDiffViewMode
     
     var body: some View {
         ScrollView {
@@ -40,7 +41,8 @@ struct MagicDiffContentView: View {
             line: line,
             showLineNumbers: showLineNumbers,
             font: font,
-            codeLanguage: selectedLanguage
+            codeLanguage: selectedLanguage,
+            displayMode: displayMode
         )
         .overlay(
             Rectangle()
@@ -55,10 +57,27 @@ struct MagicDiffContentView: View {
         CollapsibleBlockView(
             block: block,
             showLineNumbers: showLineNumbers,
-            font: font
+            font: font,
+            displayMode: displayMode
         )
     }
+    
+    init(
+        diffItems: [DiffItem],
+        showLineNumbers: Bool,
+        font: Font = .system(.body, design: .monospaced),
+        selectedLanguage: CodeLanguage = .swift,
+        displayMode: MagicDiffViewMode = .diff
+    ) {
+        self.diffItems = diffItems
+        self.showLineNumbers = showLineNumbers
+        self.font = font
+        self.selectedLanguage = selectedLanguage
+        self.displayMode = displayMode
+    }
 }
+
+// MARK: - Preview
 
 #Preview {
     let oldText = "func hello() {\n    print(\"Hello World\")\n}"
@@ -74,6 +93,12 @@ struct MagicDiffContentView: View {
         diffItems: diffItems,
         showLineNumbers: true,
         font: .system(.body, design: .monospaced),
-        selectedLanguage: .swift
+        selectedLanguage: .swift,
+        displayMode: .diff
     )
+}
+
+#Preview("MagicDiffPreviewView") {
+    MagicDiffPreviewView()
+        .inMagicContainer()
 }

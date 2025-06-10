@@ -6,16 +6,24 @@ struct CollapsibleBlockView: View {
     @State private var block: CollapsibleBlock
     let showLineNumbers: Bool
     let font: Font
+    let displayMode: MagicDiffViewMode
     
     /// 创建折叠块视图
     /// - Parameters:
     ///   - block: 折叠块数据
     ///   - showLineNumbers: 是否显示行号
     ///   - font: 字体
-    init(block: CollapsibleBlock, showLineNumbers: Bool, font: Font) {
+    ///   - displayMode: 显示模式
+    init(
+        block: CollapsibleBlock, 
+        showLineNumbers: Bool, 
+        font: Font,
+        displayMode: MagicDiffViewMode = .diff
+    ) {
         self._block = State(initialValue: block)
         self.showLineNumbers = showLineNumbers
         self.font = font
+        self.displayMode = displayMode
     }
     
     var body: some View {
@@ -70,7 +78,8 @@ struct CollapsibleBlockView: View {
                 DiffLineView(
                     line: line,
                     showLineNumbers: showLineNumbers,
-                    font: font
+                    font: font,
+                    displayMode: displayMode
                 )
                 .overlay(
                     Rectangle()
@@ -86,14 +95,27 @@ struct CollapsibleBlockView: View {
     @ViewBuilder
     private var collapsedLineNumberView: some View {
         HStack(spacing: 0) {
-            // 显示行号范围
-            Text("\(block.startLineNumber)")
-                .frame(width: 16, alignment: .trailing)
-                .foregroundColor(.secondary.opacity(0.7))
-            
-            Text("\(block.startLineNumber)")
-                .frame(width: 16, alignment: .trailing)
-                .foregroundColor(.secondary.opacity(0.7))
+            // 根据显示模式显示行号
+            switch displayMode {
+            case .original:
+                // 原始模式只显示一列行号
+                Text("\(block.startLineNumber)")
+                    .frame(width: 32, alignment: .trailing)
+                    .foregroundColor(.secondary.opacity(0.7))
+            case .modified:
+                // 修改模式只显示一列行号
+                Text("\(block.startLineNumber)")
+                    .frame(width: 32, alignment: .trailing)
+                    .foregroundColor(.secondary.opacity(0.7))
+            case .diff:
+                // 差异模式显示两列行号
+                Text("\(block.startLineNumber)")
+                    .frame(width: 16, alignment: .trailing)
+                    .foregroundColor(.secondary.opacity(0.7))
+                Text("\(block.startLineNumber)")
+                    .frame(width: 16, alignment: .trailing)
+                    .foregroundColor(.secondary.opacity(0.7))
+            }
             
             // 折叠图标
             Image(systemName: "chevron.right")
@@ -111,11 +133,19 @@ struct CollapsibleBlockView: View {
     @ViewBuilder
     private var expandButtonLineNumberView: some View {
         HStack(spacing: 0) {
-            Text("")
-                .frame(width: 16, alignment: .trailing)
-            
-            Text("")
-                .frame(width: 16, alignment: .trailing)
+            // 根据显示模式显示空白行号区域
+            switch displayMode {
+            case .original, .modified:
+                // 单列模式显示一个32宽的空白
+                Text("")
+                    .frame(width: 32, alignment: .trailing)
+            case .diff:
+                // 差异模式显示两个16宽的空白
+                Text("")
+                    .frame(width: 16, alignment: .trailing)
+                Text("")
+                    .frame(width: 16, alignment: .trailing)
+            }
             
             // 展开图标
             Image(systemName: "chevron.down")
@@ -196,7 +226,8 @@ struct CollapsibleBlockView: View {
         CollapsibleBlockView(
             block: block,
             showLineNumbers: true,
-            font: .system(.body, design: .monospaced)
+            font: .system(.body, design: .monospaced),
+            displayMode: .diff
         )
     }
     .padding()

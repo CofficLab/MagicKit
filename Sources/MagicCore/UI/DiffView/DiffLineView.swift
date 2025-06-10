@@ -6,17 +6,20 @@ struct DiffLineView: View {
     let showLineNumbers: Bool
     let font: Font
     let codeLanguage: CodeLanguage
+    let displayMode: MagicDiffViewMode
     
     init(
         line: DiffLine,
         showLineNumbers: Bool,
         font: Font = .system(.body, design: .monospaced),
-        codeLanguage: CodeLanguage = .swift
+        codeLanguage: CodeLanguage = .swift,
+        displayMode: MagicDiffViewMode = .diff
     ) {
         self.line = line
         self.showLineNumbers = showLineNumbers
         self.font = font
         self.codeLanguage = codeLanguage
+        self.displayMode = displayMode
     }
     
     var body: some View {
@@ -33,15 +36,27 @@ struct DiffLineView: View {
     @ViewBuilder
     private var lineNumberView: some View {
         HStack(spacing: 0) {
-            // 旧行号
-            Text(line.oldLineNumber?.description ?? "")
-                .frame(width: 16, alignment: .trailing)
-                .foregroundColor(.secondary.opacity(0.7))
-            
-            // 新行号
-            Text(line.newLineNumber?.description ?? "")
-                .frame(width: 16, alignment: .trailing)
-                .foregroundColor(.secondary.opacity(0.7))
+            // 根据显示模式显示行号
+            switch displayMode {
+            case .original:
+                // 原始模式只显示旧行号
+                Text(line.oldLineNumber?.description ?? "")
+                    .frame(width: 32, alignment: .trailing)
+                    .foregroundColor(.secondary.opacity(0.7))
+            case .modified:
+                // 修改模式只显示新行号
+                Text(line.newLineNumber?.description ?? "")
+                    .frame(width: 32, alignment: .trailing)
+                    .foregroundColor(.secondary.opacity(0.7))
+            case .diff:
+                // 差异模式显示两列行号
+                Text(line.oldLineNumber?.description ?? "")
+                    .frame(width: 16, alignment: .trailing)
+                    .foregroundColor(.secondary.opacity(0.7))
+                Text(line.newLineNumber?.description ?? "")
+                    .frame(width: 16, alignment: .trailing)
+                    .foregroundColor(.secondary.opacity(0.7))
+            }
             
             // 差异标识
             Text(diffSymbol)
