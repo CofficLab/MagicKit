@@ -1,6 +1,6 @@
 import SwiftUI
 
-extension URL {
+public extension URL {
     /// 创建打开按钮
     /// - Parameters:
     ///   - size: 按钮大小，默认为 28x28
