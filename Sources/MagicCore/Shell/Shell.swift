@@ -182,30 +182,30 @@ class Shell: SuperLog {
         ScrollView {
             VStack(alignment: .leading, spacing: 15) {
                 VDemoSection(title: "基础命令", icon: "⚡") {
-                    VDemoButton("获取当前目录", action: {
+                    VDemoButtonWithLog("获取当前目录", action: {
                         do {
                             let pwd = try Shell.run("pwd")
-                            print("当前目录: \(pwd)")
+                            return "当前目录: \(pwd)"
                         } catch {
-                            print("获取当前目录失败: \(error)")
+                            return "获取当前目录失败: \(error.localizedDescription)"
                         }
                     })
                     
-                    VDemoButton("获取当前用户", action: {
+                    VDemoButtonWithLog("获取当前用户", action: {
                         do {
                             let user = try Shell.run("whoami")
-                            print("当前用户: \(user)")
+                            return "当前用户: \(user)"
                         } catch {
-                            print("获取当前用户失败: \(error)")
+                            return "获取当前用户失败: \(error.localizedDescription)"
                         }
                     })
                     
-                    VDemoButton("获取系统时间", action: {
+                    VDemoButtonWithLog("获取系统时间", action: {
                         do {
                             let date = try Shell.run("date")
-                            print("系统时间: \(date)")
+                            return "系统时间: \(date)"
                         } catch {
-                            print("获取系统时间失败: \(error)")
+                            return "获取系统时间失败: \(error.localizedDescription)"
                         }
                     })
                 }
@@ -219,31 +219,26 @@ class Shell: SuperLog {
                 }
                 
                 VDemoSection(title: "多命令执行", icon: "📋") {
-                    VDemoButton("执行多个命令", action: {
+                    VDemoButtonWithLog("执行多个命令", action: {
                         do {
                             let commands = ["echo 'Hello'", "echo 'World'", "date"]
                             let results = try Shell.runMultiple(commands)
-                            print("多命令执行结果:")
-                            for (index, result) in results.enumerated() {
-                                print("命令\(index + 1): \(result)")
-                            }
+                            return "多命令执行结果:\n" + results.enumerated().map { "命令\($0.offset + 1): \($0.element)" }.joined(separator: "\n")
                         } catch {
-                            print("多命令执行失败: \(error)")
+                            return "多命令执行失败: \(error.localizedDescription)"
                         }
                     })
                 }
                 
                 VDemoSection(title: "状态码检查", icon: "📊") {
-                    VDemoButton("成功命令（echo）", action: {
+                    VDemoButtonWithLog("成功命令（echo）", action: {
                         let (output, exitCode) = Shell.runWithStatus("echo 'Hello World'")
-                        print("输出: \(output)")
-                        print("退出码: \(exitCode)")
+                        return "输出: \(output)\n退出码: \(exitCode)"
                     })
                     
-                    VDemoButton("失败命令（不存在的命令）", action: {
+                    VDemoButtonWithLog("失败命令（不存在的命令）", action: {
                         let (output, exitCode) = Shell.runWithStatus("nonexistent_command_12345")
-                        print("输出: \(output)")
-                        print("退出码: \(exitCode)")
+                        return "输出: \(output)\n退出码: \(exitCode)"
                     })
                 }
                 
@@ -252,9 +247,9 @@ class Shell: SuperLog {
                 }
                 
                 VDemoSection(title: "Git配置", icon: "🔧") {
-                    VDemoButton("配置Git凭证缓存", action: {
+                    VDemoButtonWithLog("配置Git凭证缓存", action: {
                         let result = Shell.configureGitCredentialCache()
-                        print("Git凭证缓存配置结果: \(result)")
+                        return "Git凭证缓存配置结果: \(result)"
                     })
                 }
             }
