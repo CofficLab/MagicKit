@@ -1,19 +1,6 @@
 # MagicKit
 
-MagicKit 是一个 Swift Package，提供了一些便捷的图像处理工具和功能。
-
-## 模块功能
-
-### Shell-File
-提供文件系统相关的 Shell 命令封装，例如检查目录/文件是否存在、创建/删除文件和目录、获取文件大小和权限等。
-
-### Shell-Git
-提供 Git 命令的封装，例如检查 Git 仓库状态、获取分支信息、提交日志、远程仓库信息等。
-
-## 要求
-
-- iOS 13.0+ / macOS 14.0+
-- Swift 5.5+
+MagicKit 是一个 Swift Package，提供了一些 Extension 和便捷的工具。
 
 ## 安装
 
@@ -36,10 +23,6 @@ swift test
 ```bash
 swift build
 ```
-
-## 预览功能
-
-我们的预览视图现在集成了 `VDemoButtonWithLog` 组件，它可以直接显示 Shell 命令的执行结果或错误信息，方便调试和验证。
 
 ## Maintainers
 
