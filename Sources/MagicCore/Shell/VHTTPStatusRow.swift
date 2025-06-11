@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct HTTPStatusRow: View {
+struct VHTTPStatusRow: View {
     let url: String
     @State private var statusCode: Int?
     @State private var isLoading = false

@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct IPInfoRow: View {
+struct VIPInfoRow: View {
     let label: String
     let ip: String
     

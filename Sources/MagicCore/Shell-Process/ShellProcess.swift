@@ -51,7 +51,7 @@ class ShellProcess: SuperLog {
     static func findProcesses(named name: String) -> [ProcessInfo] {
         do {
             let result = try Shell.run("ps aux | grep \"\(name)\" | grep -v grep")
-            let lines = result.components(separatedBy: .newlines)
+            let lines = result.components(separatedBy: CharacterSet.newlines)
                 .filter { !$0.isEmpty }
             
             return lines.compactMap { ProcessInfo.fromPSLine($0) }
@@ -65,8 +65,8 @@ class ShellProcess: SuperLog {
     /// - Returns: 进程信息
     static func findProcess(pid: String) -> ProcessInfo? {
         do {
-            let result = try Shell.run("ps aux | grep \"^[^ ]* *\(pid) \"")
-            let lines = result.components(separatedBy: .newlines)
+            let result = try Shell.run("ps aux | grep \"\\b\(pid)\\b\" | grep -v grep")
+            let lines = result.components(separatedBy: CharacterSet.newlines)
                 .filter { !$0.isEmpty }
             
             return lines.first.flatMap { ProcessInfo.fromPSLine($0) }
@@ -198,7 +198,7 @@ class ShellProcess: SuperLog {
     static func isProcessRunning(_ name: String) -> Bool {
         do {
             let result = try Shell.run("pgrep \"\(name)\"")
-            return !result.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            return !result.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty
         } catch {
             return false
         }
@@ -249,115 +249,4 @@ class ShellProcess: SuperLog {
     static func stopService(_ serviceName: String) throws {
         try Shell.run("launchctl stop \(serviceName)")
     }
-}
-
-// MARK: - Preview
-
-#Preview("ShellProcess Demo") {
-    VStack(spacing: 20) {
-        Text("⚙️ ShellProcess 功能演示")
-            .font(.title)
-            .bold()
-        
-        ScrollView {
-            VStack(alignment: .leading, spacing: 15) {
-                DemoSection(title: "进程查找", icon: "🔍") {
-                    DemoButton("查找Finder进程", action: {
-                        let processes = ShellProcess.findProcesses(named: "Finder")
-                        print("找到 \(processes.count) 个Finder进程")
-                        processes.prefix(3).forEach { process in
-                            print("PID: \(process.pid), CPU: \(process.cpu)%, 内存: \(process.memory)%")
-                        }
-                    })
-                    
-                    DemoButton("检查Chrome是否运行", action: {
-                        let isRunning = ShellProcess.isProcessRunning("Chrome")
-                        print("Chrome是否运行: \(isRunning ? "是" : "否")")
-                    })
-                    
-                    DemoButton("获取正在运行的应用", action: {
-                        let apps = ShellProcess.getRunningApps()
-                        print("正在运行的应用: \(apps.prefix(5))")
-                    })
-                }
-                
-                DemoSection(title: "系统资源", icon: "📊") {
-                    DemoButton("系统负载", action: {
-                        let load = ShellProcess.getSystemLoad()
-                        print("系统负载: \(load)")
-                    })
-                    
-                    DemoButton("内存使用情况", action: {
-                        let memory = ShellProcess.getMemoryUsage()
-                        let lines = memory.components(separatedBy: .newlines)
-                        print("内存使用情况（前5行）:\n\(lines.prefix(5).joined(separator: "\n"))")
-                    })
-                }
-                
-                DemoSection(title: "TOP进程", icon: "🏆") {
-                    DemoButton("CPU使用率最高的进程", action: {
-                        let processes = ShellProcess.getTopCPUProcesses(count: 5)
-                        print("CPU使用率最高的5个进程:")
-                        processes.forEach { process in
-                            print("\(process.command.prefix(30)) - CPU: \(process.cpu)%")
-                        }
-                    })
-                    
-                    DemoButton("内存使用率最高的进程", action: {
-                        let processes = ShellProcess.getTopMemoryProcesses(count: 5)
-                        print("内存使用率最高的5个进程:")
-                        processes.forEach { process in
-                            print("\(process.command.prefix(30)) - 内存: \(process.memory)%")
-                        }
-                    })
-                }
-                
-                DemoSection(title: "应用程序管理", icon: "📱") {
-                    DemoButton("启动计算器", action: {
-                        do {
-                            try ShellProcess.launchApp("Calculator")
-                            print("计算器已启动")
-                        } catch {
-                            print("启动计算器失败: \(error)")
-                        }
-                    })
-                    
-                    DemoButton("启动文本编辑器", action: {
-                        do {
-                            try ShellProcess.launchApp("TextEdit")
-                            print("文本编辑器已启动")
-                        } catch {
-                            print("启动文本编辑器失败: \(error)")
-                        }
-                    })
-                }
-                
-                DemoSection(title: "进程详情", icon: "🔬") {
-                    ProcessDetailView()
-                }
-                
-                DemoSection(title: "系统服务", icon: "🛠️") {
-                    DemoButton("查看系统服务", action: {
-                        let services = ShellProcess.getSystemServices()
-                        let lines = services.components(separatedBy: .newlines)
-                        print("系统服务（前10个）:\n\(lines.prefix(10).joined(separator: "\n"))")
-                    })
-                }
-                
-                DemoSection(title: "危险操作", icon: "⚠️") {
-                    Text("注意：以下操作可能影响系统稳定性")
-                        .font(.caption)
-                        .foregroundColor(.red)
-                    
-                    DemoButton("杀死测试进程（安全）", action: {
-                        // 这里只是演示，不会真的杀死重要进程
-                        print("这是一个安全的演示，不会真的杀死进程")
-                        print("实际使用时请谨慎操作")
-                    })
-                }
-            }
-            .padding()
-        }
-    }
-    .padding()
 }

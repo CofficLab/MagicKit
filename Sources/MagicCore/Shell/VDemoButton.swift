@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct DemoButton: View {
+struct VDemoButton: View {
     let title: String
     let action: () -> Void
     

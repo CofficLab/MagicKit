@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct CommandCheckRow: View {
+struct VCommandCheckRow: View {
     let command: String
     @State private var exists: Bool?
     

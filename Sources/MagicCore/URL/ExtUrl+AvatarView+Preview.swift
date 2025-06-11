@@ -213,7 +213,7 @@ public struct AvatarDemoView: View {
                         }
 
                         // 下载监控
-                        demoSection("下载监控设置") {
+                        VDemoSection(title: "下载监控设置", icon: "eye") {
                             HStack(spacing: 20) {
                                 // 启用监控
                                 VStack {
@@ -246,7 +246,7 @@ public struct AvatarDemoView: View {
             ScrollView {
                 HStack {
                     VStack(spacing: 32) {
-                        demoSection("错误状态") {
+                        VDemoSection(title: "错误状态", icon: "exclamationmark.triangle") {
                             HStack(spacing: 20) {
                                 // 无效 URL
                                 VStack {
@@ -277,7 +277,7 @@ public struct AvatarDemoView: View {
             ScrollView {
                 HStack {
                     VStack(spacing: 32) {
-                        demoSection("缓存文件夹") {
+                        VDemoSection(title: "缓存文件夹", icon: "folder") {
                             VStack(spacing: 16) {
                                 // 显示缓存目录路径和打开按钮
                                 HStack {

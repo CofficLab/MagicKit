@@ -181,8 +181,8 @@ class Shell: SuperLog {
         
         ScrollView {
             VStack(alignment: .leading, spacing: 15) {
-                DemoSection(title: "基础命令", icon: "⚡") {
-                    DemoButton("获取当前目录", action: {
+                VDemoSection(title: "基础命令", icon: "⚡") {
+                    VDemoButton("获取当前目录", action: {
                         do {
                             let pwd = try Shell.run("pwd")
                             print("当前目录: \(pwd)")
@@ -191,7 +191,7 @@ class Shell: SuperLog {
                         }
                     })
                     
-                    DemoButton("获取当前用户", action: {
+                    VDemoButton("获取当前用户", action: {
                         do {
                             let user = try Shell.run("whoami")
                             print("当前用户: \(user)")
@@ -200,7 +200,7 @@ class Shell: SuperLog {
                         }
                     })
                     
-                    DemoButton("获取系统时间", action: {
+                    VDemoButton("获取系统时间", action: {
                         do {
                             let date = try Shell.run("date")
                             print("系统时间: \(date)")
@@ -210,16 +210,16 @@ class Shell: SuperLog {
                     })
                 }
                 
-                DemoSection(title: "命令检查", icon: "🔍") {
-                    CommandAvailabilityRow("git")
-                    CommandAvailabilityRow("node")
-                    CommandAvailabilityRow("python3")
-                    CommandAvailabilityRow("docker")
-                    CommandAvailabilityRow("nonexistent_command")
+                VDemoSection(title: "命令检查", icon: "🔍") {
+                    VCommandAvailabilityRow("git")
+                    VCommandAvailabilityRow("node")
+                    VCommandAvailabilityRow("python3")
+                    VCommandAvailabilityRow("docker")
+                    VCommandAvailabilityRow("nonexistent_command")
                 }
                 
-                DemoSection(title: "多命令执行", icon: "📋") {
-                    DemoButton("执行多个命令", action: {
+                VDemoSection(title: "多命令执行", icon: "📋") {
+                    VDemoButton("执行多个命令", action: {
                         do {
                             let commands = ["echo 'Hello'", "echo 'World'", "date"]
                             let results = try Shell.runMultiple(commands)
@@ -233,26 +233,26 @@ class Shell: SuperLog {
                     })
                 }
                 
-                DemoSection(title: "状态码检查", icon: "📊") {
-                    DemoButton("成功命令（echo）", action: {
+                VDemoSection(title: "状态码检查", icon: "📊") {
+                    VDemoButton("成功命令（echo）", action: {
                         let (output, exitCode) = Shell.runWithStatus("echo 'Hello World'")
                         print("输出: \(output)")
                         print("退出码: \(exitCode)")
                     })
                     
-                    DemoButton("失败命令（不存在的命令）", action: {
+                    VDemoButton("失败命令（不存在的命令）", action: {
                         let (output, exitCode) = Shell.runWithStatus("nonexistent_command_12345")
                         print("输出: \(output)")
                         print("退出码: \(exitCode)")
                     })
                 }
                 
-                DemoSection(title: "异步执行", icon: "⏱️") {
-                    AsyncCommandButton()
+                VDemoSection(title: "异步执行", icon: "⏱️") {
+                    VAsyncCommandButton()
                 }
                 
-                DemoSection(title: "Git配置", icon: "🔧") {
-                    DemoButton("配置Git凭证缓存", action: {
+                VDemoSection(title: "Git配置", icon: "🔧") {
+                    VDemoButton("配置Git凭证缓存", action: {
                         let result = Shell.configureGitCredentialCache()
                         print("Git凭证缓存配置结果: \(result)")
                     })

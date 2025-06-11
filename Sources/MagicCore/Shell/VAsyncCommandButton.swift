@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct AsyncCommandButton: View {
+struct VAsyncCommandButton: View {
     @State private var isLoading = false
     @State private var result = ""
     

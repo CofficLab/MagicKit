@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct InfoRow: View {
+struct VInfoRow: View {
     let label: String
     let value: String
     

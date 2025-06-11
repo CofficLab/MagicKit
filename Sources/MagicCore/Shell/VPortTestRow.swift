@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct PortTestRow: View {
+struct VPortTestRow: View {
     let host: String
     let port: Int
     @State private var isOpen: Bool?

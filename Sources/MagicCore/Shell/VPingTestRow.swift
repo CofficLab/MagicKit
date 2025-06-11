@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct PingTestRow: View {
+struct VPingTestRow: View {
     let host: String
     @State private var isReachable: Bool?
     @State private var isLoading = false

@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct CommandAvailabilityRow: View {
+struct VCommandAvailabilityRow: View {
     let command: String
     @State private var isAvailable: Bool?
     @State private var commandPath: String?

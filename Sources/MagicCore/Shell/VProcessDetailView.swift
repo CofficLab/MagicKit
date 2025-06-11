@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct ProcessDetailView: View {
+struct VProcessDetailView: View {
     @State private var selectedPID = ""
     @State private var processDetails = ""
     

@@ -73,7 +73,8 @@ class ShellSystem: SuperLog {
     /// - Returns: 磁盘使用情况
     static func diskUsage(path: String = "/") -> String {
         do {
-            return try Shell.run("df -h \"\(path)\"").trimmingCharacters(in: .whitespacesAndNewlines)
+            let command = "df -h '\(path)'"
+            return try Shell.run(command).trimmingCharacters(in: .whitespacesAndNewlines)
         } catch {
             return error.localizedDescription
         }
@@ -95,7 +96,8 @@ class ShellSystem: SuperLog {
     static func processes(named processName: String? = nil) -> String {
         do {
             if let name = processName {
-                return try Shell.run("ps aux | grep \"\(name)\" | grep -v grep")
+                let command = "ps aux | grep '\(name)' | grep -v grep"
+                return try Shell.run(command)
             } else {
                 return try Shell.run("ps aux")
             }
@@ -119,7 +121,8 @@ class ShellSystem: SuperLog {
     /// - Returns: 环境变量值
     static func getEnvironmentVariable(_ name: String) -> String {
         do {
-            return try Shell.run("echo $\(name)").trimmingCharacters(in: .whitespacesAndNewlines)
+            let command = "echo \"$\(name)\""
+            return try Shell.run(command).trimmingCharacters(in: .whitespacesAndNewlines)
         } catch {
             return error.localizedDescription
         }
@@ -163,86 +166,4 @@ class ShellSystem: SuperLog {
             return error.localizedDescription
         }
     }
-}
-
-// MARK: - Preview
-
-#Preview("ShellSystem Demo") {
-    VStack(spacing: 20) {
-        Text("💻 ShellSystem 功能演示")
-            .font(.title)
-            .bold()
-        
-        ScrollView {
-            VStack(alignment: .leading, spacing: 15) {
-                DemoSection(title: "基本信息", icon: "ℹ️") {
-                    InfoRow("当前目录", ShellSystem.pwd())
-                    InfoRow("当前用户", ShellSystem.whoami())
-                    InfoRow("系统时间", ShellSystem.systemTime())
-                }
-                
-                DemoSection(title: "硬件信息", icon: "🖥️") {
-                    InfoRow("CPU", ShellSystem.cpuInfo())
-                    InfoRow("内存", ShellSystem.memoryInfo())
-                    
-                    DemoButton("获取系统版本", action: {
-                        let version = ShellSystem.systemVersion()
-                        print("系统版本:\n\(version)")
-                    })
-                }
-                
-                DemoSection(title: "系统状态", icon: "📊") {
-                    DemoButton("系统负载", action: {
-                        let load = ShellSystem.loadAverage()
-                        print("系统负载: \(load)")
-                    })
-                    
-                    DemoButton("磁盘使用情况", action: {
-                        let disk = ShellSystem.diskUsage()
-                        print("磁盘使用情况:\n\(disk)")
-                    })
-                    
-                    DemoButton("启动时间", action: {
-                        let bootTime = ShellSystem.bootTime()
-                        print("启动时间: \(bootTime)")
-                    })
-                }
-                
-                DemoSection(title: "环境变量", icon: "🌍") {
-                    DemoButton("PATH变量", action: {
-                        let paths = ShellSystem.getPath()
-                        print("PATH目录: \(paths.prefix(5))")
-                    })
-                    
-                    DemoButton("HOME目录", action: {
-                        let home = ShellSystem.getEnvironmentVariable("HOME")
-                        print("HOME目录: \(home)")
-                    })
-                }
-                
-                DemoSection(title: "命令检查", icon: "🔍") {
-                    CommandCheckRow("git")
-                    CommandCheckRow("node")
-                    CommandCheckRow("python3")
-                    CommandCheckRow("docker")
-                }
-                
-                DemoSection(title: "进程信息", icon: "⚙️") {
-                    DemoButton("查看所有进程", action: {
-                        let processes = ShellSystem.processes()
-                        let lines = processes.components(separatedBy: .newlines)
-                        print("进程总数: \(lines.count)")
-                        print("前5个进程:\n\(lines.prefix(5).joined(separator: "\n"))")
-                    })
-                    
-                    DemoButton("查找特定进程", action: {
-                        let processes = ShellSystem.processes(named: "Finder")
-                        print("Finder进程:\n\(processes)")
-                    })
-                }
-            }
-            .padding()
-        }
-    }
-    .padding()
 }

@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct DemoSection<Content: View>: View {
+struct VDemoSection<Content: View>: View {
     let title: String
     let icon: String
     let content: Content
