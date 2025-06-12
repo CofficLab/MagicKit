@@ -13,7 +13,7 @@ public struct MagicRootView<Content: View>: View {
         content
             .overlay(
                 MagicToastContainerView(toastManager: toastManager)
-                    .allowsHitTesting(toastManager.toasts.contains { !$0.tapToDismiss })
+                    .allowsHitTesting(true)
             )
             .environmentObject(toastManager)
     }

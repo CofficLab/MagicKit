@@ -39,8 +39,12 @@ struct MagicToastView: View {
                     Image(systemName: "xmark")
                         .font(.caption)
                         .foregroundColor(.secondary)
+                        .frame(width: 24, height: 24)
+                        .background(Color.secondary.opacity(0.1))
+                        .clipShape(Circle())
                 }
                 .buttonStyle(PlainButtonStyle())
+                .contentShape(Rectangle())
             }
         }
         .padding(.horizontal, 16)
