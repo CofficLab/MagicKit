@@ -126,6 +126,19 @@ extension ShellGit {
             return GitDiffFile(id: file, file: file, changeType: changeType, diff: "")
         }
     }
+
+    /// 获取未提交文件的变动前后内容
+    /// - Parameters:
+    ///   - file: 文件路径（相对仓库根目录）
+    ///   - repoPath: 仓库本地路径
+    /// - Returns: (修改前内容, 修改后内容)
+    public static func uncommittedFileContentChange(file: String, repoPath: String) throws -> (before: String?, after: String?) {
+        // 获取 HEAD 中的文件内容（修改前）
+        let before = try? Shell.run("git show HEAD:\(file)", at: repoPath)
+        // 获取工作区中的文件内容（修改后）
+        let after = try? String(contentsOfFile: repoPath + "/" + file, encoding: .utf8)
+        return (before, after)
+    }
 }
 
 #Preview("ShellGit+Diff Demo") {
