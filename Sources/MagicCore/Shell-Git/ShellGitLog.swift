@@ -83,17 +83,6 @@ extension ShellGit {
         return log.split(separator: "\n").map { String($0) }
     }
 
-    public struct GitCommit: Identifiable {
-        public let id: String // hash
-        public let hash: String
-        public let author: String
-        public let email: String
-        public let date: Date
-        public let message: String
-        public let refs: [String]
-        public let tags: [String]
-    }
-
     /// 获取提交记录结构体列表
     /// - Parameters:
     ///   - limit: 限制条数

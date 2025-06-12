@@ -65,6 +65,26 @@ extension ShellGit {
         let output = try Shell.run("git tag --points-at \(commit)", at: path)
         return output.split(separator: "\n").map { String($0) }.filter { !$0.isEmpty }
     }
+    
+    /// 获取标签结构体列表
+    /// - Parameter path: 仓库路径
+    /// - Returns: 标签结构体数组
+    public static func tagList(at path: String? = nil) throws -> [GitTag] {
+        let tagNames = try tags(at: path).split(separator: "\n").map { String($0) }
+        var tags: [GitTag] = []
+        for name in tagNames {
+            // 获取 commit hash
+            let commitHash = (try? Shell.run("git rev-list -n 1 \(name)", at: path)) ?? ""
+            // 获取作者、日期、message
+            let tagInfo = (try? Shell.run("git for-each-ref refs/tags/\(name) --format='%(taggername)::%(taggerdate)::%(subject)'", at: path)) ?? "::"
+            let parts = tagInfo.replacingOccurrences(of: "'", with: "").split(separator: "::").map { String($0) }
+            let author = parts.count > 0 ? parts[0] : nil
+            let date = parts.count > 1 ? ISO8601DateFormatter().date(from: parts[1]) : nil
+            let message = parts.count > 2 ? parts[2] : nil
+            tags.append(GitTag(id: name, name: name, commitHash: commitHash, author: author, date: date, message: message))
+        }
+        return tags
+    }
 }
 
 #Preview("ShellGit+StashTag Demo") {

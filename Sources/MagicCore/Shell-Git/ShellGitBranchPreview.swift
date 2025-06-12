@@ -62,6 +62,14 @@ struct ShellGitBranchPreview: View {
                                 return "合并分支失败: \(error.localizedDescription)"
                             }
                         })
+                        VDemoButtonWithLog("分支结构体列表", action: {
+                            do {
+                                let branches = try ShellGit.branchList(at: repoPath)
+                                return branches.isEmpty ? "无分支" : branches.map { "\($0.name)\($0.isCurrent ? "（当前）" : "")" }.joined(separator: ", ")
+                            } catch {
+                                return "获取分支结构体失败: \(error.localizedDescription)"
+                            }
+                        })
                     }
                 }
                 .padding()

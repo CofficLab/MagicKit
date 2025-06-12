@@ -80,6 +80,39 @@ extension ShellGit {
     public static func removeRemote(_ name: String, at path: String? = nil) throws -> String {
         return try Shell.run("git remote remove \(name)", at: path)
     }
+
+    /// 获取远程结构体列表
+    /// - Parameters:
+    ///   - path: 仓库路径
+    /// - Returns: 远程结构体数组
+    public static func remoteList(at path: String? = nil) throws -> [GitRemote] {
+        let output = try remotes(verbose: true, at: path)
+        let lines = output.split(separator: "\n").map { String($0) }
+        var remotes: [GitRemote] = []
+        var seen: Set<String> = []
+        for line in lines {
+            // 例如 origin\thttps://github.com/user/repo.git (fetch)
+            let parts = line.split(separator: "\t").map { String($0) }
+            guard parts.count == 2 else { continue }
+            let name = parts[0]
+            let urlAndType = parts[1].split(separator: " ").map { String($0) }
+            guard urlAndType.count >= 2 else { continue }
+            let url = urlAndType[0]
+            let type = urlAndType[1]
+            var fetchURL: String? = nil
+            var pushURL: String? = nil
+            if type == "(fetch)" { fetchURL = url }
+            if type == "(push)" { pushURL = url }
+            if let idx = remotes.firstIndex(where: { $0.name == name }) {
+                // 已有，补充 push/fetch
+                if fetchURL != nil { remotes[idx] = GitRemote(id: name, name: name, url: remotes[idx].url, fetchURL: fetchURL, pushURL: remotes[idx].pushURL, isDefault: idx == 0) }
+                if pushURL != nil { remotes[idx] = GitRemote(id: name, name: name, url: remotes[idx].url, fetchURL: remotes[idx].fetchURL, pushURL: pushURL, isDefault: idx == 0) }
+            } else {
+                remotes.append(GitRemote(id: name, name: name, url: url, fetchURL: fetchURL, pushURL: pushURL, isDefault: remotes.isEmpty))
+            }
+        }
+        return remotes
+    }
 }
 
 #Preview("ShellGit+Remote Demo") {

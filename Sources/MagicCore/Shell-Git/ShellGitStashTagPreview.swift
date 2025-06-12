@@ -56,6 +56,14 @@ struct ShellGitStashTagPreview: View {
                                 return "删除标签失败: \(error.localizedDescription)"
                             }
                         })
+                        VDemoButtonWithLog("标签结构体列表", action: {
+                            do {
+                                let tags = try ShellGit.tagList(at: repoPath)
+                                return tags.isEmpty ? "无标签" : tags.map { "\($0.name): \($0.commitHash)" }.joined(separator: ", ")
+                            } catch {
+                                return "获取标签结构体失败: \(error.localizedDescription)"
+                            }
+                        })
                     }
                 }
                 .padding()

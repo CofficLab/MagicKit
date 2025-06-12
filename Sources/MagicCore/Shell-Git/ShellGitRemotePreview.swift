@@ -54,6 +54,14 @@ struct ShellGitRemotePreview: View {
                                 return "拉取失败: \(error.localizedDescription)"
                             }
                         })
+                        VDemoButtonWithLog("远程结构体列表", action: {
+                            do {
+                                let remotes = try ShellGit.remoteList(at: repoPath)
+                                return remotes.isEmpty ? "无远程" : remotes.map { "\($0.name): \($0.url)" }.joined(separator: "\n")
+                            } catch {
+                                return "获取远程结构体失败: \(error.localizedDescription)"
+                            }
+                        })
                     }
                 }
                 .padding()
