@@ -14,14 +14,14 @@ extension ShellGit {
             return false
         }
     }
-    
+
     /// 获取仓库根目录
     /// - Parameter path: 路径
     /// - Returns: 仓库根目录路径
     public static func repositoryRoot(at path: String? = nil) throws -> String {
         return try Shell.run("git rev-parse --show-toplevel", at: path)
     }
-    
+
     /// 获取最新提交哈希
     /// - Parameters:
     ///   - short: 是否返回短哈希
@@ -31,7 +31,7 @@ extension ShellGit {
         let option = short ? "--short" : ""
         return try Shell.run("git rev-parse \(option) HEAD", at: path)
     }
-    
+
     /// 获取用户配置
     /// - Parameters:
     ///   - global: 是否获取全局配置
@@ -43,7 +43,7 @@ extension ShellGit {
         let email = try Shell.run("git config \(scope) user.email", at: path)
         return (name: name, email: email)
     }
-    
+
     /// 配置用户信息
     /// - Parameters:
     ///   - name: 用户名
@@ -59,8 +59,7 @@ extension ShellGit {
     }
 }
 
-
-#Preview("ShellGit Demo") {
-    ShellGitPreviewView()
+#Preview("ShellGit+ConfigInfo Demo") {
+    ShellGitConfigInfoPreview()
         .inMagicContainer()
 }

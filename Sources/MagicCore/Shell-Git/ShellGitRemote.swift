@@ -70,7 +70,7 @@ extension ShellGit {
     }
 }
 
-#Preview("ShellGit Demo") {
-    ShellGitPreviewView()
+#Preview("ShellGit+Remote Demo") {
+    ShellGitRemotePreview()
         .inMagicContainer()
-}
+} 

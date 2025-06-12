@@ -25,7 +25,7 @@ public class ShellGit: SuperLog {
     }
 }
 
-#Preview("ShellGit Demo") {
-    ShellGitPreviewView()
+#Preview("ShellGit+Core Demo") {
+    ShellGitCorePreview()
         .inMagicContainer()
 }

@@ -57,7 +57,7 @@ extension ShellGit {
     }
 }
 
-#Preview("ShellGit Demo") {
-    ShellGitPreviewView()
+#Preview("ShellGit+StashTag Demo") {
+    ShellGitStashTagPreview()
         .inMagicContainer()
 }

@@ -71,7 +71,7 @@ extension ShellGit {
     }
 }
 
-#Preview("ShellGit Demo") {
-    ShellGitPreviewView()
+#Preview("ShellGit+Branch Demo") {
+    ShellGitBranchPreview()
         .inMagicContainer()
-}
+} 
