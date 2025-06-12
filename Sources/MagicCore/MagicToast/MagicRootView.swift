@@ -1,15 +1,16 @@
 import SwiftUI
 
-/// Magic根视图 - 整合了Toast系统的根视图容器
-public struct MagicRootView<Content: View>: View {
+/// Magic根视图 - 整合了Toast系统的内部容器
+/// 用户无需直接使用此视图，应通过 View.withMagicToast() 扩展方法来使用
+struct MagicRootView<Content: View>: View {
     private let content: Content
     private let toastManager = MagicToastManager.shared
     
-    public init(@ViewBuilder content: () -> Content) {
+    init(@ViewBuilder content: () -> Content) {
         self.content = content()
     }
     
-    public var body: some View {
+    var body: some View {
         content
             .overlay(
                 MagicToastContainerView(toastManager: toastManager)
@@ -21,9 +22,8 @@ public struct MagicRootView<Content: View>: View {
 
 #if DEBUG
 #Preview {
-    MagicRootView {
-        MagicToastExampleView()
-    }
-    .frame(width: 400, height: 600)
+    MagicToastExampleView()
+        .withMagicToast()
+        .frame(width: 400, height: 600)
 }
 #endif

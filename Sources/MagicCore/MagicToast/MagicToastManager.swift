@@ -1,8 +1,10 @@
 import SwiftUI
 import Foundation
 
-/// Toast管理器
+/// Magic Toast管理器 - 统一的Toast系统
+/// 提供Toast管理和便捷的显示方法
 public class MagicToastManager: ObservableObject {
+    /// 共享实例，便于全局访问
     public static let shared = MagicToastManager()
     
     @Published private(set) var toasts: [MagicToastModel] = []
@@ -31,22 +33,27 @@ public class MagicToastManager: ObservableObject {
         }
     }
     
-    // MARK: - 便捷方法
+    // MARK: - 便捷显示方法
+    
+    /// 显示信息提示
     public func info(_ title: String, subtitle: String? = nil, duration: TimeInterval = 3.0) {
         let toast = MagicToastModel(type: .info, title: title, subtitle: subtitle, duration: duration)
         show(toast)
     }
     
+    /// 显示成功提示
     public func success(_ title: String, subtitle: String? = nil, duration: TimeInterval = 3.0) {
         let toast = MagicToastModel(type: .success, title: title, subtitle: subtitle, duration: duration)
         show(toast)
     }
     
+    /// 显示警告提示
     public func warning(_ title: String, subtitle: String? = nil, duration: TimeInterval = 4.0) {
         let toast = MagicToastModel(type: .warning, title: title, subtitle: subtitle, duration: duration)
         show(toast)
     }
     
+    /// 显示错误提示
     public func error(_ title: String, subtitle: String? = nil, duration: TimeInterval = 0, autoDismiss: Bool = false) {
         let toast = MagicToastModel(
             type: .error,
@@ -60,6 +67,7 @@ public class MagicToastManager: ObservableObject {
         show(toast)
     }
     
+    /// 显示加载中提示
     public func loading(_ title: String, subtitle: String? = nil) {
         let toast = MagicToastModel(
             type: .loading,
@@ -72,6 +80,7 @@ public class MagicToastManager: ObservableObject {
         show(toast)
     }
     
+    /// 显示自定义提示
     public func custom(
         systemImage: String,
         color: Color,
@@ -91,6 +100,8 @@ public class MagicToastManager: ObservableObject {
     }
     
     // MARK: - 消失Toast
+    
+    /// 消失指定Toast
     public func dismiss(_ id: UUID) {
         DispatchQueue.main.async {
             if let index = self.toasts.firstIndex(where: { $0.id == id }) {
@@ -107,6 +118,7 @@ public class MagicToastManager: ObservableObject {
         }
     }
     
+    /// 隐藏所有Toast
     public func dismissAll() {
         DispatchQueue.main.async {
             self.toasts.removeAll()
@@ -115,6 +127,7 @@ public class MagicToastManager: ObservableObject {
         }
     }
     
+    /// 隐藏加载中提示
     public func dismissLoading() {
         let loadingToasts = toasts.filter { 
             if case .loading = $0.type { return true }
@@ -122,7 +135,37 @@ public class MagicToastManager: ObservableObject {
         }
         loadingToasts.forEach { dismiss($0.id) }
     }
-} 
+    
+    /// 隐藏加载中提示（别名方法，保持兼容性）
+    public func hideLoading() {
+        dismissLoading()
+    }
+    
+    // MARK: - 操作结果Toast
+    
+    /// 显示操作成功
+    public func operationSuccess(_ operation: String, details: String? = nil) {
+        success(operation, subtitle: details)
+    }
+    
+    /// 显示操作失败
+    public func operationError(_ operation: String, error: Error) {
+        self.error("\(operation)失败", subtitle: error.localizedDescription, autoDismiss: false)
+    }
+    
+    /// 显示操作开始
+    public func operationStart(_ operation: String, details: String? = nil) {
+        loading(operation, subtitle: details)
+    }
+    
+    /// 结束操作
+    public func operationEnd() {
+        dismissLoading()
+    }
+}
+
+// MARK: - 便捷访问别名
+public typealias MagicMessageProvider = MagicToastManager
 
 #if DEBUG
 #Preview {

@@ -144,9 +144,8 @@ struct MagicToastView: View {
 
 #if DEBUG
 #Preview {
-    MagicRootView {
-        MagicToastExampleView()
-    }
-    .frame(width: 400, height: 600)
+    MagicToastExampleView()
+        .withMagicToast()
+        .frame(width: 400, height: 600)
 }
 #endif
