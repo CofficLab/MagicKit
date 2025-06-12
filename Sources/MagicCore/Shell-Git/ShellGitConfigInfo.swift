@@ -32,6 +32,26 @@ extension ShellGit {
         return try Shell.run("git rev-parse \(option) HEAD", at: path)
     }
 
+    /// 获取用户名
+    /// - Parameters:
+    ///   - global: 是否全局配置
+    ///   - path: 仓库路径
+    /// - Returns: 用户名
+    public static func userName(global: Bool = false, at path: String? = nil) throws -> String {
+        let scope = global ? "--global" : ""
+        return try Shell.run("git config \(scope) user.name", at: path)
+    }
+
+    /// 获取邮箱
+    /// - Parameters:
+    ///   - global: 是否全局配置
+    ///   - path: 仓库路径
+    /// - Returns: 邮箱
+    public static func userEmail(global: Bool = false, at path: String? = nil) throws -> String {
+        let scope = global ? "--global" : ""
+        return try Shell.run("git config \(scope) user.email", at: path)
+    }
+
     /// 获取用户配置
     /// - Parameters:
     ///   - global: 是否获取全局配置

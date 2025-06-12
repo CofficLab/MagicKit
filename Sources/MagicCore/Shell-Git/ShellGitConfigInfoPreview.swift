@@ -36,6 +36,38 @@ struct ShellGitConfigInfoPreview: View {
                                 return "获取用户配置失败: \(error.localizedDescription)"
                             }
                         })
+                        VDemoButtonWithLog("获取本地用户名", action: {
+                            do {
+                                let name = try ShellGit.userName(at: repoPath)
+                                return "本地用户名: \(name)"
+                            } catch {
+                                return "获取本地用户名失败: \(error.localizedDescription)"
+                            }
+                        })
+                        VDemoButtonWithLog("获取本地邮箱", action: {
+                            do {
+                                let email = try ShellGit.userEmail(at: repoPath)
+                                return "本地邮箱: \(email)"
+                            } catch {
+                                return "获取本地邮箱失败: \(error.localizedDescription)"
+                            }
+                        })
+                        VDemoButtonWithLog("获取全局用户名", action: {
+                            do {
+                                let name = try ShellGit.userName(global: true, at: repoPath)
+                                return "全局用户名: \(name)"
+                            } catch {
+                                return "获取全局用户名失败: \(error.localizedDescription)"
+                            }
+                        })
+                        VDemoButtonWithLog("获取全局邮箱", action: {
+                            do {
+                                let email = try ShellGit.userEmail(global: true, at: repoPath)
+                                return "全局邮箱: \(email)"
+                            } catch {
+                                return "获取全局邮箱失败: \(error.localizedDescription)"
+                            }
+                        })
                         VDemoButtonWithLog("配置用户信息", action: {
                             do {
                                 let result = try ShellGit.configUser(name: "TestUser", email: "test@example.com", global: true, at: repoPath)

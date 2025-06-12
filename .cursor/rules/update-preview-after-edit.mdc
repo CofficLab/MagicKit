@@ -1,0 +1,8 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Update Preview After Edit
+
+After adding or modifying a feature, if the file has a corresponding preview view, you must update the preview view to reflect the changes.
