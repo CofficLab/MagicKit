@@ -9,6 +9,7 @@ extension ShellGit {
     ///   - branch: 分支名称，默认为当前分支
     ///   - path: 仓库路径
     /// - Returns: 执行结果
+    @discardableResult
     public static func push(remote: String = "origin", branch: String? = nil, at path: String? = nil) throws -> String {
         let command = branch != nil ? "git push \(remote) \(branch!)" : "git push \(remote)"
         return try Shell.run(command, at: path)
@@ -20,6 +21,7 @@ extension ShellGit {
     ///   - branch: 分支名称，默认为当前分支
     ///   - path: 仓库路径
     /// - Returns: 执行结果
+    @discardableResult
     public static func pull(remote: String = "origin", branch: String? = nil, at path: String? = nil) throws -> String {
         let command = branch != nil ? "git pull \(remote) \(branch!)" : "git pull \(remote)"
         return try Shell.run(command, at: path)
@@ -39,10 +41,20 @@ extension ShellGit {
     /// - Parameters:
     ///   - verbose: 是否显示详细信息
     ///   - path: 仓库路径
-    /// - Returns: 远程仓库列表
+    /// - Returns: 远程仓库列表，字符串形式
     public static func remotes(verbose: Bool = false, at path: String? = nil) throws -> String {
         let option = verbose ? "-v" : ""
         return try Shell.run("git remote \(option)", at: path)
+    }
+
+    /// 获取远程仓库列表-数组
+    /// - Parameters:
+    ///   - verbose: 是否显示详细信息
+    ///   - path: 仓库路径
+    /// - Returns: 远程仓库列表，字符串数组形式
+    public static func remotesArray(verbose: Bool = false, at path: String? = nil) throws -> [String] {
+        let output = try remotes(verbose: verbose, at: path)
+        return output.split(separator: "\n").map { String($0) }
     }
 
     /// 获取第一个远程仓库的URL
