@@ -55,6 +55,16 @@ extension ShellGit {
     public static func deleteTag(_ name: String, at path: String? = nil) throws -> String {
         return try Shell.run("git tag -d \(name)", at: path)
     }
+    
+    /// 获取指定 commit 的所有标签
+    /// - Parameters:
+    ///   - commit: commit 哈希
+    ///   - path: 仓库路径
+    /// - Returns: 标签数组
+    public static func tags(for commit: String, at path: String? = nil) throws -> [String] {
+        let output = try Shell.run("git tag --points-at \(commit)", at: path)
+        return output.split(separator: "\n").map { String($0) }.filter { !$0.isEmpty }
+    }
 }
 
 #Preview("ShellGit+StashTag Demo") {

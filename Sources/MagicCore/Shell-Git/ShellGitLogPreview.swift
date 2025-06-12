@@ -33,6 +33,21 @@ struct ShellGitLogPreview: View {
                                 return "获取未推送提交失败: \(error.localizedDescription)"
                             }
                         })
+                        VDemoButtonWithLog("带标签的提交列表", action: {
+                            do {
+                                let commits = try ShellGit.commitsWithTags(limit: 10)
+                                if commits.isEmpty { return "无提交" }
+                                return commits.map { c in
+                                    if c.tags.isEmpty {
+                                        return "\(c.hash.prefix(7))  \(c.message)"
+                                    } else {
+                                        return "\(c.hash.prefix(7))  \(c.message)  [tags: \(c.tags.joined(separator: ", "))]"
+                                    }
+                                }.joined(separator: "\n")
+                            } catch {
+                                return "获取带标签的提交失败: \(error.localizedDescription)"
+                            }
+                        })
                     }
                 }
                 .padding()
