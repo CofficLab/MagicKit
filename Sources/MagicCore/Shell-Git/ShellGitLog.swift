@@ -133,6 +133,31 @@ extension ShellGit {
         }
         return commits
     }
+
+    /// 分页获取提交日志（结构体版）
+    /// - Parameters:
+    ///   - page: 页码（从 1 开始）
+    ///   - size: 每页条数
+    ///   - at: 仓库路径
+    /// - Returns: [GitCommit]
+    public static func commitListWithPagination(page: Int = 1, size: Int = 20, at path: String? = nil) throws -> [GitCommit] {
+        let skip = (page - 1) * size
+        let format = "--pretty=format:%H%x09%an%x09%ae%x09%ad%x09%s%x09%D"
+        let log = try Shell.run("git log \(format) --skip=\(skip) -\(size)", at: path)
+        let dateFormatter = ISO8601DateFormatter()
+        return log.split(separator: "\n").compactMap { line in
+            let parts = line.split(separator: "\t", omittingEmptySubsequences: false)
+            guard parts.count >= 6 else { return nil }
+            let hash = String(parts[0])
+            let author = String(parts[1])
+            let email = String(parts[2])
+            let date = dateFormatter.date(from: String(parts[3])) ?? Date()
+            let message = String(parts[4])
+            let refs = String(parts[5])
+            let tags = refs.components(separatedBy: ", ").filter { $0.contains("tag:") }.map { $0.replacingOccurrences(of: "tag:", with: "").trimmingCharacters(in: .whitespaces) }
+            return GitCommit(id: hash, hash: hash, author: author, email: email, date: date, message: message, refs: refs.components(separatedBy: ", ").filter{!$0.isEmpty}, tags: tags)
+        }
+    }
 }
 
 // MARK: - String 正则扩展
