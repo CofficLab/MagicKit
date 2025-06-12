@@ -10,12 +10,11 @@ extension ShellGit {
     /// - Returns: 提交的哈希值
     @discardableResult
     public static func commit(message: String, at path: String? = nil) throws -> String {
-        let output = try Shell.run("git commit -m \"\(message)\"", at: path)
-        // 从输出中提取提交哈希
-        if let match = output.range(of: "[0-9a-f]{40}", options: .regularExpression) {
-            return String(output[match])
-        }
-        throw NSError(domain: "ShellGit", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to get commit hash"])
+        // 执行提交
+        _ = try Shell.run("git commit -m \"\(message)\"", at: path)
+        // 直接获取 HEAD 哈希，这是最可靠的方式
+        let headHash = try Shell.run("git rev-parse HEAD", at: path)
+        return headHash.trimmingCharacters(in: .whitespacesAndNewlines)
     }
     
     /// 添加并提交文件

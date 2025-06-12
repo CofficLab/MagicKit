@@ -149,6 +149,14 @@ extension ShellGit {
         let after = try? String(contentsOfFile: repoPath + "/" + file, encoding: .utf8)
         return (before, after)
     }
+    
+    /// 检查是否有文件待提交（暂存区是否有内容）
+    /// - Parameter path: 仓库路径
+    /// - Returns: 是否有文件待提交
+    public static func hasFilesToCommit(at path: String? = nil) throws -> Bool {
+        let output = try Shell.run("git diff --cached --name-only", at: path)
+        return !output.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
 }
 
 #Preview("ShellGit+Diff Demo") {

@@ -91,7 +91,7 @@ struct ShellGitCommitPreview: View {
                                     commitMessage = ""
                                     refreshStatus()
                                 } catch {
-                                    self.error = error.localizedDescription
+                                    self.error = "提交失败: \(error.localizedDescription)"
                                 }
                             }
                             .disabled(commitMessage.isEmpty)

@@ -42,6 +42,14 @@ struct ShellGitDiffPreview: View {
                                 return "获取暂存区差异失败: \(error.localizedDescription)"
                             }
                         })
+                        VDemoButtonWithLog("检查是否有文件待提交", action: {
+                            do {
+                                let hasFiles = try ShellGit.hasFilesToCommit(at: repoPath)
+                                return hasFiles ? "有文件待提交" : "无文件待提交"
+                            } catch {
+                                return "检查失败: \(error.localizedDescription)"
+                            }
+                        })
                     }
                     VDemoSection(title: "文件内容对比", icon: "📝") {
                         HStack {
