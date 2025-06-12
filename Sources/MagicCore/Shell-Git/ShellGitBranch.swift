@@ -89,6 +89,16 @@ extension ShellGit {
         }
         return result
     }
+
+    /// 获取当前分支（结构体版）
+    /// - Parameter path: 仓库路径
+    /// - Returns: 当前分支 GitBranch 结构体
+    public static func currentBranchInfo(at path: String? = nil) throws -> GitBranch? {
+        let name = try currentBranch(at: path).trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !name.isEmpty else { return nil }
+        // 可扩展：获取上游、最新 commit hash/message
+        return GitBranch(id: name, name: name, isCurrent: true, upstream: nil, latestCommitHash: "", latestCommitMessage: "")
+    }
 }
 
 #Preview("ShellGit+Branch Demo") {
