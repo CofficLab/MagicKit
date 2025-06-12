@@ -83,6 +83,25 @@ struct ShellGitLogPreview: View {
                             .frame(maxHeight: 180)
                         }
                     }
+                    VDemoSection(title: "结构体提交记录", icon: "🧩") {
+                        VDemoButtonWithLog("获取 GitCommit 列表", action: {
+                            do {
+                                let commits = try ShellGit.commitList(limit: 10, at: repoPath)
+                                if commits.isEmpty { return "无提交" }
+                                let df = DateFormatter()
+                                df.dateFormat = "yyyy-MM-dd HH:mm:ss"
+                                return commits.map { c in
+                                    var line = "\(c.hash.prefix(7)) | \(c.author) | \(df.string(from: c.date))\n  \(c.message)"
+                                    if !c.tags.isEmpty {
+                                        line += "\n  [tags: \(c.tags.joined(separator: ", "))]"
+                                    }
+                                    return line
+                                }.joined(separator: "\n\n")
+                            } catch {
+                                return "获取 GitCommit 列表失败: \(error.localizedDescription)"
+                            }
+                        })
+                    }
                 }
                 .padding()
                 .onAppear { loadPagedLogs(repoPath) }

@@ -82,6 +82,42 @@ extension ShellGit {
         let log = try Shell.run("git log \(format) --skip=\(skip) -\(size)", at: path)
         return log.split(separator: "\n").map { String($0) }
     }
+
+    public struct GitCommit: Identifiable {
+        public let id: String // hash
+        public let hash: String
+        public let author: String
+        public let email: String
+        public let date: Date
+        public let message: String
+        public let refs: [String]
+        public let tags: [String]
+    }
+
+    /// 获取提交记录结构体列表
+    /// - Parameters:
+    ///   - limit: 限制条数
+    ///   - at: 仓库路径
+    /// - Returns: [GitCommit]
+    public static func commitList(limit: Int = 20, at path: String? = nil) throws -> [GitCommit] {
+        let format = "--pretty=format:%H%x09%an%x09%ae%x09%ad%x09%s%x09%d"
+        let log = try Shell.run("git log \(format) -\(limit)", at: path)
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+        dateFormatter.dateFormat = "E MMM d HH:mm:ss yyyy Z"
+        return log.split(separator: "\n").compactMap { line in
+            let parts = line.split(separator: "\t", omittingEmptySubsequences: false)
+            guard parts.count >= 6 else { return nil }
+            let hash = String(parts[0])
+            let author = String(parts[1])
+            let email = String(parts[2])
+            let date = dateFormatter.date(from: String(parts[3])) ?? Date()
+            let message = String(parts[4])
+            let refs = String(parts[5])
+            let tags = refs.matches(for: "tag \\w+[-.\\w]*").map { $0.replacingOccurrences(of: "tag ", with: "") }
+            return GitCommit(id: hash, hash: hash, author: author, email: email, date: date, message: message, refs: refs.components(separatedBy: ", ").filter{!$0.isEmpty}, tags: tags)
+        }
+    }
 }
 
 // MARK: - String 正则扩展
