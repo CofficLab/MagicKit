@@ -1,7 +1,7 @@
 import Foundation
 
 /// 表示一次 diff 结果中的单个文件变动
-public struct GitDiffFile: Identifiable, Equatable {
+public struct GitDiffFile: Identifiable, Equatable, Hashable {
     /// 文件名（唯一标识）
     public let id: String
     /// 文件名
