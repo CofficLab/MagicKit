@@ -43,6 +43,48 @@ extension ShellGit {
         let fullPath = ((path?.hasSuffix("/") == true ? path! : (path ?? "") + "/") + file)
         return try String(contentsOfFile: fullPath, encoding: .utf8)
     }
+
+    /// 获取所有变动文件及其 diff 内容（结构体版）
+    /// - Parameters:
+    ///   - staged: 是否查看暂存区差异
+    ///   - path: 仓库路径
+    /// - Returns: [GitDiffFile]
+    public static func diffFileList(staged: Bool = false, at path: String? = nil) throws -> [GitDiffFile] {
+        let option = staged ? "--cached" : ""
+        // 获取变动文件及类型
+        let nameStatus = try Shell.run("git diff --name-status \(option)", at: path)
+        let files = nameStatus.split(separator: "\n").map { String($0) }
+        var result: [GitDiffFile] = []
+        for line in files {
+            let parts = line.split(separator: "\t").map { String($0) }
+            guard parts.count >= 2 else { continue }
+            let changeType = parts[0]
+            let file = parts[1]
+            let diff = (try? Shell.run("git diff \(option) -- \(file)", at: path)) ?? ""
+            result.append(GitDiffFile(id: file, file: file, changeType: changeType, diff: diff))
+        }
+        return result
+    }
+
+    /// 获取指定 commit 涉及的所有文件变动及 diff 内容（结构体版）
+    /// - Parameters:
+    ///   - commit: commit 哈希
+    ///   - path: 仓库路径
+    /// - Returns: [GitDiffFile]
+    public static func fileChanges(in commit: String, at path: String? = nil) throws -> [GitDiffFile] {
+        let nameStatus = try Shell.run("git diff-tree --no-commit-id --name-status -r \(commit)", at: path)
+        let files = nameStatus.split(separator: "\n").map { String($0) }
+        var result: [GitDiffFile] = []
+        for line in files {
+            let parts = line.split(separator: "\t").map { String($0) }
+            guard parts.count >= 2 else { continue }
+            let changeType = parts[0]
+            let file = parts[1]
+            let diff = (try? Shell.run("git show \(commit):\(file)", at: path)) ?? ""
+            result.append(GitDiffFile(id: file, file: file, changeType: changeType, diff: diff))
+        }
+        return result
+    }
 }
 
 #Preview("ShellGit+Diff Demo") {
