@@ -42,13 +42,6 @@ extension ShellGit {
         return log.split(separator: "\n").map { String($0) }
     }
 
-    /// 表示带标签的提交
-    public struct CommitWithTag {
-        public let hash: String
-        public let message: String
-        public let tags: [String]
-    }
-
     /// 获取提交及其标签列表
     /// - Parameters:
     ///   - limit: 限制条数
@@ -106,6 +99,39 @@ extension ShellGit {
             let tags = refs.matches(for: "tag \\w+[-.\\w]*").map { $0.replacingOccurrences(of: "tag ", with: "") }
             return GitCommit(id: hash, hash: hash, author: author, email: email, date: date, message: message, refs: refs.components(separatedBy: ", ").filter{!$0.isEmpty}, tags: tags)
         }
+    }
+
+    /// 获取本地未推送到远程的提交日志（结构体版）
+    /// - Parameters:
+    ///   - remote: 远程仓库名，默认 origin
+    ///   - branch: 分支名，默认当前分支
+    ///   - path: 仓库路径
+    /// - Returns: 未推送的提交日志（[GitCommit]）
+    public static func unpushedCommitList(remote: String = "origin", branch: String? = nil, at path: String? = nil) throws -> [GitCommit] {
+        let branchName: String
+        if let branch = branch {
+            branchName = branch
+        } else {
+            branchName = try currentBranch(at: path)
+        }
+        let log = try Shell.run("git log \(remote)/\(branchName)..\(branchName) --pretty=format:%H%x09%an%x09%ae%x09%ad%x09%s%x09%D", at: path)
+        let lines = log.split(separator: "\n").map { String($0) }
+        var commits: [GitCommit] = []
+        let dateFormatter = ISO8601DateFormatter()
+        for line in lines {
+            let parts = line.split(separator: "\t").map { String($0) }
+            guard parts.count >= 5 else { continue }
+            let hash = parts[0]
+            let author = parts[1]
+            let email = parts[2]
+            let dateStr = parts[3]
+            let message = parts[4]
+            let refs = parts.count > 5 ? parts[5].split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) } : []
+            let tags = refs.filter { $0.contains("tag:") }.map { $0.replacingOccurrences(of: "tag:", with: "").trimmingCharacters(in: .whitespaces) }
+            let date = dateFormatter.date(from: dateStr) ?? Date()
+            commits.append(GitCommit(id: hash, hash: hash, author: author, email: email, date: date, message: message, refs: refs, tags: tags))
+        }
+        return commits
     }
 }
 

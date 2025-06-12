@@ -10,3 +10,10 @@ public struct GitCommit: Identifiable, Equatable {
     public let refs: [String]
     public let tags: [String]
 } 
+
+    /// 表示带标签的提交
+    public struct CommitWithTag {
+        public let hash: String
+        public let message: String
+        public let tags: [String]
+    }
