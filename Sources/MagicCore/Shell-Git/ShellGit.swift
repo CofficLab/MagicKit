@@ -99,6 +99,16 @@ public class ShellGit: SuperLog {
         let option = includeRemote ? "-a" : ""
         return try Shell.run("git branch \(option)", at: path)
     }
+
+    /// 获取分支列表并返回字符串数组
+    /// - Parameters:
+    ///   - includeRemote: 是否包含远程分支
+    ///   - path: 仓库路径
+    /// - Returns: 分支名称字符串数组
+    public static func branchesArray(includeRemote: Bool = false, at path: String? = nil) throws -> [String] {
+        let branchesString = try branches(includeRemote: includeRemote, at: path)
+        return branchesString.split(separator: "\n").map { $0.trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: "* ", with: "") }.filter { !$0.isEmpty }
+    }
     
     /// 获取当前分支
     /// - Parameter path: 仓库路径
