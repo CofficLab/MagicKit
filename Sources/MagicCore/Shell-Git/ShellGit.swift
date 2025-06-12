@@ -4,8 +4,8 @@ import SwiftUI
 
 /// Git命令执行类
 /// 提供常用的Git操作功能
-class ShellGit: SuperLog {
-    static let emoji = "🔧"
+public class ShellGit: SuperLog {
+    public static let emoji = "🔧"
     
     /// 初始化Git仓库
     /// - Parameter path: 仓库路径
