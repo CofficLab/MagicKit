@@ -57,9 +57,9 @@ struct ShellGitBranchPreview: View {
                         VDemoButtonWithLog("合并分支", action: {
                             do {
                                 let result = try ShellGit.merge("main", at: repoPath)
-                                return "合并分支结果: \(result)"
+                                return "合并结果: \(result)"
                             } catch {
-                                return "合并分支失败: \(error.localizedDescription)"
+                                return "合并失败: \(error.localizedDescription)"
                             }
                         })
                         VDemoButtonWithLog("分支结构体列表", action: {

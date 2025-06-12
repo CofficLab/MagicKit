@@ -27,47 +27,66 @@ extension ShellGit {
     /// - Parameter path: 仓库路径
     /// - Returns: 当前分支名
     public static func currentBranch(at path: String? = nil) throws -> String {
-        return try Shell.run("git branch --show-current", at: path)
+        return try Shell.run("git branch --show-current", at: path).trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+    
+    /// 获取所有本地分支
+    /// - Parameter path: 仓库路径
+    /// - Returns: 本地分支列表
+    public static func localBranches(at path: String? = nil) throws -> [String] {
+        let output = try Shell.run("git branch", at: path)
+        return output.split(separator: "\n")
+            .map { String($0).trimmingCharacters(in: .whitespacesAndNewlines) }
+            .map { $0.replacingOccurrences(of: "* ", with: "") }
+    }
+    
+    /// 获取所有远程分支
+    /// - Parameter path: 仓库路径
+    /// - Returns: 远程分支列表
+    public static func remoteBranches(at path: String? = nil) throws -> [String] {
+        let output = try Shell.run("git branch -r", at: path)
+        return output.split(separator: "\n")
+            .map { String($0).trimmingCharacters(in: .whitespacesAndNewlines) }
+    }
+    
+    /// 获取所有分支（本地+远程）
+    /// - Parameter path: 仓库路径
+    /// - Returns: 所有分支列表
+    public static func allBranches(at path: String? = nil) throws -> [String] {
+        let output = try Shell.run("git branch -a", at: path)
+        return output.split(separator: "\n")
+            .map { String($0).trimmingCharacters(in: .whitespacesAndNewlines) }
+            .map { $0.replacingOccurrences(of: "* ", with: "") }
     }
     
     /// 创建新分支
     /// - Parameters:
     ///   - name: 分支名称
-    ///   - checkout: 是否切换到新分支
     ///   - path: 仓库路径
     /// - Returns: 执行结果
-    public static func createBranch(_ name: String, checkout: Bool = false, at path: String? = nil) throws -> String {
-        let command = checkout ? "git checkout -b \(name)" : "git branch \(name)"
-        return try Shell.run(command, at: path)
+    public static func createBranch(_ name: String, at path: String? = nil) throws -> String {
+        return try Shell.run("git branch \(name)", at: path)
     }
     
-    /// 切换分支
+    /// 删除本地分支
     /// - Parameters:
     ///   - name: 分支名称
-    ///   - path: 仓库路径
-    /// - Returns: 执行结果
-    public static func checkout(_ name: String, at path: String? = nil) throws -> String {
-        return try Shell.run("git checkout \(name)", at: path)
-    }
-    
-    /// 删除分支
-    /// - Parameters:
-    ///   - name: 分支名称
-    ///   - force: 是否强制删除
-    ///   - path: 仓库路径
-    /// - Returns: 执行结果
+    ///   - force: 是否强制删除（即使分支还没有被合并）
+    ///   - path: 仓库路径，默认为当前目录
+    /// - Returns: 删除结果
+    /// - Throws: 如果删除失败
     public static func deleteBranch(_ name: String, force: Bool = false, at path: String? = nil) throws -> String {
-        let option = force ? "-D" : "-d"
-        return try Shell.run("git branch \(option) \(name)", at: path)
+        let forceFlag = force ? "-D" : "-d"
+        return try Shell.run("git branch \(forceFlag) \(name)", at: path)
     }
     
-    /// 合并分支
+    /// 获取分支的最后一次提交
     /// - Parameters:
-    ///   - branch: 要合并的分支
+    ///   - branchName: 分支名称
     ///   - path: 仓库路径
-    /// - Returns: 执行结果
-    public static func merge(_ branch: String, at path: String? = nil) throws -> String {
-        return try Shell.run("git merge \(branch)", at: path)
+    /// - Returns: 最后一次提交的简短信息
+    public static func lastCommitOfBranch(_ branchName: String, at path: String? = nil) throws -> String {
+        return try Shell.run("git log \(branchName) -1 --oneline", at: path)
     }
 
     /// 获取分支结构体列表

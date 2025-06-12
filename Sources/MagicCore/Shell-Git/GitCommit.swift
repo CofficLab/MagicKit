@@ -26,3 +26,16 @@ public struct CommitWithTag {
     public let message: String
     public let tags: [String]
 }
+
+
+/// 提交详细信息
+public struct GitCommitDetail {
+    public let id: String
+    public let author: String
+    public let email: String
+    public let date: Date
+    public let message: String
+    public let body: String
+    public let files: [GitDiffFile]
+    public let diff: String
+}

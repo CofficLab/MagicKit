@@ -12,7 +12,28 @@ extension ShellGit {
         let option = staged ? "--cached" : ""
         return try Shell.run("git diff \(option)", at: path)
     }
-
+    
+    /// 获取文件差异
+    /// - Parameters:
+    ///   - file: 文件路径
+    ///   - staged: 是否查看暂存区差异
+    ///   - path: 仓库路径
+    /// - Returns: 文件差异信息
+    public static func diffFile(_ file: String, staged: Bool = false, at path: String? = nil) throws -> String {
+        let option = staged ? "--cached" : ""
+        return try Shell.run("git diff \(option) \(file)", at: path)
+    }
+    
+    /// 获取两个提交之间的差异
+    /// - Parameters:
+    ///   - from: 起始提交
+    ///   - to: 目标提交
+    ///   - path: 仓库路径
+    /// - Returns: 差异信息
+    public static func diffBetweenCommits(from: String, to: String, at path: String? = nil) throws -> String {
+        return try Shell.run("git diff \(from) \(to)", at: path)
+    }
+    
     /// 获取某个 commit 前后的文件内容
     /// - Parameters:
     ///   - commit: commit 哈希
@@ -27,17 +48,6 @@ extension ShellGit {
         return (before, after)
     }
     
-    /// 获取文件差异
-    /// - Parameters:
-    ///   - file: 文件路径
-    ///   - staged: 是否查看暂存区差异
-    ///   - path: 仓库路径
-    /// - Returns: 文件差异信息
-    public static func diffFile(_ file: String, staged: Bool = false, at path: String? = nil) throws -> String {
-        let option = staged ? "--cached" : ""
-        return try Shell.run("git diff \(option) \(file)", at: path)
-    }
-
     /// 获取指定 commit 下的文件内容
     /// - Parameters:
     ///   - file: 文件路径（相对仓库根目录）
@@ -47,7 +57,7 @@ extension ShellGit {
     public static func fileContent(atCommit commit: String, file: String, at path: String? = nil) throws -> String {
         return try Shell.run("git show \(commit):\(file)", at: path)
     }
-
+    
     /// 获取当前工作区的文件内容
     /// - Parameters:
     ///   - file: 文件路径（相对仓库根目录）
@@ -57,7 +67,7 @@ extension ShellGit {
         let fullPath = ((path?.hasSuffix("/") == true ? path! : (path ?? "") + "/") + file)
         return try String(contentsOfFile: fullPath, encoding: .utf8)
     }
-
+    
     /// 获取所有变动文件及其 diff 内容（结构体版）
     /// - Parameters:
     ///   - staged: 是否查看暂存区差异
@@ -79,7 +89,7 @@ extension ShellGit {
         }
         return result
     }
-
+    
     /// 获取指定 commit 涉及的所有文件变动及 diff 内容（结构体版）
     /// - Parameters:
     ///   - commit: commit 哈希
@@ -99,7 +109,7 @@ extension ShellGit {
         }
         return result
     }
-
+    
     /// 获取指定 commit 变动的文件名列表
     /// - Parameters:
     ///   - commit: commit 哈希
@@ -109,7 +119,7 @@ extension ShellGit {
         let output = try Shell.run("git diff-tree --no-commit-id --name-only -r \(commit)", at: path)
         return output.split(separator: "\n").map { String($0) }
     }
-
+    
     /// 获取指定 commit 变动的文件列表（结构体版）
     /// - Parameters:
     ///   - commit: commit 哈希

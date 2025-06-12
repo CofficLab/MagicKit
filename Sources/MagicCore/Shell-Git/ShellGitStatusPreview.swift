@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct ShellGitStagingPreview: View {
+struct ShellGitStatusPreview: View {
     var body: some View {
         ShellGitExampleRepoView { repoPath in
             ScrollView {
@@ -8,15 +8,15 @@ struct ShellGitStagingPreview: View {
                     VDemoSection(title: "暂存区操作", icon: "📥") {
                         VDemoButtonWithLog("添加所有文件到暂存区", action: {
                             do {
-                                let result = try ShellGit.add(at: repoPath)
-                                return "添加结果: \(result)"
+                                try ShellGit.add([], at: repoPath)
+                                return "添加成功"
                             } catch {
                                 return "添加失败: \(error.localizedDescription)"
                             }
                         })
                         VDemoButtonWithLog("提交更改", action: {
                             do {
-                                let result = try ShellGit.commit("测试提交", at: repoPath)
+                                let result = try ShellGit.commit(message: "测试提交", at: repoPath)
                                 return "提交结果: \(result)"
                             } catch {
                                 return "提交失败: \(error.localizedDescription)"
@@ -32,7 +32,7 @@ struct ShellGitStagingPreview: View {
                         })
                         VDemoButtonWithLog("获取详细状态", action: {
                             do {
-                                let status = try ShellGit.statusVerbose(at: repoPath)
+                                let status = try ShellGit.statusPorcelain(at: repoPath)
                                 return status.isEmpty ? "无详细状态" : status
                             } catch {
                                 return "获取详细状态失败: \(error.localizedDescription)"
@@ -55,6 +55,6 @@ struct ShellGitStagingPreview: View {
 }
 
 #Preview("ShellGit+Staging Demo") {
-    ShellGitStagingPreview()
+    ShellGitStatusPreview()
         .inMagicContainer()
 } 

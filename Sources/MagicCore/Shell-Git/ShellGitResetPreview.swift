@@ -16,7 +16,7 @@ struct ShellGitResetPreview: View {
                         })
                         VDemoButtonWithLog("硬重置所有文件", action: {
                             do {
-                                let result = try ShellGit.reset(hard: true, at: repoPath)
+                                let result = try ShellGit.resetHard(at: repoPath)
                                 return "硬重置结果: \(result)"
                             } catch {
                                 return "硬重置失败: \(error.localizedDescription)"

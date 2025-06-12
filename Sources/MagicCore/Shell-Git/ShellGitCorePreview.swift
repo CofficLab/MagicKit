@@ -14,14 +14,6 @@ struct ShellGitCorePreview: View {
                                 return "初始化失败: \(error.localizedDescription)"
                             }
                         })
-                        VDemoButtonWithLog("克隆仓库", action: {
-                            do {
-                                let result = try ShellGit.clone("https://github.com/example/repo.git", to: repoPath)
-                                return "克隆结果: \(result)"
-                            } catch {
-                                return "克隆失败: \(error.localizedDescription)"
-                            }
-                        })
                     }
                 }
                 .padding()

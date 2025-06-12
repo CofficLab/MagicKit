@@ -25,6 +25,83 @@ extension ShellGit {
         return logString.split(separator: "\n").map { String($0) }
     }
     
+    /// 获取最近的提交记录
+    /// - Parameters:
+    ///   - count: 获取的提交数量
+    ///   - path: 仓库路径
+    /// - Returns: 提交记录列表
+    public static func recentCommits(count: Int = 10, at path: String? = nil) throws -> [GitCommit] {
+        let format = "%H|%an|%ae|%at|%s"
+        let output = try Shell.run("git log -n \(count) --pretty=format:'\(format)'", at: path)
+        return output.split(separator: "\n").compactMap { line in
+            let parts = String(line).split(separator: "|").map { String($0) }
+            guard parts.count >= 5 else { return nil }
+            return GitCommit(
+                id: parts[0],
+                hash: parts[0],
+                author: parts[1],
+                email: parts[2],
+                date: Date(timeIntervalSince1970: TimeInterval(Int(parts[3]) ?? 0)),
+                message: parts[4],
+                refs: [],
+                tags: []
+            )
+        }
+    }
+    
+    /// 获取指定分支的提交记录
+    /// - Parameters:
+    ///   - branch: 分支名称
+    ///   - count: 获取的提交数量
+    ///   - path: 仓库路径
+    /// - Returns: 提交记录列表
+    public static func commits(in branch: String, count: Int = 10, at path: String? = nil) throws -> [GitCommit] {
+        let format = "%H|%an|%ae|%at|%s"
+        let output = try Shell.run("git log \(branch) -n \(count) --pretty=format:'\(format)'", at: path)
+        return output.split(separator: "\n").compactMap { line in
+            let parts = String(line).split(separator: "|").map { String($0) }
+            guard parts.count >= 5 else { return nil }
+            return GitCommit(
+                id: parts[0],
+                hash: parts[0],
+                author: parts[1],
+                email: parts[2],
+                date: Date(timeIntervalSince1970: TimeInterval(Int(parts[3]) ?? 0)),
+                message: parts[4],
+                refs: [],
+                tags: []
+            )
+        }
+    }
+    
+    /// 获取提交的详细信息
+    /// - Parameters:
+    ///   - commit: 提交哈希
+    ///   - path: 仓库路径
+    /// - Returns: 提交详细信息
+    public static func commitDetail(_ commit: String, at path: String? = nil) throws -> GitCommitDetail {
+        let format = "%H|%an|%ae|%at|%s|%b"
+        let output = try Shell.run("git show \(commit) --pretty=format:'\(format)' --no-patch", at: path)
+        let parts = output.split(separator: "|").map { String($0) }
+        guard parts.count >= 6 else {
+            throw NSError(domain: "ShellGit", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid commit format"])
+        }
+        
+        let files = try changedFilesDetail(in: commit, at: path)
+        let diff = try Shell.run("git show \(commit)", at: path)
+        
+        return GitCommitDetail(
+            id: parts[0],
+            author: parts[1],
+            email: parts[2],
+            date: Date(timeIntervalSince1970: TimeInterval(Int(parts[3]) ?? 0)),
+            message: parts[4],
+            body: parts[5],
+            files: files,
+            diff: diff
+        )
+    }
+    
     /// 获取本地未推送到远程的提交日志
     /// - Parameters:
     ///   - remote: 远程仓库名，默认 origin
