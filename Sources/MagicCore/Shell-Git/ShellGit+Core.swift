@@ -1,5 +1,6 @@
 import Foundation
 import OSLog
+import SwiftUI
 
 /// Git命令执行类
 /// 提供常用的Git操作功能
@@ -22,4 +23,9 @@ public class ShellGit: SuperLog {
         let command = path != nil ? "git clone \(url) \(path!)" : "git clone \(url)"
         return try Shell.run(command)
     }
+}
+
+#Preview("ShellGit Demo") {
+    ShellGitPreviewView()
+        .inMagicContainer()
 }

@@ -1,5 +1,6 @@
 import Foundation
 import OSLog
+import SwiftUI
 
 extension ShellGit {
     /// 暂存更改
@@ -54,4 +55,9 @@ extension ShellGit {
     public static func deleteTag(_ name: String, at path: String? = nil) throws -> String {
         return try Shell.run("git tag -d \(name)", at: path)
     }
+}
+
+#Preview("ShellGit Demo") {
+    ShellGitPreviewView()
+        .inMagicContainer()
 }

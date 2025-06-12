@@ -1,5 +1,6 @@
 import Foundation
 import OSLog
+import SwiftUI
 
 extension ShellGit {
     /// 获取分支列表
@@ -68,4 +69,9 @@ extension ShellGit {
     public static func merge(_ branch: String, at path: String? = nil) throws -> String {
         return try Shell.run("git merge \(branch)", at: path)
     }
+}
+
+#Preview("ShellGit Demo") {
+    ShellGitPreviewView()
+        .inMagicContainer()
 }

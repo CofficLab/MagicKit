@@ -1,5 +1,6 @@
 import Foundation
 import OSLog
+import SwiftUI
 
 extension ShellGit {
     /// 添加文件到暂存区
@@ -34,4 +35,17 @@ extension ShellGit {
     public static func statusVerbose(at path: String? = nil) throws -> String {
         return try Shell.run("git status", at: path)
     }
+
+    /// 判断本地是否有未提交的变动
+    /// - Parameter path: 仓库路径
+    /// - Returns: 如果有未提交的变动则返回true，否则返回false
+    public static func hasUncommittedChanges(at path: String? = nil) throws -> Bool {
+        let output = try Shell.run("git status --porcelain", at: path)
+        return !output.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+}
+
+#Preview("ShellGit Demo") {
+    ShellGitPreviewView()
+        .inMagicContainer()
 }

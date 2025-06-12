@@ -1,5 +1,6 @@
 import Foundation
 import OSLog
+import SwiftUI
 
 extension ShellGit {
     /// 检查是否为Git仓库
@@ -56,4 +57,10 @@ extension ShellGit {
         let emailResult = try Shell.run("git config \(scope) user.email \"\(email)\"", at: path)
         return "Name: \(nameResult)\nEmail: \(emailResult)"
     }
+}
+
+
+#Preview("ShellGit Demo") {
+    ShellGitPreviewView()
+        .inMagicContainer()
 }
