@@ -6,6 +6,12 @@ struct ShellGitDiffPreview: View {
     @State private var workContent: String = ""
     @State private var error: String? = nil
     @State private var showResult: Bool = false
+    @State private var diffCommit: String = "HEAD~1"
+    @State private var diffFile: String = "README.md"
+    @State private var beforeContent: String = ""
+    @State private var afterContent: String = ""
+    @State private var diffError: String? = nil
+    @State private var showDiffResult: Bool = false
 
     var body: some View {
         ShellGitExampleRepoView { repoPath in
@@ -66,6 +72,51 @@ struct ShellGitDiffPreview: View {
                                         .frame(maxWidth: .infinity, alignment: .leading)
                                 }.frame(maxHeight: 120)
                                     .background(Color.gray.opacity(0.4))
+                            }
+                            .padding(6)
+                            .cornerRadius(8)
+                        }
+                    }
+                    VDemoSection(title: "指定 commit 文件变动内容", icon: "🔍") {
+                        HStack {
+                            TextField("commit 哈希", text: $diffCommit)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                            TextField("文件名（相对路径）", text: $diffFile)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                            Button("获取") {
+                                do {
+                                    let (before, after) = try ShellGit.fileContentChange(at: diffCommit, file: diffFile, repoPath: repoPath)
+                                    beforeContent = before ?? "(文件不存在)"
+                                    afterContent = after ?? "(文件不存在)"
+                                    diffError = nil
+                                    showDiffResult = true
+                                } catch let e {
+                                    diffError = e.localizedDescription
+                                    showDiffResult = false
+                                }
+                            }
+                        }
+                        if let diffError = diffError {
+                            Text("错误: \(diffError)").foregroundColor(.red)
+                        }
+                        if showDiffResult {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("修改前内容:")
+                                    .font(.caption)
+                                ScrollView {
+                                    Text(beforeContent)
+                                        .font(.system(size: 12, design: .monospaced))
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                }.frame(maxHeight: 120)
+                                    .background(Color.yellow.opacity(0.3))
+                                Text("修改后内容:")
+                                    .font(.caption)
+                                ScrollView {
+                                    Text(afterContent)
+                                        .font(.system(size: 12, design: .monospaced))
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                }.frame(maxHeight: 120)
+                                    .background(Color.blue.opacity(0.2))
                             }
                             .padding(6)
                             .cornerRadius(8)

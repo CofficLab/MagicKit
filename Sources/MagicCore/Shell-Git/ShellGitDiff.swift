@@ -12,6 +12,20 @@ extension ShellGit {
         let option = staged ? "--cached" : ""
         return try Shell.run("git diff \(option)", at: path)
     }
+
+    /// 获取某个 commit 前后的文件内容
+    /// - Parameters:
+    ///   - commit: commit 哈希
+    ///   - file: 文件路径（相对仓库根目录）
+    ///   - repoPath: 仓库本地路径
+    /// - Returns: (修改前内容, 修改后内容)
+    public static func fileContentChange(at commit: String, file: String, repoPath: String) throws -> (before: String?, after: String?) {
+        // 获取 parent commit
+        let parentCommit = try Shell.run("git rev-parse \(commit)^", at: repoPath).trimmingCharacters(in: .whitespacesAndNewlines)
+        let before = try? Shell.run("git show \(parentCommit):\(file)", at: repoPath)
+        let after = try? Shell.run("git show \(commit):\(file)", at: repoPath)
+        return (before, after)
+    }
     
     /// 获取文件差异
     /// - Parameters:
