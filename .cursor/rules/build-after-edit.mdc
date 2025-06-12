@@ -1,0 +1,8 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Build After Edit
+
+After adding or modifying code, you should attempt to build the project. If the build fails, you must resolve the issues and repeat the process until the build succeeds.

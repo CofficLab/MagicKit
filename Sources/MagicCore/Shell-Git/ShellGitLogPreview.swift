@@ -25,6 +25,14 @@ struct ShellGitLogPreview: View {
                                 return "获取提交日志数组失败: \(error.localizedDescription)"
                             }
                         })
+                        VDemoButtonWithLog("未推送到远程的提交", action: {
+                            do {
+                                let commits = try ShellGit.unpushedCommits()
+                                return commits.isEmpty ? "所有提交已同步到远程" : commits.joined(separator: "\n")
+                            } catch {
+                                return "获取未推送提交失败: \(error.localizedDescription)"
+                            }
+                        })
                     }
                 }
                 .padding()
