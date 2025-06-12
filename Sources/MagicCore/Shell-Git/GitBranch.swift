@@ -1,7 +1,7 @@
 import Foundation
 
 /// 表示一个 Git 分支
-public struct GitBranch: Identifiable, Equatable {
+public struct GitBranch: Identifiable, Equatable, Hashable {
     /// 分支名（唯一标识）
     public let id: String
     /// 分支名
