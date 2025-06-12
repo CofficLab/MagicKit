@@ -99,6 +99,33 @@ extension ShellGit {
         }
         return result
     }
+
+    /// 获取指定 commit 变动的文件名列表
+    /// - Parameters:
+    ///   - commit: commit 哈希
+    ///   - path: 仓库路径
+    /// - Returns: 文件名数组
+    public static func changedFiles(in commit: String, at path: String? = nil) throws -> [String] {
+        let output = try Shell.run("git diff-tree --no-commit-id --name-only -r \(commit)", at: path)
+        return output.split(separator: "\n").map { String($0) }
+    }
+
+    /// 获取指定 commit 变动的文件列表（结构体版）
+    /// - Parameters:
+    ///   - commit: commit 哈希
+    ///   - path: 仓库路径
+    /// - Returns: [GitDiffFile]，仅包含文件名和变动类型，diff 为空
+    public static func changedFilesDetail(in commit: String, at path: String? = nil) throws -> [GitDiffFile] {
+        let output = try Shell.run("git diff-tree --no-commit-id --name-status -r \(commit)", at: path)
+        let files = output.split(separator: "\n").map { String($0) }
+        return files.compactMap { line in
+            let parts = line.split(separator: "\t").map { String($0) }
+            guard parts.count >= 2 else { return nil }
+            let changeType = parts[0]
+            let file = parts[1]
+            return GitDiffFile(id: file, file: file, changeType: changeType, diff: "")
+        }
+    }
 }
 
 #Preview("ShellGit+Diff Demo") {

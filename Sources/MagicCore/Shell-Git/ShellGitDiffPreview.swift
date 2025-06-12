@@ -12,6 +12,14 @@ struct ShellGitDiffPreview: View {
     @State private var afterContent: String = ""
     @State private var diffError: String? = nil
     @State private var showDiffResult: Bool = false
+    @State private var filesCommit: String = "HEAD~1"
+    @State private var filesList: [String] = []
+    @State private var filesError: String? = nil
+    @State private var showFilesResult: Bool = false
+    @State private var filesDetailCommit: String = "HEAD~1"
+    @State private var filesDetailList: [GitDiffFile] = []
+    @State private var filesDetailError: String? = nil
+    @State private var showFilesDetailResult: Bool = false
 
     var body: some View {
         ShellGitExampleRepoView { repoPath in
@@ -117,6 +125,86 @@ struct ShellGitDiffPreview: View {
                                         .frame(maxWidth: .infinity, alignment: .leading)
                                 }.frame(maxHeight: 120)
                                     .background(Color.blue.opacity(0.2))
+                            }
+                            .padding(6)
+                            .cornerRadius(8)
+                        }
+                    }
+                    VDemoSection(title: "指定 commit 变动文件列表", icon: "📂") {
+                        HStack {
+                            TextField("commit 哈希", text: $filesCommit)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                            Button("获取") {
+                                do {
+                                    filesList = try ShellGit.changedFiles(in: filesCommit, at: repoPath)
+                                    filesError = nil
+                                    showFilesResult = true
+                                } catch let e {
+                                    filesError = e.localizedDescription
+                                    showFilesResult = false
+                                }
+                            }
+                        }
+                        if let filesError = filesError {
+                            Text("错误: \(filesError)").foregroundColor(.red)
+                        }
+                        if showFilesResult {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("变动文件列表:")
+                                    .font(.caption)
+                                if filesList.isEmpty {
+                                    Text("无变动文件")
+                                        .foregroundColor(.secondary)
+                                } else {
+                                    ForEach(filesList, id: \.self) { file in
+                                        Text(file)
+                                            .font(.system(size: 13, design: .monospaced))
+                                            .frame(maxWidth: .infinity, alignment: .leading)
+                                    }
+                                }
+                            }
+                            .padding(6)
+                            .cornerRadius(8)
+                        }
+                    }
+                    VDemoSection(title: "指定 commit 变动文件列表（结构体）", icon: "🧩") {
+                        HStack {
+                            TextField("commit 哈希", text: $filesDetailCommit)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                            Button("获取") {
+                                do {
+                                    filesDetailList = try ShellGit.changedFilesDetail(in: filesDetailCommit, at: repoPath)
+                                    filesDetailError = nil
+                                    showFilesDetailResult = true
+                                } catch let e {
+                                    filesDetailError = e.localizedDescription
+                                    showFilesDetailResult = false
+                                }
+                            }
+                        }
+                        if let filesDetailError = filesDetailError {
+                            Text("错误: \(filesDetailError)").foregroundColor(.red)
+                        }
+                        if showFilesDetailResult {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("变动文件结构体列表:")
+                                    .font(.caption)
+                                if filesDetailList.isEmpty {
+                                    Text("无变动文件")
+                                        .foregroundColor(.secondary)
+                                } else {
+                                    ForEach(filesDetailList) { file in
+                                        HStack {
+                                            Text("\(file.changeType)")
+                                                .font(.system(size: 13, design: .monospaced))
+                                                .foregroundColor(.accentColor)
+                                                .frame(width: 24, alignment: .leading)
+                                            Text(file.file)
+                                                .font(.system(size: 13, design: .monospaced))
+                                                .frame(maxWidth: .infinity, alignment: .leading)
+                                        }
+                                    }
+                                }
                             }
                             .padding(6)
                             .cornerRadius(8)
