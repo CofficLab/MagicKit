@@ -3,32 +3,6 @@ import OSLog
 import SwiftUI
 
 extension ShellGit {
-    /// 暂存更改
-    /// - Parameters:
-    ///   - message: 暂存信息
-    ///   - path: 仓库路径
-    /// - Returns: 执行结果
-    public static func stash(_ message: String? = nil, at path: String? = nil) throws -> String {
-        let command = message != nil ? "git stash push -m \"\(message!)\"" : "git stash"
-        return try Shell.run(command, at: path)
-    }
-    
-    /// 恢复暂存
-    /// - Parameters:
-    ///   - index: 暂存索引，默认为最新
-    ///   - path: 仓库路径
-    /// - Returns: 执行结果
-    public static func stashPop(index: Int = 0, at path: String? = nil) throws -> String {
-        return try Shell.run("git stash pop stash@{\(index)}", at: path)
-    }
-    
-    /// 获取暂存列表
-    /// - Parameter path: 仓库路径
-    /// - Returns: 暂存列表
-    public static func stashList(at path: String? = nil) throws -> String {
-        return try Shell.run("git stash list", at: path)
-    }
-    
     /// 获取标签列表
     /// - Parameter path: 仓库路径
     /// - Returns: 标签列表
@@ -85,9 +59,24 @@ extension ShellGit {
         }
         return tags
     }
-}
-
-#Preview("ShellGit+StashTag Demo") {
-    ShellGitStashTagPreview()
-        .inMagicContainer()
-}
+    
+    /// 获取指定 commit 的所有标签（结构体版）
+    /// - Parameters:
+    ///   - commit: commit 哈希
+    ///   - path: 仓库路径
+    /// - Returns: [GitTag]
+    public static func tagList(for commit: String, at path: String? = nil) throws -> [GitTag] {
+        let tagNames = try tags(for: commit, at: path)
+        var tags: [GitTag] = []
+        for name in tagNames {
+            let commitHash = (try? Shell.run("git rev-list -n 1 \(name)", at: path)) ?? ""
+            let tagInfo = (try? Shell.run("git for-each-ref refs/tags/\(name) --format='%(taggername)::%(taggerdate)::%(subject)'", at: path)) ?? "::"
+            let parts = tagInfo.replacingOccurrences(of: "'", with: "").split(separator: "::").map { String($0) }
+            let author = parts.count > 0 ? parts[0] : nil
+            let date = parts.count > 1 ? ISO8601DateFormatter().date(from: parts[1]) : nil
+            let message = parts.count > 2 ? parts[2] : nil
+            tags.append(GitTag(id: name, name: name, commitHash: commitHash, author: author, date: date, message: message))
+        }
+        return tags
+    }
+} 

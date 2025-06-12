@@ -1,15 +1,24 @@
 import Foundation
 
+/// 表示一次 Git 提交记录
 public struct GitCommit: Identifiable, Equatable {
-    public let id: String // hash
+    /// 提交哈希（唯一标识）
+    public let id: String
+    /// 提交哈希
     public let hash: String
+    /// 作者名称
     public let author: String
+    /// 作者邮箱
     public let email: String
+    /// 提交日期
     public let date: Date
+    /// 提交信息
     public let message: String
+    /// 关联的引用（如分支、tag 等）
     public let refs: [String]
+    /// 关联的标签名
     public let tags: [String]
-} 
+}
 
 /// 表示带标签的提交
 public struct CommitWithTag {
