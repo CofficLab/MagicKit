@@ -68,6 +68,20 @@ extension ShellGit {
             return CommitWithTag(hash: hash, message: message, tags: tags)
         }
     }
+
+    /// 分页获取提交日志
+    /// - Parameters:
+    ///   - page: 页码（从 1 开始）
+    ///   - size: 每页条数
+    ///   - oneline: 是否单行显示
+    ///   - path: 仓库路径
+    /// - Returns: 日志信息数组
+    public static func logsWithPagination(page: Int = 1, size: Int = 20, oneline: Bool = true, at path: String? = nil) throws -> [String] {
+        let skip = (page - 1) * size
+        let format = oneline ? "--oneline" : ""
+        let log = try Shell.run("git log \(format) --skip=\(skip) -\(size)", at: path)
+        return log.split(separator: "\n").map { String($0) }
+    }
 }
 
 // MARK: - String 正则扩展

@@ -1,6 +1,11 @@
 import SwiftUI
 
 struct ShellGitLogPreview: View {
+    @State private var logPage: Int = 1
+    @State private var logSize: Int = 10
+    @State private var pagedLogs: [String] = []
+    @State private var pagedError: String? = nil
+
     var body: some View {
         ShellGitExampleRepoView { repoPath in
             ScrollView {
@@ -46,9 +51,52 @@ struct ShellGitLogPreview: View {
                             }
                         })
                     }
+                    VDemoSection(title: "分页获取提交日志", icon: "📄") {
+                        HStack(spacing: 10) {
+                            Button("上一页") {
+                                if logPage > 1 { logPage -= 1 }
+                                loadPagedLogs(repoPath)
+                            }
+                            Button("下一页") {
+                                logPage += 1
+                                loadPagedLogs(repoPath)
+                            }
+                            Text("第 \(logPage) 页，每页 \(logSize) 条")
+                        }
+                        .padding(.bottom, 4)
+                        Button("刷新") { loadPagedLogs(repoPath) }
+                        if let pagedError = pagedError {
+                            Text("错误: \(pagedError)").foregroundColor(.red)
+                        }
+                        if !pagedLogs.isEmpty {
+                            ScrollView(.horizontal) {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    ForEach(pagedLogs, id: \ .self) { log in
+                                        Text(log)
+                                            .font(.system(size: 12, design: .monospaced))
+                                    }
+                                }
+                                .padding(6)
+                                .background(Color.gray.opacity(0.1))
+                                .cornerRadius(8)
+                            }
+                            .frame(maxHeight: 180)
+                        }
+                    }
                 }
                 .padding()
+                .onAppear { loadPagedLogs(repoPath) }
             }
+        }
+    }
+
+    private func loadPagedLogs(_ repoPath: String) {
+        do {
+            pagedLogs = try ShellGit.logsWithPagination(page: logPage, size: logSize, at: repoPath)
+            pagedError = nil
+        } catch {
+            pagedLogs = []
+            pagedError = error.localizedDescription
         }
     }
 }
