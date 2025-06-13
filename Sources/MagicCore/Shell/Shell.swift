@@ -6,7 +6,7 @@ import SwiftUI
 /// 提供基础的Shell命令执行功能
 class Shell: SuperLog {
     static let emoji = "🐚"
-    
+
     /// 执行Shell命令
     /// - Parameters:
     ///   - command: 要执行的命令
@@ -48,19 +48,18 @@ class Shell: SuperLog {
         }
 
         if process.terminationStatus != 0 {
-            if verbose {
-                os_log("\(self.t) ❌ Command failed")
-                os_log("\(self.t) ➡️ Path: \(path ?? "Current Directory")")
-                os_log("\(self.t) ➡️ Command: \(command)")
-                os_log("\(self.t) ➡️ Output: \(output)")
-                os_log("\(self.t) ➡️ Exit code: \(process.terminationStatus)")
-            }
-            throw ShellError.commandFailed(output + "\n" + command)
+            os_log("\(self.t) ❌ Command failed")
+            os_log("\(self.t) ➡️ Path: \(path ?? "Current Directory")")
+            os_log("\(self.t) ➡️ Command: \(command)")
+            os_log("\(self.t) ➡️ Output: \(output)")
+            os_log("\(self.t) ➡️ Exit code: \(process.terminationStatus)")
+
+            throw ShellError.commandFailed(output, command)
         }
 
         return output.trimmingCharacters(in: .whitespacesAndNewlines)
     }
-    
+
     /// 异步执行Shell命令
     /// - Parameters:
     ///   - command: 要执行的命令
@@ -79,7 +78,7 @@ class Shell: SuperLog {
             }
         }
     }
-    
+
     /// 执行多个命令
     /// - Parameters:
     ///   - commands: 命令数组
@@ -89,15 +88,15 @@ class Shell: SuperLog {
     /// - Throws: 任何命令执行失败时抛出错误
     static func runMultiple(_ commands: [String], at path: String? = nil, verbose: Bool = false) throws -> [String] {
         var results: [String] = []
-        
+
         for command in commands {
             let result = try run(command, at: path, verbose: verbose)
             results.append(result)
         }
-        
+
         return results
     }
-    
+
     /// 执行命令并返回退出状态码
     /// - Parameters:
     ///   - command: 要执行的命令
@@ -143,7 +142,7 @@ class Shell: SuperLog {
 
         return (output.trimmingCharacters(in: .whitespacesAndNewlines), process.terminationStatus)
     }
-    
+
     /// 检查命令是否可用
     /// - Parameter command: 命令名
     /// - Returns: 命令是否可用
@@ -155,7 +154,7 @@ class Shell: SuperLog {
             return false
         }
     }
-    
+
     /// 获取命令的完整路径
     /// - Parameter command: 命令名
     /// - Returns: 命令的完整路径
@@ -167,7 +166,7 @@ class Shell: SuperLog {
             return nil
         }
     }
-    
+
     /// 配置Git凭证缓存
     /// - Returns: 配置结果
     static func configureGitCredentialCache() -> String {
@@ -186,7 +185,7 @@ class Shell: SuperLog {
         Text("🐚 Shell 核心功能演示")
             .font(.title)
             .bold()
-        
+
         ScrollView {
             VStack(alignment: .leading, spacing: 15) {
                 VDemoSection(title: "基础命令", icon: "⚡") {
@@ -198,7 +197,7 @@ class Shell: SuperLog {
                             return "获取当前目录失败: \(error.localizedDescription)"
                         }
                     })
-                    
+
                     VDemoButtonWithLog("获取当前用户", action: {
                         do {
                             let user = try Shell.run("whoami")
@@ -207,7 +206,7 @@ class Shell: SuperLog {
                             return "获取当前用户失败: \(error.localizedDescription)"
                         }
                     })
-                    
+
                     VDemoButtonWithLog("获取系统时间", action: {
                         do {
                             let date = try Shell.run("date")
@@ -217,7 +216,7 @@ class Shell: SuperLog {
                         }
                     })
                 }
-                
+
                 VDemoSection(title: "命令检查", icon: "🔍") {
                     VCommandAvailabilityRow("git")
                     VCommandAvailabilityRow("node")
@@ -225,7 +224,7 @@ class Shell: SuperLog {
                     VCommandAvailabilityRow("docker")
                     VCommandAvailabilityRow("nonexistent_command")
                 }
-                
+
                 VDemoSection(title: "多命令执行", icon: "📋") {
                     VDemoButtonWithLog("执行多个命令", action: {
                         do {
@@ -237,23 +236,23 @@ class Shell: SuperLog {
                         }
                     })
                 }
-                
+
                 VDemoSection(title: "状态码检查", icon: "📊") {
                     VDemoButtonWithLog("成功命令（echo）", action: {
                         let (output, exitCode) = Shell.runWithStatus("echo 'Hello World'")
                         return "输出: \(output)\n退出码: \(exitCode)"
                     })
-                    
+
                     VDemoButtonWithLog("失败命令（不存在的命令）", action: {
                         let (output, exitCode) = Shell.runWithStatus("nonexistent_command_12345")
                         return "输出: \(output)\n退出码: \(exitCode)"
                     })
                 }
-                
+
                 VDemoSection(title: "异步执行", icon: "⏱️") {
                     VAsyncCommandButton()
                 }
-                
+
                 VDemoSection(title: "Git配置", icon: "🔧") {
                     VDemoButtonWithLog("配置Git凭证缓存", action: {
                         let result = Shell.configureGitCredentialCache()
