@@ -34,17 +34,47 @@ extension ShellGit {
         return try Shell.run("git diff \(from) \(to)", at: path)
     }
     
+    /// 检查文件在指定commit中是否存在
+    /// - Parameters:
+    ///   - commit: commit哈希
+    ///   - file: 文件路径
+    ///   - repoPath: 仓库路径
+    /// - Returns: 文件是否存在
+    private static func fileExists(at commit: String, file: String, repoPath: String) -> Bool {
+        do {
+            _ = try Shell.run("git cat-file -e \(commit):\(file)", at: repoPath)
+            return true
+        } catch {
+            return false
+        }
+    }
+    
     /// 获取某个 commit 前后的文件内容
     /// - Parameters:
     ///   - commit: commit 哈希
     ///   - file: 文件路径（相对仓库根目录）
     ///   - repoPath: 仓库本地路径
     /// - Returns: (修改前内容, 修改后内容)
+    ///   - before: 父commit中的文件内容，如果文件在父commit中不存在则为nil
+    ///   - after: 当前commit中的文件内容，如果文件在当前commit中不存在则为nil
+    /// - Note: 
+    ///   - 如果文件是新增的：before为nil，after为文件内容
+    ///   - 如果文件是删除的：before为文件内容，after为nil
+    ///   - 如果文件是修改的：before和after都为文件内容
+    ///   - 如果文件在两个commit中都不存在：before和after都为nil
     public static func fileContentChange(at commit: String, file: String, repoPath: String) throws -> (before: String?, after: String?) {
         // 获取 parent commit
         let parentCommit = try Shell.run("git rev-parse \(commit)^", at: repoPath).trimmingCharacters(in: .whitespacesAndNewlines)
-        let before = try Shell.run("git show \(parentCommit):\(file)", at: repoPath)
-        let after = try Shell.run("git show \(commit):\(file)", at: repoPath)
+        
+        // 先检查文件是否存在，再获取内容
+        let before: String? = fileExists(at: parentCommit, file: file, repoPath: repoPath) 
+            ? try Shell.run("git show \(parentCommit):\(file)", at: repoPath)
+            : nil
+            
+        let after: String? = fileExists(at: commit, file: file, repoPath: repoPath)
+            ? try Shell.run("git show \(commit):\(file)", at: repoPath) 
+            : nil
+        
         return (before, after)
     }
     
