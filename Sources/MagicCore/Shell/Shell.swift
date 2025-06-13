@@ -42,11 +42,19 @@ class Shell: SuperLog {
         let output = String(data: outputData, encoding: .utf8) ?? ""
 
         if verbose {
-            os_log("\(self.t)\(command)")
-            os_log("\(output)")
+            os_log("\(self.t) ➡️ Path: \(path ?? "Current Directory")")
+            os_log("\(self.t) ➡️ Command: \(command)")
+            os_log("\(self.t) ➡️ Output: \(output)")
         }
 
         if process.terminationStatus != 0 {
+            if verbose {
+                os_log("\(self.t) ❌ Command failed")
+                os_log("\(self.t) ➡️ Path: \(path ?? "Current Directory")")
+                os_log("\(self.t) ➡️ Command: \(command)")
+                os_log("\(self.t) ➡️ Output: \(output)")
+                os_log("\(self.t) ➡️ Exit code: \(process.terminationStatus)")
+            }
             throw ShellError.commandFailed(output + "\n" + command)
         }
 
