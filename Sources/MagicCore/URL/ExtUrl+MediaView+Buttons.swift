@@ -33,7 +33,7 @@ public struct ActionButtonsView: View {
             }
             
             if showLogButton {
-                MagicButton(icon: .iconLog, action: {
+                MagicButton(icon: .iconLog, action: {_ in
                     showLogSheet = true
                 }).magicShape(.circle).magicSize(.small)
             }

@@ -5,9 +5,13 @@ extension MagicButton {
     @ViewBuilder
     var containerContent: some View {
         if isLoading && loadingStyle != .none {
-            loadingView
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .contentShape(Rectangle())
+            MagicLoadingView(
+                style: loadingStyle,
+                isLoading: true,
+                foregroundColor: foregroundColor
+            )
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .contentShape(Rectangle())
         } else {
             GeometryReader { geometry in
                 let minSize = min(geometry.size.width, geometry.size.height)

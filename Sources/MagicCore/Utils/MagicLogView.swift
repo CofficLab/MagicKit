@@ -29,7 +29,9 @@ public struct MagicLogView: View {
                         style: .secondary,
                         size: .small,
                         shape: .circle,
-                        action: onClose
+                        action: {_ in
+                            onClose()
+                        }
                     )
 
                     Spacer()
@@ -74,7 +76,8 @@ public struct MagicLogView: View {
                     style: .secondary,
                     size: .small,
                     shape: .circle,
-                    action: copyAllLogs
+                    action: {_ in
+                        copyAllLogs()}
                 )
 
                 MagicButton(
@@ -82,7 +85,8 @@ public struct MagicLogView: View {
                     style: .secondary,
                     size: .small,
                     shape: .circle,
-                    action: { logger.clearLogs() }
+                    action: { _ in
+                        logger.clearLogs() }
                 )
             }
             .frame(height: 40)

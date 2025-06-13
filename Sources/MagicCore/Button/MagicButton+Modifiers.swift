@@ -15,6 +15,9 @@ public extension MagicButton {
             shapeVisibility: self.shapeVisibility,
             disabledReason: self.disabledReason,
             popoverContent: self.popoverContent,
+            customBackgroundColor: self.customBackgroundColor,
+            preventDoubleClick: self.preventDoubleClick,
+            loadingStyle: self.loadingStyle,
             action: self.action
         )
     }
@@ -32,6 +35,9 @@ public extension MagicButton {
             shapeVisibility: self.shapeVisibility,
             disabledReason: self.disabledReason,
             popoverContent: self.popoverContent,
+            customBackgroundColor: self.customBackgroundColor,
+            preventDoubleClick: self.preventDoubleClick,
+            loadingStyle: self.loadingStyle,
             action: self.action
         )
     }
@@ -49,6 +55,9 @@ public extension MagicButton {
             shapeVisibility: self.shapeVisibility,
             disabledReason: self.disabledReason,
             popoverContent: self.popoverContent,
+            customBackgroundColor: self.customBackgroundColor,
+            preventDoubleClick: self.preventDoubleClick,
+            loadingStyle: self.loadingStyle,
             action: self.action
         )
     }
@@ -75,6 +84,9 @@ public extension MagicButton {
             shapeVisibility: self.shapeVisibility,
             disabledReason: self.disabledReason,
             popoverContent: self.popoverContent,
+            customBackgroundColor: self.customBackgroundColor,
+            preventDoubleClick: self.preventDoubleClick,
+            loadingStyle: self.loadingStyle,
             action: self.action
         )
     }
@@ -112,6 +124,9 @@ public extension MagicButton {
             shapeVisibility: self.shapeVisibility,
             disabledReason: self.disabledReason,
             popoverContent: self.popoverContent,
+            customBackgroundColor: self.customBackgroundColor,
+            preventDoubleClick: self.preventDoubleClick,
+            loadingStyle: self.loadingStyle,
             action: self.action
         )
     }
@@ -129,6 +144,9 @@ public extension MagicButton {
             shapeVisibility: self.shapeVisibility,
             disabledReason: reason,
             popoverContent: self.popoverContent,
+            customBackgroundColor: self.customBackgroundColor,
+            preventDoubleClick: self.preventDoubleClick,
+            loadingStyle: self.loadingStyle,
             action: self.action
         )
     }
@@ -157,6 +175,9 @@ public extension MagicButton {
             shapeVisibility: self.shapeVisibility,
             disabledReason: self.disabledReason,
             popoverContent: AnyView(content()),
+            customBackgroundColor: self.customBackgroundColor,
+            preventDoubleClick: self.preventDoubleClick,
+            loadingStyle: self.loadingStyle,
             action: self.action
         )
     }
@@ -183,6 +204,9 @@ public extension MagicButton {
             shapeVisibility: visibility,
             disabledReason: self.disabledReason,
             popoverContent: self.popoverContent,
+            customBackgroundColor: self.customBackgroundColor,
+            preventDoubleClick: self.preventDoubleClick,
+            loadingStyle: self.loadingStyle,
             action: self.action
         )
     }
@@ -209,6 +233,9 @@ public extension MagicButton {
             shapeVisibility: self.shapeVisibility,
             disabledReason: self.disabledReason,
             popoverContent: self.popoverContent,
+            customBackgroundColor: self.customBackgroundColor,
+            preventDoubleClick: self.preventDoubleClick,
+            loadingStyle: self.loadingStyle,
             action: self.action
         )
     }
@@ -241,6 +268,9 @@ public extension MagicButton {
             shapeVisibility: self.shapeVisibility,
             disabledReason: self.disabledReason,
             popoverContent: self.popoverContent,
+            customBackgroundColor: self.customBackgroundColor,
+            preventDoubleClick: self.preventDoubleClick,
+            loadingStyle: self.loadingStyle,
             action: self.action
         )
     }

@@ -81,7 +81,9 @@ struct DownloadButtonView: View, SuperLog {
                     size: size <= 32 ? .small : (size <= 40 ? .regular : .large),
                     shape: shape,
                     disabledReason: buttonDisabled ? buttonLabel : nil,
-                    action: handleButtonTap
+                    action: {_ in
+                        handleButtonTap()
+                    }
                 )
                 .symbolEffect(.bounce, value: url.isDownloaded)
             }

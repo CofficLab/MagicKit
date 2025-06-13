@@ -165,7 +165,8 @@ struct MagicThemePreview<Content: View>: View {
             MagicButton(
                 icon: isDarkMode ? "sun.max.fill" : "moon.fill",
                 style: .secondary,
-                action: { isDarkMode.toggle() }
+                action: { _ in
+                    isDarkMode.toggle() }
             )
             .magicShape(.circle)
         }

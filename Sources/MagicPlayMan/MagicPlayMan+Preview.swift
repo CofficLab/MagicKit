@@ -248,7 +248,7 @@ public extension MagicPlayMan {
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
 
-                    MagicButton(
+                    MagicButton.simple(
                         icon: "arrow.clockwise",
                         title: "Try Again",
                         style: .primary,

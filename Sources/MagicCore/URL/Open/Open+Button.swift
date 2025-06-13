@@ -12,7 +12,7 @@ public extension URL {
             title: isNetworkURL ? "在浏览器中打开" : "在访达中显示",
             style: .secondary,
             shape: .circle,
-            action: {
+            action: {_ in 
                 open()
             }
         )
@@ -27,7 +27,7 @@ public extension URL {
             title: appType.displayName,
             style: .secondary,
             shape: .circle,
-            action: {
+            action: {_ in 
                 #if os(macOS)
                     openIn(appType)
                 #else

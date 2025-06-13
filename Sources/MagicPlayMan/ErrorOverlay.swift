@@ -24,7 +24,7 @@ struct ErrorOverlay: View {
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
 
-                MagicButton(
+                MagicButton.simple(
                     icon: "arrow.clockwise",
                     title: "Try Again",
                     shape: .capsule,

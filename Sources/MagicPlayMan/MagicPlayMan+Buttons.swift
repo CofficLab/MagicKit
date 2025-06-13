@@ -4,7 +4,7 @@ import SwiftUI
 public extension MagicPlayMan {
     /// 创建播放/暂停按钮
     func makePlayPauseButton() -> MagicButton {
-        MagicButton(
+        MagicButton.simple(
             icon: state == .playing ? .iconPauseFill : .iconPlayFill,
             style: state == .playing ? .primary : .secondary,
             shape: .circle,
@@ -34,7 +34,7 @@ public extension MagicPlayMan {
             nil
         }
 
-        return MagicButton(
+        return MagicButton.simple(
             icon: .iconBackwardEndFill,
             style: .secondary,
             shape: .circle,
@@ -64,7 +64,7 @@ public extension MagicPlayMan {
             nil
         }
 
-        return MagicButton(
+        return MagicButton.simple(
             icon: .iconForwardEndFill,
             style: .secondary,
             shape: .circle,
@@ -75,7 +75,7 @@ public extension MagicPlayMan {
 
     /// 创建快退按钮
     func makeRewindButton() -> MagicButton {
-        MagicButton(
+        MagicButton.simple(
             icon: .iconGobackward10,
             style: .secondary,
             shape: .circle,
@@ -89,7 +89,7 @@ public extension MagicPlayMan {
 
     /// 创建快进按钮
     func makeForwardButton() -> MagicButton {
-        MagicButton(
+        MagicButton.simple(
             icon: .iconGoforward10,
             style: .secondary,
             shape: .circle,
@@ -103,7 +103,7 @@ public extension MagicPlayMan {
 
     /// 创建播放模式按钮
     func makePlayModeButton() -> MagicButton {
-        MagicButton(
+        MagicButton.simple(
             icon: playMode.iconName,
             style: playMode != .sequence ? .primary : .secondary,
             shape: .circle,
@@ -122,9 +122,10 @@ public extension MagicPlayMan {
             style: isCurrentAssetLiked ? .primary : .secondary,
             shape: .roundedSquare,
             disabledReason: !hasAsset ? "No media loaded" : nil,
-            action: {
+            action: { completion in
                 Task {
                     await self.toggleLike()
+                    completion()
                 }
             }
         )
@@ -159,8 +160,9 @@ public extension MagicPlayMan {
             icon: self.isPlaylistEnabled ? .iconListCircleFill : .iconListCircle,
             style: self.isPlaylistEnabled ? .primary : .secondary,
             shape: .circle,
-            action: { [self] in
+            action: { [self] completion in
                 self.setPlaylistEnabled(!self.isPlaylistEnabled)
+                completion()
             }
         )
     }

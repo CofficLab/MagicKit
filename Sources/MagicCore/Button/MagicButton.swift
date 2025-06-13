@@ -234,10 +234,8 @@ public struct MagicButton: View {
     let disabledReason: String?
     /// 弹出内容
     let popoverContent: AnyView?
-    /// 点击动作
-    let action: (() -> Void)?
-    /// 异步点击动作
-    let asyncAction: (() async -> Void)?
+    /// 点击动作（可以是简单动作或带完成回调的动作）
+    let action: ((@escaping () -> Void) -> Void)?
     /// 自定义背景色
     let customBackgroundColor: Color?
     /// 是否启用防重复点击
@@ -266,10 +264,10 @@ public struct MagicButton: View {
     ///   - shapeVisibility: 形状显示时机（默认为 .always）
     ///   - disabledReason: 禁用状态的提示文本（如果为 nil 则按钮可用）
     ///   - popoverContent: 弹出内容（可选）
-    ///   - action: 点击动作
     ///   - customBackgroundColor: 自定义背景色
     ///   - preventDoubleClick: 是否启用防重复点击
     ///   - loadingStyle: 加载动画样式
+    ///   - action: 点击动作，接收一个完成回调参数。调用完成回调来结束loading状态
     public init(
         icon: String? = nil,
         title: String? = nil,
@@ -279,10 +277,10 @@ public struct MagicButton: View {
         shapeVisibility: ShapeVisibility = .always,
         disabledReason: String? = nil,
         popoverContent: AnyView? = nil,
-        action: (() -> Void)? = nil,
         customBackgroundColor: Color? = nil,
         preventDoubleClick: Bool = true,
-        loadingStyle: LoadingStyle = .spinner
+        loadingStyle: LoadingStyle = .spinner,
+        action: ((@escaping () -> Void) -> Void)? = nil
     ) {
         // 确保至少有一个显示内容
         if icon == nil && title == nil {
@@ -303,10 +301,9 @@ public struct MagicButton: View {
         self.customBackgroundColor = customBackgroundColor
         self.preventDoubleClick = preventDoubleClick
         self.loadingStyle = loadingStyle
-        self.asyncAction = nil
     }
-
-    /// 创建一个支持异步操作的 MagicButton
+    
+    /// 创建一个简单的 MagicButton（向后兼容）
     /// - Parameters:
     ///   - icon: SF Symbols 图标名称
     ///   - title: 按钮标题（可选）
@@ -319,8 +316,8 @@ public struct MagicButton: View {
     ///   - customBackgroundColor: 自定义背景色
     ///   - preventDoubleClick: 是否启用防重复点击
     ///   - loadingStyle: 加载动画样式
-    ///   - asyncAction: 异步点击动作
-    public init(
+    ///   - action: 简单点击动作，不需要完成回调
+    public static func simple(
         icon: String? = nil,
         title: String? = nil,
         style: Style = .primary,
@@ -332,28 +329,24 @@ public struct MagicButton: View {
         customBackgroundColor: Color? = nil,
         preventDoubleClick: Bool = true,
         loadingStyle: LoadingStyle = .spinner,
-        asyncAction: @escaping () async -> Void
-    ) {
-        // 确保至少有一个显示内容
-        if icon == nil && title == nil {
-            self.icon = "circle"
-            self.title = nil
-        } else {
-            self.icon = icon
-            self.title = title
+        action: @escaping () -> Void
+    ) -> MagicButton {
+        return MagicButton(
+            icon: icon,
+            title: title,
+            style: style,
+            size: size,
+            shape: shape,
+            shapeVisibility: shapeVisibility,
+            disabledReason: disabledReason,
+            popoverContent: popoverContent,
+            customBackgroundColor: customBackgroundColor,
+            preventDoubleClick: preventDoubleClick,
+            loadingStyle: loadingStyle
+        ) { completion in
+            action()
+            completion()
         }
-
-        self.style = style
-        self.size = size
-        self.shape = shape
-        self.shapeVisibility = shapeVisibility
-        self.disabledReason = disabledReason
-        self.popoverContent = popoverContent
-        self.action = nil
-        self.customBackgroundColor = customBackgroundColor
-        self.preventDoubleClick = preventDoubleClick
-        self.loadingStyle = loadingStyle
-        self.asyncAction = asyncAction
     }
 
     public var body: some View {
@@ -443,15 +436,7 @@ public struct MagicButton: View {
         return false
     }
 
-    /// 加载视图
-    @ViewBuilder
-    var loadingView: some View {
-        MagicLoadingView(
-            style: loadingStyle,
-            isLoading: isLoading,
-            foregroundColor: foregroundColor
-        )
-    }
+
 
     private var buttonSize: CGFloat {
         if case .auto = size {
