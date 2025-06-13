@@ -48,7 +48,7 @@ class Shell: SuperLog {
         }
 
         if process.terminationStatus != 0 {
-            os_log("\(self.t) ❌ Command failed \n ➡️ Path: \(path ?? "Current Directory") (\(FileManager.default.currentDirectoryPath)) \n ➡️ Command: \(command) \n ➡️ Output: \(output) \n ➡️ Exit code: \(process.terminationStatus)")
+            os_log(.error, "\(self.t) ❌ Command failed \n ➡️ Path: \(path ?? "Current Directory") (\(FileManager.default.currentDirectoryPath)) \n ➡️ Command: \(command) \n ➡️ Output: \(output) \n ➡️ Exit code: \(process.terminationStatus)")
 
             throw ShellError.commandFailed(output, command)
         }
