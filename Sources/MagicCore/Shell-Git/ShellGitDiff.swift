@@ -43,8 +43,8 @@ extension ShellGit {
     public static func fileContentChange(at commit: String, file: String, repoPath: String) throws -> (before: String?, after: String?) {
         // 获取 parent commit
         let parentCommit = try Shell.run("git rev-parse \(commit)^", at: repoPath).trimmingCharacters(in: .whitespacesAndNewlines)
-        let before = try? Shell.run("git show \(parentCommit):\(file)", at: repoPath)
-        let after = try? Shell.run("git show \(commit):\(file)", at: repoPath)
+        let before = try Shell.run("git show \(parentCommit):\(file)", at: repoPath)
+        let after = try Shell.run("git show \(commit):\(file)", at: repoPath)
         return (before, after)
     }
     
