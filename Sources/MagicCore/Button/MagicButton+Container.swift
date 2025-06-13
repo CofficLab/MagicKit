@@ -10,7 +10,6 @@ extension MagicButton {
                 isLoading: true,
                 foregroundColor: foregroundColor
             )
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .contentShape(Rectangle())
         } else {
             GeometryReader { geometry in
