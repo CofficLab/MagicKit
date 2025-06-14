@@ -8,7 +8,9 @@ MagicKit 是一个 Swift Package，提供了一些 Extension 和便捷的工具�
 
 MagicKit 可以通过 [Swift Package Manager](https://swift.org/package-manager/) 安装。
 
-在您的 `Package.swift` 文件中，将以下内容添加到 dependencies 数组中:
+## 主要组件
+
+- MagicTooltip：轻松为视图添加 Tooltip
 
 ## 测试
 
