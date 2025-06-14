@@ -114,7 +114,7 @@ extension ShellGit {
             guard parts.count >= 2 else { continue }
             let changeType = parts[0]
             let file = parts[1]
-            let diff = (try? Shell.run("git diff \(option) -- \(file)", at: path)) ?? ""
+            let diff = try Shell.run("git diff \(option) -- \(file)", at: path)
             result.append(GitDiffFile(id: file, file: file, changeType: changeType, diff: diff))
         }
         return result
@@ -134,7 +134,7 @@ extension ShellGit {
             guard parts.count >= 2 else { continue }
             let changeType = parts[0]
             let file = parts[1]
-            let diff = (try? Shell.run("git show \(commit):\(file)", at: path)) ?? ""
+            let diff = try Shell.run("git show \(commit) -- \(file)", at: path)
             result.append(GitDiffFile(id: file, file: file, changeType: changeType, diff: diff))
         }
         return result
@@ -172,11 +172,28 @@ extension ShellGit {
     ///   - file: 文件路径（相对仓库根目录）
     ///   - repoPath: 仓库本地路径
     /// - Returns: (修改前内容, 修改后内容)
+    /// - Throws: 如果无法读取文件内容则抛出错误
     public static func uncommittedFileContentChange(file: String, repoPath: String) throws -> (before: String?, after: String?) {
         // 获取 HEAD 中的文件内容（修改前）
-        let before = try? Shell.run("git show HEAD:\(file)", at: repoPath)
+        // 如果文件在 HEAD 中不存在（新文件），则 before 为 nil
+        let before: String?
+        do {
+            before = try Shell.run("git show HEAD:\(file)", at: repoPath)
+        } catch {
+            // 文件在 HEAD 中不存在，可能是新文件
+            before = nil
+        }
+        
         // 获取工作区中的文件内容（修改后）
-        let after = try? String(contentsOfFile: repoPath + "/" + file, encoding: .utf8)
+        let fullPath = repoPath.hasSuffix("/") ? repoPath + file : repoPath + "/" + file
+        let after: String?
+        do {
+            after = try String(contentsOfFile: fullPath, encoding: .utf8)
+        } catch {
+            // 文件在工作区中不存在，可能是删除的文件
+            after = nil
+        }
+        
         return (before, after)
     }
     
