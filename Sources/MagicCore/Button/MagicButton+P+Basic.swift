@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct BasicButtonsPreview: View {
+    @State private var isLoading = false
+    
     var body: some View {
         VStack(spacing: 20) {
             Text("基础按钮")
@@ -20,6 +22,18 @@ struct BasicButtonsPreview: View {
             MagicButton(icon: "trash")
                 .magicTitle("次要按钮")
                 .magicStyle(.secondary)
+            
+            // 测试加载状态的按钮
+            MagicButton(
+                icon: "arrow.clockwise",
+                title: "Test Loading",
+                style: .primary,
+                loadingStyle: .spinner
+            ) { completion in
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                    completion()
+                }
+            }
         }
         .padding()
     }

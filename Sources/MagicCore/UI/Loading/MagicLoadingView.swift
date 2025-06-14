@@ -45,7 +45,8 @@ public struct MagicLoadingView: View {
             ProgressView()
                 .progressViewStyle(CircularProgressViewStyle())
                 .scaleEffect(0.8)
-                .frame(width: 20, height: 20)
+                .frame(minWidth: 20, idealWidth: 20, maxWidth: 20, minHeight: 20, idealHeight: 20, maxHeight: 20)
+                .fixedSize()
         case .dots:
             HStack(spacing: 4) {
                 ForEach(0..<3, id: \.self) { index in
