@@ -407,7 +407,6 @@ public struct MagicButton: View {
                         .padding()
                 }
             }
-            .withConditionalTooltip(title, shouldShow: shouldShowTooltip)
             .onAppear {
                 // 确保初始状态正确设置
                 if showingPopover {
@@ -440,10 +439,6 @@ public struct MagicButton: View {
         case .onHover:
             return isHovering
         }
-    }
-
-    private var shouldShowTooltip: Bool {
-        return title != nil && !title!.isEmpty && icon != nil && !shouldShowTitle
     }
 }
 
