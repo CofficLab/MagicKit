@@ -132,6 +132,38 @@ public enum OpenAppType: String {
         }
         return displayName
     }
+    
+    #if os(macOS)
+    /// 检查应用是否已安装
+    var isInstalled: Bool {
+        guard let bundleId = bundleId else { return true } // auto, browser等特殊类型认为总是可用
+        return NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleId) != nil
+    }
+    
+    /// 获取应用的真实图标（如果已安装）
+    /// - Parameter useRealIcon: 是否使用真实应用图标，默认为false使用系统图标
+    /// - Returns: 图标名称或NSImage
+    func realIcon(useRealIcon: Bool = false) -> Any {
+        if useRealIcon && isInstalled, let bundleId = bundleId {
+            if let appURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleId) {
+                return NSWorkspace.shared.icon(forFile: appURL.path)
+            }
+        }
+        return icon
+    }
+    
+    /// 根据URL获取真实图标（用于auto类型）
+    /// - Parameters:
+    ///   - url: URL对象
+    ///   - useRealIcon: 是否使用真实应用图标
+    /// - Returns: 图标名称或NSImage
+    func realIcon(for url: URL, useRealIcon: Bool = false) -> Any {
+        if self == .auto {
+            return url.isNetworkURL ? String.iconSafari : String.iconShowInFinder
+        }
+        return realIcon(useRealIcon: useRealIcon)
+    }
+    #endif
 }
 
 #Preview("Open Buttons") {

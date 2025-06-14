@@ -65,9 +65,9 @@ struct OpenPreivewView: View {
                         }
                     }
                     
-                    // 文本编辑器
+                    // 文本编辑器 - 系统图标
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("文本编辑器：")
+                        Text("文本编辑器（系统图标）：")
                         VStack(alignment: .leading, spacing: 8) {
                             HStack {
                                 Text("• 系统文本编辑器：")
@@ -96,6 +96,40 @@ struct OpenPreivewView: View {
                             }
                         }
                     }
+                    
+                    #if os(macOS)
+                    // 文本编辑器 - 真实应用图标
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("文本编辑器（真实应用图标）：")
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                Text("• 系统文本编辑器：")
+                                Spacer()
+                                URL.sample_temp_txt.makeOpenButton(.textEdit, useRealIcon: true)
+                            }
+                            HStack {
+                                Text("• Xcode 开发环境：")
+                                Spacer()
+                                URL.sample_temp_txt.makeOpenButton(.xcode, useRealIcon: true)
+                            }
+                            HStack {
+                                Text("• VS Code 编辑器：")
+                                Spacer()
+                                URL.sample_temp_txt.makeOpenButton(.vscode, useRealIcon: true)
+                            }
+                            HStack {
+                                Text("• Cursor AI 编辑器：")
+                                Spacer()
+                                URL.sample_temp_txt.makeOpenButton(.cursor, useRealIcon: true)
+                            }
+                            HStack {
+                                Text("• Trae 开发工具：")
+                                Spacer()
+                                URL.sample_temp_txt.makeOpenButton(.trae, useRealIcon: true)
+                            }
+                        }
+                    }
+                    #endif
                     
                     // 其他工具
                     VStack(alignment: .leading, spacing: 12) {
