@@ -1,9 +1,24 @@
 import SwiftUI
 
+#if os(macOS)
+import AppKit
+#endif
+
+/// 图标类型
+public enum MagicButtonIcon {
+    /// SF Symbols 系统图标
+    case systemName(String)
+    /// 自定义图标（仅 macOS）
+    #if os(macOS)
+    case customImage(NSImage)
+    #endif
+}
+
 /// 一个功能丰富的按钮组件，支持多种样式、大小和形状
 ///
 /// MagicButton 提供了丰富的自定义选项：
 /// - 支持图标和文本组合
+/// - 支持 SF Symbols 和自定义图标
 /// - 提供主要和次要两种样式
 /// - 支持四种尺寸：自动、小、中、大
 /// - 提供多种形状选项
@@ -12,7 +27,7 @@ import SwiftUI
 ///
 /// 基本用法：
 /// ```swift
-/// MagicButton(icon: "star", action: {})
+/// MagicButton(icon: .systemName("star"), action: {})
 ///     .magicTitle("按钮")
 ///     .magicStyle(.primary)
 /// ```
@@ -218,8 +233,8 @@ public struct MagicButton: View {
 
     // MARK: - Properties
 
-    /// SF Symbols 图标名称
-    let icon: String?
+    /// 按钮图标
+    let icon: MagicButtonIcon?
     /// 按钮标题（可选）
     let title: String?
     /// 按钮样式
@@ -268,7 +283,7 @@ public struct MagicButton: View {
     ///   - loadingStyle: 加载动画样式
     ///   - action: 点击动作，接收一个完成回调参数。调用完成回调来结束loading状态
     public init(
-        icon: String? = nil,
+        icon: MagicButtonIcon? = nil,
         title: String? = nil,
         style: Style = .primary,
         size: Size = .regular,
@@ -283,7 +298,7 @@ public struct MagicButton: View {
     ) {
         // 确保至少有一个显示内容
         if icon == nil && title == nil {
-            self.icon = "circle"
+            self.icon = .systemName("circle")
             self.title = nil
         } else {
             self.icon = icon
@@ -304,7 +319,7 @@ public struct MagicButton: View {
     
     /// 创建一个简单的 MagicButton（向后兼容）
     /// - Parameters:
-    ///   - icon: SF Symbols 图标名称
+    ///   - icon: MagicButtonIcon 图标
     ///   - title: 按钮标题（可选）
     ///   - style: 按钮样式（默认为 .primary）
     ///   - size: 按钮大小（默认为 .regular）
@@ -317,7 +332,7 @@ public struct MagicButton: View {
     ///   - loadingStyle: 加载动画样式
     ///   - action: 简单点击动作，不需要完成回调
     public static func simple(
-        icon: String? = nil,
+        icon: MagicButtonIcon? = nil,
         title: String? = nil,
         style: Style = .primary,
         size: Size = .regular,
@@ -332,6 +347,96 @@ public struct MagicButton: View {
     ) -> MagicButton {
         return MagicButton(
             icon: icon,
+            title: title,
+            style: style,
+            size: size,
+            shape: shape,
+            shapeVisibility: shapeVisibility,
+            disabledReason: disabledReason,
+            popoverContent: popoverContent,
+            customBackgroundColor: customBackgroundColor,
+            preventDoubleClick: preventDoubleClick,
+            loadingStyle: loadingStyle
+        ) { completion in
+            action()
+            completion()
+        }
+    }
+    
+    /// 创建一个 MagicButton（向后兼容 - 使用 String 图标名称）
+    /// - Parameters:
+    ///   - icon: SF Symbols 图标名称
+    ///   - title: 按钮标题（可选）
+    ///   - style: 按钮样式（默认为 .primary）
+    ///   - size: 按钮大小（默认为 .regular）
+    ///   - shape: 按钮形状（默认为 .circle）
+    ///   - shapeVisibility: 形状显示时机（默认为 .always）
+    ///   - disabledReason: 禁用状态的提示文本（如果为 nil 则按钮可用）
+    ///   - popoverContent: 弹出内容（可选）
+    ///   - customBackgroundColor: 自定义背景色
+    ///   - preventDoubleClick: 是否启用防重复点击
+    ///   - loadingStyle: 加载动画样式
+    ///   - action: 点击动作，接收一个完成回调参数。调用完成回调来结束loading状态
+    public init(
+        icon: String,
+        title: String? = nil,
+        style: Style = .primary,
+        size: Size = .regular,
+        shape: Shape = .roundedRectangle,
+        shapeVisibility: ShapeVisibility = .always,
+        disabledReason: String? = nil,
+        popoverContent: AnyView? = nil,
+        customBackgroundColor: Color? = nil,
+        preventDoubleClick: Bool = true,
+        loadingStyle: LoadingStyle = .spinner,
+        action: ((@escaping () -> Void) -> Void)? = nil
+    ) {
+        self.init(
+            icon: .systemName(icon),
+            title: title,
+            style: style,
+            size: size,
+            shape: shape,
+            shapeVisibility: shapeVisibility,
+            disabledReason: disabledReason,
+            popoverContent: popoverContent,
+            customBackgroundColor: customBackgroundColor,
+            preventDoubleClick: preventDoubleClick,
+            loadingStyle: loadingStyle,
+            action: action
+        )
+    }
+    
+    /// 创建一个简单的 MagicButton（向后兼容 - 使用 String 图标名称）
+    /// - Parameters:
+    ///   - icon: SF Symbols 图标名称
+    ///   - title: 按钮标题（可选）
+    ///   - style: 按钮样式（默认为 .primary）
+    ///   - size: 按钮大小（默认为 .regular）
+    ///   - shape: 按钮形状（默认为 .circle）
+    ///   - shapeVisibility: 形状显示时机（默认为 .always）
+    ///   - disabledReason: 禁用状态的提示文本（如果为 nil 则按钮可用）
+    ///   - popoverContent: 弹出内容（可选）
+    ///   - customBackgroundColor: 自定义背景色
+    ///   - preventDoubleClick: 是否启用防重复点击
+    ///   - loadingStyle: 加载动画样式
+    ///   - action: 简单点击动作，不需要完成回调
+    public static func simple(
+        icon: String,
+        title: String? = nil,
+        style: Style = .primary,
+        size: Size = .regular,
+        shape: Shape = .roundedRectangle,
+        shapeVisibility: ShapeVisibility = .always,
+        disabledReason: String? = nil,
+        popoverContent: AnyView? = nil,
+        customBackgroundColor: Color? = nil,
+        preventDoubleClick: Bool = true,
+        loadingStyle: LoadingStyle = .spinner,
+        action: @escaping () -> Void
+    ) -> MagicButton {
+        return MagicButton(
+            icon: .systemName(icon),
             title: title,
             style: style,
             size: size,

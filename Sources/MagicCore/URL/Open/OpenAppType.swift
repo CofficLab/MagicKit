@@ -163,6 +163,52 @@ public enum OpenAppType: String {
         }
         return realIcon(useRealIcon: useRealIcon)
     }
+    
+    /// 获取 MagicButtonIcon 类型的图标
+    /// - Parameter useRealIcon: 是否使用真实应用图标，默认为false使用系统图标
+    /// - Returns: MagicButtonIcon
+    func magicButtonIcon(useRealIcon: Bool = false) -> MagicButtonIcon {
+        if useRealIcon && isInstalled, let bundleId = bundleId {
+            if let appURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleId) {
+                let realIcon = NSWorkspace.shared.icon(forFile: appURL.path)
+                return .customImage(realIcon)
+            }
+        }
+        return .systemName(icon)
+    }
+    
+    /// 根据URL获取 MagicButtonIcon 类型的图标（用于auto类型）
+    /// - Parameters:
+    ///   - url: URL对象
+    ///   - useRealIcon: 是否使用真实应用图标
+    /// - Returns: MagicButtonIcon
+    func magicButtonIcon(for url: URL, useRealIcon: Bool = false) -> MagicButtonIcon {
+        if self == .auto {
+            let iconName = url.isNetworkURL ? String.iconSafari : String.iconShowInFinder
+            return .systemName(iconName)
+        }
+        return magicButtonIcon(useRealIcon: useRealIcon)
+    }
+    #else
+    /// 获取 MagicButtonIcon 类型的图标（iOS版本）
+    /// - Parameter useRealIcon: 是否使用真实应用图标（iOS上忽略此参数）
+    /// - Returns: MagicButtonIcon
+    func magicButtonIcon(useRealIcon: Bool = false) -> MagicButtonIcon {
+        return .systemName(icon)
+    }
+    
+    /// 根据URL获取 MagicButtonIcon 类型的图标（用于auto类型，iOS版本）
+    /// - Parameters:
+    ///   - url: URL对象
+    ///   - useRealIcon: 是否使用真实应用图标（iOS上忽略此参数）
+    /// - Returns: MagicButtonIcon
+    func magicButtonIcon(for url: URL, useRealIcon: Bool = false) -> MagicButtonIcon {
+        if self == .auto {
+            let iconName = url.isNetworkURL ? String.iconSafari : String.iconShowInFinder
+            return .systemName(iconName)
+        }
+        return .systemName(icon)
+    }
     #endif
 }
 
