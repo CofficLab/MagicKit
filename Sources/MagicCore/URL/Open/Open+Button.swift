@@ -2,37 +2,26 @@ import SwiftUI
 
 public extension URL {
     /// 创建打开按钮
-    /// - Parameters:
-    ///   - size: 按钮大小，默认为 28x28
-    ///   - showLabel: 是否显示文字标签，默认为 false
+    /// - Parameter appType: 应用程序类型，默认为 .auto（智能选择）
     /// - Returns: 打开按钮视图
-    func makeOpenButton() -> MagicButton {
+    func makeOpenButton(_ appType: OpenAppType = .auto) -> MagicButton {
         MagicButton(
-            icon: isNetworkURL ? .iconSafari : .iconShowInFinder,
-            title: isNetworkURL ? "在浏览器中打开" : "在访达中显示",
+            icon: appType.icon(for: self),
+            title: appType.displayName(for: self),
             style: .secondary,
             shape: .circle,
-            action: {_ in 
-                open()
-            }
-        )
-    }
-    
-    /// 创建在指定应用程序中打开的按钮
-    /// - Parameter appType: 应用程序类型
-    /// - Returns: 打开按钮视图
-    func makeOpenInButton(_ appType: OpenAppType) -> MagicButton {
-        MagicButton(
-            icon: appType.icon,
-            title: appType.displayName,
-            style: .secondary,
-            shape: .circle,
-            action: {_ in 
+            action: {completion in
                 #if os(macOS)
                     openIn(appType)
                 #else
-                    open()
+                    if appType == .auto {
+                        open()
+                    } else {
+                        open() // iOS上所有类型都使用默认打开方式
+                    }
                 #endif
+                
+                completion()
             }
         )
     }

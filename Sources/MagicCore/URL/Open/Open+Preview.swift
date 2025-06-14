@@ -6,21 +6,36 @@ struct OpenPreivewView: View {
             VStack(spacing: 20) {
                 // 网络链接
                 Group {
-                    Text("网络链接").font(.headline)
+                    Text("网络链接示例").font(.headline)
                     
                     // 单个打开按钮
-                    HStack {
-                        Text("默认打开按钮：")
-                        URL.sample_web_mp3_kennedy.makeOpenButton()
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack {
+                            Text("智能打开（自动识别链接类型）：")
+                            Spacer()
+                            URL.sample_web_mp3_kennedy.makeOpenButton()
+                        }
                     }
                     
                     // 网页浏览器按钮
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("网页浏览器：")
-                        HStack(spacing: 8) {
-                            URL.sample_web_mp3_kennedy.makeOpenInButton(.browser)
-                            URL.sample_web_mp3_kennedy.makeOpenInButton(.safari)
-                            URL.sample_web_mp3_kennedy.makeOpenInButton(.chrome)
+                        Text("指定浏览器打开：")
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                Text("• 默认浏览器：")
+                                Spacer()
+                                URL.sample_web_mp3_kennedy.makeOpenButton(.browser)
+                            }
+                            HStack {
+                                Text("• Safari 浏览器：")
+                                Spacer()
+                                URL.sample_web_mp3_kennedy.makeOpenButton(.safari)
+                            }
+                            HStack {
+                                Text("• Chrome 浏览器：")
+                                Spacer()
+                                URL.sample_web_mp3_kennedy.makeOpenButton(.chrome)
+                            }
                         }
                     }
                 }
@@ -29,51 +44,73 @@ struct OpenPreivewView: View {
 
                 // 本地文件
                 Group {
-                    Text("本地文件").font(.headline)
+                    Text("本地文件示例").font(.headline)
                     
                     // 单个打开按钮
-                    HStack {
-                        Text("默认打开按钮：")
-                        URL.sample_temp_txt.makeOpenButton()
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack {
+                            Text("智能打开（自动识别文件类型）：")
+                            Spacer()
+                            URL.sample_temp_txt.makeOpenButton()
+                        }
                     }
                     
-                    // 所有支持的应用程序
+                    // 文件管理
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("所有支持的应用程序：")
-                        HStack(spacing: 8) {
-                            URL.sample_temp_txt.makeOpenInButton(.finder)
-                            URL.sample_temp_txt.makeOpenInButton(.preview)
-                            URL.sample_temp_txt.makeOpenInButton(.textEdit)
-                            URL.sample_temp_txt.makeOpenInButton(.terminal)
-                            URL.sample_temp_txt.makeOpenInButton(.xcode)
-                            URL.sample_temp_txt.makeOpenInButton(.vscode)
+                        Text("文件管理：")
+                        HStack {
+                            Text("• 在访达中显示并选中：")
+                            Spacer()
+                            URL.sample_temp_txt.makeOpenButton(.finder)
                         }
                     }
                     
-                    // 按应用类型分组
-                    Group {
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text("文件浏览：")
-                            URL.sample_temp_txt.makeOpenInButton(.finder)
-                        }
-                        
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text("文本编辑：")
-                            HStack(spacing: 8) {
-                                URL.sample_temp_txt.makeOpenInButton(.textEdit)
-                                URL.sample_temp_txt.makeOpenInButton(.xcode)
-                                URL.sample_temp_txt.makeOpenInButton(.vscode)
+                    // 文本编辑器
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("文本编辑器：")
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                Text("• 系统文本编辑器：")
+                                Spacer()
+                                URL.sample_temp_txt.makeOpenButton(.textEdit)
+                            }
+                            HStack {
+                                Text("• Xcode 开发环境：")
+                                Spacer()
+                                URL.sample_temp_txt.makeOpenButton(.xcode)
+                            }
+                            HStack {
+                                Text("• VS Code 编辑器：")
+                                Spacer()
+                                URL.sample_temp_txt.makeOpenButton(.vscode)
+                            }
+                            HStack {
+                                Text("• Cursor AI 编辑器：")
+                                Spacer()
+                                URL.sample_temp_txt.makeOpenButton(.cursor)
+                            }
+                            HStack {
+                                Text("• Trae 开发工具：")
+                                Spacer()
+                                URL.sample_temp_txt.makeOpenButton(.trae)
                             }
                         }
-                        
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text("预览：")
-                            URL.sample_temp_txt.makeOpenInButton(.preview)
-                        }
-                        
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text("终端：")
-                            URL.sample_temp_txt.makeOpenInButton(.terminal)
+                    }
+                    
+                    // 其他工具
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("其他工具：")
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                Text("• 预览应用查看：")
+                                Spacer()
+                                URL.sample_temp_txt.makeOpenButton(.preview)
+                            }
+                            HStack {
+                                Text("• 终端中打开目录：")
+                                Spacer()
+                                URL.sample_temp_txt.makeOpenButton(.terminal)
+                            }
                         }
                     }
                 }

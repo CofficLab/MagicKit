@@ -44,6 +44,11 @@ public extension URL {
         /// 在指定的应用程序中打开
         /// - Parameter appType: 应用程序类型
         func openIn(_ appType: OpenAppType) {
+            if appType == .auto {
+                open()
+                return
+            }
+            
             if appType == .browser {
                 openInBrowser()
                 return
