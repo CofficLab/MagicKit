@@ -247,7 +247,6 @@ public struct MagicButton: View {
     @State internal var containerSize: CGFloat = 0
     @State internal var showingDisabledPopover = false
     @State internal var showingPopover = false
-    @State internal var showingTooltip = false
     @State internal var shouldShowTitle = false
     @State internal var isLoading = false
     @Environment(\.colorScheme) var colorScheme
@@ -377,17 +376,6 @@ public struct MagicButton: View {
             .onHover { hovering in
                 withAnimation(.easeInOut(duration: 0.2)) {
                     isHovering = hovering
-                    // 只有当按钮是纯图标模式且有标题时才显示tooltip
-                    if shouldShowTooltip {
-                        showingTooltip = hovering
-                    }
-                }
-            }
-            .popover(isPresented: $showingTooltip, arrowEdge: .top) {
-                if let tooltipText = title {
-                    Text(tooltipText)
-                        .font(.caption)
-                        .padding(8)
                 }
             }
             .scaleEffect(isHovering ? 1.05 : 1.0)
@@ -419,6 +407,7 @@ public struct MagicButton: View {
                         .padding()
                 }
             }
+            .withConditionalTooltip(title, shouldShow: shouldShowTooltip)
             .onAppear {
                 // 确保初始状态正确设置
                 if showingPopover {
@@ -435,8 +424,6 @@ public struct MagicButton: View {
         }
         return false
     }
-
-
 
     private var buttonSize: CGFloat {
         if case .auto = size {

@@ -205,7 +205,59 @@ public extension View {
     func withTooltipUnlimited(_ text: String, position: TooltipPosition = .top) -> some View {
         self.withTooltip(text, position: position, maxWidth: nil)
     }
-} 
+    
+    /// 根据条件为视图添加tooltip提示
+    /// - Parameters:
+    ///   - text: 提示文本（可选）
+    ///   - shouldShow: 是否应该显示tooltip
+    ///   - position: 显示位置，默认为上方
+    ///   - backgroundColor: 背景色，默认为半透明黑色
+    ///   - textColor: 文字颜色，默认为白色
+    ///   - font: 字体，默认为caption
+    ///   - cornerRadius: 圆角半径，默认为6
+    ///   - horizontalPadding: 水平内边距，默认为8
+    ///   - verticalPadding: 垂直内边距，默认为4
+    ///   - offset: 偏移距离，默认为20
+    ///   - animationDuration: 动画时长，默认为0.2秒
+    ///   - maxWidth: 最大宽度，默认为200，设置为nil则不限制宽度
+    ///   - multilineTextAlignment: 多行文本对齐方式，默认为居中
+    /// - Returns: 根据条件带有或不带tooltip的视图
+    @ViewBuilder
+    func withConditionalTooltip(
+        _ text: String?,
+        shouldShow: Bool,
+        position: TooltipPosition = .top,
+        backgroundColor: Color = Color.black.opacity(0.8),
+        textColor: Color = .white,
+        font: Font = .caption,
+        cornerRadius: CGFloat = 6,
+        horizontalPadding: CGFloat = 8,
+        verticalPadding: CGFloat = 4,
+        offset: CGFloat = 20,
+        animationDuration: Double = 0.2,
+        maxWidth: CGFloat? = 200,
+        multilineTextAlignment: TextAlignment = .center
+    ) -> some View {
+        if shouldShow, let tooltipText = text {
+            self.withTooltip(
+                tooltipText,
+                position: position,
+                backgroundColor: backgroundColor,
+                textColor: textColor,
+                font: font,
+                cornerRadius: cornerRadius,
+                horizontalPadding: horizontalPadding,
+                verticalPadding: verticalPadding,
+                offset: offset,
+                animationDuration: animationDuration,
+                maxWidth: maxWidth,
+                multilineTextAlignment: multilineTextAlignment
+            )
+        } else {
+            self
+        }
+    }
+}
 
 #Preview {
     TooltipPreviews()
