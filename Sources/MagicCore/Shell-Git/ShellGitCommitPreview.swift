@@ -1,5 +1,6 @@
 import SwiftUI
 
+#if DEBUG
 struct ShellGitCommitPreview: View {
     @State private var status: String = ""
     @State private var stagedFiles: [String] = []
@@ -117,8 +118,11 @@ struct ShellGitCommitPreview: View {
         }
     }
 }
+#endif
 
+#if DEBUG
 #Preview("ShellGit+Commit Demo") {
     ShellGitCommitPreview()
         .inMagicContainer()
 } 
+#endif

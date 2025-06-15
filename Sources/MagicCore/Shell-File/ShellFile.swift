@@ -152,7 +152,9 @@ class ShellFile: SuperLog {
 
 // MARK: - Preview
 
+#if DEBUG
 #Preview("ShellFile Demo") {
     ShellFilePreviewView()
         .inMagicContainer()
 }
+#endif

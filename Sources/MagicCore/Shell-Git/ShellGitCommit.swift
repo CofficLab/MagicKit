@@ -30,7 +30,11 @@ extension ShellGit {
     }
 }
 
+// MARK: - Preview
+
+#if DEBUG
 #Preview("ShellGit+Commit Demo") {
     ShellGitCommitPreview()
         .inMagicContainer()
 } 
+#endif

@@ -1,5 +1,6 @@
 import SwiftUI
 
+#if DEBUG
 struct ShellGitResetPreview: View {
     var body: some View {
         ShellGitExampleRepoView { repoPath in
@@ -29,8 +30,13 @@ struct ShellGitResetPreview: View {
         }
     }
 }
+#endif
 
+// MARK: - Preview
+
+#if DEBUG
 #Preview("ShellGit+Reset Demo") {
     ShellGitResetPreview()
         .inMagicContainer()
 } 
+#endif

@@ -92,7 +92,11 @@ extension ShellGit {
     }
 }
 
+// MARK: - Preview
+
+#if DEBUG
 #Preview("ShellGit+Checkout Demo") {
     ShellGitCheckoutPreview()
         .inMagicContainer()
 } 
+#endif

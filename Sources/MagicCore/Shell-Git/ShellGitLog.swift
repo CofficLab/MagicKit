@@ -248,7 +248,11 @@ private extension String {
     }
 }
 
+// MARK: - Preview
+
+#if DEBUG
 #Preview("ShellGit+Log Demo") {
     ShellGitLogPreview()
         .inMagicContainer()
 } 
+#endif

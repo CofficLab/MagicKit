@@ -73,6 +73,7 @@ class Shell: SuperLog {
     ///   - verbose: 是否输出详细日志
     /// - Returns: 命令执行结果
     /// - Throws: 执行失败时抛出错误
+    @discardableResult
     static func runSync(_ command: String, at path: String? = nil, verbose: Bool = false) throws -> String {
         // 使用 RunLoop 来同步等待异步操作完成，避免阻塞主线程
         var result: Result<String, Error>?
@@ -225,8 +226,10 @@ class Shell: SuperLog {
 
 // MARK: - Preview
 
+#if DEBUG
 #Preview("Shell Demo") {
     ShellDemoView()
         .padding()
         .inMagicContainer()
 }
+#endif

@@ -67,7 +67,11 @@ extension ShellGit {
     }
 }
 
+// MARK: - Preview
+
+#if DEBUG
 #Preview("ShellGit+Reset Demo") {
     ShellGitResetPreview()
         .inMagicContainer()
 } 
+#endif

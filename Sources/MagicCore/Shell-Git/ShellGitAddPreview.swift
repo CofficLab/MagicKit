@@ -1,5 +1,6 @@
 import SwiftUI
 
+#if DEBUG
 struct ShellGitAddPreview: View {
     @State private var status: String = ""
     @State private var stagedFiles: [String] = []
@@ -87,8 +88,11 @@ struct ShellGitAddPreview: View {
         }
     }
 }
+#endif
 
+#if DEBUG
 #Preview("ShellGit+Add Demo") {
     ShellGitAddPreview()
         .inMagicContainer()
-} 
+}
+#endif

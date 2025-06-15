@@ -120,7 +120,11 @@ extension ShellGit {
     }
 }
 
+// MARK: - Preview
+
+#if DEBUG
 #Preview("ShellGit+Branch Demo") {
     ShellGitBranchPreview()
         .inMagicContainer()
 } 
+#endif

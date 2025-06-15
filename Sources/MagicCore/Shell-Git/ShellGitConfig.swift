@@ -79,7 +79,11 @@ extension ShellGit {
     }
 }
 
+// MARK: - Preview
+
+#if DEBUG
 #Preview("ShellGit+ConfigInfo Demo") {
     ShellGitConfigInfoPreview()
         .inMagicContainer()
 }
+#endif

@@ -1,5 +1,6 @@
 import SwiftUI
 
+#if DEBUG
 struct ShellDemoView: View {
     var body: some View {
         VStack(spacing: 20) {
@@ -268,9 +269,12 @@ struct ShellDemoView: View {
         }
     }
 }
+#endif
 
+#if DEBUG
 #Preview("Shell Demo") {
     ShellDemoView()
         .padding()
         .inMagicContainer()
 }
+#endif

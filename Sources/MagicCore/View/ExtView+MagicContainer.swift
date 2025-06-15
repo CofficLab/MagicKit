@@ -69,6 +69,7 @@ enum PreviewSize: String, CaseIterable {
 }
 
 // MARK: - MagicThemePreview
+
 /// 主题预览容器，提供亮暗主题切换功能
 struct MagicThemePreview<Content: View>: View {
     // MARK: - Properties

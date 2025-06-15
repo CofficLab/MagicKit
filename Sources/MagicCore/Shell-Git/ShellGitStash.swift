@@ -45,3 +45,12 @@ extension ShellGit {
         return result
     }
 } 
+
+// MARK: - Preview
+
+#if DEBUG
+#Preview("ShellGit+Stash Demo") {
+    ShellGitStashPreview()
+        .inMagicContainer()
+} 
+#endif

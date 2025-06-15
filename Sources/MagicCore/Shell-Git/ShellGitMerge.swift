@@ -133,7 +133,11 @@ extension ShellGit {
     }
 }
 
+// MARK: - Preview
+
+#if DEBUG
 #Preview("ShellGit+Merge Demo") {
     ShellGitMergePreview()
         .inMagicContainer()
 } 
+#endif

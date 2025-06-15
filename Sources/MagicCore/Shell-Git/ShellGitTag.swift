@@ -80,3 +80,12 @@ extension ShellGit {
         return tags
     }
 } 
+
+// MARK: - Preview
+
+#if DEBUG
+#Preview("ShellGit+Tag Demo") {
+    ShellGitTagPreview()
+        .inMagicContainer()
+} 
+#endif

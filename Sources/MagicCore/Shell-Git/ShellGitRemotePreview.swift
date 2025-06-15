@@ -1,5 +1,6 @@
 import SwiftUI
 
+#if DEBUG
 struct ShellGitRemotePreview: View {
     var body: some View {
         ShellGitExampleRepoView { repoPath in
@@ -69,8 +70,13 @@ struct ShellGitRemotePreview: View {
         }
     }
 }
+#endif
 
+// MARK: - Preview
+
+#if DEBUG
 #Preview("ShellGit+Remote Demo") {
     ShellGitRemotePreview()
         .inMagicContainer()
 } 
+#endif

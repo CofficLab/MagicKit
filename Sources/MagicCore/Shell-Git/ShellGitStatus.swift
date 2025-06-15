@@ -42,7 +42,11 @@ extension ShellGit {
     }
 }
 
+// MARK: - Preview
+
+#if DEBUG
 #Preview("ShellGit+Status Demo") {
     ShellGitStatusPreview()
         .inMagicContainer()
 }
+#endif

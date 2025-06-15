@@ -15,7 +15,11 @@ public class ShellGit: SuperLog {
     }
 }
 
+// MARK: - Preview
+
+#if DEBUG
 #Preview("ShellGit+Core Demo") {
     ShellGitCorePreview()
         .inMagicContainer()
 }
+#endif

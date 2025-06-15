@@ -19,8 +19,10 @@ enum ShellError: Error, LocalizedError {
 
 // MARK: - Preview
 
+#if DEBUG
 #Preview("Shell Demo") {
     ShellDemoView()
         .padding()
         .inMagicContainer()
 }
+#endif

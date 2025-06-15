@@ -115,7 +115,11 @@ extension ShellGit {
     }
 }
 
+// MARK: - Preview
+
+#if DEBUG
 #Preview("ShellGit+Remote Demo") {
     ShellGitRemotePreview()
         .inMagicContainer()
 } 
+#endif

@@ -1,5 +1,6 @@
 import SwiftUI
 
+#if DEBUG
 struct ShellGitCheckoutPreview: View {
     var body: some View {
         ShellGitExampleRepoView { repoPath in
@@ -109,8 +110,11 @@ struct ShellGitCheckoutPreview: View {
         }
     }
 }
+#endif
 
+#if DEBUG
 #Preview("ShellGit+Checkout Demo") {
     ShellGitCheckoutPreview()
         .inMagicContainer()
 } 
+#endif

@@ -1,5 +1,6 @@
 import SwiftUI
 
+#if DEBUG   
 struct ShellGitClonePreview: View {
     @State private var testRepoURL = "https://github.com/CofficLab/MagicKit.git"
     @State private var cloneResult: String = ""
@@ -134,8 +135,11 @@ struct ShellGitClonePreview: View {
         return uniqueDir
     }
 }
+#endif
 
+#if DEBUG
 #Preview("ShellGit+Clone Demo") {
     ShellGitClonePreview()
         .inMagicContainer()
 } 
+#endif

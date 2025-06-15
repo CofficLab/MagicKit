@@ -207,7 +207,11 @@ extension ShellGit {
     }
 }
 
-//#Preview("ShellGit+Diff Demo") {
-//    ShellGitDiffPreview()
-//        .inMagicContainer()
-//} 
+// MARK: - Preview
+
+#if DEBUG
+#Preview("ShellGit+Diff Demo") {
+   ShellGitDiffPreview()
+       .inMagicContainer()
+} 
+#endif

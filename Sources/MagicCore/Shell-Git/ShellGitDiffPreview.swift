@@ -1,5 +1,6 @@
 import SwiftUI
 
+#if DEBUG
 struct ShellGitDiffPreview: View {
     @State private var fileName: String = "README.md"
     @State private var headContent: String = ""
@@ -181,8 +182,13 @@ struct ShellGitDiffPreview: View {
         }
     }
 }
+#endif
 
+// MARK: - Preview
+
+#if DEBUG
 #Preview("ShellGit+Diff Demo") {
     ShellGitDiffPreview()
         .inMagicContainer()
 } 
+#endif

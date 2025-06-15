@@ -1,5 +1,6 @@
 import SwiftUI
 
+#if DEBUG
 struct ShellGitLogPreview: View {
     @State private var logPage: Int = 1
     @State private var logSize: Int = 10
@@ -119,8 +120,13 @@ struct ShellGitLogPreview: View {
         }
     }
 }
+#endif
 
+// MARK: - Preview
+
+#if DEBUG
 #Preview("ShellGit+Log Demo") {
-    ShellGitLogPreview()
-        .inMagicContainer()
+        ShellGitLogPreview()
+            .inMagicContainer()
 } 
+#endif

@@ -1,7 +1,7 @@
 import SwiftUI
 
+#if DEBUG
 struct ShellFilePreviewView: View {
-    
     var body: some View {
         VStack(spacing: 20) {
             Text("🐚 ShellFile 功能演示")
@@ -70,8 +70,11 @@ struct ShellFilePreviewView: View {
         .padding()
     }
 }
+#endif
 
+#if DEBUG
 #Preview("ShellFile Demo") {
     ShellFilePreviewView()
         .inMagicContainer()
 }
+#endif

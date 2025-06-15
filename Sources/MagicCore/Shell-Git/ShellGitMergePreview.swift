@@ -1,5 +1,6 @@
 import SwiftUI
 
+#if DEBUG
 struct ShellGitMergePreview: View {
     var body: some View {
         ShellGitExampleRepoView { repoPath in
@@ -152,8 +153,13 @@ struct ShellGitMergePreview: View {
         }
     }
 }
+#endif
 
+// MARK: - Preview
+
+#if DEBUG
 #Preview("ShellGit+Merge Demo") {
     ShellGitMergePreview()
         .inMagicContainer()
 } 
+#endif

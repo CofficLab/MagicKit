@@ -22,7 +22,9 @@ extension ShellGit {
     }
 }
 
+#if DEBUG
 #Preview("ShellGit+Add Demo") {
     ShellGitAddPreview()
         .inMagicContainer()
 } 
+#endif

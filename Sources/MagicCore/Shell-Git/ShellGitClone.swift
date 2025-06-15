@@ -128,7 +128,11 @@ extension ShellGit {
     }
 }
 
+// MARK: - Preview
+
+#if DEBUG
 #Preview("ShellGit+Clone Demo") {
     ShellGitClonePreview()
         .inMagicContainer()
 } 
+#endif
