@@ -31,7 +31,7 @@ extension ShellGit {
             command += " \(destination)"
         }
         
-        return try Shell.run(command)
+        return try Shell.runSync(command)
     }
     
     /// 浅克隆远程仓库（只克隆最新的提交）
@@ -94,7 +94,7 @@ extension ShellGit {
             command += " \(destination)"
         }
         
-        return try Shell.run(command)
+        return try Shell.runSync(command)
     }
     
     /// 裸克隆（用于服务器端）
@@ -103,7 +103,7 @@ extension ShellGit {
     ///   - destination: 本地目标路径
     /// - Returns: 执行结果
     public static func cloneBare(_ url: String, to destination: String) throws -> String {
-        return try Shell.run("git clone --bare \(url) \(destination)")
+        return try Shell.runSync("git clone --bare \(url) \(destination)")
     }
     
     /// 镜像克隆（完整镜像）
@@ -112,7 +112,7 @@ extension ShellGit {
     ///   - destination: 本地目标路径
     /// - Returns: 执行结果
     public static func cloneMirror(_ url: String, to destination: String) throws -> String {
-        return try Shell.run("git clone --mirror \(url) \(destination)")
+        return try Shell.runSync("git clone --mirror \(url) \(destination)")
     }
     
     /// 检查URL是否为有效的Git仓库
@@ -120,7 +120,7 @@ extension ShellGit {
     /// - Returns: 是否为有效的Git仓库
     public static func isValidGitRepository(_ url: String) -> Bool {
         do {
-            _ = try Shell.run("git ls-remote \(url)")
+            _ = try Shell.runSync("git ls-remote \(url)")
             return true
         } catch {
             return false

@@ -10,7 +10,7 @@ extension ShellGit {
     /// - Returns: 差异信息
     public static func diff(staged: Bool = false, at path: String? = nil) throws -> String {
         let option = staged ? "--cached" : ""
-        return try Shell.run("git diff \(option)", at: path)
+        return try Shell.runSync("git diff \(option)", at: path)
     }
     
     /// 获取文件差异
@@ -21,7 +21,7 @@ extension ShellGit {
     /// - Returns: 文件差异信息
     public static func diffFile(_ file: String, staged: Bool = false, at path: String? = nil) throws -> String {
         let option = staged ? "--cached" : ""
-        return try Shell.run("git diff \(option) \(file)", at: path)
+        return try Shell.runSync("git diff \(option) \(file)", at: path)
     }
     
     /// 获取两个提交之间的差异
@@ -31,7 +31,7 @@ extension ShellGit {
     ///   - path: 仓库路径
     /// - Returns: 差异信息
     public static func diffBetweenCommits(from: String, to: String, at path: String? = nil) throws -> String {
-        return try Shell.run("git diff \(from) \(to)", at: path)
+        return try Shell.runSync("git diff \(from) \(to)", at: path)
     }
     
     /// 检查文件在指定commit中是否存在
@@ -42,7 +42,7 @@ extension ShellGit {
     /// - Returns: 文件是否存在
     private static func fileExists(at commit: String, file: String, repoPath: String) -> Bool {
         do {
-            _ = try Shell.run("git cat-file -e \(commit):\(file)", at: repoPath)
+            _ = try Shell.runSync("git cat-file -e \(commit):\(file)", at: repoPath)
             return true
         } catch {
             return false
@@ -64,15 +64,15 @@ extension ShellGit {
     ///   - 如果文件在两个commit中都不存在：before和after都为nil
     public static func fileContentChange(at commit: String, file: String, repoPath: String) throws -> (before: String?, after: String?) {
         // 获取 parent commit
-        let parentCommit = try Shell.run("git rev-parse \(commit)^", at: repoPath).trimmingCharacters(in: .whitespacesAndNewlines)
+        let parentCommit = try Shell.runSync("git rev-parse \(commit)^", at: repoPath).trimmingCharacters(in: .whitespacesAndNewlines)
         
         // 先检查文件是否存在，再获取内容
         let before: String? = fileExists(at: parentCommit, file: file, repoPath: repoPath) 
-            ? try Shell.run("git show \(parentCommit):\(file)", at: repoPath)
+            ? try Shell.runSync("git show \(parentCommit):\(file)", at: repoPath)
             : nil
             
         let after: String? = fileExists(at: commit, file: file, repoPath: repoPath)
-            ? try Shell.run("git show \(commit):\(file)", at: repoPath) 
+            ? try Shell.runSync("git show \(commit):\(file)", at: repoPath) 
             : nil
         
         return (before, after)
@@ -85,7 +85,7 @@ extension ShellGit {
     ///   - path: 仓库路径
     /// - Returns: 文件内容字符串
     public static func fileContent(atCommit commit: String, file: String, at path: String? = nil) throws -> String {
-        return try Shell.run("git show \(commit):\(file)", at: path)
+        return try Shell.runSync("git show \(commit):\(file)", at: path)
     }
     
     /// 获取当前工作区的文件内容
@@ -103,10 +103,10 @@ extension ShellGit {
     ///   - staged: 是否查看暂存区差异
     ///   - path: 仓库路径
     /// - Returns: [GitDiffFile]
-    public static func diffFileList(staged: Bool = false, at path: String? = nil) throws -> [GitDiffFile] {
+    public static func diffFileList(staged: Bool = false, at path: String? = nil) async throws -> [GitDiffFile] {
         let option = staged ? "--cached" : ""
         // 获取变动文件及类型
-        let nameStatus = try Shell.run("git diff --name-status \(option)", at: path)
+        let nameStatus = try await Shell.runSync("git diff --name-status \(option)", at: path)
         let files = nameStatus.split(separator: "\n").map { String($0) }
         var result: [GitDiffFile] = []
         for line in files {
@@ -114,7 +114,7 @@ extension ShellGit {
             guard parts.count >= 2 else { continue }
             let changeType = parts[0]
             let file = parts[1]
-            let diff = try Shell.run("git diff \(option) -- \(file)", at: path)
+            let diff = try Shell.runSync("git diff \(option) -- \(file)", at: path)
             result.append(GitDiffFile(id: file, file: file, changeType: changeType, diff: diff))
         }
         return result
@@ -126,7 +126,7 @@ extension ShellGit {
     ///   - path: 仓库路径
     /// - Returns: [GitDiffFile]
     public static func fileChanges(in commit: String, at path: String? = nil) throws -> [GitDiffFile] {
-        let nameStatus = try Shell.run("git diff-tree --no-commit-id --name-status -r \(commit)", at: path)
+        let nameStatus = try Shell.runSync("git diff-tree --no-commit-id --name-status -r \(commit)", at: path)
         let files = nameStatus.split(separator: "\n").map { String($0) }
         var result: [GitDiffFile] = []
         for line in files {
@@ -134,7 +134,7 @@ extension ShellGit {
             guard parts.count >= 2 else { continue }
             let changeType = parts[0]
             let file = parts[1]
-            let diff = try Shell.run("git show \(commit) -- \(file)", at: path)
+            let diff = try Shell.runSync("git show \(commit) -- \(file)", at: path)
             result.append(GitDiffFile(id: file, file: file, changeType: changeType, diff: diff))
         }
         return result
@@ -146,7 +146,7 @@ extension ShellGit {
     ///   - path: 仓库路径
     /// - Returns: 文件名数组
     public static func changedFiles(in commit: String, at path: String? = nil) throws -> [String] {
-        let output = try Shell.run("git diff-tree --no-commit-id --name-only -r \(commit)", at: path)
+        let output = try Shell.runSync("git diff-tree --no-commit-id --name-only -r \(commit)", at: path)
         return output.split(separator: "\n").map { String($0) }
     }
     
@@ -154,9 +154,10 @@ extension ShellGit {
     /// - Parameters:
     ///   - commit: commit 哈希
     ///   - path: 仓库路径
+    ///   - verbose: 是否详细输出，默认不详细输出
     /// - Returns: [GitDiffFile]，仅包含文件名和变动类型，diff 为空
-    public static func changedFilesDetail(in commit: String, at path: String? = nil) throws -> [GitDiffFile] {
-        let output = try Shell.run("git diff-tree --no-commit-id --name-status -r \(commit)", at: path)
+    public static func changedFilesDetail(in commit: String, at path: String? = nil, verbose: Bool = false) throws -> [GitDiffFile] {
+        let output = try Shell.runSync("git diff-tree --no-commit-id --name-status -r \(commit)", at: path, verbose: verbose)
         let files = output.split(separator: "\n").map { String($0) }
         return files.compactMap { line in
             let parts = line.split(separator: "\t").map { String($0) }
@@ -178,7 +179,7 @@ extension ShellGit {
         // 如果文件在 HEAD 中不存在（新文件），则 before 为 nil
         let before: String?
         do {
-            before = try Shell.run("git show HEAD:\(file)", at: repoPath)
+            before = try Shell.runSync("git show HEAD:\(file)", at: repoPath)
         } catch {
             // 文件在 HEAD 中不存在，可能是新文件
             before = nil
@@ -201,12 +202,12 @@ extension ShellGit {
     /// - Parameter path: 仓库路径
     /// - Returns: 是否有文件待提交
     public static func hasFilesToCommit(at path: String? = nil) throws -> Bool {
-        let output = try Shell.run("git diff --cached --name-only", at: path)
+        let output = try Shell.runSync("git diff --cached --name-only", at: path)
         return !output.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 }
 
-#Preview("ShellGit+Diff Demo") {
-    ShellGitDiffPreview()
-        .inMagicContainer()
-} 
+//#Preview("ShellGit+Diff Demo") {
+//    ShellGitDiffPreview()
+//        .inMagicContainer()
+//} 

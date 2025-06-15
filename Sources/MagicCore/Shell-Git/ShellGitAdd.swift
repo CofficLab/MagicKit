@@ -9,7 +9,7 @@ extension ShellGit {
     ///   - path: 仓库路径
     public static func add(_ files: [String] = [], at path: String? = nil) throws {
         let filesStr = files.isEmpty ? "." : files.joined(separator: " ")
-        try Shell.run("git add \(filesStr)", at: path)
+        try Shell.runSync("git add \(filesStr)", at: path)
     }
     
     /// 将文件从暂存区移除
@@ -18,7 +18,7 @@ extension ShellGit {
     ///   - path: 仓库路径
     public static func reset(_ files: [String] = [], at path: String? = nil) throws {
         let filesStr = files.isEmpty ? "." : files.joined(separator: " ")
-        try Shell.run("git reset \(filesStr)", at: path)
+        try Shell.runSync("git reset \(filesStr)", at: path)
     }
 }
 

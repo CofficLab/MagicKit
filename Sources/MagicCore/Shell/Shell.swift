@@ -7,71 +7,108 @@ import SwiftUI
 class Shell: SuperLog {
     static let emoji = "🐚"
 
-    /// 执行Shell命令
-    /// - Parameters:
-    ///   - command: 要执行的命令
-    ///   - path: 执行命令的工作目录（可选）
-    ///   - verbose: 是否输出详细日志
-    /// - Returns: 命令执行结果
-    /// - Throws: 命令执行失败时抛出错误
-    static func run(_ command: String, at path: String? = nil, verbose: Bool = false) throws -> String {
-        let process = Process()
-        process.executableURL = URL(fileURLWithPath: "/bin/bash")
-        process.arguments = ["-c", command]
-
-        if let path = path {
-            process.currentDirectoryURL = URL(fileURLWithPath: path)
-        }
-
-        let pipe = Pipe()
-        process.standardOutput = pipe
-        process.standardError = pipe
-
-        let outputHandle = pipe.fileHandleForReading
-        var outputData = Data()
-
-        outputHandle.readabilityHandler = { handle in
-            outputData.append(handle.availableData)
-        }
-
-        try process.run()
-        process.waitUntilExit()
-
-        outputHandle.readabilityHandler = nil
-
-        let output = String(data: outputData, encoding: .utf8) ?? ""
-
-        if verbose {
-            os_log("\(self.t) ➡️ Path: \(path ?? "Current Directory") (\(FileManager.default.currentDirectoryPath))")
-            os_log("\(self.t) ➡️ Command: \(command)")
-            os_log("\(self.t) ➡️ Output: \(output)")
-        }
-
-        if process.terminationStatus != 0 {
-            os_log(.error, "\(self.t) ❌ Command failed \n ➡️ Path: \(path ?? "Current Directory") (\(FileManager.default.currentDirectoryPath)) \n ➡️ Command: \(command) \n ➡️ Output: \(output) \n ➡️ Exit code: \(process.terminationStatus)")
-
-            throw ShellError.commandFailed(output, command)
-        }
-
-        return output.trimmingCharacters(in: .whitespacesAndNewlines)
-    }
-
     /// 异步执行Shell命令
     /// - Parameters:
     ///   - command: 要执行的命令
     ///   - path: 执行命令的工作目录（可选）
     ///   - verbose: 是否输出详细日志
     /// - Returns: 命令执行结果
-    static func runAsync(_ command: String, at path: String? = nil, verbose: Bool = false) async throws -> String {
+    /// - Throws: 执行失败时抛出错误
+    static func run(_ command: String, at path: String? = nil, verbose: Bool = false) async throws -> String {
         return try await withCheckedThrowingContinuation { continuation in
-            DispatchQueue.global(qos: .background).async {
+            // 在后台队列执行，避免阻塞调用线程
+            DispatchQueue.global(qos: .userInitiated).async {
+                let process = Process()
+                process.executableURL = URL(fileURLWithPath: "/bin/bash")
+                process.arguments = ["-c", command]
+
+                if let path = path {
+                    process.currentDirectoryURL = URL(fileURLWithPath: path)
+                }
+
+                let pipe = Pipe()
+                process.standardOutput = pipe
+                process.standardError = pipe
+
+                let outputHandle = pipe.fileHandleForReading
+                var outputData = Data()
+                
+                // 使用异步数据读取，避免信号量阻塞
+                outputHandle.readabilityHandler = { handle in
+                    let data = handle.availableData
+                    if !data.isEmpty {
+                        outputData.append(data)
+                    }
+                }
+
                 do {
-                    let result = try run(command, at: path, verbose: verbose)
-                    continuation.resume(returning: result)
+                    try process.run()
+                    
+                    // 异步等待进程完成
+                    DispatchQueue.global(qos: .userInitiated).async {
+                        process.waitUntilExit()
+                        
+                        // 清理 handler 并读取剩余数据
+                        outputHandle.readabilityHandler = nil
+                        let remainingData = outputHandle.readDataToEndOfFile()
+                        if !remainingData.isEmpty {
+                            outputData.append(remainingData)
+                        }
+                        
+                        // 处理结果
+                        guard let output = String(data: outputData, encoding: .utf8) else {
+                            continuation.resume(throwing: ShellError.stringConversionFailed(outputData))
+                            return
+                        }
+
+                        if verbose {
+                            os_log("\(self.t) \n➡️ Path: \n\(path ?? "Current Directory") (\(FileManager.default.currentDirectoryPath)) \n➡️ Command: \n\(command) \n➡️ Output: \n\(output)")
+                        }
+
+                        if process.terminationStatus != 0 {
+                            os_log(.error, "\(self.t) ❌ Command failed \n ➡️ Path: \(path ?? "Current Directory") (\(FileManager.default.currentDirectoryPath)) \n ➡️ Command: \(command) \n ➡️ Output: \(output) \n ➡️ Exit code: \(process.terminationStatus)")
+                            continuation.resume(throwing: ShellError.commandFailed(output, command))
+                        } else {
+                            continuation.resume(returning: output.trimmingCharacters(in: .whitespacesAndNewlines))
+                        }
+                    }
                 } catch {
-                    continuation.resume(throwing: error)
+                    continuation.resume(throwing: ShellError.processStartFailed(error.localizedDescription))
                 }
             }
+        }
+    }
+
+    /// 同步执行Shell命令（向后兼容，内部调用异步版本）
+    /// - Parameters:
+    ///   - command: 要执行的命令
+    ///   - path: 执行命令的工作目录（可选）
+    ///   - verbose: 是否输出详细日志
+    /// - Returns: 命令执行结果
+    /// - Throws: 执行失败时抛出错误
+    static func runSync(_ command: String, at path: String? = nil, verbose: Bool = false) throws -> String {
+        // 使用 RunLoop 来同步等待异步操作完成，避免阻塞主线程
+        var result: Result<String, Error>?
+        
+        Task {
+            do {
+                let output = try await run(command, at: path, verbose: verbose)
+                result = .success(output)
+            } catch {
+                result = .failure(error)
+            }
+        }
+        
+        // 使用 RunLoop 等待结果，不会阻塞主线程
+        while result == nil {
+            RunLoop.current.run(mode: .default, before: Date(timeIntervalSinceNow: 0.01))
+        }
+        
+        switch result! {
+        case .success(let output):
+            return output
+        case .failure(let error):
+            throw error
         }
     }
 
@@ -86,7 +123,7 @@ class Shell: SuperLog {
         var results: [String] = []
 
         for command in commands {
-            let result = try run(command, at: path, verbose: verbose)
+            let result = try runSync(command, at: path, verbose: verbose)
             results.append(result)
         }
 
@@ -114,9 +151,20 @@ class Shell: SuperLog {
 
         let outputHandle = pipe.fileHandleForReading
         var outputData = Data()
+        
+        // 使用信号量来确保数据读取完成
+        let semaphore = DispatchSemaphore(value: 0)
+        var isReadingComplete = false
 
         outputHandle.readabilityHandler = { handle in
-            outputData.append(handle.availableData)
+            let data = handle.availableData
+            if data.isEmpty {
+                // 数据读取完成
+                isReadingComplete = true
+                semaphore.signal()
+            } else {
+                outputData.append(data)
+            }
         }
 
         do {
@@ -126,9 +174,23 @@ class Shell: SuperLog {
             return ("执行失败: \(error.localizedDescription)", -1)
         }
 
+        // 等待数据读取完成，最多等待1秒
+        let result = semaphore.wait(timeout: .now() + 1.0)
+        
+        // 清理 handler
         outputHandle.readabilityHandler = nil
+        
+        // 如果超时，尝试读取剩余数据
+        if result == .timedOut || !isReadingComplete {
+            let remainingData = outputHandle.readDataToEndOfFile()
+            if !remainingData.isEmpty {
+                outputData.append(remainingData)
+            }
+        }
 
-        let output = String(data: outputData, encoding: .utf8) ?? ""
+        guard let output = String(data: outputData, encoding: .utf8) else {
+            return ("字符串转换失败: 无法将输出数据转换为UTF-8字符串，数据大小: \(outputData.count) 字节", -2)
+        }
 
         if verbose {
             os_log("\(self.t)\(command)")
@@ -144,7 +206,7 @@ class Shell: SuperLog {
     /// - Returns: 命令是否可用
     static func isCommandAvailable(_ command: String) -> Bool {
         do {
-            _ = try run("which \(command)")
+            _ = try runSync("which \(command)")
             return true
         } catch {
             return false
@@ -156,7 +218,7 @@ class Shell: SuperLog {
     /// - Returns: 命令的完整路径
     static func getCommandPath(_ command: String) -> String? {
         do {
-            let path = try run("which \(command)")
+            let path = try runSync("which \(command)")
             return path.isEmpty ? nil : path
         } catch {
             return nil
@@ -167,7 +229,7 @@ class Shell: SuperLog {
     /// - Returns: 配置结果
     static func configureGitCredentialCache() -> String {
         do {
-            return try self.run("git config --global credential.helper cache")
+            return try self.runSync("git config --global credential.helper cache")
         } catch {
             return error.localizedDescription
         }
@@ -187,7 +249,7 @@ class Shell: SuperLog {
                 VDemoSection(title: "基础命令", icon: "⚡") {
                     VDemoButtonWithLog("获取当前目录", action: {
                         do {
-                            let pwd = try Shell.run("pwd")
+                            let pwd = try Shell.runSync("pwd")
                             return "当前目录: \(pwd)"
                         } catch {
                             return "获取当前目录失败: \(error.localizedDescription)"
@@ -196,7 +258,7 @@ class Shell: SuperLog {
 
                     VDemoButtonWithLog("获取当前用户", action: {
                         do {
-                            let user = try Shell.run("whoami")
+                            let user = try Shell.runSync("whoami")
                             return "当前用户: \(user)"
                         } catch {
                             return "获取当前用户失败: \(error.localizedDescription)"
@@ -205,7 +267,7 @@ class Shell: SuperLog {
 
                     VDemoButtonWithLog("获取系统时间", action: {
                         do {
-                            let date = try Shell.run("date")
+                            let date = try Shell.runSync("date")
                             return "系统时间: \(date)"
                         } catch {
                             return "获取系统时间失败: \(error.localizedDescription)"
@@ -253,6 +315,66 @@ class Shell: SuperLog {
                     VDemoButtonWithLog("配置Git凭证缓存", action: {
                         let result = Shell.configureGitCredentialCache()
                         return "Git凭证缓存配置结果: \(result)"
+                    })
+                }
+
+                VDemoSection(title: "错误处理", icon: "⚠️") {
+                    VDemoButtonWithLog("测试字符串转换错误", action: {
+                        // 注意：这个测试在正常情况下不会触发错误，因为大多数命令输出都是有效的UTF-8
+                        // 这里只是展示错误处理的结构
+                        do {
+                            let result = try Shell.runSync("echo 'Test UTF-8 conversion'")
+                            return "字符串转换成功: \(result)"
+                        } catch let error as ShellError {
+                            switch error {
+                            case .stringConversionFailed(let data):
+                                return "字符串转换失败: 数据大小 \(data.count) 字节"
+                            case .commandFailed(let output, let command):
+                                return "命令执行失败: \(command)\n输出: \(output)"
+                            case .processStartFailed(let message):
+                                return "进程启动失败: \(message)"
+                            }
+                        } catch {
+                            return "未知错误: \(error.localizedDescription)"
+                        }
+                    })
+                }
+
+                VDemoSection(title: "稳定性测试", icon: "🔄") {
+                    VDemoButtonWithLog("测试 git diff-tree 稳定性", action: {
+                        // 模拟你遇到的问题：多次执行同一个 git 命令
+                        var results: [String] = []
+                        let testCommand = "git log --oneline -1"
+                        
+                        for i in 1...5 {
+                            do {
+                                let result = try Shell.runSync(testCommand)
+                                let status = result.isEmpty ? "❌ 空结果" : "✅ 正常"
+                                results.append("第\(i)次: \(status) - 长度: \(result.count)")
+                            } catch {
+                                results.append("第\(i)次: ❌ 错误 - \(error.localizedDescription)")
+                            }
+                        }
+                        
+                        return "Git命令稳定性测试结果:\n" + results.joined(separator: "\n")
+                    })
+                    
+                    VDemoButtonWithLog("测试快速连续执行", action: {
+                        // 测试快速连续执行多个命令
+                        var results: [String] = []
+                        let commands = ["echo 'test1'", "echo 'test2'", "echo 'test3'", "date", "whoami"]
+                        
+                        for (index, command) in commands.enumerated() {
+                            do {
+                                let result = try Shell.runSync(command)
+                                let status = result.isEmpty ? "❌ 空结果" : "✅ 正常"
+                                results.append("命令\(index + 1): \(status) - \(result.prefix(20))")
+                            } catch {
+                                results.append("命令\(index + 1): ❌ 错误 - \(error.localizedDescription)")
+                            }
+                        }
+                        
+                        return "快速连续执行测试结果:\n" + results.joined(separator: "\n")
                     })
                 }
             }

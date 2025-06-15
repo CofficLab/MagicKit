@@ -11,7 +11,7 @@ extension ShellGit {
     /// - Returns: 日志信息
     public static func log(limit: Int = 10, oneline: Bool = true, at path: String? = nil) throws -> String {
         let format = oneline ? "--oneline" : ""
-        return try Shell.run("git log \(format) -\(limit)", at: path)
+        return try Shell.runSync("git log \(format) -\(limit)", at: path)
     }
     
     /// 获取提交日志（字符串数组）
@@ -32,7 +32,7 @@ extension ShellGit {
     /// - Returns: 提交记录列表
     public static func recentCommits(count: Int = 10, at path: String? = nil) throws -> [GitCommit] {
         let format = "%H|%an|%ae|%at|%s"
-        let output = try Shell.run("git log -n \(count) --pretty=format:'\(format)'", at: path)
+        let output = try Shell.runSync("git log -n \(count) --pretty=format:'\(format)'", at: path)
         return output.split(separator: "\n").compactMap { line in
             let parts = String(line).split(separator: "|").map { String($0) }
             guard parts.count >= 5 else { return nil }
@@ -57,7 +57,7 @@ extension ShellGit {
     /// - Returns: 提交记录列表
     public static func commits(in branch: String, count: Int = 10, at path: String? = nil) throws -> [GitCommit] {
         let format = "%H|%an|%ae|%at|%s"
-        let output = try Shell.run("git log \(branch) -n \(count) --pretty=format:'\(format)'", at: path)
+        let output = try Shell.runSync("git log \(branch) -n \(count) --pretty=format:'\(format)'", at: path)
         return output.split(separator: "\n").compactMap { line in
             let parts = String(line).split(separator: "|").map { String($0) }
             guard parts.count >= 5 else { return nil }
@@ -79,16 +79,16 @@ extension ShellGit {
     ///   - commit: 提交哈希
     ///   - path: 仓库路径
     /// - Returns: 提交详细信息
-    public static func commitDetail(_ commit: String, at path: String? = nil) throws -> GitCommitDetail {
+    public static func commitDetail(_ commit: String, at path: String? = nil) async throws -> GitCommitDetail {
         let format = "%H|%an|%ae|%at|%s|%b"
-        let output = try Shell.run("git show \(commit) --pretty=format:'\(format)' --no-patch", at: path)
+        let output = try Shell.runSync("git show \(commit) --pretty=format:'\(format)' --no-patch", at: path)
         let parts = output.split(separator: "|").map { String($0) }
         guard parts.count >= 6 else {
             throw NSError(domain: "ShellGit", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid commit format"])
         }
         
-        let files = try changedFilesDetail(in: commit, at: path)
-        let diff = try Shell.run("git show \(commit)", at: path)
+        let files = try await changedFilesDetail(in: commit, at: path)
+        let diff = try Shell.runSync("git show \(commit)", at: path)
         
         return GitCommitDetail(
             id: parts[0],
@@ -115,7 +115,7 @@ extension ShellGit {
         } else {
             branchName = try currentBranch(at: path)
         }
-        let log = try Shell.run("git log \(remote)/\(branchName)..\(branchName) --oneline", at: path)
+        let log = try Shell.runSync("git log \(remote)/\(branchName)..\(branchName) --oneline", at: path)
         return log.split(separator: "\n").map { String($0) }
     }
 
@@ -126,7 +126,7 @@ extension ShellGit {
     /// - Returns: [CommitWithTag]
     public static func commitsWithTags(limit: Int = 20, at path: String? = nil) throws -> [CommitWithTag] {
         // 使用 git log --pretty=format:"%H%x09%s%x09%d" 获取 hash、message、ref
-        let log = try Shell.run("git log --pretty=format:%H%x09%s%x09%d -\(limit)", at: path)
+        let log = try Shell.runSync("git log --pretty=format:%H%x09%s%x09%d -\(limit)", at: path)
         return log.split(separator: "\n").compactMap { line in
             let parts = line.split(separator: "\t", omittingEmptySubsequences: false)
             guard parts.count >= 3 else { return nil }
@@ -149,7 +149,7 @@ extension ShellGit {
     public static func logsWithPagination(page: Int = 1, size: Int = 20, oneline: Bool = true, at path: String? = nil) throws -> [String] {
         let skip = (page - 1) * size
         let format = oneline ? "--oneline" : ""
-        let log = try Shell.run("git log \(format) --skip=\(skip) -\(size)", at: path)
+        let log = try Shell.runSync("git log \(format) --skip=\(skip) -\(size)", at: path)
         return log.split(separator: "\n").map { String($0) }
     }
 
@@ -160,7 +160,7 @@ extension ShellGit {
     /// - Returns: [GitCommit]
     public static func commitList(limit: Int = 20, at path: String? = nil) throws -> [GitCommit] {
         let format = "--pretty=format:%H%x09%an%x09%ae%x09%ad%x09%s%x09%d"
-        let log = try Shell.run("git log \(format) -\(limit)", at: path)
+        let log = try Shell.runSync("git log \(format) -\(limit)", at: path)
         let dateFormatter = DateFormatter()
         dateFormatter.locale = Locale(identifier: "en_US_POSIX")
         dateFormatter.dateFormat = "E MMM d HH:mm:ss yyyy Z"
@@ -191,7 +191,7 @@ extension ShellGit {
         } else {
             branchName = try currentBranch(at: path)
         }
-        let log = try Shell.run("git log \(remote)/\(branchName)..\(branchName) --pretty=format:%H%x09%an%x09%ae%x09%ad%x09%s%x09%D", at: path)
+        let log = try Shell.runSync("git log \(remote)/\(branchName)..\(branchName) --pretty=format:%H%x09%an%x09%ae%x09%ad%x09%s%x09%D", at: path)
         let lines = log.split(separator: "\n").map { String($0) }
         var commits: [GitCommit] = []
         let dateFormatter = ISO8601DateFormatter()
@@ -220,7 +220,7 @@ extension ShellGit {
     public static func commitListWithPagination(page: Int = 1, size: Int = 20, at path: String? = nil) throws -> [GitCommit] {
         let skip = (page - 1) * size
         let format = "--pretty=format:%H%x09%an%x09%ae%x09%ad%x09%s%x09%D"
-        let log = try Shell.run("git log \(format) --skip=\(skip) -\(size)", at: path)
+        let log = try Shell.runSync("git log \(format) --skip=\(skip) -\(size)", at: path)
         let dateFormatter = ISO8601DateFormatter()
         return log.split(separator: "\n").compactMap { line in
             let parts = line.split(separator: "\t", omittingEmptySubsequences: false)

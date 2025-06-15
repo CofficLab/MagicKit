@@ -11,7 +11,7 @@ class ShellNetwork: SuperLog {
     /// - Returns: 是否连接成功
     static func ping(_ host: String = "google.com") -> Bool {
         do {
-            _ = try Shell.run("ping -c 1 -W 3000 \(host)")
+            _ = try Shell.runSync("ping -c 1 -W 3000 \(host)")
             return true
         } catch {
             return false
@@ -25,7 +25,7 @@ class ShellNetwork: SuperLog {
     /// - Returns: ping结果
     /// - Throws: 执行失败时抛出错误
     static func pingDetailed(_ host: String, count: Int = 4) throws -> String {
-        try Shell.run("ping -c \(count) \(host)")
+        try Shell.runSync("ping -c \(count) \(host)")
     }
     
     /// 下载文件
@@ -34,7 +34,7 @@ class ShellNetwork: SuperLog {
     ///   - output: 输出文件路径
     /// - Throws: 下载失败时抛出错误
     static func download(_ url: String, to output: String) throws {
-        try Shell.run("curl -L \"\(url)\" -o \"\(output)\"")
+        try Shell.runSync("curl -L \"\(url)\" -o \"\(output)\"")
     }
     
     /// 获取URL内容
@@ -42,7 +42,7 @@ class ShellNetwork: SuperLog {
     /// - Returns: URL内容
     /// - Throws: 获取失败时抛出错误
     static func curl(_ url: String) throws -> String {
-        try Shell.run("curl -s \"\(url)\"")
+        try Shell.runSync("curl -s \"\(url)\"")
     }
     
     /// 获取URL的HTTP头信息
@@ -50,7 +50,7 @@ class ShellNetwork: SuperLog {
     /// - Returns: HTTP头信息
     /// - Throws: 获取失败时抛出错误
     static func getHeaders(_ url: String) throws -> String {
-        try Shell.run("curl -I \"\(url)\"")
+        try Shell.runSync("curl -I \"\(url)\"")
     }
     
     /// 测试端口连接
@@ -60,7 +60,7 @@ class ShellNetwork: SuperLog {
     /// - Returns: 端口是否开放
     static func testPort(_ host: String, port: Int) -> Bool {
         do {
-            _ = try Shell.run("nc -z -w3 \(host) \(port)")
+            _ = try Shell.runSync("nc -z -w3 \(host) \(port)")
             return true
         } catch {
             return false
@@ -71,7 +71,7 @@ class ShellNetwork: SuperLog {
     /// - Returns: IP地址数组
     static func getLocalIPs() -> [String] {
         do {
-            let result = try Shell.run("ifconfig | grep 'inet ' | grep -v 127.0.0.1 | awk '{print $2}'")
+            let result = try Shell.runSync("ifconfig | grep 'inet ' | grep -v 127.0.0.1 | awk '{print $2}'")
             return result.components(separatedBy: .newlines)
                 .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
                 .filter { !$0.isEmpty }
@@ -84,7 +84,7 @@ class ShellNetwork: SuperLog {
     /// - Returns: 公网IP地址
     static func getPublicIP() -> String {
         do {
-            return try Shell.run("curl -s ifconfig.me").trimmingCharacters(in: .whitespacesAndNewlines)
+            return try Shell.runSync("curl -s ifconfig.me").trimmingCharacters(in: .whitespacesAndNewlines)
         } catch {
             return "获取失败"
         }
@@ -94,7 +94,7 @@ class ShellNetwork: SuperLog {
     /// - Returns: 网络接口状态
     static func getNetworkStatus() -> String {
         do {
-            return try Shell.run("ifconfig | grep -E '^[a-z]|inet '")
+            return try Shell.runSync("ifconfig | grep -E '^[a-z]|inet '")
         } catch {
             return error.localizedDescription
         }
@@ -104,7 +104,7 @@ class ShellNetwork: SuperLog {
     /// - Returns: 路由表信息
     static func getRoutes() -> String {
         do {
-            return try Shell.run("netstat -rn")
+            return try Shell.runSync("netstat -rn")
         } catch {
             return error.localizedDescription
         }
@@ -114,7 +114,7 @@ class ShellNetwork: SuperLog {
     /// - Returns: 网络连接信息
     static func getConnections() -> String {
         do {
-            return try Shell.run("netstat -an")
+            return try Shell.runSync("netstat -an")
         } catch {
             return error.localizedDescription
         }
@@ -125,7 +125,7 @@ class ShellNetwork: SuperLog {
     /// - Returns: DNS查询结果
     /// - Throws: 查询失败时抛出错误
     static func nslookup(_ domain: String) throws -> String {
-        try Shell.run("nslookup \(domain)")
+        try Shell.runSync("nslookup \(domain)")
     }
     
     /// 追踪路由
@@ -133,14 +133,14 @@ class ShellNetwork: SuperLog {
     /// - Returns: 路由追踪结果
     /// - Throws: 追踪失败时抛出错误
     static func traceroute(_ host: String) throws -> String {
-        try Shell.run("traceroute \(host)")
+        try Shell.runSync("traceroute \(host)")
     }
     
     /// 获取WiFi信息
     /// - Returns: WiFi信息
     static func getWiFiInfo() -> String {
         do {
-            return try Shell.run("/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I")
+            return try Shell.runSync("/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I")
         } catch {
             return error.localizedDescription
         }
@@ -150,7 +150,7 @@ class ShellNetwork: SuperLog {
     /// - Returns: WiFi网络列表
     static func scanWiFi() -> String {
         do {
-            return try Shell.run("/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -s")
+            return try Shell.runSync("/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -s")
         } catch {
             return error.localizedDescription
         }
@@ -161,7 +161,7 @@ class ShellNetwork: SuperLog {
     /// - Returns: HTTP状态码
     static func getHTTPStatus(_ url: String) -> Int {
         do {
-            let result = try Shell.run("curl -s -o /dev/null -w '%{http_code}' \"\(url)\"")
+            let result = try Shell.runSync("curl -s -o /dev/null -w '%{http_code}' \"\(url)\"")
             return Int(result.trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0
         } catch {
             return 0
@@ -173,7 +173,7 @@ class ShellNetwork: SuperLog {
     static func speedTest() -> String {
         do {
             // 下载一个小文件来测试速度
-            let result = try Shell.run("curl -w '%{speed_download}' -s -o /dev/null http://speedtest.wdc01.softlayer.com/downloads/test10.zip")
+            let result = try Shell.runSync("curl -w '%{speed_download}' -s -o /dev/null http://speedtest.wdc01.softlayer.com/downloads/test10.zip")
             let speed = Double(result.trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0
             return String(format: "%.2f KB/s", speed / 1024)
         } catch {

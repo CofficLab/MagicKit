@@ -10,7 +10,7 @@ class ShellSystem: SuperLog {
     /// - Returns: 当前工作目录路径
     static func pwd() -> String {
         do {
-            return try Shell.run("pwd").trimmingCharacters(in: .whitespacesAndNewlines)
+            return try Shell.runSync("pwd").trimmingCharacters(in: .whitespacesAndNewlines)
         } catch {
             return error.localizedDescription
         }
@@ -20,7 +20,7 @@ class ShellSystem: SuperLog {
     /// - Returns: 当前用户名
     static func whoami() -> String {
         do {
-            return try Shell.run("whoami").trimmingCharacters(in: .whitespacesAndNewlines)
+            return try Shell.runSync("whoami").trimmingCharacters(in: .whitespacesAndNewlines)
         } catch {
             return error.localizedDescription
         }
@@ -30,7 +30,7 @@ class ShellSystem: SuperLog {
     /// - Returns: 系统信息字符串
     static func uname() -> String {
         do {
-            return try Shell.run("uname -a").trimmingCharacters(in: .whitespacesAndNewlines)
+            return try Shell.runSync("uname -a").trimmingCharacters(in: .whitespacesAndNewlines)
         } catch {
             return error.localizedDescription
         }
@@ -40,7 +40,7 @@ class ShellSystem: SuperLog {
     /// - Returns: 系统版本信息
     static func systemVersion() -> String {
         do {
-            return try Shell.run("sw_vers").trimmingCharacters(in: .whitespacesAndNewlines)
+            return try Shell.runSync("sw_vers").trimmingCharacters(in: .whitespacesAndNewlines)
         } catch {
             return error.localizedDescription
         }
@@ -50,7 +50,7 @@ class ShellSystem: SuperLog {
     /// - Returns: CPU信息
     static func cpuInfo() -> String {
         do {
-            return try Shell.run("sysctl -n machdep.cpu.brand_string").trimmingCharacters(in: .whitespacesAndNewlines)
+            return try Shell.runSync("sysctl -n machdep.cpu.brand_string").trimmingCharacters(in: .whitespacesAndNewlines)
         } catch {
             return error.localizedDescription
         }
@@ -60,7 +60,7 @@ class ShellSystem: SuperLog {
     /// - Returns: 内存信息
     static func memoryInfo() -> String {
         do {
-            let totalMemory = try Shell.run("sysctl -n hw.memsize")
+            let totalMemory = try Shell.runSync("sysctl -n hw.memsize")
             let memoryGB = Double(totalMemory.trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0
             return String(format: "%.1f GB", memoryGB / 1024 / 1024 / 1024)
         } catch {
@@ -74,7 +74,7 @@ class ShellSystem: SuperLog {
     static func diskUsage(path: String = "/") -> String {
         do {
             let command = "df -h '\(path)'"
-            return try Shell.run(command).trimmingCharacters(in: .whitespacesAndNewlines)
+            return try Shell.runSync(command).trimmingCharacters(in: .whitespacesAndNewlines)
         } catch {
             return error.localizedDescription
         }
@@ -84,7 +84,7 @@ class ShellSystem: SuperLog {
     /// - Returns: 系统负载信息
     static func loadAverage() -> String {
         do {
-            return try Shell.run("uptime").trimmingCharacters(in: .whitespacesAndNewlines)
+            return try Shell.runSync("uptime").trimmingCharacters(in: .whitespacesAndNewlines)
         } catch {
             return error.localizedDescription
         }
@@ -97,9 +97,9 @@ class ShellSystem: SuperLog {
         do {
             if let name = processName {
                 let command = "ps aux | grep '\(name)' | grep -v grep"
-                return try Shell.run(command)
+                return try Shell.runSync(command)
             } else {
-                return try Shell.run("ps aux")
+                return try Shell.runSync("ps aux")
             }
         } catch {
             return error.localizedDescription
@@ -110,7 +110,7 @@ class ShellSystem: SuperLog {
     /// - Returns: 网络接口信息
     static func networkInterfaces() -> String {
         do {
-            return try Shell.run("ifconfig")
+            return try Shell.runSync("ifconfig")
         } catch {
             return error.localizedDescription
         }
@@ -122,7 +122,7 @@ class ShellSystem: SuperLog {
     static func getEnvironmentVariable(_ name: String) -> String {
         do {
             let command = "echo \"$\(name)\""
-            return try Shell.run(command).trimmingCharacters(in: .whitespacesAndNewlines)
+            return try Shell.runSync(command).trimmingCharacters(in: .whitespacesAndNewlines)
         } catch {
             return error.localizedDescription
         }
@@ -140,7 +140,7 @@ class ShellSystem: SuperLog {
     /// - Returns: 命令是否存在
     static func commandExists(_ command: String) -> Bool {
         do {
-            _ = try Shell.run("which \(command)")
+            _ = try Shell.runSync("which \(command)")
             return true
         } catch {
             return false
@@ -151,7 +151,7 @@ class ShellSystem: SuperLog {
     /// - Returns: 系统时间
     static func systemTime() -> String {
         do {
-            return try Shell.run("date").trimmingCharacters(in: .whitespacesAndNewlines)
+            return try Shell.runSync("date").trimmingCharacters(in: .whitespacesAndNewlines)
         } catch {
             return error.localizedDescription
         }
@@ -161,7 +161,7 @@ class ShellSystem: SuperLog {
     /// - Returns: 系统启动时间
     static func bootTime() -> String {
         do {
-            return try Shell.run("sysctl -n kern.boottime").trimmingCharacters(in: .whitespacesAndNewlines)
+            return try Shell.runSync("sysctl -n kern.boottime").trimmingCharacters(in: .whitespacesAndNewlines)
         } catch {
             return error.localizedDescription
         }

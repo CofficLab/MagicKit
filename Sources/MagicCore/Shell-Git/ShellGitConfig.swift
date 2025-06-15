@@ -8,7 +8,7 @@ extension ShellGit {
     /// - Returns: 是否为Git仓库
     public static func isGitRepository(at path: String? = nil) -> Bool {
         do {
-            _ = try Shell.run("git rev-parse --git-dir", at: path)
+            _ = try Shell.runSync("git rev-parse --git-dir", at: path)
             return true
         } catch {
             return false
@@ -19,7 +19,7 @@ extension ShellGit {
     /// - Parameter path: 路径
     /// - Returns: 仓库根目录路径
     public static func repositoryRoot(at path: String? = nil) throws -> String {
-        return try Shell.run("git rev-parse --show-toplevel", at: path)
+        return try Shell.runSync("git rev-parse --show-toplevel", at: path)
     }
 
     /// 获取最新提交哈希
@@ -29,7 +29,7 @@ extension ShellGit {
     /// - Returns: 提交哈希
     public static func lastCommitHash(short: Bool = false, at path: String? = nil) throws -> String {
         let option = short ? "--short" : ""
-        return try Shell.run("git rev-parse \(option) HEAD", at: path)
+        return try Shell.runSync("git rev-parse \(option) HEAD", at: path)
     }
 
     /// 获取用户名
@@ -39,7 +39,7 @@ extension ShellGit {
     /// - Returns: 用户名
     public static func userName(global: Bool = false, at path: String? = nil) throws -> String {
         let scope = global ? "--global" : ""
-        return try Shell.run("git config \(scope) user.name", at: path)
+        return try Shell.runSync("git config \(scope) user.name", at: path)
     }
 
     /// 获取邮箱
@@ -49,7 +49,7 @@ extension ShellGit {
     /// - Returns: 邮箱
     public static func userEmail(global: Bool = false, at path: String? = nil) throws -> String {
         let scope = global ? "--global" : ""
-        return try Shell.run("git config \(scope) user.email", at: path)
+        return try Shell.runSync("git config \(scope) user.email", at: path)
     }
 
     /// 获取用户配置
@@ -59,8 +59,8 @@ extension ShellGit {
     /// - Returns: 用户配置信息
     public static func getUserConfig(global: Bool = false, at path: String? = nil) throws -> (name: String, email: String) {
         let scope = global ? "--global" : ""
-        let name = try Shell.run("git config \(scope) user.name", at: path)
-        let email = try Shell.run("git config \(scope) user.email", at: path)
+        let name = try Shell.runSync("git config \(scope) user.name", at: path)
+        let email = try Shell.runSync("git config \(scope) user.email", at: path)
         return (name: name, email: email)
     }
 
@@ -73,8 +73,8 @@ extension ShellGit {
     /// - Returns: 执行结果
     public static func configUser(name: String, email: String, global: Bool = false, at path: String? = nil) throws -> String {
         let scope = global ? "--global" : ""
-        let nameResult = try Shell.run("git config \(scope) user.name \"\(name)\"", at: path)
-        let emailResult = try Shell.run("git config \(scope) user.email \"\(email)\"", at: path)
+        let nameResult = try Shell.runSync("git config \(scope) user.name \"\(name)\"", at: path)
+        let emailResult = try Shell.runSync("git config \(scope) user.email \"\(email)\"", at: path)
         return "Name: \(nameResult)\nEmail: \(emailResult)"
     }
 }

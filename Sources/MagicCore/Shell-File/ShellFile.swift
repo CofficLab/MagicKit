@@ -11,7 +11,7 @@ class ShellFile: SuperLog {
     /// - Returns: 目录是否存在
     func isDirExists(_ dir: String) -> Bool {
         do {
-            let result = try Shell.run("""
+            let result = try Shell.runSync("""
                 if [ ! -d "\(dir)" ]; then
                     echo "false"
                 else
@@ -30,7 +30,7 @@ class ShellFile: SuperLog {
     /// - Returns: 文件是否存在
     func isFileExists(_ path: String) -> Bool {
         do {
-            let result = try Shell.run("""
+            let result = try Shell.runSync("""
                 if [ ! -f "\(path)" ]; then
                     echo "false"
                 else
@@ -54,7 +54,7 @@ class ShellFile: SuperLog {
         }
         
         do {
-            _ = try Shell.run("""
+            _ = try Shell.runSync("""
                 if [ ! -d "\(dir)" ]; then
                     mkdir -p "\(dir)"
                 else
@@ -73,7 +73,7 @@ class ShellFile: SuperLog {
     func makeFile(_ path: String, content: String) {
         do {
             let escapedContent = content.replacingOccurrences(of: "\"", with: "\\\"")
-            _ = try Shell.run("echo \"\(escapedContent)\" > \"\(path)\"")
+            _ = try Shell.runSync("echo \"\(escapedContent)\" > \"\(path)\"")
         } catch {
             os_log("\(self.t)创建文件失败: \(error.localizedDescription)")
         }
@@ -84,14 +84,14 @@ class ShellFile: SuperLog {
     /// - Returns: 文件内容
     /// - Throws: 读取失败时抛出错误
     func getFileContent(_ path: String) throws -> String {
-        try Shell.run("cat \"\(path)\"")
+        try Shell.runSync("cat \"\(path)\"")
     }
     
     /// 删除文件或目录
     /// - Parameter path: 文件或目录路径
     /// - Throws: 删除失败时抛出错误
     func remove(_ path: String) throws {
-        try Shell.run("rm -rf \"\(path)\"")
+        try Shell.runSync("rm -rf \"\(path)\"")
     }
     
     /// 复制文件或目录
@@ -100,7 +100,7 @@ class ShellFile: SuperLog {
     ///   - destination: 目标路径
     /// - Throws: 复制失败时抛出错误
     func copy(_ source: String, to destination: String) throws {
-        try Shell.run("cp -r \"\(source)\" \"\(destination)\"")
+        try Shell.runSync("cp -r \"\(source)\" \"\(destination)\"")
     }
     
     /// 移动文件或目录
@@ -109,7 +109,7 @@ class ShellFile: SuperLog {
     ///   - destination: 目标路径
     /// - Throws: 移动失败时抛出错误
     func move(_ source: String, to destination: String) throws {
-        try Shell.run("mv \"\(source)\" \"\(destination)\"")
+        try Shell.runSync("mv \"\(source)\" \"\(destination)\"")
     }
     
     /// 获取文件大小
@@ -117,7 +117,7 @@ class ShellFile: SuperLog {
     /// - Returns: 文件大小（字节）
     /// - Throws: 获取失败时抛出错误
     func getFileSize(_ path: String) throws -> Int {
-        let result = try Shell.run("stat -f%z \"\(path)\"")
+        let result = try Shell.runSync("stat -f%z \"\(path)\"")
         return Int(result.trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0
     }
     
@@ -126,7 +126,7 @@ class ShellFile: SuperLog {
     /// - Returns: 文件名数组
     /// - Throws: 获取失败时抛出错误
     func listFiles(_ dir: String) throws -> [String] {
-        let result = try Shell.run("ls -1 \"\(dir)\"")
+        let result = try Shell.runSync("ls -1 \"\(dir)\"")
         return result.components(separatedBy: .newlines)
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .filter { !$0.isEmpty }
@@ -137,7 +137,7 @@ class ShellFile: SuperLog {
     /// - Returns: 权限字符串
     /// - Throws: 获取失败时抛出错误
     func getPermissions(_ path: String) throws -> String {
-        try Shell.run("stat -f%Sp \"\(path)\"")
+        try Shell.runSync("stat -f%Sp \"\(path)\"")
     }
     
     /// 修改文件权限
@@ -146,7 +146,7 @@ class ShellFile: SuperLog {
     ///   - permissions: 权限（如 "755"）
     /// - Throws: 修改失败时抛出错误
     func changePermissions(_ path: String, permissions: String) throws {
-        try Shell.run("chmod \(permissions) \"\(path)\"")
+        try Shell.runSync("chmod \(permissions) \"\(path)\"")
     }
 }
 

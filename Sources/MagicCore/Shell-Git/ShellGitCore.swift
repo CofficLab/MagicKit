@@ -11,7 +11,7 @@ public class ShellGit: SuperLog {
     /// - Parameter path: 仓库路径
     /// - Returns: 执行结果
     public static func initRepository(at path: String) throws -> String {
-        return try Shell.run("git init", at: path)
+        return try Shell.runSync("git init", at: path)
     }
 }
 

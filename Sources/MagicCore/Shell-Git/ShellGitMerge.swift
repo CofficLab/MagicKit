@@ -9,7 +9,7 @@ extension ShellGit {
     ///   - path: 仓库路径
     /// - Returns: 执行结果
     public static func merge(_ branchName: String, at path: String? = nil) throws -> String {
-        return try Shell.run("git merge \(branchName)", at: path)
+        return try Shell.runSync("git merge \(branchName)", at: path)
     }
     
     /// 快进合并
@@ -18,7 +18,7 @@ extension ShellGit {
     ///   - path: 仓库路径
     /// - Returns: 执行结果
     public static func mergeFastForward(_ branchName: String, at path: String? = nil) throws -> String {
-        return try Shell.run("git merge --ff-only \(branchName)", at: path)
+        return try Shell.runSync("git merge --ff-only \(branchName)", at: path)
     }
     
     /// 非快进合并（创建合并提交）
@@ -32,7 +32,7 @@ extension ShellGit {
         if let message = message {
             command += " -m \"\(message)\""
         }
-        return try Shell.run(command, at: path)
+        return try Shell.runSync(command, at: path)
     }
     
     /// 压缩合并（将分支的所有提交压缩为一个提交）
@@ -41,7 +41,7 @@ extension ShellGit {
     ///   - path: 仓库路径
     /// - Returns: 执行结果
     public static func mergeSquash(_ branchName: String, at path: String? = nil) throws -> String {
-        return try Shell.run("git merge --squash \(branchName)", at: path)
+        return try Shell.runSync("git merge --squash \(branchName)", at: path)
     }
     
     /// 使用指定策略合并
@@ -51,21 +51,21 @@ extension ShellGit {
     ///   - path: 仓库路径
     /// - Returns: 执行结果
     public static func mergeWithStrategy(_ branchName: String, strategy: String, at path: String? = nil) throws -> String {
-        return try Shell.run("git merge -s \(strategy) \(branchName)", at: path)
+        return try Shell.runSync("git merge -s \(strategy) \(branchName)", at: path)
     }
     
     /// 中止合并
     /// - Parameter path: 仓库路径
     /// - Returns: 执行结果
     public static func mergeAbort(at path: String? = nil) throws -> String {
-        return try Shell.run("git merge --abort", at: path)
+        return try Shell.runSync("git merge --abort", at: path)
     }
     
     /// 继续合并（解决冲突后）
     /// - Parameter path: 仓库路径
     /// - Returns: 执行结果
     public static func mergeContinue(at path: String? = nil) throws -> String {
-        return try Shell.run("git merge --continue", at: path)
+        return try Shell.runSync("git merge --continue", at: path)
     }
     
     /// 检查是否正在进行合并
@@ -73,7 +73,7 @@ extension ShellGit {
     /// - Returns: 是否正在合并
     public static func isMerging(at path: String? = nil) throws -> Bool {
         do {
-            _ = try Shell.run("git rev-parse --verify MERGE_HEAD", at: path)
+            _ = try Shell.runSync("git rev-parse --verify MERGE_HEAD", at: path)
             return true
         } catch {
             return false
@@ -84,7 +84,7 @@ extension ShellGit {
     /// - Parameter path: 仓库路径
     /// - Returns: 冲突文件列表
     public static func mergeConflictFiles(at path: String? = nil) throws -> [String] {
-        let output = try Shell.run("git diff --name-only --diff-filter=U", at: path)
+        let output = try Shell.runSync("git diff --name-only --diff-filter=U", at: path)
         return output.split(separator: "\n").map { String($0) }.filter { !$0.isEmpty }
     }
     
@@ -111,10 +111,10 @@ extension ShellGit {
     /// - Returns: 执行结果
     public static func mergeResolveOurs(_ files: [String] = [], at path: String? = nil) throws -> String {
         if files.isEmpty {
-            return try Shell.run("git checkout --ours .", at: path)
+            return try Shell.runSync("git checkout --ours .", at: path)
         } else {
             let filesStr = files.joined(separator: " ")
-            return try Shell.run("git checkout --ours \(filesStr)", at: path)
+            return try Shell.runSync("git checkout --ours \(filesStr)", at: path)
         }
     }
     
@@ -125,10 +125,10 @@ extension ShellGit {
     /// - Returns: 执行结果
     public static func mergeResolveTheirs(_ files: [String] = [], at path: String? = nil) throws -> String {
         if files.isEmpty {
-            return try Shell.run("git checkout --theirs .", at: path)
+            return try Shell.runSync("git checkout --theirs .", at: path)
         } else {
             let filesStr = files.joined(separator: " ")
-            return try Shell.run("git checkout --theirs \(filesStr)", at: path)
+            return try Shell.runSync("git checkout --theirs \(filesStr)", at: path)
         }
     }
 }

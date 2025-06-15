@@ -10,7 +10,7 @@ extension ShellGit {
     /// - Returns: 分支列表
     public static func branches(includeRemote: Bool = false, at path: String? = nil) throws -> String {
         let option = includeRemote ? "-a" : ""
-        return try Shell.run("git branch \(option)", at: path)
+        return try Shell.runSync("git branch \(option)", at: path)
     }
 
     /// 获取分支列表并返回字符串数组
@@ -27,14 +27,14 @@ extension ShellGit {
     /// - Parameter path: 仓库路径
     /// - Returns: 当前分支名
     public static func currentBranch(at path: String? = nil) throws -> String {
-        return try Shell.run("git branch --show-current", at: path).trimmingCharacters(in: .whitespacesAndNewlines)
+        return try Shell.runSync("git branch --show-current", at: path).trimmingCharacters(in: .whitespacesAndNewlines)
     }
     
     /// 获取所有本地分支
     /// - Parameter path: 仓库路径
     /// - Returns: 本地分支列表
     public static func localBranches(at path: String? = nil) throws -> [String] {
-        let output = try Shell.run("git branch", at: path)
+        let output = try Shell.runSync("git branch", at: path)
         return output.split(separator: "\n")
             .map { String($0).trimmingCharacters(in: .whitespacesAndNewlines) }
             .map { $0.replacingOccurrences(of: "* ", with: "") }
@@ -44,7 +44,7 @@ extension ShellGit {
     /// - Parameter path: 仓库路径
     /// - Returns: 远程分支列表
     public static func remoteBranches(at path: String? = nil) throws -> [String] {
-        let output = try Shell.run("git branch -r", at: path)
+        let output = try Shell.runSync("git branch -r", at: path)
         return output.split(separator: "\n")
             .map { String($0).trimmingCharacters(in: .whitespacesAndNewlines) }
     }
@@ -53,7 +53,7 @@ extension ShellGit {
     /// - Parameter path: 仓库路径
     /// - Returns: 所有分支列表
     public static func allBranches(at path: String? = nil) throws -> [String] {
-        let output = try Shell.run("git branch -a", at: path)
+        let output = try Shell.runSync("git branch -a", at: path)
         return output.split(separator: "\n")
             .map { String($0).trimmingCharacters(in: .whitespacesAndNewlines) }
             .map { $0.replacingOccurrences(of: "* ", with: "") }
@@ -65,7 +65,7 @@ extension ShellGit {
     ///   - path: 仓库路径
     /// - Returns: 执行结果
     public static func createBranch(_ name: String, at path: String? = nil) throws -> String {
-        return try Shell.run("git branch \(name)", at: path)
+        return try Shell.runSync("git branch \(name)", at: path)
     }
     
     /// 删除本地分支
@@ -77,7 +77,7 @@ extension ShellGit {
     /// - Throws: 如果删除失败
     public static func deleteBranch(_ name: String, force: Bool = false, at path: String? = nil) throws -> String {
         let forceFlag = force ? "-D" : "-d"
-        return try Shell.run("git branch \(forceFlag) \(name)", at: path)
+        return try Shell.runSync("git branch \(forceFlag) \(name)", at: path)
     }
     
     /// 获取分支的最后一次提交
@@ -86,7 +86,7 @@ extension ShellGit {
     ///   - path: 仓库路径
     /// - Returns: 最后一次提交的简短信息
     public static func lastCommitOfBranch(_ branchName: String, at path: String? = nil) throws -> String {
-        return try Shell.run("git log \(branchName) -1 --oneline", at: path)
+        return try Shell.runSync("git log \(branchName) -1 --oneline", at: path)
     }
 
     /// 获取分支结构体列表

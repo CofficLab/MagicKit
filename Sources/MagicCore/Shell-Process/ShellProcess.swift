@@ -34,7 +34,7 @@ class ShellProcess: SuperLog {
     /// - Returns: 进程信息数组
     static func getAllProcesses() -> [ProcessInfo] {
         do {
-            let result = try Shell.run("ps aux")
+            let result = try Shell.runSync("ps aux")
             let lines = result.components(separatedBy: .newlines)
                 .dropFirst() // 跳过标题行
                 .filter { !$0.isEmpty }
@@ -50,7 +50,7 @@ class ShellProcess: SuperLog {
     /// - Returns: 匹配的进程信息数组
     static func findProcesses(named name: String) -> [ProcessInfo] {
         do {
-            let result = try Shell.run("ps aux | grep \"\(name)\" | grep -v grep")
+            let result = try Shell.runSync("ps aux | grep \"\(name)\" | grep -v grep")
             let lines = result.components(separatedBy: CharacterSet.newlines)
                 .filter { !$0.isEmpty }
             
@@ -65,7 +65,7 @@ class ShellProcess: SuperLog {
     /// - Returns: 进程信息
     static func findProcess(pid: String) -> ProcessInfo? {
         do {
-            let result = try Shell.run("ps aux | grep \"\\b\(pid)\\b\" | grep -v grep")
+            let result = try Shell.runSync("ps aux | grep \"\\b\(pid)\\b\" | grep -v grep")
             let lines = result.components(separatedBy: CharacterSet.newlines)
                 .filter { !$0.isEmpty }
             
@@ -79,21 +79,21 @@ class ShellProcess: SuperLog {
     /// - Parameter pid: 进程ID
     /// - Throws: 杀死进程失败时抛出错误
     static func killProcess(pid: String) throws {
-        try Shell.run("kill \(pid)")
+        try Shell.runSync("kill \(pid)")
     }
     
     /// 强制杀死进程
     /// - Parameter pid: 进程ID
     /// - Throws: 杀死进程失败时抛出错误
     static func forceKillProcess(pid: String) throws {
-        try Shell.run("kill -9 \(pid)")
+        try Shell.runSync("kill -9 \(pid)")
     }
     
     /// 根据进程名杀死所有匹配的进程
     /// - Parameter name: 进程名
     /// - Throws: 杀死进程失败时抛出错误
     static func killProcesses(named name: String) throws {
-        try Shell.run("pkill \"\(name)\"")
+        try Shell.runSync("pkill \"\(name)\"")
     }
     
     /// 获取进程树
@@ -102,9 +102,9 @@ class ShellProcess: SuperLog {
     static func getProcessTree(pid: String? = nil) -> String {
         do {
             if let pid = pid {
-                return try Shell.run("pstree \(pid)")
+                return try Shell.runSync("pstree \(pid)")
             } else {
-                return try Shell.run("pstree")
+                return try Shell.runSync("pstree")
             }
         } catch {
             return error.localizedDescription
@@ -115,7 +115,7 @@ class ShellProcess: SuperLog {
     /// - Returns: 系统负载信息
     static func getSystemLoad() -> String {
         do {
-            return try Shell.run("uptime")
+            return try Shell.runSync("uptime")
         } catch {
             return error.localizedDescription
         }
@@ -125,7 +125,7 @@ class ShellProcess: SuperLog {
     /// - Returns: 内存使用情况
     static func getMemoryUsage() -> String {
         do {
-            return try Shell.run("vm_stat")
+            return try Shell.runSync("vm_stat")
         } catch {
             return error.localizedDescription
         }
@@ -136,7 +136,7 @@ class ShellProcess: SuperLog {
     /// - Returns: CPU使用率最高的进程
     static func getTopCPUProcesses(count: Int = 10) -> [ProcessInfo] {
         do {
-            let result = try Shell.run("ps aux --sort=-%cpu | head -\(count + 1)")
+            let result = try Shell.runSync("ps aux --sort=-%cpu | head -\(count + 1)")
             let lines = result.components(separatedBy: .newlines)
                 .dropFirst() // 跳过标题行
                 .filter { !$0.isEmpty }
@@ -152,7 +152,7 @@ class ShellProcess: SuperLog {
     /// - Returns: 内存使用率最高的进程
     static func getTopMemoryProcesses(count: Int = 10) -> [ProcessInfo] {
         do {
-            let result = try Shell.run("ps aux --sort=-%mem | head -\(count + 1)")
+            let result = try Shell.runSync("ps aux --sort=-%mem | head -\(count + 1)")
             let lines = result.components(separatedBy: .newlines)
                 .dropFirst() // 跳过标题行
                 .filter { !$0.isEmpty }
@@ -167,7 +167,7 @@ class ShellProcess: SuperLog {
     /// - Parameter appName: 应用程序名称
     /// - Throws: 启动失败时抛出错误
     static func launchApp(_ appName: String) throws {
-        try Shell.run("open -a \"\(appName)\"")
+        try Shell.runSync("open -a \"\(appName)\"")
     }
     
     /// 启动应用程序并打开文件
@@ -176,14 +176,14 @@ class ShellProcess: SuperLog {
     ///   - filePath: 文件路径
     /// - Throws: 启动失败时抛出错误
     static func launchApp(_ appName: String, withFile filePath: String) throws {
-        try Shell.run("open -a \"\(appName)\" \"\(filePath)\"")
+        try Shell.runSync("open -a \"\(appName)\" \"\(filePath)\"")
     }
     
     /// 获取正在运行的应用程序
     /// - Returns: 应用程序列表
     static func getRunningApps() -> [String] {
         do {
-            let result = try Shell.run("osascript -e 'tell application \"System Events\" to get name of every process whose background only is false'")
+            let result = try Shell.runSync("osascript -e 'tell application \"System Events\" to get name of every process whose background only is false'")
             return result.components(separatedBy: ", ")
                 .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
                 .filter { !$0.isEmpty }
@@ -197,7 +197,7 @@ class ShellProcess: SuperLog {
     /// - Returns: 进程是否正在运行
     static func isProcessRunning(_ name: String) -> Bool {
         do {
-            let result = try Shell.run("pgrep \"\(name)\"")
+            let result = try Shell.runSync("pgrep \"\(name)\"")
             return !result.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty
         } catch {
             return false
@@ -209,7 +209,7 @@ class ShellProcess: SuperLog {
     /// - Returns: 进程详细信息
     static func getProcessDetails(pid: String) -> String {
         do {
-            return try Shell.run("ps -p \(pid) -o pid,ppid,user,time,command")
+            return try Shell.runSync("ps -p \(pid) -o pid,ppid,user,time,command")
         } catch {
             return error.localizedDescription
         }
@@ -220,7 +220,7 @@ class ShellProcess: SuperLog {
     /// - Returns: 资源使用情况
     static func monitorProcess(pid: String) -> String {
         do {
-            return try Shell.run("top -pid \(pid) -l 1")
+            return try Shell.runSync("top -pid \(pid) -l 1")
         } catch {
             return error.localizedDescription
         }
@@ -230,7 +230,7 @@ class ShellProcess: SuperLog {
     /// - Returns: 系统服务状态
     static func getSystemServices() -> String {
         do {
-            return try Shell.run("launchctl list")
+            return try Shell.runSync("launchctl list")
         } catch {
             return error.localizedDescription
         }
@@ -240,13 +240,13 @@ class ShellProcess: SuperLog {
     /// - Parameter serviceName: 服务名称
     /// - Throws: 启动失败时抛出错误
     static func startService(_ serviceName: String) throws {
-        try Shell.run("launchctl start \(serviceName)")
+        try Shell.runSync("launchctl start \(serviceName)")
     }
     
     /// 停止系统服务
     /// - Parameter serviceName: 服务名称
     /// - Throws: 停止失败时抛出错误
     static func stopService(_ serviceName: String) throws {
-        try Shell.run("launchctl stop \(serviceName)")
+        try Shell.runSync("launchctl stop \(serviceName)")
     }
 }

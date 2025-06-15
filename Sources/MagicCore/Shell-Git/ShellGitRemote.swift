@@ -12,7 +12,7 @@ extension ShellGit {
     @discardableResult
     public static func push(remote: String = "origin", branch: String? = nil, at path: String? = nil) throws -> String {
         let command = branch != nil ? "git push \(remote) \(branch!)" : "git push \(remote)"
-        return try Shell.run(command, at: path)
+        return try Shell.runSync(command, at: path)
     }
     
     /// 从远程仓库拉取
@@ -24,7 +24,7 @@ extension ShellGit {
     @discardableResult
     public static func pull(remote: String = "origin", branch: String? = nil, at path: String? = nil) throws -> String {
         let command = branch != nil ? "git pull \(remote) \(branch!)" : "git pull \(remote)"
-        return try Shell.run(command, at: path)
+        return try Shell.runSync(command, at: path)
     }
     
     /// 添加远程仓库
@@ -34,7 +34,7 @@ extension ShellGit {
     ///   - path: 仓库路径
     /// - Returns: 执行结果
     public static func addRemote(_ name: String, url: String, at path: String? = nil) throws -> String {
-        return try Shell.run("git remote add \(name) \(url)", at: path)
+        return try Shell.runSync("git remote add \(name) \(url)", at: path)
     }
     
     /// 获取远程仓库列表
@@ -44,7 +44,7 @@ extension ShellGit {
     /// - Returns: 远程仓库列表，字符串形式
     public static func remotes(verbose: Bool = false, at path: String? = nil) throws -> String {
         let option = verbose ? "-v" : ""
-        return try Shell.run("git remote \(option)", at: path)
+        return try Shell.runSync("git remote \(option)", at: path)
     }
 
     /// 获取远程仓库列表-数组
@@ -61,7 +61,7 @@ extension ShellGit {
     /// - Parameter path: 仓库路径
     /// - Returns: 第一个远程仓库的URL，如果不存在则返回nil
     public static func firstRemoteURL(at path: String? = nil) throws -> String? {
-        let output = try Shell.run("git remote -v", at: path)
+        let output = try Shell.runSync("git remote -v", at: path)
         let lines = output.split(separator: "\n").map { String($0) }
         guard let firstLine = lines.first else { return nil }
         // 示例输出: origin	https://github.com/user/repo.git (fetch)
@@ -78,7 +78,7 @@ extension ShellGit {
     ///   - path: 仓库路径
     /// - Returns: 执行结果
     public static func removeRemote(_ name: String, at path: String? = nil) throws -> String {
-        return try Shell.run("git remote remove \(name)", at: path)
+        return try Shell.runSync("git remote remove \(name)", at: path)
     }
 
     /// 获取远程结构体列表
