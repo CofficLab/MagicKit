@@ -96,8 +96,10 @@ struct MagicContainer<Content: View>: View {
             MagicButton(
                 icon: isDarkMode ? "sun.max.fill" : "moon.fill",
                 style: .secondary,
-                action: { _ in
-                    isDarkMode.toggle() }
+                action: { completion in
+                    isDarkMode.toggle()
+                    completion()
+                }
             )
             .magicShape(.circle)
         }

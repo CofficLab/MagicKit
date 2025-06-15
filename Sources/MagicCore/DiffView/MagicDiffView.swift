@@ -87,7 +87,7 @@ public struct MagicDiffView: View, SuperLog {
                 Group {
                     switch selectedView {
                     case .diff:
-                        MagicDiffContentView(
+                        DiffContentView(
                             diffItems: diffItems,
                             showLineNumbers: showLineNumbers,
                             font: font,
@@ -96,7 +96,7 @@ public struct MagicDiffView: View, SuperLog {
                             verbose: verbose
                         )
                     case .original:
-                        MagicDiffContentView(
+                        DiffContentView(
                             diffItems: createDiffItemsFromText(oldText),
                             showLineNumbers: showLineNumbers,
                             font: font,
@@ -105,7 +105,7 @@ public struct MagicDiffView: View, SuperLog {
                             verbose: verbose
                         )
                     case .modified:
-                        MagicDiffContentView(
+                        DiffContentView(
                             diffItems: createDiffItemsFromText(newText),
                             showLineNumbers: showLineNumbers,
                             font: font,

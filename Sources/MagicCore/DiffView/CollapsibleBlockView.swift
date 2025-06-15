@@ -100,29 +100,28 @@ struct CollapsibleBlockView: View {
             case .original:
                 // 原始模式只显示一列行号
                 Text("\(block.startLineNumber)")
+                    .font(.system(.body, design: .monospaced))
                     .frame(width: 32, alignment: .trailing)
                     .foregroundColor(.secondary.opacity(0.7))
             case .modified:
                 // 修改模式只显示一列行号
                 Text("\(block.startLineNumber)")
+                    .font(.system(.body, design: .monospaced))
                     .frame(width: 32, alignment: .trailing)
                     .foregroundColor(.secondary.opacity(0.7))
             case .diff:
                 // 差异模式显示两列行号
                 Text("\(block.startLineNumber)")
-                    .frame(width: 16, alignment: .trailing)
+                    .font(.system(.body, design: .monospaced))
+                    .frame(width: 32, alignment: .trailing)
                     .foregroundColor(.secondary.opacity(0.7))
                 Text("\(block.startLineNumber)")
-                    .frame(width: 16, alignment: .trailing)
+                    .font(.system(.body, design: .monospaced))
+                    .frame(width: 32, alignment: .trailing)
                     .foregroundColor(.secondary.opacity(0.7))
             }
-            
-            // 折叠图标
-            Image(systemName: "chevron.right")
-                .frame(width: 16, alignment: .center)
-                .foregroundColor(.secondary)
-                .font(.system(.caption, design: .monospaced))
         }
+        .frame(maxHeight: .infinity)
         .font(.system(.caption, design: .monospaced))
         .padding(.horizontal, 6)
         .padding(.vertical, 1)
@@ -142,17 +141,12 @@ struct CollapsibleBlockView: View {
             case .diff:
                 // 差异模式显示两个16宽的空白
                 Text("")
-                    .frame(width: 16, alignment: .trailing)
+                    .frame(width: 32, alignment: .trailing)
                 Text("")
-                    .frame(width: 16, alignment: .trailing)
+                    .frame(width: 32, alignment: .trailing)
             }
-            
-            // 展开图标
-            Image(systemName: "chevron.down")
-                .frame(width: 16, alignment: .center)
-                .foregroundColor(.secondary)
-                .font(.system(.caption, design: .monospaced))
         }
+        .frame(maxHeight: .infinity)
         .font(.system(.caption, design: .monospaced))
         .padding(.horizontal, 6)
         .padding(.vertical, 1)
@@ -207,29 +201,8 @@ struct CollapsibleBlockView: View {
 }
 
 // MARK: - Preview
-#Preview("CollapsibleBlockView") {
-    let sampleLines = [
-        DiffLine(content: "unchanged line 1", type: .unchanged, oldLineNumber: 5, newLineNumber: 5),
-        DiffLine(content: "unchanged line 2", type: .unchanged, oldLineNumber: 6, newLineNumber: 6),
-        DiffLine(content: "unchanged line 3", type: .unchanged, oldLineNumber: 7, newLineNumber: 7),
-        DiffLine(content: "unchanged line 4", type: .unchanged, oldLineNumber: 8, newLineNumber: 8)
-    ]
-    
-    let block = CollapsibleBlock(
-        lines: sampleLines,
-        isCollapsed: true,
-        startLineNumber: 5,
-        endLineNumber: 8
-    )
-    
-    VStack {
-        CollapsibleBlockView(
-            block: block,
-            showLineNumbers: true,
-            font: .system(.body, design: .monospaced),
-            displayMode: .diff
-        )
-    }
-    .padding()
-    .frame(height: 600)
+
+#Preview("MagicDiffPreviewView") {
+    MagicDiffPreviewView()
+        .inMagicContainer()
 }

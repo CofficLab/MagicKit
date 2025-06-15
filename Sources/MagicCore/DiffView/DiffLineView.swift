@@ -49,27 +49,27 @@ struct DiffLineView: View, SuperLog {
             if let oldNumber = line.oldLineNumber {
                 Text("\(oldNumber)")
                     .font(font)
-                    .foregroundColor(.secondary)
-                    .frame(width: 40, alignment: .trailing)
+                    .foregroundColor(.primary)
+                    .frame(width: 30, alignment: .trailing)
             } else {
                 Text("")
                     .font(font)
-                    .frame(width: 40)
+                    .frame(width: 30)
             }
 
             if let newNumber = line.newLineNumber {
                 Text("\(newNumber)")
                     .font(font)
                     .foregroundColor(.secondary)
-                    .frame(width: 40, alignment: .trailing)
+                    .frame(width: 30, alignment: .trailing)
             } else {
                 Text("")
                     .font(font)
-                    .frame(width: 40)
+                    .frame(width: 30)
             }
         }
         .padding(.horizontal, 8)
-        .background(.background)
+        .frame(maxHeight: .infinity)
     }
 
     /// 内容视图
@@ -131,6 +131,7 @@ struct DiffLineView: View, SuperLog {
                     .padding(.leading, 4)
             }
         }
+        .frame(maxHeight: .infinity)
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, 2)
     }
