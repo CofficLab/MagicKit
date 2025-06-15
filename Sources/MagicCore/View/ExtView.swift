@@ -89,44 +89,6 @@ extension View {
     }
 }
 
-#Preview("Dashed Border") {
-    VStack(spacing: 20) {
-        // 默认样式
-        Text("Default Style")
-            .padding()
-            .dashedBorder()
-        
-        // 自定义颜色
-        Text("Custom Color")
-            .padding()
-            .dashedBorder(color: .blue)
-        
-        // 自定义线宽
-        Text("Thick Border")
-            .padding()
-            .dashedBorder(color: .red, lineWidth: 3)
-        
-        // 自定义虚线样式
-        Text("Custom Dash Pattern")
-            .padding()
-            .dashedBorder(color: .green, dash: [10, 5])
-        
-        // 应用于图片
-        Image(systemName: "star.fill")
-            .font(.largeTitle)
-            .padding()
-            .dashedBorder(color: .orange, lineWidth: 2, dash: [8, 4])
-        
-        // 添加 onlyDebug 预览示例
-        Text("Debug Only View")
-            .padding()
-            .background(Color.yellow)
-            .onlyDebug()
-    }
-    .padding()
-    .inMagicContainer()
-}
-
 #Preview("Toast") {
     ToastPreviewView()
 }

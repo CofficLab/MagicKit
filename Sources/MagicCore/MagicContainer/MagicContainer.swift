@@ -110,7 +110,7 @@ struct MagicContainer<Content: View>: View {
 // MARK: - Preview
 
 #if DEBUG
-#Preview("MagicThemePreviewPreview") {
+#Preview("MagicContainerPreview") {
     MagicContainerPreview()
 }
 #endif
