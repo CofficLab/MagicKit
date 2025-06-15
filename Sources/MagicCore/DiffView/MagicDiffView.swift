@@ -1,3 +1,4 @@
+import OSLog
 import SwiftUI
 
 /// 用于比较两个字符串差异的视图组件，类似GitHub Desktop的diff视图
@@ -12,7 +13,9 @@ import SwiftUI
 ///     newText: "Hello Swift\nThis is line 2\nNew line 3"
 /// )
 /// ```
-public struct MagicDiffView: View {
+public struct MagicDiffView: View, SuperLog {
+    public nonisolated static let emoji = "🖥️"
+
     // 配置属性
     let oldText: String
     let newText: String
@@ -20,12 +23,13 @@ public struct MagicDiffView: View {
     let font: Font
     let enableCollapsing: Bool
     let minUnchangedLines: Int
-    let defaultLanguage: CodeLanguage
+    let verbose: Bool
+    let language: CodeLanguage
 
     // 状态管理
     @State private var selectedView: MagicDiffViewMode = .diff
-    @State private var selectedLanguage: CodeLanguage
-    
+    @State private var isInitialized: Bool = false
+
     // 复制状态管理
     @State private var copyState: CopyState = .idle
     @State private var copyMessage: String = ""
@@ -38,7 +42,7 @@ public struct MagicDiffView: View {
     ///   - font: 文本字体，默认为等宽字体
     ///   - enableCollapsing: 是否启用折叠功能，默认为 true
     ///   - minUnchangedLines: 最小未变动行数才会折叠，默认为3行
-    ///   - defaultLanguage: 默认代码语言，如果为nil则自动检测
+    ///   - verbose: 是否启用详细日志，默认为 false
     public init(
         oldText: String,
         newText: String,
@@ -46,19 +50,24 @@ public struct MagicDiffView: View {
         font: Font = .system(.body, design: .monospaced),
         enableCollapsing: Bool = true,
         minUnchangedLines: Int = 3,
-        defaultLanguage: CodeLanguage? = nil
+        verbose: Bool = false
     ) {
+        if verbose {
+            os_log("\(Self.onInit) oldText: \(oldText.count) newText: \(newText.count)")
+        }
+
         self.oldText = oldText
         self.newText = newText
         self.showLineNumbers = showLineNumbers
         self.font = font
         self.enableCollapsing = enableCollapsing
         self.minUnchangedLines = minUnchangedLines
-        
-        // 如果没有指定默认语言，尝试自动检测
-        let detectedLanguage = defaultLanguage ?? SyntaxHighlighter.detectLanguage(newText)
-        self.defaultLanguage = detectedLanguage
-        self._selectedLanguage = State(initialValue: detectedLanguage)
+        self.verbose = verbose
+        self.language = SyntaxHighlighter.detectLanguage(newText)
+
+        if verbose {
+            os_log("\(Self.t)🔍 初始化完成")
+        }
     }
 
     public var body: some View {
@@ -67,13 +76,13 @@ public struct MagicDiffView: View {
                 // 顶部工具栏
                 MagicDiffToolbar(
                     selectedView: $selectedView,
-                    selectedLanguage: $selectedLanguage,
                     copyState: $copyState,
                     oldText: oldText,
                     newText: newText,
+                    verbose: verbose,
                     onCopy: copyToClipboard
                 )
-                
+
                 // 主要内容区域
                 Group {
                     switch selectedView {
@@ -82,24 +91,27 @@ public struct MagicDiffView: View {
                             diffItems: diffItems,
                             showLineNumbers: showLineNumbers,
                             font: font,
-                            selectedLanguage: selectedLanguage,
-                            displayMode: .diff
+                            selectedLanguage: language,
+                            displayMode: .diff,
+                            verbose: verbose
                         )
                     case .original:
                         MagicDiffContentView(
                             diffItems: createDiffItemsFromText(oldText),
                             showLineNumbers: showLineNumbers,
                             font: font,
-                            selectedLanguage: selectedLanguage,
-                            displayMode: .original
+                            selectedLanguage: language,
+                            displayMode: .original,
+                            verbose: verbose
                         )
                     case .modified:
                         MagicDiffContentView(
                             diffItems: createDiffItemsFromText(newText),
                             showLineNumbers: showLineNumbers,
                             font: font,
-                            selectedLanguage: selectedLanguage,
-                            displayMode: .modified
+                            selectedLanguage: language,
+                            displayMode: .modified,
+                            verbose: verbose
                         )
                     }
                 }
@@ -109,7 +121,7 @@ public struct MagicDiffView: View {
             MagicDiffCopyToast(copyState: copyState, message: copyMessage)
         }
     }
-    
+
     /// 计算差异项目（包含折叠块）
     private var diffItems: [DiffItem] {
         // 处理空文本的情况，避免返回包含空字符串的数组
@@ -125,10 +137,14 @@ public struct MagicDiffView: View {
             return diffLines.map { .line($0) }
         }
     }
-    
+
     /// 复制文本到剪贴板
     /// - Parameter text: 要复制的文本内容
     private func copyToClipboard(text: String) {
+        if verbose {
+            os_log("\(Self.t)开始复制文本到剪贴板")
+        }
+
         // 设置复制中状态
         withAnimation(.easeInOut(duration: 0.1)) {
             copyState = .copying
@@ -137,6 +153,10 @@ public struct MagicDiffView: View {
         // 模拟复制操作的延迟
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             text.copy()
+
+            if verbose {
+                os_log("\(Self.t)文本已复制到剪贴板")
+            }
 
             // 复制成功
             withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
@@ -150,13 +170,19 @@ public struct MagicDiffView: View {
                     copyState = .idle
                     copyMessage = ""
                 }
+                if verbose {
+                    os_log("\(Self.t)复制状态已重置")
+                }
             }
         }
     }
-    
+
     /// 将纯文本转换为DiffItem数组
     private func createDiffItemsFromText(_ text: String) -> [DiffItem] {
         let lines = text.isEmpty ? [] : text.components(separatedBy: .newlines)
+        if verbose {
+            os_log("\(Self.t)创建纯文本差异项目，行数: \(lines.count)")
+        }
         return lines.enumerated().map { index, content in
             let diffLine = DiffLine(
                 content: content,
@@ -171,7 +197,9 @@ public struct MagicDiffView: View {
 
 // MARK: - Preview
 
-#Preview("MagicDiffPreviewView") {
-    MagicDiffPreviewView()
-        .inMagicContainer()
-}
+#if DEBUG
+    #Preview("MagicDiffPreviewView") {
+        MagicDiffPreviewView()
+            .inMagicContainer()
+    }
+#endif

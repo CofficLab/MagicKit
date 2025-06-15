@@ -1,12 +1,16 @@
 import SwiftUI
+import OSLog
 
 /// 差异视图的主要内容组件
-struct MagicDiffContentView: View {
+struct MagicDiffContentView: View, SuperLog {
+    public nonisolated static let emoji = "📋"
+    
     let diffItems: [DiffItem]
     let showLineNumbers: Bool
     let font: Font
     let selectedLanguage: CodeLanguage
     let displayMode: MagicDiffViewMode
+    let verbose: Bool
     
     var body: some View {
         ScrollView {
@@ -18,6 +22,11 @@ struct MagicDiffContentView: View {
             RoundedRectangle(cornerRadius: 0)
                 .stroke(Color.secondary.opacity(0.3), lineWidth: 1)
         )
+        .onAppear {
+            if verbose {
+                os_log("\(Self.t)🔍 body 渲染时接收到的 selectedLanguage: \(selectedLanguage.rawValue)")
+            }
+        }
     }
     
     /// 差异视图内容
@@ -42,7 +51,8 @@ struct MagicDiffContentView: View {
             showLineNumbers: showLineNumbers,
             font: font,
             codeLanguage: selectedLanguage,
-            displayMode: displayMode
+            displayMode: displayMode,
+            verbose: verbose
         )
         .overlay(
             Rectangle()
@@ -66,14 +76,26 @@ struct MagicDiffContentView: View {
         diffItems: [DiffItem],
         showLineNumbers: Bool,
         font: Font = .system(.body, design: .monospaced),
-        selectedLanguage: CodeLanguage = .swift,
-        displayMode: MagicDiffViewMode = .diff
+        selectedLanguage: CodeLanguage,
+        displayMode: MagicDiffViewMode = .diff,
+        verbose: Bool = false
     ) {
+        if verbose {
+            os_log("\(Self.t)🔍 MagicDiffContentView 初始化开始")
+            os_log("\(Self.t)🔍 传入的 selectedLanguage 参数: \(selectedLanguage.rawValue)")
+        }
+        
         self.diffItems = diffItems
         self.showLineNumbers = showLineNumbers
         self.font = font
         self.selectedLanguage = selectedLanguage
         self.displayMode = displayMode
+        self.verbose = verbose
+        
+        if verbose {
+            os_log("\(Self.t)🔍 设置后的 selectedLanguage: \(selectedLanguage.rawValue)")
+            os_log("\(Self.t)初始化差异内容视图，语言: \(selectedLanguage.rawValue)")
+        }
     }
 }
 
@@ -94,7 +116,8 @@ struct MagicDiffContentView: View {
         showLineNumbers: true,
         font: .system(.body, design: .monospaced),
         selectedLanguage: .swift,
-        displayMode: .diff
+        displayMode: .diff,
+        verbose: true
     )
 }
 

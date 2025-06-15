@@ -1,8 +1,11 @@
 import SwiftUI
+import OSLog
 
 /// 语法高亮器
 /// 提供基本的代码语法高亮功能
-struct SyntaxHighlighter {
+struct SyntaxHighlighter: SuperLog {
+    static let emoji = "📝"
+    
     /// 语法高亮规则
     struct HighlightRule {
         let pattern: String
@@ -173,8 +176,9 @@ struct SyntaxHighlighter {
     /// - Parameters:
     ///   - text: 要高亮的文本
     ///   - rules: 高亮规则数组
+    ///   - verbose: 是否输出详细日志
     /// - Returns: 高亮后的文本视图
-    static func highlight(text: String, rules: [HighlightRule]) -> Text {
+    static func highlight(text: String, rules: [HighlightRule], verbose: Bool = false) -> Text {
         var attributedString = AttributedString(text)
         let nsRange = NSRange(location: 0, length: text.utf16.count)
         
@@ -187,8 +191,6 @@ struct SyntaxHighlighter {
             for match in matches {
                 guard let range = Range(match.range, in: text) else { continue }
                 let color = rule.color
-                
-                // 将String.Index范围转换为AttributedString.Index范围
                 if let attrRange = Range(range, in: attributedString) {
                     attributedString[attrRange].foregroundColor = color
                 }
@@ -199,15 +201,30 @@ struct SyntaxHighlighter {
     }
     
     /// 检测代码语言类型
-    /// - Parameter text: 要检测的代码文本
+    /// - Parameters:
+    ///   - text: 要检测的代码文本
+    ///   - verbose: 是否启用详细日志，默认为 false
     /// - Returns: 推测的语言类型
-    static func detectLanguage(_ text: String) -> CodeLanguage {
+    static func detectLanguage(_ text: String, verbose: Bool = false) -> CodeLanguage {
+        if verbose {
+            os_log("\(Self.t)🔍 开始语言检测，文本长度: \(text.count)")
+            let preview = String(text.prefix(200))
+            os_log("\(Self.t)🔍 文本预览: \(preview)")
+        }
+        
         // 基于文件特征的语言检测逻辑
         let firstLines = text.components(separatedBy: .newlines).prefix(5).joined(separator: "\n")
         
         // Swift特征
-        if firstLines.contains("import SwiftUI") || firstLines.contains("import Foundation") ||
-           text.contains("@State") || text.contains("struct") && text.contains(": View") {
+        let hasImportSwiftUI = firstLines.contains("import SwiftUI")
+        let hasImportFoundation = firstLines.contains("import Foundation")
+        let hasState = text.contains("@State")
+        let hasStructView = text.contains("struct") && text.contains(": View")
+        
+        if hasImportSwiftUI || hasImportFoundation || hasState || hasStructView {
+            if verbose {
+                os_log("\(Self.t)👓 检测到 Swift 代码")
+            }
             return .swift
         }
         
@@ -215,6 +232,9 @@ struct SyntaxHighlighter {
         if firstLines.contains("const ") || firstLines.contains("let ") ||
            firstLines.contains("import ") && firstLines.contains("from '") ||
            text.contains("function") || text.contains("=>") {
+            if verbose {
+                os_log("\(Self.t)👓 检测到 JavaScript 代码")
+            }
             return .javascript
         }
         
@@ -222,24 +242,36 @@ struct SyntaxHighlighter {
         if firstLines.contains("def ") || firstLines.contains("import ") ||
            text.contains("class ") && text.contains("self") ||
            text.contains("#!") && text.contains("python") {
+            if verbose {
+                os_log("\(Self.t)👓 检测到 Python 代码")
+            }
             return .python
         }
         
         // Java特征
         if firstLines.contains("public class ") || firstLines.contains("package ") ||
            text.contains("import java.") || text.contains("@Override") {
+            if verbose {
+                os_log("\(Self.t)👓 检测到 Java 代码")
+            }
             return .java
         }
         
         // C++特征
         if firstLines.contains("#include") || firstLines.contains("using namespace") ||
            text.contains("int main") || text.contains("std::") {
+            if verbose {
+                os_log("\(Self.t)👓 检测到 C++ 代码")
+            }
             return .cpp
         }
         
         // HTML特征
         if firstLines.contains("<!DOCTYPE") || firstLines.contains("<html") ||
            text.contains("</div>") || text.contains("<head>") {
+            if verbose {
+                os_log("\(Self.t)👓 检测到 HTML 代码")
+            }
             return .html
         }
         
@@ -247,16 +279,41 @@ struct SyntaxHighlighter {
         if text.contains("{") && text.contains("}") &&
            (text.contains("px") || text.contains("em") || text.contains("#")) &&
            !text.contains("function") {
+            if verbose {
+                os_log("\(Self.t)👓 检测到 CSS 代码")
+            }
             return .css
         }
         
         // PHP特征
         if firstLines.contains("<?php") || firstLines.contains("namespace ") ||
            text.contains("function") && text.contains("$") {
+            if verbose {
+                os_log("\(Self.t)👓 检测到 PHP 代码")
+            }
             return .php
         }
         
+        if verbose {
+            os_log("\(Self.t)❌ 未检测到特定语言，返回 plainText")
+        }
+        
         return .plainText
+    }
+    
+    /// 测试语言检测功能
+    static func testLanguageDetection() {
+        let testCases = [
+            ("Swift代码", "import SwiftUI\n\nstruct ContentView: View {\n    @State private var count = 0\n    \n    var body: some View {\n        Text(\"Hello\")\n    }\n}"),
+            ("JavaScript代码", "const items = [];\nfunction calculateTotal() {\n    return items.reduce((sum, item) => sum + item.price, 0);\n}"),
+            ("Python代码", "def hello_world():\n    print('Hello, World!')\n    return True"),
+            ("纯文本", "这是一段普通的文本\n没有任何编程语言特征")
+        ]
+        
+        for (name, code) in testCases {
+            let detected = detectLanguage(code, verbose: true)
+            os_log("\(Self.t)🧪 测试 \(name): 检测结果 = \(detected.rawValue)")
+        }
     }
 }
 
@@ -309,7 +366,9 @@ public enum CodeLanguage: String, CaseIterable {
 
 // MARK: - Preview
 
+#if DEBUG
 #Preview("MagicDiffPreviewView") {
     MagicDiffPreviewView()
         .inMagicContainer()
 }
+#endif

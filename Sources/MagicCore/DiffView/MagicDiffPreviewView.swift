@@ -82,11 +82,20 @@ struct MagicDiffPreviewView: View {
             // 指定默认语言示例
             MagicDiffView(
                 oldText: "// 旧版本 JavaScript 代码\nfunction calculateTotal(items) {\n  var total = 0;\n  for (var i = 0; i < items.length; i++) {\n    total += items[i].price;\n  }\n  return total;\n}",
-                newText: "// 新版本 JavaScript 代码\nfunction calculateTotal(items) {\n  // 使用 reduce 方法计算总和\n  const total = items.reduce((sum, item) => {\n    return sum + item.price;\n  }, 0);\n  \n  return total;\n}",
-                defaultLanguage: .javascript
+                newText: "// 新版本 JavaScript 代码\nfunction calculateTotal(items) {\n  // 使用 reduce 方法计算总和\n  const total = items.reduce((sum, item) => {\n    return sum + item.price;\n  }, 0);\n  \n  return total;\n}"
             )
             .tabItem {
                 Text("指定语言")
+            }
+            
+            // 语言检测和详细日志示例
+            MagicDiffView(
+                oldText: "struct OldView: View {\n    var body: some View {\n        Text(\"Hello\")\n    }\n}",
+                newText: "struct NewView: View {\n    @State private var message = \"Hello, World!\"\n    \n    var body: some View {\n        VStack {\n            Text(message)\n                .font(.title)\n            Button(\"Update\") {\n                message = \"Updated!\"\n            }\n        }\n        .padding()\n    }\n}",
+                verbose: true  // 启用详细日志
+            )
+            .tabItem {
+                Text("语言检测")
             }
         }
     }
@@ -96,5 +105,179 @@ struct MagicDiffPreviewView: View {
 
 #Preview("MagicDiffPreviewView") {
     MagicDiffPreviewView()
+        .inMagicContainer()
+}
+
+/// 动态文本变化演示视图
+/// 用于测试 MagicDiffView 在父视图状态变化时的重新创建行为
+struct DynamicTextPreview: View {
+    @State private var oldText = ""
+    @State private var newText = ""
+    
+    var body: some View {
+        VStack(spacing: 20) {
+            // 状态显示
+            VStack(alignment: .leading, spacing: 8) {
+                Text("当前状态:")
+                    .font(.headline)
+                Text("oldText: \(oldText.isEmpty ? "空" : "\(oldText.count) 字符")")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                Text("newText: \(newText.isEmpty ? "空" : "\(newText.count) 字符")")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            .padding()
+            .background(Color.gray.opacity(0.1))
+            .cornerRadius(8)
+            
+            // MagicDiffView
+            MagicDiffView(
+                oldText: oldText,
+                newText: newText,
+                verbose: true
+            )
+        }
+        .padding()
+        .onAppear {
+            // 延迟 1 秒后设置 Swift 代码
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    oldText = """
+                    struct OldView: View {
+                        var body: some View {
+                            Text("Hello")
+                        }
+                    }
+                    """
+                    
+                    newText = """
+                    struct NewView: View {
+                        @State private var message = "Hello, World!"
+                        
+                        var body: some View {
+                            VStack {
+                                Text(message)
+                                    .font(.title)
+                                Button("Update") {
+                                    message = "Updated!"
+                                }
+                            }
+                            .padding()
+                        }
+                    }
+                    """
+                }
+            }
+        }
+    }
+}
+
+#Preview("动态文本变化") {
+    DynamicTextPreview()
+        .inMagicContainer()
+}
+
+#Preview("语言检测测试") {
+    let swiftCode = """
+    import SwiftUI
+    
+    struct TestView: View {
+        @State private var count = 0
+        
+        var body: some View {
+            Text("Count: \\(count)")
+        }
+    }
+    """
+    
+    return MagicDiffView(
+        oldText: "",
+        newText: swiftCode,
+        verbose: true
+    )
+    .inMagicContainer()
+}
+
+#Preview("调试语言检测") {
+    struct DebugLanguageDetectionView: View {
+        @State private var oldText = ""
+        @State private var newText = ""
+        @State private var detectedLanguage: CodeLanguage = .plainText
+        
+        var body: some View {
+            VStack(spacing: 20) {
+                // 状态显示
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("调试信息:")
+                        .font(.headline)
+                    Text("oldText: \(oldText.isEmpty ? "空" : "\(oldText.count) 字符")")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Text("newText: \(newText.isEmpty ? "空" : "\(newText.count) 字符")")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Text("检测到的语言: \(detectedLanguage.rawValue)")
+                        .font(.caption)
+                        .foregroundColor(.blue)
+                }
+                .padding()
+                .background(Color.gray.opacity(0.1))
+                .cornerRadius(8)
+                
+                // 手动检测按钮
+                Button("手动检测语言") {
+                    let textToDetect = newText.isEmpty ? oldText : newText
+                    detectedLanguage = SyntaxHighlighter.detectLanguage(textToDetect, verbose: true)
+                }
+                .buttonStyle(.borderedProminent)
+                
+                // MagicDiffView
+                MagicDiffView(
+                    oldText: oldText,
+                    newText: newText,
+                    verbose: true
+                )
+            }
+            .padding()
+            .onAppear {
+                // 延迟 1 秒后设置 Swift 代码
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                    withAnimation(.easeInOut(duration: 0.5)) {
+                        oldText = """
+                        struct OldView: View {
+                            var body: some View {
+                                Text("Hello")
+                            }
+                        }
+                        """
+                        
+                        newText = """
+                        struct NewView: View {
+                            @State private var message = "Hello, World!"
+                            
+                            var body: some View {
+                                VStack {
+                                    Text(message)
+                                        .font(.title)
+                                    Button("Update") {
+                                        message = "Updated!"
+                                    }
+                                }
+                                .padding()
+                            }
+                        }
+                        """
+                        
+                        // 手动检测一次
+                        let textToDetect = newText.isEmpty ? oldText : newText
+                        detectedLanguage = SyntaxHighlighter.detectLanguage(textToDetect, verbose: true)
+                    }
+                }
+            }
+        }
+    }
+    
+    return DebugLanguageDetectionView()
         .inMagicContainer()
 }
