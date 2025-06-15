@@ -156,8 +156,8 @@ extension ShellGit {
     ///   - path: 仓库路径
     ///   - verbose: 是否详细输出，默认不详细输出
     /// - Returns: [GitDiffFile]，仅包含文件名和变动类型，diff 为空
-    public static func changedFilesDetail(in commit: String, at path: String? = nil, verbose: Bool = false) throws -> [GitDiffFile] {
-        let output = try Shell.runSync("git diff-tree --no-commit-id --name-status -r \(commit)", at: path, verbose: verbose)
+    public static func changedFilesDetail(in commit: String, at path: String? = nil, verbose: Bool = false) async throws -> [GitDiffFile] {
+        let output = try await Shell.run("git diff-tree --no-commit-id --name-status -r \(commit)", at: path, verbose: verbose)
         let files = output.split(separator: "\n").map { String($0) }
         return files.compactMap { line in
             let parts = line.split(separator: "\t").map { String($0) }

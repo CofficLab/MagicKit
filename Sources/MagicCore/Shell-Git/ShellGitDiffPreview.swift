@@ -175,49 +175,6 @@ struct ShellGitDiffPreview: View {
                             .cornerRadius(8)
                         }
                     }
-                    VDemoSection(title: "指定 commit 变动文件列表（结构体）", icon: "🧩") {
-                        HStack {
-                            TextField("commit 哈希", text: $filesDetailCommit)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                            Button("获取") {
-                                do {
-                                    filesDetailList = try ShellGit.changedFilesDetail(in: filesDetailCommit, at: repoPath)
-                                    filesDetailError = nil
-                                    showFilesDetailResult = true
-                                } catch let e {
-                                    filesDetailError = e.localizedDescription
-                                    showFilesDetailResult = false
-                                }
-                            }
-                        }
-                        if let filesDetailError = filesDetailError {
-                            Text("错误: \(filesDetailError)").foregroundColor(.red)
-                        }
-                        if showFilesDetailResult {
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text("变动文件结构体列表:")
-                                    .font(.caption)
-                                if filesDetailList.isEmpty {
-                                    Text("无变动文件")
-                                        .foregroundColor(.secondary)
-                                } else {
-                                    ForEach(filesDetailList) { file in
-                                        HStack {
-                                            Text("\(file.changeType)")
-                                                .font(.system(size: 13, design: .monospaced))
-                                                .foregroundColor(.accentColor)
-                                                .frame(width: 24, alignment: .leading)
-                                            Text(file.file)
-                                                .font(.system(size: 13, design: .monospaced))
-                                                .frame(maxWidth: .infinity, alignment: .leading)
-                                        }
-                                    }
-                                }
-                            }
-                            .padding(6)
-                            .cornerRadius(8)
-                        }
-                    }
                 }
                 .padding()
             }

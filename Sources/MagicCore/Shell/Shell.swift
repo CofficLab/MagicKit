@@ -26,51 +26,38 @@ class Shell: SuperLog {
                     process.currentDirectoryURL = URL(fileURLWithPath: path)
                 }
 
-                let pipe = Pipe()
-                process.standardOutput = pipe
-                process.standardError = pipe
-
-                let outputHandle = pipe.fileHandleForReading
-                var outputData = Data()
-                
-                // 使用异步数据读取，避免信号量阻塞
-                outputHandle.readabilityHandler = { handle in
-                    let data = handle.availableData
-                    if !data.isEmpty {
-                        outputData.append(data)
-                    }
-                }
+                let outputPipe = Pipe()
+                let errorPipe = Pipe()
+                process.standardOutput = outputPipe
+                process.standardError = errorPipe
 
                 do {
                     try process.run()
                     
-                    // 异步等待进程完成
-                    DispatchQueue.global(qos: .userInitiated).async {
-                        process.waitUntilExit()
-                        
-                        // 清理 handler 并读取剩余数据
-                        outputHandle.readabilityHandler = nil
-                        let remainingData = outputHandle.readDataToEndOfFile()
-                        if !remainingData.isEmpty {
-                            outputData.append(remainingData)
-                        }
-                        
-                        // 处理结果
-                        guard let output = String(data: outputData, encoding: .utf8) else {
-                            continuation.resume(throwing: ShellError.stringConversionFailed(outputData))
-                            return
-                        }
+                    // 使用同步方式读取数据，避免异步handler的竞态条件
+                    let outputData = outputPipe.fileHandleForReading.readDataToEndOfFile()
+                    let errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
+                    
+                    // 等待进程完成
+                    process.waitUntilExit()
+                    
+                    // 转换数据到字符串
+                    let output = String(data: outputData, encoding: .utf8) ?? ""
+                    let errorOutput = String(data: errorData, encoding: .utf8) ?? ""
+                    
+                    // 合并标准输出和错误输出
+                    let combinedOutput = errorOutput.isEmpty ? output : "\(output)\n\(errorOutput)"
 
-                        if verbose {
-                            os_log("\(self.t) \n➡️ Path: \n\(path ?? "Current Directory") (\(FileManager.default.currentDirectoryPath)) \n➡️ Command: \n\(command) \n➡️ Output: \n\(output)")
-                        }
+                    if verbose {
+                        os_log("\(self.t) \n➡️ Path: \n\(path ?? "Current Directory") (\(FileManager.default.currentDirectoryPath)) \n➡️ Command: \n\(command) \n➡️ Output: \n\(combinedOutput)")
+                    }
 
-                        if process.terminationStatus != 0 {
-                            os_log(.error, "\(self.t) ❌ Command failed \n ➡️ Path: \(path ?? "Current Directory") (\(FileManager.default.currentDirectoryPath)) \n ➡️ Command: \(command) \n ➡️ Output: \(output) \n ➡️ Exit code: \(process.terminationStatus)")
-                            continuation.resume(throwing: ShellError.commandFailed(output, command))
-                        } else {
-                            continuation.resume(returning: output.trimmingCharacters(in: .whitespacesAndNewlines))
-                        }
+                    if process.terminationStatus != 0 {
+                        os_log(.error, "\(self.t) ❌ Command failed \n ➡️ Path: \(path ?? "Current Directory") (\(FileManager.default.currentDirectoryPath)) \n ➡️ Command: \(command) \n ➡️ Output: \(combinedOutput) \n ➡️ Exit code: \(process.terminationStatus)")
+                        continuation.resume(throwing: ShellError.commandFailed(combinedOutput, command))
+                    } else {
+                        let trimmedOutput = output.trimmingCharacters(in: .whitespacesAndNewlines)
+                        continuation.resume(returning: trimmedOutput)
                     }
                 } catch {
                     continuation.resume(throwing: ShellError.processStartFailed(error.localizedDescription))
