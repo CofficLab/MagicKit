@@ -16,3 +16,11 @@ enum ShellError: Error, LocalizedError {
         }
     }
 }
+
+// MARK: - Preview
+
+#Preview("Shell Demo") {
+    ShellDemoView()
+        .padding()
+        .inMagicContainer()
+}
