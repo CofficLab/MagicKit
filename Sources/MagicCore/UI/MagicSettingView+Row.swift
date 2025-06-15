@@ -95,7 +95,7 @@ fileprivate struct PressActionModifier: ViewModifier {
 
 // MARK: - Preview
 #Preview {
-    MagicThemePreview {
+    MagicContainer {
         VStack(spacing: 0) {
             // Basic row with text content
             MagicSettingRow(

@@ -589,7 +589,7 @@ struct SystemIconsDemoView: View {
     var body: some View {
         TabView {
             // 文档图标演示
-            MagicThemePreview {
+            MagicContainer {
                 VStack(spacing: 20) {
                     // 文档相关图标
                     VStack(alignment: .leading, spacing: 12) {
@@ -630,7 +630,7 @@ struct SystemIconsDemoView: View {
             }
             
             // 操作图标演示
-            MagicThemePreview {
+            MagicContainer {
                 VStack(spacing: 20) {
                     // 基础操作图标
                     VStack(alignment: .leading, spacing: 12) {
@@ -696,7 +696,7 @@ struct SystemIconsDemoView: View {
             }
             
             // 状态图标演示
-            MagicThemePreview {
+            MagicContainer {
                 VStack(spacing: 20) {
                     // 状态图标
                     VStack(alignment: .leading, spacing: 12) {

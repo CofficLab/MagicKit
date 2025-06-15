@@ -117,7 +117,7 @@ extension MagicBackground {
 #Preview("Forest Themes") {
     TabView {
         // 森林主题
-        MagicThemePreview {
+        MagicContainer {
             ScrollView {
                 VStack(spacing: 20) {
                     Text("森林主题")

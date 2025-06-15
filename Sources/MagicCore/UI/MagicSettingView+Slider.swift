@@ -35,7 +35,7 @@ public struct MagicSettingSlider<V: BinaryFloatingPoint>: View where V.Stride: B
 
 // MARK: - Preview
 #Preview {
-    MagicThemePreview {
+    MagicContainer {
         VStack(spacing: 0) {
             MagicSettingSlider(
                 title: "Volume",

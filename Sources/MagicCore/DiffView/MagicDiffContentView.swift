@@ -18,15 +18,10 @@ struct MagicDiffContentView: View, SuperLog {
         }
         .background(Color(NSColor.controlBackgroundColor))
         .cornerRadius(0)
-        .overlay(
-            RoundedRectangle(cornerRadius: 0)
-                .stroke(Color.secondary.opacity(0.3), lineWidth: 1)
-        )
-        .onAppear {
-            if verbose {
-                os_log("\(Self.t)🔍 body 渲染时接收到的 selectedLanguage: \(selectedLanguage.rawValue)")
-            }
-        }
+//        .overlay(
+//            RoundedRectangle(cornerRadius: 0)
+//                .stroke(Color.secondary.opacity(0.3), lineWidth: 1)
+//        )
     }
     
     /// 差异视图内容
@@ -54,12 +49,12 @@ struct MagicDiffContentView: View, SuperLog {
             displayMode: displayMode,
             verbose: verbose
         )
-        .overlay(
-            Rectangle()
-                .frame(height: 0.5)
-                .foregroundColor(Color.secondary.opacity(0.1)),
-            alignment: .bottom
-        )
+//        .overlay(
+//            Rectangle()
+//                .frame(height: 0.5)
+//                .foregroundColor(Color.secondary.opacity(0.1)),
+//            alignment: .bottom
+//        )
     }
     
     /// 差异视图中的折叠块项目
@@ -80,22 +75,12 @@ struct MagicDiffContentView: View, SuperLog {
         displayMode: MagicDiffViewMode = .diff,
         verbose: Bool = false
     ) {
-        if verbose {
-            os_log("\(Self.t)🔍 MagicDiffContentView 初始化开始")
-            os_log("\(Self.t)🔍 传入的 selectedLanguage 参数: \(selectedLanguage.rawValue)")
-        }
-        
         self.diffItems = diffItems
         self.showLineNumbers = showLineNumbers
         self.font = font
         self.selectedLanguage = selectedLanguage
         self.displayMode = displayMode
         self.verbose = verbose
-        
-        if verbose {
-            os_log("\(Self.t)🔍 设置后的 selectedLanguage: \(selectedLanguage.rawValue)")
-            os_log("\(Self.t)初始化差异内容视图，语言: \(selectedLanguage.rawValue)")
-        }
     }
 }
 

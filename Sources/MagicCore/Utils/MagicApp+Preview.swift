@@ -30,7 +30,7 @@ struct MagicAppDemoView: View {
     @State private var uptimeTimer: Timer? = nil
     
     var body: some View {
-        MagicThemePreview {
+        MagicContainer {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     // 应用信息

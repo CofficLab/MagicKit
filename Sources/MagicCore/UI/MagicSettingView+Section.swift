@@ -31,7 +31,7 @@ public struct MagicSettingSection<Content: View>: View {
 // MARK: - Preview
 
 #Preview {
-    MagicThemePreview {
+    MagicContainer {
         MagicSettingSection(title: "General") {
             VStack(spacing: 8) {
                 Text("Setting Item 1")

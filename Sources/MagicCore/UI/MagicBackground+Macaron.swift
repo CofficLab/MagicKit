@@ -135,7 +135,7 @@ extension MagicBackground {
 #Preview("Macaron Themes") {
     TabView {
         // 马卡龙主题
-        MagicThemePreview {
+        MagicContainer {
             ScrollView {
                 VStack(spacing: 20) {
                     Text("马卡龙主题")

@@ -135,7 +135,7 @@ extension MagicBackground {
 #Preview("Color Themes") {
     TabView {
         // 颜色主题
-        MagicThemePreview {
+        MagicContainer {
             ScrollView {
                 VStack(spacing: 20) {
                     Text("颜色主题")

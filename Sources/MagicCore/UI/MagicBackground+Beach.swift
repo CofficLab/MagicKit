@@ -160,7 +160,7 @@ private struct PalmTree: View {
 #Preview("Beach Themes") {
     TabView {
         // 海滩主题
-        MagicThemePreview {
+        MagicContainer {
             ScrollView {
                 VStack(spacing: 20) {
                     Text("海滩主题")

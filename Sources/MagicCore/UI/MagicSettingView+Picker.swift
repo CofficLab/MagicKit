@@ -41,7 +41,7 @@ public struct MagicSettingPicker<T: Hashable>: View {
 
 // MARK: - Preview
 #Preview {
-    MagicThemePreview {
+    MagicContainer {
         VStack(spacing: 0) {
             MagicSettingPicker(
                 title: "Theme",

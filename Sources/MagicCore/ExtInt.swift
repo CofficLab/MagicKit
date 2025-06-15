@@ -89,7 +89,7 @@ struct IntExtensionDemoView: View {
     var body: some View {
         TabView {
             // 基础功能演示
-            MagicThemePreview {
+            MagicContainer {
                 VStack(spacing: 20) {
                     // HTTP 状态码
                     VStack(alignment: .leading, spacing: 12) {
@@ -141,7 +141,7 @@ struct IntExtensionDemoView: View {
             }
             
             // 格式化演示
-            MagicThemePreview {
+            MagicContainer {
                 VStack(spacing: 20) {
                     // 数字格式化
                     VStack(alignment: .leading, spacing: 12) {

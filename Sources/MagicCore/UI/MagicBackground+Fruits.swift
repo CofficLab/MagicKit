@@ -143,7 +143,7 @@ extension MagicBackground {
 #Preview("Fruit Themes") {
     TabView {
         // 水果主题
-        MagicThemePreview {
+        MagicContainer {
             ScrollView {
                 VStack(spacing: 20) {
                     Text("水果主题")

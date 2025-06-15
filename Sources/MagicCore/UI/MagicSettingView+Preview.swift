@@ -60,7 +60,7 @@ public struct SettingExampleView: View {
     public init() {}
     
     public var body: some View {
-        MagicThemePreview {
+        MagicContainer {
             VStack(alignment: .leading, spacing: 24) {
                 // Radio Confirmation Demo Section
                 MagicSettingSection(title: "Data Sync Mode") {

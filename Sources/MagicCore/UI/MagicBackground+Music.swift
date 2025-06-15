@@ -134,7 +134,7 @@ extension MagicBackground {
 #Preview("Music Themes") {
     TabView {
         // 音乐主题
-        MagicThemePreview {
+        MagicContainer {
             ScrollView {
                 VStack(spacing: 20) {
                     Text("音乐主题")

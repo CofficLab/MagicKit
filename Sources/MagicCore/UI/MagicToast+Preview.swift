@@ -129,7 +129,7 @@ private struct AnimationToastPreview: View {
 struct MagicToastPreview: View {
     var body: some View {
         TabView {
-            MagicThemePreview {
+            MagicContainer {
                 BasicToastPreview()
             }
             .tabItem {
@@ -137,7 +137,7 @@ struct MagicToastPreview: View {
                 Text("基础")
             }
             
-            MagicThemePreview {
+            MagicContainer {
                 StyleToastPreview()
             }
             .tabItem {
@@ -145,7 +145,7 @@ struct MagicToastPreview: View {
                 Text("样式")
             }
             
-            MagicThemePreview {
+            MagicContainer {
                 LongTextToastPreview()
             }
             .tabItem {
@@ -153,7 +153,7 @@ struct MagicToastPreview: View {
                 Text("长文本")
             }
             
-            MagicThemePreview {
+            MagicContainer {
                 AnimationToastPreview()
             }
             .tabItem {

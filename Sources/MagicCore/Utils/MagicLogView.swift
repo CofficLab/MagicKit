@@ -231,7 +231,7 @@ public struct MagicLogView: View {
 }
 
 #Preview("With Logs") {
-    MagicThemePreview {
+    MagicContainer {
         let logger = MagicLogger.shared
         logger.logView()
             .frame(height: 500)

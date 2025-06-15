@@ -428,7 +428,7 @@ extension MagicBackground {
 #Preview("Basic Themes") {
     TabView {
         // 基础主题
-        MagicThemePreview {
+        MagicContainer {
             ScrollView {
                 VStack(spacing: 20) {
                     Group {
@@ -456,7 +456,7 @@ extension MagicBackground {
         }
         
         // 自然主题
-        MagicThemePreview {
+        MagicContainer {
             ScrollView {
                 VStack(spacing: 20) {
                     Group {

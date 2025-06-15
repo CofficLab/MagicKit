@@ -158,7 +158,7 @@ private struct IceCrystal: View {
 #Preview("Snow Themes") {
     TabView {
         // 雪景主题
-        MagicThemePreview {
+        MagicContainer {
             ScrollView {
                 VStack(spacing: 20) {
                     Text("雪景主题")

@@ -143,7 +143,7 @@ private struct TimeLabel: View {
 #Preview("MagicProgressBar") {
     TabView {
         // 基础用法
-        MagicThemePreview {
+        MagicContainer {
             VStack(spacing: 20) {
                 Text("基础进度条")
                     .font(.headline)
@@ -162,7 +162,7 @@ private struct TimeLabel: View {
         }
         
         // 交互示例
-        MagicThemePreview {
+        MagicContainer {
             VStack(spacing: 20) {
                 Text("交互进度条")
                     .font(.headline)
@@ -184,7 +184,7 @@ private struct TimeLabel: View {
         }
         
         // 不同长度
-        MagicThemePreview {
+        MagicContainer {
             VStack(spacing: 20) {
                 Text("不同长度")
                     .font(.headline)
@@ -224,7 +224,7 @@ private struct TimeLabel: View {
         }
         
         // 动态更新
-        MagicThemePreview {
+        MagicContainer {
             DynamicProgressBarPreview()
         }
         .tabItem {

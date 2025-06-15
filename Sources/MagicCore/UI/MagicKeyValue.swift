@@ -64,7 +64,7 @@ public struct MagicKeyValue<Icon: View>: View {
 #Preview("MagicKeyValue 演示") {
     TabView {
         // 基础示例
-        MagicThemePreview {
+        MagicContainer {
             VStack(spacing: 16) {
                 MagicKeyValue(key: "用户名", value: "admin")
                 MagicKeyValue(key: "创建时间", value: "2024-03-15 14:30:45")
@@ -79,7 +79,7 @@ public struct MagicKeyValue<Icon: View>: View {
         }
         
         // 图标示例
-        MagicThemePreview {
+        MagicContainer {
             VStack(spacing: 16) {
                 MagicKeyValue(key: "播放", value: "play.circle") {
                     Image(systemName: "play.circle")
@@ -99,7 +99,7 @@ public struct MagicKeyValue<Icon: View>: View {
         }
         
         // 分组示例
-        MagicThemePreview {
+        MagicContainer {
             VStack(spacing: 20) {
                 // 用户信息组
                 VStack(alignment: .leading, spacing: 12) {

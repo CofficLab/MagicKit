@@ -30,7 +30,7 @@ public struct MagicSettingToggle: View {
 
 // MARK: - Preview
 #Preview {
-    MagicThemePreview {
+    MagicContainer {
         VStack(spacing: 0) {
             MagicSettingToggle(
                 title: "Enable Feature",

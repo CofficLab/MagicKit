@@ -144,7 +144,7 @@ extension MagicBackground {
 #Preview("Sky Themes") {
     TabView {
         // 天空主题
-        MagicThemePreview {
+        MagicContainer {
             ScrollView {
                 VStack(spacing: 20) {
                     Text("天空主题")

@@ -149,7 +149,7 @@ extension MagicBackground {
 #Preview("River Themes") {
     TabView {
         // 河流主题
-        MagicThemePreview {
+        MagicContainer {
             ScrollView {
                 VStack(spacing: 20) {
                     Text("河流主题")

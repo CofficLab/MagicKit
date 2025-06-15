@@ -142,7 +142,7 @@ extension MagicBackground {
 #Preview("Ocean Themes") {
     TabView {
         // 海洋主题
-        MagicThemePreview {
+        MagicContainer {
             ScrollView {
                 VStack(spacing: 20) {
                     Text("海洋主题")

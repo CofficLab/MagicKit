@@ -8,7 +8,7 @@ public struct HttpClientPreview: View {
     @State private var client: HttpClient?
     
     public var body: some View {
-        MagicThemePreview {
+        MagicContainer {
             VStack(spacing: 20) {
                 // Response Section
                 VStack(alignment: .leading, spacing: 8) {

@@ -419,7 +419,7 @@ struct StringExtensionDemoView: View {
     var body: some View {
         TabView {
             // 基础功能演示
-            MagicThemePreview {
+            MagicContainer {
                 VStack(spacing: 20) {
                     // 字符串处理
                     VStack(alignment: .leading, spacing: 12) {

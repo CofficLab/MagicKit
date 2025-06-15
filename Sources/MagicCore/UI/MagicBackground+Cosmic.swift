@@ -246,7 +246,7 @@ extension MagicBackground {
 #Preview("Cosmic Themes") {
     TabView {
         // 宇宙主题
-        MagicThemePreview {
+        MagicContainer {
             ScrollView {
                 VStack(spacing: 20) {
                     Text("宇宙主题")

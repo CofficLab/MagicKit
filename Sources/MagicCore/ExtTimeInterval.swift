@@ -54,7 +54,7 @@ struct TimeIntervalExtensionDemoView: View {
     var body: some View {
         TabView {
             // 时间格式化演示
-            MagicThemePreview {
+            MagicContainer {
                 VStack(spacing: 20) {
                     // 基础格式化
                     VStack(alignment: .leading, spacing: 12) {

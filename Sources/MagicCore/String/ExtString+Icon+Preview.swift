@@ -3,7 +3,7 @@ import SwiftUI
 /// String+Icon 扩展功能演示视图
 struct StringIconExtensionDemoView: View {
     var body: some View {
-        MagicThemePreview {
+        MagicContainer {
             VStack(spacing: 24) {
                 // 文档相关
                 IconSection(title: "文档相关", icons: [

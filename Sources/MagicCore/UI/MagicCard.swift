@@ -24,7 +24,7 @@ public struct MagicCard<Content, Background>: View where Content: View, Backgrou
 #Preview("MagicCard") {
     TabView {
         // 基础样式
-        MagicThemePreview {
+        MagicContainer {
             VStack(spacing: 16) {
                 Text("基础卡片")
                     .font(.headline)
@@ -51,7 +51,7 @@ public struct MagicCard<Content, Background>: View where Content: View, Backgrou
         }
         
         // 复杂内容
-        MagicThemePreview {
+        MagicContainer {
             VStack(spacing: 16) {
                 Text("复杂内容")
                     .font(.headline)
@@ -107,7 +107,7 @@ public struct MagicCard<Content, Background>: View where Content: View, Backgrou
         }
         
         // 不同背景
-        MagicThemePreview {
+        MagicContainer {
             VStack(spacing: 16) {
                 Text("不同背景")
                     .font(.headline)
@@ -158,7 +158,7 @@ public struct MagicCard<Content, Background>: View where Content: View, Backgrou
         }
         
         // 交互样式
-        MagicThemePreview {
+        MagicContainer {
             VStack(spacing: 16) {
                 Text("交互样式")
                     .font(.headline)

@@ -263,7 +263,7 @@ struct PlatformImageDemoView: View {
     var body: some View {
         TabView {
             // 基础功能演示
-            MagicThemePreview {
+            MagicContainer {
                 VStack(spacing: 20) {
                     // 系统图标
                     VStack(alignment: .leading, spacing: 12) {
@@ -310,7 +310,7 @@ struct PlatformImageDemoView: View {
             }
             
             // 图片处理演示
-            MagicThemePreview {
+            MagicContainer {
                 VStack(spacing: 20) {
                     // 缩放质量演示
                     VStack(alignment: .leading, spacing: 12) {

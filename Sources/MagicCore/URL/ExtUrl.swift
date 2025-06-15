@@ -294,7 +294,7 @@ struct URLExtensionDemoView: View {
     var body: some View {
         TabView {
             // 路径操作演示
-            MagicThemePreview {
+            MagicContainer {
                 VStack(spacing: 20) {
                     // 基础路径操作
                     VStack(alignment: .leading, spacing: 12) {
@@ -353,7 +353,7 @@ struct URLExtensionDemoView: View {
             }
             
             // 文件操作演示
-            MagicThemePreview {
+            MagicContainer {
                 VStack(spacing: 20) {
                     // 文件操作
                     VStack(alignment: .leading, spacing: 12) {

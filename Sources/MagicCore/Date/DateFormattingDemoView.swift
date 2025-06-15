@@ -8,7 +8,7 @@ struct DateFormattingDemoView: View {
     @State private var oldDate = Date().addingTimeInterval(-86400 * 10) // 10天前
     
     var body: some View {
-        MagicThemePreview {
+        MagicContainer {
             ScrollView {
                 VStack(spacing: 20) {
                     // 静态属性部分

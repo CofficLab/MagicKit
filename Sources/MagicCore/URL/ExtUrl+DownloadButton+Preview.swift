@@ -34,7 +34,7 @@ struct DownloadButtonPreview: View {
     }
 
     private var basicPreview: some View {
-        MagicThemePreview {
+        MagicContainer {
             VStack(spacing: 20) {
                 Group {
                     Text("基本按钮").font(.headline)
@@ -56,7 +56,7 @@ struct DownloadButtonPreview: View {
     }
 
     private var shapesPreview: some View {
-        MagicThemePreview {
+        MagicContainer {
             VStack(spacing: 20) {
                 Group {
                     Text("圆形").font(.headline)
@@ -93,7 +93,7 @@ struct DownloadButtonPreview: View {
     }
 
     private var fileTypesPreview: some View {
-        MagicThemePreview {
+        MagicContainer {
             VStack(spacing: 20) {
                 Group {
                     Text("iCloud 文件").font(.headline)
@@ -124,7 +124,7 @@ struct DownloadButtonPreview: View {
     }
 
     private var statesPreview: some View {
-        MagicThemePreview {
+        MagicContainer {
             VStack(spacing: 20) {
                 Group {
                     Text("未下载").font(.headline)
