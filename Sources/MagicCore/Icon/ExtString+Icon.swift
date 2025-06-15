@@ -91,6 +91,36 @@ public extension String {
     /// 刷新图标名称 (arrow.clockwise)
     static let iconRefresh = "arrow.clockwise"
     
+    /// 刷新圆形图标名称 (arrow.clockwise.circle)
+    static let iconRefreshCircle = "arrow.clockwise.circle"
+    
+    /// 刷新圆形填充图标名称 (arrow.clockwise.circle.fill)
+    static let iconRefreshCircleFill = "arrow.clockwise.circle.fill"
+    
+    /// 双箭头刷新图标名称 (arrow.2.circlepath)
+    static let iconRefreshAlt = "arrow.2.circlepath"
+    
+    /// 双箭头刷新圆形图标名称 (arrow.2.circlepath.circle)
+    static let iconRefreshAltCircle = "arrow.2.circlepath.circle"
+    
+    /// 双箭头刷新圆形填充图标名称 (arrow.2.circlepath.circle.fill)
+    static let iconRefreshAltCircleFill = "arrow.2.circlepath.circle.fill"
+    
+    /// 同步图标名称 (arrow.triangle.2.circlepath)
+    static let iconSync = "arrow.triangle.2.circlepath"
+    
+    /// 同步圆形图标名称 (arrow.triangle.2.circlepath.circle)
+    static let iconSyncCircle = "arrow.triangle.2.circlepath.circle"
+    
+    /// 同步圆形填充图标名称 (arrow.triangle.2.circlepath.circle.fill)
+    static let iconSyncCircleFill = "arrow.triangle.2.circlepath.circle.fill"
+    
+    /// 重新加载图标名称 (gobackward)
+    static let iconReload = "gobackward"
+    
+    /// 重新开始图标名称 (restart.circle)
+    static let iconRestart = "restart.circle"
+    
     /// 设置图标名称 (gearshape)
     static let iconSettings = "gearshape"
     
@@ -281,8 +311,8 @@ public extension String {
     static let iconCloudUpload = "icloud.and.arrow.up"
     
     // MARK: - 系统状态
-    /// 占位图标名称 (placeholder)
-    static let iconPlaceholder = "placeholder"
+    /// 占位图标名称 (photo.badge.plus)
+    static let iconPlaceholder = "photo.badge.plus"
     
     /// 电池图标名称 (battery.100)
     static let iconBattery = "battery.100"

@@ -37,13 +37,28 @@ struct StringIconExtensionDemoView: View {
                     ("剪切", .iconCut),
                     ("粘贴", .iconPaste),
                     ("搜索", .iconSearch),
-                    ("重置", .iconReset),
-                    ("刷新", .iconRefresh),
                     ("设置", .iconSettings),
                     ("工具栏", .iconToolbar),
                     ("工具栏填充", .iconToolbarFill),
                     ("顶部工具栏", .iconTopToolbar),
                     ("顶部工具栏填充", .iconTopToolbarFill)
+                ])
+                
+                // 刷新和同步
+                IconSection(title: "刷新和同步", icons: [
+                    ("刷新", .iconRefresh),
+                    ("刷新圆形", .iconRefreshCircle),
+                    ("刷新圆形填充", .iconRefreshCircleFill),
+                    ("双箭头刷新", .iconRefreshAlt),
+                    ("双箭头刷新圆形", .iconRefreshAltCircle),
+                    ("双箭头刷新圆形填充", .iconRefreshAltCircleFill),
+                    ("同步", .iconSync),
+                    ("同步圆形", .iconSyncCircle),
+                    ("同步圆形填充", .iconSyncCircleFill),
+                    ("重置", .iconReset),
+                    ("重新加载", .iconReload),
+                    ("重新开始", .iconRestart),
+                    ("箭头循环", .iconArrowClockwise)
                 ])
                 
                 // 媒体控制
