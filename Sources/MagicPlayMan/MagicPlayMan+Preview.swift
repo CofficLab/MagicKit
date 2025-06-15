@@ -48,7 +48,7 @@ public extension MagicPlayMan {
                 },
                 onPlayModeChanged: { [weak playMan] newMode in
                     playMan?.log("观察到事件：播放模式变化 - \(playMan?.playMode.rawValue ?? "未知") -> \(newMode.rawValue)")
-                },
+                }
             )
         }
 
